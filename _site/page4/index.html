@@ -33,33 +33,51 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2015/11/04/android/">
-        android
+      <a href="/2017/11/01/android_2.3.7_build/">
+        android_2.3.7_build
       </a>
     </h1>
 
-    <time datetime="2015-11-04T00:00:00+00:00" class="post-date">04 Nov 2015</time>
+    <time datetime="2017-11-01T00:00:00+00:00" class="post-date">01 Nov 2017</time>
 
-    <h2 id="android-">android 开发笔记</h2>
-<p>###简介###
-####安卓系统架构####
-1 linux内核层:驱动等;
-2 系统运行库层:c c++:
-- 各种应用库和运行时环境dalvik
-- 库：SGL,
-3 应用框架层：
-- 提供api,四大组件等,提供UI所需的各种控件
-4 应用层：
-- 一个应用程序可以利用框架的以下五部分构成：
-<em>活动(activity)
- 广播
- 服务
-内容提供者
-intent and intent filter(意图和意图过滤器)</em></p>
+    <h1 id="android">android的编译，安装等</h1>
+<p>不翻墙国内下载：
+<a href="https://pan.baidu.com/s/1ngsZs#list/path=%2FAndroid%E6%BA%90%E7%A0%81">安卓源码各版本</a></p>
 
-<p>安卓生命周期</p>
+<p>这里简单写遇到的问题和解决,是基于罗升阳的书android内核源码情景分析
+我是在ubuntu13的32位版本上编译的android2.3.7版本，因为adb是32位的，建议都用32位的ubuntu。
+我在虚拟机中安装的ubuntu
+其他前期配置可以看书中的工具，有的如libwxgtk那个版本要换成2.8
+接下来是编译注意：</p>
 
-<h3 id="section">界面</h3>
+<h2 id="make381make">１make使用3.8.1的版本,并按照常规的make三部曲安装</h2>
+
+<h2 id="gccg44apt-get-install-gcc-44-g-44">2　gcc，g++使用4.4版本：直接安装apt-get install gcc-4.4 g++-4.4</h2>
+
+<p>接着在/usr/bin/下找到ls -l g*
+有个软连接，改</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo mv gcc gcc.bak
+sudo ln -s gcc-4.4 gcc
+</code></pre>
+</div>
+
+<p>g++同上
+接着检测版本：g++ -v gcc -v</p>
+
+<h2 id="lncurses">3 -lncurses找不到：</h2>
+
+<p>直接apt安装libncurses5-dev
+　　　
+　　　
+###4 提示error dalvik_system_Zygote.c　storge size of rlim isnt known</p>
+
+<p>　　改：在android/davilk/vm/native/dalvik_system_Zygote.c中加入:
+　　
+	　　#include&lt;sys/time.h&gt;
+	　　#include&lt;sys/resource.h&gt;
+　　
+　　至此直到最后成功都没有出现问题</p>
 
   </article>
   
@@ -67,7 +85,7 @@ intent and intent filter(意图和意图过滤器)</em></p>
 
 <div class="pagination">
   
-    <span class="pagination-item older">Older</span>
+    <a class="pagination-item older" href="/page5">Older</a>
   
   
     <a class="pagination-item newer" href="/page3">Newer</a>
@@ -78,7 +96,7 @@ intent and intent filter(意图和意图过滤器)</em></p>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-11-05T12:40:08+00:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2017-11-12T23:09:18+00:00">2017</time>. All rights reserved.
         </small>
       </footer>
     </div>

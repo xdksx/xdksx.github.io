@@ -7,7 +7,7 @@
 
   <title>
     
-      What's Jekyll? &middot; Poole
+      android_2.3.7_build &middot; Poole
     
   </title>
 
@@ -30,15 +30,46 @@
 
       <main>
         <article class="post">
-  <h1 class="post-title">What's Jekyll?</h1>
-  <time datetime="2016-01-01T00:00:00+00:00" class="post-date">01 Jan 2016</time>
-  <p><a href="http://jekyllrb.com">Jekyll</a> is a static site generator, an open-source tool for creating simple yet powerful websites of all shapes and sizes. From <a href="https://github.com/jekyll/jekyll/blob/master/README.markdown">the project’s readme</a>:</p>
+  <h1 class="post-title">android_2.3.7_build</h1>
+  <time datetime="2017-11-01T00:00:00+00:00" class="post-date">01 Nov 2017</time>
+  <h1 id="android">android的编译，安装等</h1>
+<p>不翻墙国内下载：
+<a href="https://pan.baidu.com/s/1ngsZs#list/path=%2FAndroid%E6%BA%90%E7%A0%81">安卓源码各版本</a></p>
 
-<blockquote>
-  <p>Jekyll is a simple, blog aware, static site generator. It takes a template directory […] and spits out a complete, static website suitable for serving with Apache or your favorite web server. This is also the engine behind GitHub Pages, which you can use to host your project’s page or blog right here from GitHub.</p>
-</blockquote>
+<p>这里简单写遇到的问题和解决,是基于罗升阳的书android内核源码情景分析
+我是在ubuntu13的32位版本上编译的android2.3.7版本，因为adb是32位的，建议都用32位的ubuntu。
+我在虚拟机中安装的ubuntu
+其他前期配置可以看书中的工具，有的如libwxgtk那个版本要换成2.8
+接下来是编译注意：</p>
 
-<p>It’s an immensely useful tool. Find out more by <a href="https://github.com/jekyll/jekyll">visiting the project on GitHub</a>.</p>
+<h2 id="make381make">１make使用3.8.1的版本,并按照常规的make三部曲安装</h2>
+
+<h2 id="gccg44apt-get-install-gcc-44-g-44">2　gcc，g++使用4.4版本：直接安装apt-get install gcc-4.4 g++-4.4</h2>
+
+<p>接着在/usr/bin/下找到ls -l g*
+有个软连接，改</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo mv gcc gcc.bak
+sudo ln -s gcc-4.4 gcc
+</code></pre>
+</div>
+
+<p>g++同上
+接着检测版本：g++ -v gcc -v</p>
+
+<h2 id="lncurses">3 -lncurses找不到：</h2>
+
+<p>直接apt安装libncurses5-dev
+　　　
+　　　
+###4 提示error dalvik_system_Zygote.c　storge size of rlim isnt known</p>
+
+<p>　　改：在android/davilk/vm/native/dalvik_system_Zygote.c中加入:
+　　
+	　　#include&lt;sys/time.h&gt;
+	　　#include&lt;sys/resource.h&gt;
+　　
+　　至此直到最后成功都没有出现问题</p>
 
 </article>
 

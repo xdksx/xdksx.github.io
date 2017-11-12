@@ -7,7 +7,7 @@
 
   <title>
     
-      What's Jekyll? &middot; Poole
+      wpa_supplicant &middot; Poole
     
   </title>
 
@@ -30,15 +30,20 @@
 
       <main>
         <article class="post">
-  <h1 class="post-title">What's Jekyll?</h1>
-  <time datetime="2016-01-01T00:00:00+00:00" class="post-date">01 Jan 2016</time>
-  <p><a href="http://jekyllrb.com">Jekyll</a> is a static site generator, an open-source tool for creating simple yet powerful websites of all shapes and sizes. From <a href="https://github.com/jekyll/jekyll/blob/master/README.markdown">the project’s readme</a>:</p>
+  <h1 class="post-title">wpa_supplicant</h1>
+  <time datetime="2017-10-28T00:00:00+00:00" class="post-date">28 Oct 2017</time>
+  <p>wpa_supplicant
+It implements key negotiation with a WPA Authenticator and it can optionally control roaming and IEEE 802.11 authentication/association of the wlan driver.
+使用时可以是用wpa_cli接口指令的形式或者是wpa_ctrl.c　.h那样提供了API,供外部语言如c++调用，需先打开，调用open。。。再发送请求，request，具体见文档，如下链接：</p>
 
-<blockquote>
-  <p>Jekyll is a simple, blog aware, static site generator. It takes a template directory […] and spits out a complete, static website suitable for serving with Apache or your favorite web server. This is also the engine behind GitHub Pages, which you can use to host your project’s page or blog right here from GitHub.</p>
-</blockquote>
+<p>hostapd includes IEEE 802.11 access point management (authentication / association), IEEE 802.1X/WPA/WPA2 Authenticator, EAP server, and RADIUS authentication server functionality. It can be build with various configuration option, e.g., a standalone AP management solution or a RADIUS authentication server with support for number of EAP methods.</p>
 
-<p>It’s an immensely useful tool. Find out more by <a href="https://github.com/jekyll/jekyll">visiting the project on GitHub</a>.</p>
+<p>some link:http://w1.fi/wpa_supplicant/devel/
+http://www.linuxfromscratch.org/blfs/view/svn/basicnet/wpa_supplicant.html
+http://w1.fi/wpa_supplicant/devel/ctrl_iface_page.html
+http://w1.fi/wpa_supplicant/
+http://www.linuxfromscratch.org/blfs/view/svn/basicnet/wpa_supplicant.html
+http://blog.csdn.net/haima1998/article/details/43369949</p>
 
 </article>
 

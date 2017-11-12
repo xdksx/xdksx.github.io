@@ -4,13 +4,220 @@
  <title>Poole</title>
  <link href="http://getpoole.com/atom.xml" rel="self"/>
  <link href="http://getpoole.com/"/>
- <updated>2017-11-05T12:40:08+00:00</updated>
+ <updated>2017-11-12T23:09:18+00:00</updated>
  <id>http://getpoole.com</id>
  <author>
    <name>Mark Otto</name>
    <email>markdotto@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>content</title>
+   <link href="http://getpoole.com/2017/11/04/content/"/>
+   <updated>2017-11-04T00:00:00+00:00</updated>
+   <id>http://getpoole.com/2017/11/04/content</id>
+   <content type="html">&lt;h2 id=&quot;android-&quot;&gt;android 开发笔记&lt;/h2&gt;
+&lt;p&gt;###简介###
+####安卓系统架构####&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/page3&quot;&gt;android&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/page2&quot;&gt;apache2_cgi_python&lt;/a&gt;
+&lt;a href=&quot;http://127.0.0.1:4000/page3&quot;&gt;android_2.3.7_build&lt;/a&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>apache2_cgi_python</title>
+   <link href="http://getpoole.com/2017/11/03/apache2_cgi_python/"/>
+   <updated>2017-11-03T00:00:00+00:00</updated>
+   <id>http://getpoole.com/2017/11/03/apache2_cgi_python</id>
+   <content type="html">&lt;h1 id=&quot;apache2&quot;&gt;apache2安装&lt;/h1&gt;
+&lt;p&gt;１在官网上下载apache2源码包并根据提示安装
+２sudo apt-get install apache2&lt;/p&gt;
+
+&lt;h3 id=&quot;apache2-1&quot;&gt;apache2的启动等&lt;/h3&gt;
+&lt;p&gt;/etc/init.d/apache2 start
+restart stop等等&lt;/p&gt;
+
+&lt;h3 id=&quot;apache2apt-get-install-cgipython&quot;&gt;apache2在安装方式为apt-get install 时候的配置文件及cgi支持python的配置&lt;/h3&gt;
+&lt;p&gt;１　在/etc/apache2/下有文件apache2.conf
+将以下&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	&amp;lt;Directory /&amp;gt;
+	        Options FollowSymLinks
+ 		AllowOverride None
+	        Require all denied
+	&amp;lt;/Directory&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;替换为&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ScriptAlias /cgi-bin/ &quot;/var/www/cgi-bin/&quot;　　
+ &amp;lt;Directory &quot;/var/www/cgi-bin/&quot;&amp;gt;
+	    AllowOverride None
+	    Options +ExecCGI
+	    Order allow,deny
+	    Allow from all
+ &amp;lt;/Directory&amp;gt;
+AddHandler cgi-script .cgi  .py
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;２　并在/etc/apache2/mods-enabled下的mime.load加入：
+LoadModule cgi_module /usr/lib/apache2/modules/mod_cgi.so
+３重启apache服务器&lt;/p&gt;
+
+&lt;h1 id=&quot;apache2makecgipython&quot;&gt;apache2在安装方式为make的配置文件及cgi支持python的配置&lt;/h1&gt;
+&lt;p&gt;这里的配置文件是/usr/local/apache2/conf，并对httpd.conf配置
+且LoadModule cgid_module modules/mod_cgid.so是加在这个文件中的&lt;/p&gt;
+
+&lt;h1 id=&quot;section&quot;&gt;测试文件&lt;/h1&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+  
+print &quot;Content-type:text/html&quot;
+print
+print &#39;&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;&#39;
+print &#39;&lt;span class=&quot;nt&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;&#39;
+print &#39;&lt;span class=&quot;nt&quot;&gt;&amp;lt;title&amp;gt;&lt;/span&gt;Hello&lt;span class=&quot;nt&quot;&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;&#39;
+print &#39;&lt;span class=&quot;nt&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;&#39;
+print &#39;&lt;span class=&quot;nt&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;&#39;
+print &#39;&lt;span class=&quot;nt&quot;&gt;&amp;lt;h2&amp;gt;&lt;/span&gt;Hello Word! This is my first CGI program&lt;span class=&quot;nt&quot;&gt;&amp;lt;/h2&amp;gt;&lt;/span&gt;&#39;
+print &#39;&lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;&#39;
+print &#39;&lt;span class=&quot;nt&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;注意添加可执行的权限：chmod 755 xxx&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>github_page</title>
+   <link href="http://getpoole.com/2017/11/02/github_page/"/>
+   <updated>2017-11-02T00:00:00+00:00</updated>
+   <id>http://getpoole.com/2017/11/02/github_page</id>
+   <content type="html">&lt;p&gt;how to start
+https://pages.github.com/&lt;/p&gt;
+
+&lt;p&gt;使用模板生成静态网页
+http://jekyllcn.com/
+注意安装时候可以直接apt-get install
+或者采用网上的主流方式
+使用这个pool模板，将md文件名改为日期的形式，参考里面的文件，并且在里面的内容加上：
+—
+layout: post
+title: github_page
+—
+注意后者是title
+接着在pool-master目录下build:
+jekyll build   //这样它会生成
+接着开启服务器就可以了
+可以将该路径放在content文件夹下，就可以形成目录了&lt;/p&gt;
+
+&lt;p&gt;另一个更好的模板：NexT
+https://github.com/Simpleyyt/jekyll-theme-next&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>android_2.3.7_build</title>
+   <link href="http://getpoole.com/2017/11/01/android_2.3.7_build/"/>
+   <updated>2017-11-01T00:00:00+00:00</updated>
+   <id>http://getpoole.com/2017/11/01/android_2.3.7_build</id>
+   <content type="html">&lt;h1 id=&quot;android&quot;&gt;android的编译，安装等&lt;/h1&gt;
+&lt;p&gt;不翻墙国内下载：
+&lt;a href=&quot;https://pan.baidu.com/s/1ngsZs#list/path=%2FAndroid%E6%BA%90%E7%A0%81&quot;&gt;安卓源码各版本&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;这里简单写遇到的问题和解决,是基于罗升阳的书android内核源码情景分析
+我是在ubuntu13的32位版本上编译的android2.3.7版本，因为adb是32位的，建议都用32位的ubuntu。
+我在虚拟机中安装的ubuntu
+其他前期配置可以看书中的工具，有的如libwxgtk那个版本要换成2.8
+接下来是编译注意：&lt;/p&gt;
+
+&lt;h2 id=&quot;make381make&quot;&gt;１make使用3.8.1的版本,并按照常规的make三部曲安装&lt;/h2&gt;
+
+&lt;h2 id=&quot;gccg44apt-get-install-gcc-44-g-44&quot;&gt;2　gcc，g++使用4.4版本：直接安装apt-get install gcc-4.4 g++-4.4&lt;/h2&gt;
+
+&lt;p&gt;接着在/usr/bin/下找到ls -l g*
+有个软连接，改&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo mv gcc gcc.bak
+sudo ln -s gcc-4.4 gcc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;g++同上
+接着检测版本：g++ -v gcc -v&lt;/p&gt;
+
+&lt;h2 id=&quot;lncurses&quot;&gt;3 -lncurses找不到：&lt;/h2&gt;
+
+&lt;p&gt;直接apt安装libncurses5-dev
+　　　
+　　　
+###4 提示error dalvik_system_Zygote.c　storge size of rlim isnt known&lt;/p&gt;
+
+&lt;p&gt;　　改：在android/davilk/vm/native/dalvik_system_Zygote.c中加入:
+　　
+	　　#include&amp;lt;sys/time.h&amp;gt;
+	　　#include&amp;lt;sys/resource.h&amp;gt;
+　　
+　　至此直到最后成功都没有出现问题&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>jni</title>
+   <link href="http://getpoole.com/2017/10/29/jni/"/>
+   <updated>2017-10-29T00:00:00+00:00</updated>
+   <id>http://getpoole.com/2017/10/29/jni</id>
+   <content type="html">&lt;p&gt;about jni:&lt;/p&gt;
+
+&lt;p&gt;jni作为java和原生语言的接口，这里先看下它如何被使用，以后再研究这种跨语言
+调用机制内部实现原理&lt;/p&gt;
+
+&lt;p&gt;分为静态注册和动态注册，看一个例子很快就能理解：
+jni有两种使用方式，一种是静态注册的，依赖于头文件的。另一种是动态注册的不依赖头文件，静态的看里面文件夹的实例和博客就行，具体的命令见history&lt;/p&gt;
+
+&lt;p&gt;动态方式也可以参见dy文件夹下的网页教程，以及对应的两个例子&lt;/p&gt;
+
+&lt;p&gt;另外可以作为ndk在android中使用及在android　stdio也可以直接生成so，具体要配置见当前文件夹中的网页&lt;/p&gt;
+
+&lt;p&gt;一些链接：android_jni_ndk:http://www.cnblogs.com/wzben/p/5733571.html
+动态注册无运行实例：http://www.linuxidc.com/Linux/2017-02/140130.htm
+静态注册：http://www.cnblogs.com/bastard/archive/2012/05/17/2506877.html
+动态注册：有实例http://www.linuxidc.com/Linux/2017-02/140129.htm&lt;/p&gt;
+
+&lt;p&gt;时间仓促，未能将自己的实例打包到github上
+文档，或可到oracle或google　ndk等
+www.fer.unizg.hr/_download/repository/jni.pdf&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>wpa_supplicant</title>
+   <link href="http://getpoole.com/2017/10/28/wpa_supplicant/"/>
+   <updated>2017-10-28T00:00:00+00:00</updated>
+   <id>http://getpoole.com/2017/10/28/wpa_supplicant</id>
+   <content type="html">&lt;p&gt;wpa_supplicant
+It implements key negotiation with a WPA Authenticator and it can optionally control roaming and IEEE 802.11 authentication/association of the wlan driver.
+使用时可以是用wpa_cli接口指令的形式或者是wpa_ctrl.c　.h那样提供了API,供外部语言如c++调用，需先打开，调用open。。。再发送请求，request，具体见文档，如下链接：&lt;/p&gt;
+
+&lt;p&gt;hostapd includes IEEE 802.11 access point management (authentication / association), IEEE 802.1X/WPA/WPA2 Authenticator, EAP server, and RADIUS authentication server functionality. It can be build with various configuration option, e.g., a standalone AP management solution or a RADIUS authentication server with support for number of EAP methods.&lt;/p&gt;
+
+&lt;p&gt;some link:http://w1.fi/wpa_supplicant/devel/
+http://www.linuxfromscratch.org/blfs/view/svn/basicnet/wpa_supplicant.html
+http://w1.fi/wpa_supplicant/devel/ctrl_iface_page.html
+http://w1.fi/wpa_supplicant/
+http://www.linuxfromscratch.org/blfs/view/svn/basicnet/wpa_supplicant.html
+http://blog.csdn.net/haima1998/article/details/43369949&lt;/p&gt;
+</content>
+ </entry>
  
  <entry>
    <title>Introduction</title>

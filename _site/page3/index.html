@@ -33,20 +33,33 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2016/01/01/whats-jekyll/">
-        What's Jekyll?
+      <a href="/2017/11/02/github_page/">
+        github_page
       </a>
     </h1>
 
-    <time datetime="2016-01-01T00:00:00+00:00" class="post-date">01 Jan 2016</time>
+    <time datetime="2017-11-02T00:00:00+00:00" class="post-date">02 Nov 2017</time>
 
-    <p><a href="http://jekyllrb.com">Jekyll</a> is a static site generator, an open-source tool for creating simple yet powerful websites of all shapes and sizes. From <a href="https://github.com/jekyll/jekyll/blob/master/README.markdown">the project’s readme</a>:</p>
+    <p>how to start
+https://pages.github.com/</p>
 
-<blockquote>
-  <p>Jekyll is a simple, blog aware, static site generator. It takes a template directory […] and spits out a complete, static website suitable for serving with Apache or your favorite web server. This is also the engine behind GitHub Pages, which you can use to host your project’s page or blog right here from GitHub.</p>
-</blockquote>
+<p>使用模板生成静态网页
+http://jekyllcn.com/
+注意安装时候可以直接apt-get install
+或者采用网上的主流方式
+使用这个pool模板，将md文件名改为日期的形式，参考里面的文件，并且在里面的内容加上：
+—
+layout: post
+title: github_page
+—
+注意后者是title
+接着在pool-master目录下build:
+jekyll build   //这样它会生成
+接着开启服务器就可以了
+可以将该路径放在content文件夹下，就可以形成目录了</p>
 
-<p>It’s an immensely useful tool. Find out more by <a href="https://github.com/jekyll/jekyll">visiting the project on GitHub</a>.</p>
+<p>另一个更好的模板：NexT
+https://github.com/Simpleyyt/jekyll-theme-next</p>
 
   </article>
   
@@ -65,7 +78,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-11-05T12:40:08+00:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2017-11-12T23:09:18+00:00">2017</time>. All rights reserved.
         </small>
       </footer>
     </div>
