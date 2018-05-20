@@ -85,9 +85,9 @@ theme: yilia
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy: 
-  type: #git 
-# repo: https://github.com/xdksx/xdksx.github.io.git
-# branch: master
+  type: git 
+  repo: https://github.com/xdksx/xdksx.github.io.git
+  branch: master
 sitemap:
     path: sitemap.xml
 baidusitemap:
