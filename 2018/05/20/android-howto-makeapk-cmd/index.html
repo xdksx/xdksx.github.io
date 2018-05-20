@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://xdksx.github.io">
   <title>android_howto_makeapk_cmd | Ksance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="how to make a android by cmd :在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni way 1:方法１prepare用的是 android studio 创建了一个工程，然后手动在命令行打包，进入工">
+  <meta name="description" content="how to make a android by cmd :在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni way 1:方法１prepareandroid studio 创建了一个工程，然后手动在命令行打包，进入工程里的.">
 <meta name="keywords" content="android_make">
 <meta property="og:type" content="article">
 <meta property="og:title" content="android_howto_makeapk_cmd">
 <meta property="og:url" content="http://xdksx.github.io/2018/05/20/android-howto-makeapk-cmd/index.html">
 <meta property="og:site_name" content="Ksance">
-<meta property="og:description" content="how to make a android by cmd :在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni way 1:方法１prepare用的是 android studio 创建了一个工程，然后手动在命令行打包，进入工">
+<meta property="og:description" content="how to make a android by cmd :在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni way 1:方法１prepareandroid studio 创建了一个工程，然后手动在命令行打包，进入工程里的.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-20T17:30:13.949Z">
+<meta property="og:updated_time" content="2018-05-20T17:34:10.509Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="android_howto_makeapk_cmd">
-<meta name="twitter:description" content="how to make a android by cmd :在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni way 1:方法１prepare用的是 android studio 创建了一个工程，然后手动在命令行打包，进入工">
+<meta name="twitter:description" content="how to make a android by cmd :在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni way 1:方法１prepareandroid studio 创建了一个工程，然后手动在命令行打包，进入工程里的.">
   
     <link rel="alternative" href="/atom.xml" title="Ksance" type="application/atom+xml">
   
@@ -194,8 +194,8 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="how-to-make-a-android-by-cmd"><a href="#how-to-make-a-android-by-cmd" class="headerlink" title="how to make a android by cmd :"></a>how to make a android by cmd :</h3><pre><code>在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni
-</code></pre><h3 id="way-1-方法１"><a href="#way-1-方法１" class="headerlink" title="way 1:方法１"></a>way 1:方法１</h3><h4 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h4><pre><code>用的是 android studio 创建了一个工程，然后手动在命令行打包，进入工程里的，或者用andrid create project创建
-</code></pre><p>cd ~/Desktop/DexTest/app/src/main<br>mkdir gen<br>mkdir build<br>mkdir out</p>
+</code></pre><h3 id="way-1-方法１"><a href="#way-1-方法１" class="headerlink" title="way 1:方法１"></a>way 1:方法１</h3><h4 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h4><pre><code>android studio 创建了一个工程，然后手动在命令行打包，进入工程里的.  或者direct use andrid create project创建
+</code></pre><p>cd ~/Desktop/FirstTest/app/src/main<br>mkdir gen<br>mkdir build<br>mkdir out</p>
 <p>在android工程目录下建立Makefile文件，添加如下代码：<br>    SDK=~/Android/Sdk　　　　<br>    BUILD_TOOLS=$(SDK)/build-tools/25.0.3<br>    PLATFORMS=$(SDK)/platforms/android-25<br>    aapt=$(BUILD_TOOLS)/aapt<br>    dx=$(BUILD_TOOLS)/dx<br>    aidl=$(BUILD_TOOLS)/aidl<br>    apkbuilder=$(SDK)/tools/apkbuilder2 //后面不支持apkbuilder所以<br>    adb=$(SDK)/platform-tools/adb</p>
 <h4 id="资源编译，生成-R-java"><a href="#资源编译，生成-R-java" class="headerlink" title="资源编译，生成 R.java"></a>资源编译，生成 R.java</h4><pre><code>aapt_task:
     $(aapt) package \
