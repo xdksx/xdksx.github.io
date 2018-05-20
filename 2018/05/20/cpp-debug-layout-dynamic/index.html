@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://xdksx.github.io">
   <title>cpp_debug_layout_dynamic | Ksance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：　　　　１）重定位－－－　放在内存哪里　　　　　　       　2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段">
+  <meta name="description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：  １）重定位－－－　放在内存哪里2)  等待调度执行这里可以使用gdb进行调试查看  一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进">
 <meta name="keywords" content="cpp_memory">
 <meta property="og:type" content="article">
 <meta property="og:title" content="cpp_debug_layout_dynamic">
 <meta property="og:url" content="http://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/index.html">
 <meta property="og:site_name" content="Ksance">
-<meta property="og:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：　　　　１）重定位－－－　放在内存哪里　　　　　　       　2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段">
+<meta property="og:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：  １）重定位－－－　放在内存哪里2)  等待调度执行这里可以使用gdb进行调试查看  一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-20T18:46:28.293Z">
+<meta property="og:updated_time" content="2018-05-20T18:52:33.393Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cpp_debug_layout_dynamic">
-<meta name="twitter:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：　　　　１）重定位－－－　放在内存哪里　　　　　　       　2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段">
+<meta name="twitter:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：  １）重定位－－－　放在内存哪里2)  等待调度执行这里可以使用gdb进行调试查看  一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进">
   
     <link rel="alternative" href="/atom.xml" title="Ksance" type="application/atom+xml">
   
@@ -193,10 +193,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="c执行期内存布局和调试："><a href="#c执行期内存布局和调试：" class="headerlink" title="c执行期内存布局和调试："></a>c执行期内存布局和调试：</h3><p>在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等<br>１、将目标文件装入：<br>　　　　１）重定位－－－　放在内存哪里<br>　　　　　　       　2)  等待调度执行<br>这里可以使用gdb进行调试查看</p>
+        <h3 id="c执行期内存布局和调试："><a href="#c执行期内存布局和调试：" class="headerlink" title="c执行期内存布局和调试："></a>c执行期内存布局和调试：</h3><p>在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等<br>１、将目标文件装入：</p>
+<blockquote>
+<p>１）重定位－－－　放在内存哪里<br>2)  等待调度执行<br>这里可以使用gdb进行调试查看</p>
+</blockquote>
 <p>一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：<br>在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进程信息结构task_struct，打开的文件，上下文信息和挂起的信号等</p>
 <blockquote>
-<p>　　　栈区　　高地址到低地址<br>堆区　　低地址到高地址<br>bss<br>         数据<br>         代码</p>
+<p>栈区　　高地址到低地址<br>堆区　　低地址到高地址<br>bss<br>         数据<br>         代码</p>
 </blockquote>
 <p> 以下将从两个维度进行对一个程序被执行成进程时，内存的情况：<br> １、各种段区的内存分布<br> ２、gdb 调试程序执行时的过程。－－可能涉及到汇编<br> －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－</p>
 <h4 id="1、gdb-常用的命令和用法："><a href="#1、gdb-常用的命令和用法：" class="headerlink" title="1、gdb　常用的命令和用法："></a>1、gdb　常用的命令和用法：</h4><p>1)通过gcc 编译出带调试信息的程序：gcc -o gdbtest gdbtest.c -g 回车重复上一次命令<br> 2)设置断点：　<br>b 行号<br>b 函数名<br>b 行号　if 条件<br>eg:<br>break main  /  b main<br>  删除断点:delete 行号</p>
@@ -208,7 +211,7 @@
 <p> 7) 保存断点：<br> info b  查看断点信息<br> save breakpoint fig.dp 保存断点<br> 读取断点文件：　gdb hello -x fig.dp</p>
 <p> 退出quit</p>
 <p> <a href="http://bbs.chinaunix.net/thread-150524-1-1.html" target="_blank" rel="noopener">http://bbs.chinaunix.net/thread-150524-1-1.html</a></p>
-<h4 id="2-使用kdbg-界面版本gdb-在gcc-…-g后，用kdbg打开即可、"><a href="#2-使用kdbg-界面版本gdb-在gcc-…-g后，用kdbg打开即可、" class="headerlink" title="2 使用kdbg   界面版本gdb  在gcc … -g后，用kdbg打开即可、"></a>2 使用kdbg   界面版本gdb  在gcc … -g后，用kdbg打开即可、</h4><p> －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－<br> 查看程序运行时各个地址：</p>
+<h4 id="2-使用kdbg"><a href="#2-使用kdbg" class="headerlink" title="2 使用kdbg"></a>2 使用kdbg</h4><p> 界面版本gdb  在gcc … -g后，用kdbg打开即可、<br> －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－<br> 查看程序运行时各个地址：</p>
 <pre><code> #include&lt;stdio.h&gt;
 #include&lt;string.h&gt;
 #include&lt;sys/types.h&gt;
