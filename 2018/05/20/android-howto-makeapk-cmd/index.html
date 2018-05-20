@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xdksx.github.io">
-  <title>Archives: 2018 | Ksance</title>
+  <title>android_howto_makeapk_cmd | Ksance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="this a test">
-<meta name="keywords" content="may be class test">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Ksance">
-<meta property="og:url" content="http://xdksx.github.io/archives/2018/index.html">
+  <meta name="description" content="###how to make a android by cmd :     在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni ###way 1:方法１ prepare用的是 android studio 创建了一个工程，然后">
+<meta name="keywords" content="android_make">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android_howto_makeapk_cmd">
+<meta property="og:url" content="http://xdksx.github.io/2018/05/20/android-howto-makeapk-cmd/index.html">
 <meta property="og:site_name" content="Ksance">
-<meta property="og:description" content="this a test">
+<meta property="og:description" content="###how to make a android by cmd :     在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni ###way 1:方法１ prepare用的是 android studio 创建了一个工程，然后">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-05-20T17:21:08.189Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ksance">
-<meta name="twitter:description" content="this a test">
+<meta name="twitter:title" content="android_howto_makeapk_cmd">
+<meta name="twitter:description" content="###how to make a android by cmd :     在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni ###way 1:方法１ prepare用的是 android studio 创建了一个工程，然后">
   
     <link rel="alternative" href="/atom.xml" title="Ksance" type="application/atom+xml">
   
@@ -172,63 +173,72 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-android-howto-makeapk-cmd" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/05/20/hello-world/" class="archive-article-date">
-  	<time datetime="2018-05-20T12:26:14.469Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-20</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/05/20/hello-world/">Hello World</a>
+    <h1 class="article-title" itemprop="name">
+      android_howto_makeapk_cmd
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/05/20/android-howto-makeapk-cmd/" class="archive-article-date">
+        
+        <a href="/2018/05/20/android-howto-makeapk-cmd/" class="archive-article-date">
   	<time datetime="2018-05-20T09:08:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-20</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/05/20/android-howto-makeapk-cmd/">android_howto_makeapk_cmd</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>###how to make a android by cmd :<br>     在解压了一个APK文件之后会发现它包含的内容：签名文件夹（三个文件），res文件夹（放置资源），Dalvik,class文件,AndroidMainifest,resources.arsc,若是通过ndk开发，则还包含jni</p>
+<p>###way 1:方法１</p>
+<h4 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h4><pre><code>用的是 android studio 创建了一个工程，然后手动在命令行打包，进入工程里的，或者用andrid create project创建
+</code></pre><p>cd ~/Desktop/DexTest/app/src/main<br>mkdir gen<br>mkdir build<br>mkdir out</p>
+<p>在android工程目录下建立Makefile文件，添加如下代码：<br>    SDK=~/Android/Sdk　　　　<br>    BUILD_TOOLS=$(SDK)/build-tools/25.0.3<br>    PLATFORMS=$(SDK)/platforms/android-25<br>    aapt=$(BUILD_TOOLS)/aapt<br>    dx=$(BUILD_TOOLS)/dx<br>    aidl=$(BUILD_TOOLS)/aidl<br>    apkbuilder=$(SDK)/tools/apkbuilder2 //后面不支持apkbuilder所以<br>    adb=$(SDK)/platform-tools/adb</p>
+<p>####资源编译，生成 R.java<br>    aapt_task:<br>        $(aapt) package \<br>        -f \ #如果编译出来的文件已经存在，强制覆盖<br>        -M  AndroidManifest.xml  \ # Mainifest.xml 的路径<br>        -I  $(PLATFORMS)/android.jar \ # 某个版本平台的 android.jar 的路径　#依赖多个文件时用:隔开如:-I xx.jar:xxx.jar:…<br>        -S  res/ \ # res 文件夹路径<br>        -J gen/ \ # 生成 R.java 的输出目录<br>        -m  #使得生成的包的目录放在 -J 参数指定的目录</p>
+<p>####代码编译，生成 .class<br>    javac_task:<br>        javac -source 1.7 -target 1.7 \ # 使用 jdk1.8 编译 1.7 的 .class 文件<br>        -encoding UTF-8 \<br>        -bootclasspath  $(PLATFORMS)/android.jar \ #覆盖引导类文件的位置 依赖多个文件时用:隔开如:-I xx.jar:xxx.jar:…<br>        -d build/ \ #指定放置生成的类文件的位置<br>        java/thereisnospon/dextest/<em>.java \<br>        gen/thereisnospon/dextest/</em>.java \</p>
+<p>####生成 .dex<br>    dx_task:<br>        $(dx) –dex –output=build/classes.dex \<br>        build  </p>
+<p>####资源文件初始包<br>    resapk_task:<br>        $(aapt) package -f \<br>        -M  AndroidManifest.xml  \<br>        -I  $(PLATFORMS)/android.jar \<br>        -S  res/ \<br>        -F  out/resources</p>
+<p>####将.dex 文件加入到资源文件初始包中　　<br>注意这一步由于－rf xxx得在,src文件夹的母文件夹下执行<br>    apk_task:<br>        java -cp $(SDK)/tools/lib/sdklib-25.3.2.jar \<br>          com.android.sdklib.build.ApkBuilderMain \<br>          Demo.apk -v -u -z src/main/out/resources\<br>          -f src/main/build/classes.dex -rf src</p>
+<p>####签名，使用debug的签名<br>    signer:<br>        jarsigner -verbose \<br>        -keystore ~/.android/debug.keystore \<br>        -storepass android \<br>        -keypass android \<br>        Demo.apk  androiddebugkey</p>
+<p>####一次性打包<br>    pkg:<br>        make apk_task<br>        make signer </p>
+<p>####卸载apk<br>    uninstall:<br>        $(adb) uninstall  thereisnospon.dextest</p>
+<p>####安装apk<br>    install:<br>        $(adb) install out/app.apk</p>
+<p>####运行<br>run:<br>    make pkg<br>    make uninstall<br>    make install</p>
+<pre><code>$(adb) shell am start -n thereisnospon.dextest/        thereisnospon.dextest.MainActivity  
+</code></pre><p>###方法２，用gradle,<br>首先用AS 建立工程，之后在工程文件下，之星执行，gradle clean<br>gradle build<br>即生成apk文件</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -240,7 +250,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -253,131 +263,113 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xdksx.github.io/2018/05/20/android-howto-makeapk-cmd/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/05/20/android-will-write/" class="archive-article-date">
-  	<time datetime="2018-05-20T08:58:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-20</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2018/05/20/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/05/20/android-will-write/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">android_will_write</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/05/20/android-will-write/">android_will_write</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">android_activity</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/android//" class="article-tag-list-link color3">android</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/05/20/test-article-picture/" class="archive-article-date">
-  	<time datetime="2018-05-20T07:46:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-20</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/05/20/test-article-picture/">test_article_picture</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">test</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/05/19/ksance-test-article/" class="archive-article-date">
-  	<time datetime="2018-05-19T16:10:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/05/19/ksance-test-article/">ksance test article</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
 
 
           </div>
@@ -400,8 +392,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
