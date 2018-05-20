@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="Ksance">
 <meta property="og:description" content="MTU这是一篇关于MTU的介绍文章，MTU是MAC层中数据包的最大值，下面通过这几个部分来介绍： 理论部分：１、MTU(Maximum Transmission Unit)如何定义: 指的是通信协议中的某一层上面所能通过的最大数据包大小 这里指mac层上面能通过的IP分组的最大值；我们知道，在tcp层传输数据的时候，在未指定上层使用http协议时，可以发送任何大小的数据。数据到了ip层时，需要加上">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-20T22:28:58.882Z">
+<meta property="og:updated_time" content="2018-05-20T22:40:11.542Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tcpip_mtu">
 <meta name="twitter:description" content="MTU这是一篇关于MTU的介绍文章，MTU是MAC层中数据包的最大值，下面通过这几个部分来介绍： 理论部分：１、MTU(Maximum Transmission Unit)如何定义: 指的是通信协议中的某一层上面所能通过的最大数据包大小 这里指mac层上面能通过的IP分组的最大值；我们知道，在tcp层传输数据的时候，在未指定上层使用http协议时，可以发送任何大小的数据。数据到了ip层时，需要加上">
@@ -202,8 +202,7 @@
         <h1 id="MTU"><a href="#MTU" class="headerlink" title="MTU"></a>MTU</h1><p>这是一篇关于MTU的介绍文章，MTU是MAC层中数据包的最大值，下面通过这几个部分来介绍：</p>
 <h3 id="理论部分："><a href="#理论部分：" class="headerlink" title="理论部分："></a>理论部分：</h3><h4 id="１、MTU-Maximum-Transmission-Unit-如何定义"><a href="#１、MTU-Maximum-Transmission-Unit-如何定义" class="headerlink" title="１、MTU(Maximum Transmission Unit)如何定义:"></a>１、MTU(Maximum Transmission Unit)如何定义:</h4><ul>
 <li>指的是通信协议中的某一层上面所能通过的最大数据包大小</li>
-<li>这里指mac层上面能通过的IP分组的最大值；我们知道，在tcp层传输数据的时候，在未指定上层使用http协议时，可以发送任何大小的数据。数据到了ip层时，需要加上ip头然后传递到mac层去加mac头，那在这个传递的过程中，包是不是越大越好，会做什么处理？<br>　答案是分片：举个例子：现在以太网的MTU为1500B，假设现从tcp层向ip层传输长度为3008B的数据报文，则该报文添加了io头后为3028B,3028B&gt;1500B，大于以太网一帧能承载的最大数据包（除了mac头),会做如下处理:<br>分片：ip净载荷：MTU-IP头：1500-20=1480;<pre><code>3008B 需要分为3片，3008=14  
-</code></pre>总结：MTU就是MAC承载的载荷的最大值  </li>
+<li>这里指mac层上面能通过的IP分组的最大值；我们知道，在tcp层传输数据的时候，在未指定上层使用http协议时，可以发送任何大小的数据。数据到了ip层时，需要加上ip头然后传递到mac层去加mac头，那在这个传递的过程中，包是不是越大越好，会做什么处理？  <a id="more"></a><br>　答案是分片：举个例子：现在以太网的MTU为1500B，假设现从tcp层向ip层传输长度为3008B的数据报文，则该报文添加了io头后为3028B,3028B&gt;1500B，大于以太网一帧能承载的最大数据包（除了mac头),会做如下处理:<br>分片：ip净载荷：MTU-IP头：1500-20=1480;<br> 3008B 需要分为3片，3008=1480,1480,48<br>总结：MTU就是MAC承载的载荷的最大值  </li>
 </ul>
 <h4 id="2、MTU会影响什么"><a href="#2、MTU会影响什么" class="headerlink" title="2、MTU会影响什么:"></a>2、MTU会影响什么:</h4><ul>
 <li>数据包太大-&gt;分片重组-&gt;网络性能变差  </li>
