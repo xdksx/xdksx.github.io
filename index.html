@@ -265,7 +265,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>　###  c compile time memory layout<br>　　标题：从一个简单的程序开始，介绍几种间接或直接debug出c程序内存布局的方法：</p>
+        <h3 id="c-compile-time-memory-layout"><a href="#c-compile-time-memory-layout" class="headerlink" title="c compile time memory layout"></a>c compile time memory layout</h3><p>　　标题：从一个简单的程序开始，介绍几种间接或直接debug出c程序内存布局的方法：</p>
 <p>　　概述：首先介绍几个概念：<br>　　程序从源代码编译之后，即经过预处理，编译，汇编，连接的过程后生成一个可执行程序，在linux为elf,此时程序还是静态的，没有被执行，可以说是编译期或者静态的时候；<br>　　当程序在终端被运行，此时会将pc指向main开始执行程序，并一步一步根据程序需要分配内存，栈区，堆区等等，此时为动态期；成为进程或线程；<br>      注意：c语言经过词法分析语法分析等，期间有符号表等的生成（可能存储着和struct，class和定义的类型基本类型等信息），之后生成汇编语言代码不会体现类型信息如无法在其中见到struct的定义代码，并且char定义的变量的值被转化为ASICC码　。汇编代码中体现struct的只有其变量的偏移等等；至于它如何知道，是通过符号表得到的，但是啊生成汇编后不需要符号表了。。汇编执行的过程中并无太多变量相关的内容，之后将变量的值存入某个内存位置的语句；</p>
 <p>　　本文主要探索通过linux下的工具如size gdb等深入学习c程序静态和动态下在内存中的分布和执行情况，以进一步理解c</p>
 <p>前言：<br>一个源代码通过编译后生成一个目标文件.o它是一个elf　relocatable文件,以下.o文件指此类，elf文件为executable文件<br>.o文件(elf)文件的结构： 通过objdump -h xx.o可以查看到</p>
@@ -373,7 +373,7 @@ int main()
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/c-cpp//" class="article-tag-list-link color1">c-cpp</a>
+        			<a href="/categories/c-cpp//" class="article-tag-list-link color1">c&cpp</a>
         		</li>
       		
 		</ul>
