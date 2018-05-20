@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://xdksx.github.io">
-  <title>ksance test article | Ksance</title>
+  <title>cpp_debug_layout_dynamic | Ksance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="this is a test article by ksance">
-<meta name="keywords" content="may be class test">
+  <meta name="description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：　　　　１）重定位－－－　放在内存哪里　　　　　　       　2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段">
+<meta name="keywords" content="cpp_memory">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ksance test article">
-<meta property="og:url" content="http://xdksx.github.io/2018/05/19/ksance-test-article/index.html">
+<meta property="og:title" content="cpp_debug_layout_dynamic">
+<meta property="og:url" content="http://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/index.html">
 <meta property="og:site_name" content="Ksance">
-<meta property="og:description" content="this is a test article by ksance">
+<meta property="og:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：　　　　１）重定位－－－　放在内存哪里　　　　　　       　2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-20T00:57:45.225Z">
+<meta property="og:updated_time" content="2018-05-20T18:39:44.321Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ksance test article">
-<meta name="twitter:description" content="this is a test article by ksance">
+<meta name="twitter:title" content="cpp_debug_layout_dynamic">
+<meta name="twitter:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：　　　　１）重定位－－－　放在内存哪里　　　　　　       　2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：在内存中申请的空间，代码（加载的程序段，包括代码段，数据段">
   
     <link rel="alternative" href="/atom.xml" title="Ksance" type="application/atom+xml">
   
@@ -173,28 +173,155 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-ksance-test-article" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-cpp-debug-layout-dynamic" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      ksance test article
+      cpp_debug_layout_dynamic
     </h1>
   
 
         
-        <a href="/2018/05/19/ksance-test-article/" class="archive-article-date">
-  	<time datetime="2018-05-19T16:10:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-20</time>
+        <a href="/2018/05/20/cpp-debug-layout-dynamic/" class="archive-article-date">
+  	<time datetime="2018-05-20T10:33:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-20</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p> this is a test article by ksance </p>
+        <h3 id="c执行期内存布局和调试："><a href="#c执行期内存布局和调试：" class="headerlink" title="c执行期内存布局和调试："></a>c执行期内存布局和调试：</h3><p>在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等<br>１、将目标文件装入：<br>　　　　１）重定位－－－　放在内存哪里<br>　　　　　　       　2)  等待调度执行<br>这里可以使用gdb进行调试查看</p>
+<p>一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：<br>在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进程信息结构task_struct，打开的文件，上下文信息和挂起的信号等</p>
+<blockquote>
+<p>　　　栈区　　高地址到低地址<br>堆区　　低地址到高地址<br>bss<br>         数据<br>         代码</p>
+</blockquote>
+<p> 以下将从两个维度进行对一个程序被执行成进程时，内存的情况：<br> １、各种段区的内存分布<br> ２、gdb 调试程序执行时的过程。－－可能涉及到汇编<br> －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－</p>
+<h4 id="1、gdb-常用的命令和用法："><a href="#1、gdb-常用的命令和用法：" class="headerlink" title="1、gdb　常用的命令和用法："></a>1、gdb　常用的命令和用法：</h4><p>1)通过gcc 编译出带调试信息的程序：gcc -o gdbtest gdbtest.c -g 回车重复上一次命令<br> 2)设置断点：　<br>b 行号<br>b 函数名<br>b 行号　if 条件<br>eg:<br>break main  /  b main<br>  删除断点:delete 行号</p>
+<p>3)列出代码<br>l /list</p>
+<p>4)运行，start<br>  跳转到断点:c/continue   r/run<br>  until  行号　　　运行直到该行<br>5)观察变量b和地址<br>watch b  若变量值发生变化，则程序停止</p>
+<p>　p/print  b  看变量值<br>　p/print &amp;b　看变量地址<br> i  locals</p>
+<p> info registers 显示所有寄存器的值<br> x   查看特定内存位置的值如：print/x $eax   显示为１６进制 print/t  ２进制，　print/d 十进制想／x<br>x/nyz  : n表示字段数，y为输出格式，z是字段长度</p>
+<p>６）单步调试<br> n/next   /   s/step　</p>
+<p> 7) 保存断点：<br> info b  查看断点信息<br> save breakpoint fig.dp 保存断点<br> 读取断点文件：　gdb hello -x fig.dp</p>
+<p> 退出quit</p>
+<p> <a href="http://bbs.chinaunix.net/thread-150524-1-1.html" target="_blank" rel="noopener">http://bbs.chinaunix.net/thread-150524-1-1.html</a></p>
+<h4 id="2-使用kdbg-界面版本gdb-在gcc-…-g后，用kdbg打开即可、"><a href="#2-使用kdbg-界面版本gdb-在gcc-…-g后，用kdbg打开即可、" class="headerlink" title="2 使用kdbg   界面版本gdb  在gcc … -g后，用kdbg打开即可、"></a>2 使用kdbg   界面版本gdb  在gcc … -g后，用kdbg打开即可、</h4><p> －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－<br> 查看程序运行时各个地址：</p>
+<pre><code> #include&lt;stdio.h&gt;
+#include&lt;string.h&gt;
+#include&lt;sys/types.h&gt;
+#include&lt;stdlib.h&gt;
+#include&lt;unistd.h&gt;
+#define SHW_ADR(ID,I) printf(&quot;the id %s \t is at adr:%8X\n&quot;,ID,&amp;I);
 
+extern etext,edata,end;
+
+char *cptr=&quot;Hello World\n&quot;;
+char buffer1[25];
+int main(void)
+{
+    void showit(char *);
+    int i=0;
+       printf(&quot;Adr etext:%8x\tAdr edata:%8x \t Adr end :%8x \n\n&quot;,&amp;etext,&amp;edata,&amp;end);
+    SHW_ADR(&quot;main&quot;,main);
+    SHW_ADR(&quot;showit&quot;,showit);
+    SHW_ADR(&quot;cptr&quot;,cptr);
+    SHW_ADR(&quot;buffer1&quot;,buffer1);
+    SHW_ADR(&quot;i&quot;,i);
+    strcpy(buffer1,&quot;A demonstration\n&quot;);
+    write(1,buffer1,strlen(buffer1)+1);
+    for(;i&lt;1;++i)
+        showit(cptr);
+    return 0;
+}
+
+void showit(char *p)
+{
+    char *buffer2;
+    SHW_ADR(&quot;buffer2&quot;,buffer2);
+    if((buffer2=(char *)malloc((unsigned)(strlen(p)+1)))!=NULL)
+    {
+        strcpy(buffer2,p);
+        printf(&quot;%s&quot;,buffer2);
+        free(buffer2);
+    }
+    else
+    {
+        printf(&quot;Allocation error.\n&quot;);
+        exit(1);
+    }
+}
+</code></pre><p>－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;malloc.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;alloca.h&gt;
+
+extern void afunc(void);
+extern etext,edata,end;
+
+int bss_var;                //no init globel data must be in bss
+
+int data_var=42;            //init globel data must be in data
+
+#define SHW_ADR(ID,I) printf(&quot;the %8s\t is at adr:%8x\n&quot;,ID,&amp;I);        //the macro to printf the addr
+
+int main(int argc,char *argv[])
+{
+    char *p,*b,*nb;
+
+    printf(&quot;Adr etext:%8x\t Adr edata %8x\t Adr end %8x\t\n&quot;,&amp;etext,&amp;edata,&amp;end);
+
+    printf(&quot;\ntext Location:\n&quot;);
+    SHW_ADR(&quot;main&quot;,main);            //text section function
+    SHW_ADR(&quot;afunc&quot;,afunc);            //text section function
+
+    printf(&quot;\nbss Location:\n&quot;);
+    SHW_ADR(&quot;bss_var&quot;,bss_var);        //bss section var
+
+    printf(&quot;\ndata location:\n&quot;);
+    SHW_ADR(&quot;data_var&quot;,data_var);    //data section var
+
+
+    printf(&quot;\nStack Locations:\n&quot;);
+    afunc();
+
+    p=(char *)alloca(32);            //alloc memory from statck
+    if(p!=NULL)
+    {
+        SHW_ADR(&quot;start&quot;,p);
+        SHW_ADR(&quot;end&quot;,p+31);
+    }
+
+    b=(char *)malloc(32*sizeof(char));    //malloc memory from heap
+    nb=(char *)malloc(16*sizeof(char));
+
+    printf(&quot;\nHeap Locations:\n&quot;);    
+    printf(&quot;the Heap start: %p\n&quot;,b);
+    printf(&quot;the Heap end:%p\n&quot;,(nb+16*sizeof(char)));
+    printf(&quot;\nb and nb in Stack\n&quot;);
+    SHW_ADR(&quot;b&quot;,b);
+    SHW_ADR(&quot;nb&quot;,nb);
+    free(b);
+    free(nb);
+}
+
+
+void afunc(void)
+{
+    static int long level=0;    //data section static var
+    int     stack_var;                //temp var ,in stack section
+    if(++level==5)
+    {
+        return;
+    }
+    SHW_ADR(&quot;stack_var in stack section&quot;,stack_var);
+    SHW_ADR(&quot;Level in data section&quot;,level);
+    afunc();
+}
+</code></pre>
       
 
       
@@ -223,7 +350,29 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">cpp_memory</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/c-cpp//" class="article-tag-list-link color1">c/cpp</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -273,7 +422,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://xdksx.github.io/2018/05/19/ksance-test-article/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -287,15 +436,20 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/05/20/test-article-picture/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/05/20/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          test_article_picture
+          Hello World
         
       </div>
     </a>
   
+  
+    <a href="/2018/05/20/android-jni/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">android_jni</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 
