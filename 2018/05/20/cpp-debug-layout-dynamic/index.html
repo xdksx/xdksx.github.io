@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://xdksx.github.io">
   <title>cpp_debug_layout_dynamic | Ksance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：１）重定位－－－　放在内存哪里 2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：   在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核">
+  <meta name="description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：">
 <meta name="keywords" content="cpp_memory">
 <meta property="og:type" content="article">
 <meta property="og:title" content="cpp_debug_layout_dynamic">
 <meta property="og:url" content="http://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/index.html">
 <meta property="og:site_name" content="Ksance">
-<meta property="og:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：１）重定位－－－　放在内存哪里 2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：   在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核">
+<meta property="og:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-20T20:26:43.358Z">
+<meta property="og:updated_time" content="2018-05-20T20:37:19.746Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cpp_debug_layout_dynamic">
-<meta name="twitter:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：１）重定位－－－　放在内存哪里 2)  等待调度执行这里可以使用gdb进行调试查看 一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：   在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核">
+<meta name="twitter:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入：">
   
     <link rel="alternative" href="/atom.xml" title="Ksance" type="application/atom+xml">
   
@@ -193,7 +193,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="c执行期内存布局和调试："><a href="#c执行期内存布局和调试：" class="headerlink" title="c执行期内存布局和调试："></a>c执行期内存布局和调试：</h3><p>在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等<br>１、将目标文件装入：<br><em>１）重定位－－－　放在内存哪里<br> 2)  等待调度执行</em><br>这里可以使用gdb进行调试查看</p>
+        <h3 id="c执行期内存布局和调试："><a href="#c执行期内存布局和调试：" class="headerlink" title="c执行期内存布局和调试："></a>c执行期内存布局和调试：</h3><p>在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等<br>１、将目标文件装入：<a id="more"></a><br><em>１）重定位－－－　放在内存哪里<br> 2)  等待调度执行</em><br>这里可以使用gdb进行调试查看</p>
 <p>一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).<br>一个进程主要包括：<br>   在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进程信息结构task_struct，打开的文件，上下文信息和挂起的信号等</p>
 <blockquote>
 <p>栈区　　高地址到低地址<br>堆区　　低地址到高地址<br>bss<br>数据<br>代码</p>
