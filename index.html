@@ -266,89 +266,10 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="c-compile-time-memory-layout"><a href="#c-compile-time-memory-layout" class="headerlink" title="c compile time memory layout"></a>c compile time memory layout</h3><p>　　标题：从一个简单的程序开始，介绍几种间接或直接debug出c程序内存布局的方法：</p>
-<p>　　概述：首先介绍几个概念：<br>　　程序从源代码编译之后，即经过预处理，编译，汇编，连接的过程后生成一个可执行程序，在linux为elf,此时程序还是静态的，没有被执行，可以说是编译期或者静态的时候；<br>　　当程序在终端被运行，此时会将pc指向main开始执行程序，并一步一步根据程序需要分配内存，栈区，堆区等等，此时为动态期；成为进程或线程；<br>      注意：c语言经过词法分析语法分析等，期间有符号表等的生成（可能存储着和struct，class和定义的类型基本类型等信息），之后生成汇编语言代码不会体现类型信息如无法在其中见到struct的定义代码，并且char定义的变量的值被转化为ASICC码　。汇编代码中体现struct的只有其变量的偏移等等；至于它如何知道，是通过符号表得到的，但是啊生成汇编后不需要符号表了。。汇编执行的过程中并无太多变量相关的内容，之后将变量的值存入某个内存位置的语句；</p>
-<p>　　本文主要探索通过linux下的工具如size gdb等深入学习c程序静态和动态下在内存中的分布和执行情况，以进一步理解c</p>
-<p>前言：<br>一个源代码通过编译后生成一个目标文件.o它是一个elf　relocatable文件,以下.o文件指此类，elf文件为executable文件<br>.o文件(elf)文件的结构： 通过objdump -h xx.o可以查看到</p>
-<pre><code>other data  ...
-.comment    offset 0x000000c6.
-.rodata      ...　　　//const &amp; str 常量
-.data
-.text
-.elf header
-</code></pre><p>一个elf文件的结构是这样的：可以通过readelf来看：<br>    　　　　　　　　elfheader　　　　　　　　文件头包含了平台信息：/usr/include/elf.h<br>            .text　　　　　　　　　　　　段表　各个段：应用程序也可以自己定义段，和指定变量在哪个段<br>            .data<br>            .bss<br>            ..<br>            other sections<br>            section header table　　　　<br>            string tables　　　　　　　　重定位表和字符串表<br>            symbol tables　　　　　　　　 符号表是链接的接口<br> 符号表是链接的接口：符号修饰和函数有很大关系，涉及调用的，其中c的符号比较简单，c++为了冲突处理，采用了命名空间，又包含类，所以符号比较复杂<br> 可以通过readelf -s　xx.o查看；且加了签名机制，将函数名又做进一步转换（类似乱码），减少冲突<br>  强符号和弱符号（强引用和若引用），调试信息　－g<br> 扩展：<br> １）比如应用程序可以增加非系统保留字的段如：添加一个music段：当elf运行起来后可以读取这个段播放音乐；但是自定义的段名不能使用.作为前缀；<br> 如objcopy工具将图片段加入：objcopy -I binary -O elf32-i386 -B  i386 image.jpg image.o<br>   objdump -ht image.o<br>   可以看到图片在内存中的起始地址等，可以在程序中直接声明后使用他们<br>   具体看文档<br>２）自定义段：<strong>attribute</strong>((section(“FOO”))) int global=24;<br>           <strong>attribute</strong>((section(“BAR”))) void  foo(){}  既可以把变量或函数放入该段中　段名：BAR FOO</p>
-<p>正文：</p>
-<h4 id="0、先从几个命令："><a href="#0、先从几个命令：" class="headerlink" title="0、先从几个命令："></a>0、先从几个命令：</h4><p>1)size filename:查看elf或.o文件中各个段大小：<br>  text       data        bss        dec        hex    filename<br>     74          0          0         74         4a    simplest.o<br>　　代码段　　　数据段　　<br>代码段：只读，可共享，代码中的常量数据在编译时在代码段中分配空间，如int x=3;中的3及const 声明的常量和字符串常量 ,其他数据只引用地址<br>数据段：为全局初始化数据区和静态数据区：已经初始化的全局变量和静态变量（全局和局部）<br>bss:为初始化数据取，存放为初始化的全局变量和静态变量，但在开始执行时会被内核赋值０或null</p>
-<p>2)其他工具：<br> readelf -a simplest.o<br> 可以看到更清楚的段信息<br> objdump -t simplest<br> objdump -h simplest.o   替代size可以看到更多信息</p>
-<p>此时显示出来的一些地址并不是装载后的地址</p>
-<p>objdump -s -d xx.o:　　-s 16进制，-d反汇编　　－－－查看代码段<br>objdump -s -x -d xx.o:   –查看数据段和rodata</p>
-<p>3)查看目标文件文件属性如relocatable –.o/executable –elf/share object –.so..<br> file xxx</p>
-<h4 id="１、从最简单的程序开始：simplest-c"><a href="#１、从最简单的程序开始：simplest-c" class="headerlink" title="１、从最简单的程序开始：simplest.c"></a>１、从最简单的程序开始：simplest.c</h4><pre><code>int main()
-{
-   return 0;
-}
-</code></pre><p>将它进行预处理：gcc -E simplest.c 可以看到没有引用到其他头文件：</p>
-<pre><code># 1 &quot;simplest.c&quot;
-# 1 &quot;&lt;built-in&gt;&quot;
-# 1 &quot;&lt;command-line&gt;&quot;
-# 1 &quot;/usr/include/stdc-predef.h&quot; 1 3 4
-# 1 &quot;&lt;command-line&gt;&quot; 2
-# 1 &quot;simplest.c&quot;
-int main()
- {
-  return 0;
- }
-</code></pre><p>将它进行汇编：gcc -S simplest.c<br>        .file    “simplest.c”<br>        .text<br>        .globl    main<br>        .type    main, @function<br>    main:<br>    .LFB0:<br>        .cfi_startproc<br>        pushq    %rbp<br>        .cfi_def_cfa_offset 16<br>        .cfi_offset 6, -16<br>        movq    %rsp, %rbp<br>        .cfi_def_cfa_register 6<br>        movl    $0, %eax<br>        popq    %rbp<br>        .cfi_def_cfa 7, 8<br>        ret<br>        .cfi_endproc<br>    .LFE0:<br>        .size    main, .-main<br>        .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>        .section    .note.GNU-stack,””,@progbits</p>
-<p>生成.o文件：gcc -c simplest.c<br>并通过file xx.o查看类型<br>simplest.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped</p>
-<p>通过size 查看各个段：<br>size simplest.o:  可以看到只有代码段，数据为空，bss为空，是比较纯净的</p>
-<p>text       data        bss        dec        hex    filename<br>     67          0          0         67         43    simplest.o</p>
-<p>接着编译成elf:gcc -o simplest simplest.c<br>file simplest<br>simplest: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked,<br>interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=<br>56beff50d6dfd6d435c9556630737121d59c1cc7, not stripped<br>可以看到连接器等信息</p>
-<p>size simplest<br>  text       data        bss        dec        hex    filename<br>   1099        544          8       1651        673    simplest<br>注意这里的和.o的文件大小和分段不同，</p>
-<h4 id="２、加入头文件和局部变量"><a href="#２、加入头文件和局部变量" class="headerlink" title="２、加入头文件和局部变量"></a>２、加入头文件和局部变量</h4><pre><code>#include&lt;stdio.h&gt;
-int main()
-{
-  int locala;
-  int localb=3;
-  return 0;
-  }
-</code></pre><p>进行gcc -E simplest.c会看到很多导入的部分，从输出可以看到头文件的位置和引入的函数<br>汇编，可以看到分配３到内存中<br>        .file    “simplest.c”<br>        .text<br>        .globl    main<br>        .type    main, @function<br>    main:<br>    .LFB0:<br>        .cfi_startproc<br>        pushq    %rbp<br>        .cfi_def_cfa_offset 16<br>        .cfi_offset 6, -16<br>        movq    %rsp, %rbp<br>        .cfi_def_cfa_register 6<br>        movl    $3, -4(%rbp)<br>        movl    $0, %eax<br>        popq    %rbp<br>        .cfi_def_cfa 7, 8<br>        ret<br>        .cfi_endproc<br>    .LFE0:<br>        .size    main, .-main<br>        .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>        .section    .note.GNU-stack,””,@progbits</p>
-<p>　　生成.o文件：可以看到未改变data和bss,但是代码段变大<br>  text       data        bss        dec        hex    filename<br>     74          0          0         74         4a    simplest.o</p>
-<p>生成elf:数据区和bss未改变，代码段也未改变？<br> text       data        bss        dec        hex    filename<br>   1099        544          8       1651        673    simplest</p>
-<h4 id="３、加入已经初始化的局部静态变量："><a href="#３、加入已经初始化的局部静态变量：" class="headerlink" title="３、加入已经初始化的局部静态变量："></a>３、加入已经初始化的局部静态变量：</h4><pre><code>int main()
-{
- static int statica=3;
-..
-}
-</code></pre><p>看生成的汇编：<br>        .file    “simplest.c”<br>        .text<br>        .globl    main<br>        .type    main, @function<br>    main:<br>    .LFB0:<br>        .cfi_startproc<br>        pushq    %rbp<br>        .cfi_def_cfa_offset 16<br>        .cfi_offset 6, -16<br>        movq    %rsp, %rbp<br>        .cfi_def_cfa_register 6<br>        movl    $3, -4(%rbp)<br>        movl    $0, %eax<br>        popq    %rbp<br>        .cfi_def_cfa 7, 8<br>        ret<br>        .cfi_endproc<br>    .LFE0:<br>        .size    main, .-main<br>        .data<br>        .align 4<br>        .type    statica.2285, @object　//新加的段<br>        .size    statica.2285, 4<br>    statica.2285:<br>        .long    3<br>        .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>        .section    .note.GNU-stack,””,@progbits</p>
-<p>.o大小：在静态数据区增加了，４　１个int的长度<br> text       data        bss        dec        hex    filename<br>     74          4          0         78         4e    simplest.o</p>
-<p>elf:有点费解，。。<br> text       data        bss        dec        hex    filename<br>   1099        548          4       1651        673    simplest</p>
-<h4 id="４、加入已经初始化的全局变量和全局静态变量"><a href="#４、加入已经初始化的全局变量和全局静态变量" class="headerlink" title="４、加入已经初始化的全局变量和全局静态变量"></a>４、加入已经初始化的全局变量和全局静态变量</h4><pre><code>int golbala=6;
-    　static long gs=12;
-</code></pre><p>生成的汇编<br>        .file    “simplest.c”<br>        .globl    golbala<br>        .data<br>        .align 4<br>        .type    golbala, @object<br>        .size    golbala, 4<br>    golbala://变量名<br>        .long    6<br>        .align 8<br>        .type    gs, @object<br>        .size    gs, 8<br>    gs://变量名<br>        .quad    12<br>        .text<br>        .globl    main<br>        .type    main, @function<br>    main:<br>    .LFB0:<br>        .cfi_startproc<br>        pushq    %rbp<br>        .cfi_def_cfa_offset 16<br>        .cfi_offset 6, -16<br>        movq    %rsp, %rbp<br>        .cfi_def_cfa_register 6<br>        movl    $3, -4(%rbp)<br>        movl    $0, %eax<br>        popq    %rbp<br>        .cfi_def_cfa 7, 8<br>        ret<br>        .cfi_endproc<br>    .LFE0:<br>        .size    main, .-main<br>        .data<br>        .align 4<br>        .type    statica.2287, @object<br>        .size    statica.2287, 4<br>    statica.2287:<br>        .long    3<br>        .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>        .section    .note.GNU-stack,””,@progbits</p>
-<p>size : 从４变到20:一个long 和int 4+4齐（见汇编）+8（long)+4=20<br>      text       data        bss        dec        hex    filename<br>       74         20          0         94         5e    simplest.o</p>
-<p>elf size:548–&gt;564  16<br>  text       data        bss        dec        hex    filename<br>   1099        564          4       1667        683    simplest</p>
-<h4 id="5-将-int-golbala-6"><a href="#5-将-int-golbala-6" class="headerlink" title="5 将 　　int golbala=6;"></a>5 将 　　int golbala=6;</h4><pre><code>　static long gs=12;　　倒换位置！！！！！！！！！
-</code></pre><p> 则对齐成：size x.o为：１６比原来小，可以用于节省内存：<br>   text       data        bss        dec        hex    filename<br>     74         16          0         90         5a    simplest.o<br>　　汇编：<br>    .file    “simplest.c”<br>    .data<br>    .align 8<br>    .type    gs, @object<br>    .size    gs, 8<br>gs:<br>    .quad    12<br>    .globl    golbala<br>    .align 4<br>    .type    golbala, @object<br>    .size    golbala, 4<br>golbala:<br>    .long    6<br>    .text<br>    .globl    main<br>    .type    main, @function<br>main:<br>.LFB0:<br>    .cfi_startproc<br>    pushq    %rbp<br>    .cfi_def_cfa_offset 16<br>    .cfi_offset 6, -16<br>    movq    %rsp, %rbp<br>    .cfi_def_cfa_register 6<br>    movl    $3, -4(%rbp)<br>    movl    $0, %eax<br>    popq    %rbp<br>    .cfi_def_cfa 7, 8<br>    ret<br>    .cfi_endproc<br>.LFE0:<br>    .size    main, .-main<br>    .data<br>    .align 4<br>    .type    statica.2287, @object<br>    .size    statica.2287, 4<br>statica.2287:<br>    .long    3<br>    .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>    .section    .note.GNU-stack,””,@progbits<br>elf文件的也变小：但bss变大，费解。。<br> text       data        bss        dec        hex    filename<br>   1099        560          8       1667        683    simplest</p>
-<h4 id="6、加入未初始化的全局变量和全局与局部静态变量"><a href="#6、加入未初始化的全局变量和全局与局部静态变量" class="headerlink" title="6、加入未初始化的全局变量和全局与局部静态变量"></a>6、加入未初始化的全局变量和全局与局部静态变量</h4><pre><code>  1 #include&lt;stdio.h&gt;
-    2 static long gs=12;
-    3 int golbala=6;
-    4      
-    5     
-    6 static long gsl;
-    7 int gi;
-    8 int main()
-    9 {   
-   10      static int staticn;
-11      static int statica=3;
-   12      int locala;
-   13      int localb=3;
-   14      return 0;
-   15 }
-</code></pre><p>汇编没有看到什么变化：<br>    .file    “simplest.c”<br>    .data<br>    .align 8<br>    .type    gs, @object<br>    .size    gs, 8<br>gs:<br>    .quad    12<br>    .globl    golbala<br>    .align 4<br>    .type    golbala, @object<br>    .size    golbala, 4<br>golbala:<br>    .long    6<br>    .local    gsl<br>    .comm    gsl,8,8<br>    .comm    gi,4,4<br>    .text<br>    .globl    main<br>    .type    main, @function<br>main:<br>.LFB0:<br>    .cfi_startproc<br>    pushq    %rbp<br>    .cfi_def_cfa_offset 16<br>    .cfi_offset 6, -16<br>    movq    %rsp, %rbp<br>    .cfi_def_cfa_register 6<br>    movl    $3, -4(%rbp)<br>    movl    $0, %eax<br>    popq    %rbp<br>    .cfi_def_cfa 7, 8<br>    ret<br>    .cfi_endproc<br>.LFE0:<br>    .size    main, .-main<br>    .data<br>    .align 4<br>    .type    statica.2290, @object<br>    .size    statica.2290, 4<br>statica.2290:<br>    .long    3<br>    .local    staticn.2289<br>    .comm    staticn.2289,4,4<br>    .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>    .section    .note.GNU-stack,””,@progbits</p>
-<p>.o文件：+12 未包含未初始化的全局变量<br>text       data        bss        dec        hex    filename<br>     74         16         12        102         66    simplest.o</p>
-<p>elf:+16 未包含未初始化的全局变量<br>text       data        bss        dec        hex    filename<br>   1099        560         24       1683        693    simplest</p>
-<p>至此分析完c程序静态下各个段的大小。在执行时才会有堆和栈的出现；链接前后大小也不同</p>
-<p>参考：程序员的自我修养</p>
-
+<p>　　概述：首先介绍几个概念：<br>
+        
+          <a class="article-more-a" href="/2018/05/20/cpp-debug-layout-static/#more">more >></a>
+        
       
 
       
@@ -432,34 +353,29 @@ int main()
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="c执行期内存布局和调试："><a href="#c执行期内存布局和调试：" class="headerlink" title="c执行期内存布局和调试："></a>c执行期内存布局和调试：</h3><p>在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等<br>１、将目标文件装入：</p>
+        <h3 id="c执行期内存布局和调试："><a href="#c执行期内存布局和调试：" class="headerlink" title="c执行期内存布局和调试："></a>c执行期内存布局和调试：</h3><p>在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等<br>１、将目标文件装入：<br><em>１）重定位－－－　放在内存哪里<br> 2)  等待调度执行</em><br>这里可以使用gdb进行调试查看</p>
+<p>一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).<br>一个进程主要包括：<br>   在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进程信息结构task_struct，打开的文件，上下文信息和挂起的信号等</p>
 <blockquote>
-<p>１）重定位－－－　放在内存哪里<br>2)  等待调度执行<br>这里可以使用gdb进行调试查看</p>
-</blockquote>
-<p>一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).一个进程主要包括：<br>在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进程信息结构task_struct，打开的文件，上下文信息和挂起的信号等</p>
-<blockquote>
-<p>栈区　　高地址到低地址<br>堆区　　低地址到高地址<br>bss<br>         数据<br>         代码</p>
+<p>栈区　　高地址到低地址<br>堆区　　低地址到高地址<br>bss<br>数据<br>代码</p>
 </blockquote>
 <p> 以下将从两个维度进行对一个程序被执行成进程时，内存的情况：<br> １、各种段区的内存分布<br> ２、gdb 调试程序执行时的过程。－－可能涉及到汇编<br> －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－</p>
 <h4 id="1、gdb-常用的命令和用法："><a href="#1、gdb-常用的命令和用法：" class="headerlink" title="1、gdb　常用的命令和用法："></a>1、gdb　常用的命令和用法：</h4><p>1)通过gcc 编译出带调试信息的程序：gcc -o gdbtest gdbtest.c -g 回车重复上一次命令<br> 2)设置断点：　<br>b 行号<br>b 函数名<br>b 行号　if 条件<br>eg:<br>break main  /  b main<br>  删除断点:delete 行号</p>
 <p>3)列出代码<br>l /list</p>
 <p>4)运行，start<br>  跳转到断点:c/continue   r/run<br>  until  行号　　　运行直到该行<br>5)观察变量b和地址<br>watch b  若变量值发生变化，则程序停止</p>
 <p>　p/print  b  看变量值<br>　p/print &amp;b　看变量地址<br> i  locals</p>
-<p> info registers 显示所有寄存器的值<br> x   查看特定内存位置的值如：print/x $eax   显示为１６进制 print/t  ２进制，　print/d 十进制想／x<br>x/nyz  : n表示字段数，y为输出格式，z是字段长度</p>
+<p> info registers 显示所有寄存器的值<br> 查看特定内存位置的值如：<br> print/x $eax   显示为16进制<br> print/t  2进制，　<br> print/d 十进制,<br>x/nyz  : n表示字段数，y为输出格式，z是字段长度</p>
 <p>６）单步调试<br> n/next   /   s/step　</p>
 <p> 7) 保存断点：<br> info b  查看断点信息<br> save breakpoint fig.dp 保存断点<br> 读取断点文件：　gdb hello -x fig.dp</p>
 <p> 退出quit</p>
 <p> <a href="http://bbs.chinaunix.net/thread-150524-1-1.html" target="_blank" rel="noopener">http://bbs.chinaunix.net/thread-150524-1-1.html</a></p>
-<h4 id="2-使用kdbg"><a href="#2-使用kdbg" class="headerlink" title="2 使用kdbg"></a>2 使用kdbg</h4><p> 界面版本gdb  在gcc … -g后，用kdbg打开即可、<br> －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－<br> 查看程序运行时各个地址：</p>
-<pre><code> #include&lt;stdio.h&gt;
+<h4 id="2-使用kdbg"><a href="#2-使用kdbg" class="headerlink" title="2 使用kdbg"></a>2 使用kdbg</h4><p> 界面版本gdb  在gcc … -g后，用kdbg打开即可、<br> 查看程序运行时各个地址：</p>
+<pre><code>#include&lt;stdio.h&gt;
 #include&lt;string.h&gt;
 #include&lt;sys/types.h&gt;
 #include&lt;stdlib.h&gt;
 #include&lt;unistd.h&gt;
 #define SHW_ADR(ID,I) printf(&quot;the id %s \t is at adr:%8X\n&quot;,ID,&amp;I);
-
 extern etext,edata,end;
-
 char *cptr=&quot;Hello World\n&quot;;
 char buffer1[25];
 int main(void)
@@ -909,9 +825,10 @@ static JNINativeMethod method_table[]={
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h4 id="android-adb-command"><a href="#android-adb-command" class="headerlink" title="android adb command"></a>android adb command</h4><p>从android群英传中学习到额外的几个adb指令，是之前没接触到的：<br>adb list targets<br>adb install -r　xx.apk -r为覆盖<br>adb shell df<br>adb shell pm list packages -f<br>adb shell input keyevent 3　　－－模拟按键输入，这里为点击home建<br>adb shell touchscreen ..模拟滑动<br>adb shell dumpsys 监听Activity运行状态<br>adb shell screenrecord /sdcard/demo.mp4  录制　屏幕<br>adb shell am start -n 包名/包名＋类名</p>
-<p>更多，见google　develop中android studio的部分<br>另在源码目录中/system/core/toolbox  和/frameworks/base/cmds为所有ADB命令和shell命令来源</p>
-
+        <h4 id="android-adb-command"><a href="#android-adb-command" class="headerlink" title="android adb command"></a>android adb command</h4><p>从android群英传中学习到额外的几个adb指令，是之前没接触到的：<br>adb list targets<br>adb install -r　xx.apk -r为覆盖<br>adb shell df<br>
+        
+          <a class="article-more-a" href="/2018/05/20/android-adb/#more">more >></a>
+        
       
 
       
