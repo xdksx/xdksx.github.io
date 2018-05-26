@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdksx.github.io/"/>
-  <updated>2018-05-24T00:18:57.909Z</updated>
+  <updated>2018-05-20T22:40:11.542Z</updated>
   <id>http://xdksx.github.io/</id>
   
   <author>
@@ -15,32 +15,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>introduction</title>
-    <link href="http://xdksx.github.io/2018/05/23/introduction/"/>
-    <id>http://xdksx.github.io/2018/05/23/introduction/</id>
-    <published>2018-05-23T15:34:45.000Z</published>
-    <updated>2018-05-24T00:18:57.909Z</updated>
-    
-    <content type="html"><![CDATA[<p>###关于我<br>么么么么</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;###关于我&lt;br&gt;么么么么&lt;/p&gt;
-
-      
-    
-    </summary>
-    
-      <category term="test" scheme="http://xdksx.github.io/categories/test/"/>
-    
-    
-      <category term="test" scheme="http://xdksx.github.io/tags/test/"/>
-    
-  </entry>
   
   <entry>
     <title>tcpip_mtu</title>
