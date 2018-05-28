@@ -501,46 +501,14 @@
           
 
   
-  <div onclick="showGitment()" id="gitment_title" class="gitment_title">显示 Gitment 评论</div>
-  <div id="container" style="display:none"></div>
-  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-  <script>
-  const myTheme = {
-    render(state, instance) {
-      const container = document.createElement('div');
-      container.lang = "en-US";
-      container.className = 'gitment-container gitment-root-container';
-      container.appendChild(instance.renderHeader(state, instance));
-      container.appendChild(instance.renderEditor(state, instance));
-      container.appendChild(instance.renderComments(state, instance));
-      container.appendChild(instance.renderFooter(state, instance));
-      return container;
-    }
-  }
-  function showGitment() {
-    $("#gitment_title").attr("style", "display:none");
-    $("#container").attr("style", "").addClass("gitment_container");
-    var gitment = new Gitment({
-      id: window.location.pathname,
-      theme: myTheme,
-      owner: '',
-      repo: '',
-      oauth: {
-        client_id: '06e6b70d396f6928e45a',
-        client_secret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3'
-      }
-    });
-    gitment.render('container');
-  }
-  </script>
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
 
 
 
-
-
-  
-  
 
 
 
@@ -898,7 +866,7 @@
             owner: 'xdksx# MUST HAVE, Your Github ID',
             repo: 'https://github.com/xdksx/myblogcomment.git',
             
-            lang: "zh-CN" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
             
             oauth: {
             
