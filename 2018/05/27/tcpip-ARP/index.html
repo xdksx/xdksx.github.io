@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="追光者">
 <meta property="og:description" content="ARP 协议ARP协议的作用 ARP是一种地址解析协议，ARP的存在是为了能在端到端通信时的寻找到端地址；ARP由设备的ip地址获取到设备的mac硬件地址，从而能跟该设备通信； 在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：端设备手机pc等–&amp;gt;(交换机)路由器—&amp;gt;下一个路由器—&amp;gt;下一个终端设备">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-28T00:22:04.171Z">
+<meta property="og:updated_time" content="2018-05-30T21:45:55.230Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tcpip_ARP">
 <meta name="twitter:description" content="ARP 协议ARP协议的作用 ARP是一种地址解析协议，ARP的存在是为了能在端到端通信时的寻找到端地址；ARP由设备的ip地址获取到设备的mac硬件地址，从而能跟该设备通信； 在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：端设备手机pc等–&amp;gt;(交换机)路由器—&amp;gt;下一个路由器—&amp;gt;下一个终端设备">
@@ -400,7 +400,7 @@
       
         <h3 id="ARP-协议"><a href="#ARP-协议" class="headerlink" title="ARP 协议"></a>ARP 协议</h3><h4 id="ARP协议的作用"><a href="#ARP协议的作用" class="headerlink" title="ARP协议的作用"></a>ARP协议的作用</h4><ul>
 <li>ARP是一种地址解析协议，ARP的存在是为了能在端到端通信时的寻找到端地址；ARP由设备的ip地址获取到设备的mac硬件地址，从而能跟该设备通信；</li>
-<li>在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：<br>端设备手机pc等–&gt;(交换机)路由器—&gt;下一个路由器—&gt;下一个终端设备  <a id="more"></a><br>端设备默认路由到网关–&gt;网关收到包后，将源地址改为网关的外网地址—&gt;下一个路由将源地址改为其地址–&gt;….-&gt;设备地址为目的地址时，接收而不转发</li>
+<li>在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：<br>端设备手机pc等–&gt;(交换机)路由器—&gt;下一个路由器—&gt;下一个终端设备  <a id="more"></a><br>端设备默认路由到网关–&gt;网关收到包后，将源地址改为网关的外网地址—&gt;下一个路由–&gt;….-&gt;设备地址为目的地址时，接收而不转发</li>
 <li>考虑一个问题：在上述的网络上发送时，如pc发给路由器时，只知道它的ip地址，怎么发给它：<br>即端到端的发送：是借助设备唯一的mac地址来发送的<br>在有线网中。利用了交换机的端口和mac地址关系，转发<br>在wifi中，能接收到所有的包，但是会在驱动中将mac目的地址非本地的包丢弃，除非开启了混杂监听模式</li>
 <li>但是路由器怎么知道设备如手机的mac地址呢？<br>通过arp协议来获取，arp是依赖mac和ip的”映射”</li>
 <li>tcpip卷1中4.2举了一个完整的例子，可以去看<h4 id="ARP协议的交互过程"><a href="#ARP协议的交互过程" class="headerlink" title="ARP协议的交互过程"></a>ARP协议的交互过程</h4></li>
