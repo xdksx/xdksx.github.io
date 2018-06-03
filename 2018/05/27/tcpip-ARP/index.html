@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="追光者">
 <meta property="og:description" content="ARP 协议ARP协议的作用 ARP是一种地址解析协议，ARP的存在是为了能在端到端通信时的寻找到端地址；ARP由设备的ip地址获取到设备的mac硬件地址，从而能跟该设备通信； 在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：端设备手机pc等–&amp;gt;(交换机)路由器—&amp;gt;下一个路由器—&amp;gt;下一个终端设备">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-30T21:45:55.230Z">
+<meta property="og:updated_time" content="2018-05-31T00:08:57.466Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tcpip_ARP">
 <meta name="twitter:description" content="ARP 协议ARP协议的作用 ARP是一种地址解析协议，ARP的存在是为了能在端到端通信时的寻找到端地址；ARP由设备的ip地址获取到设备的mac硬件地址，从而能跟该设备通信； 在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：端设备手机pc等–&amp;gt;(交换机)路由器—&amp;gt;下一个路由器—&amp;gt;下一个终端设备">
@@ -438,7 +438,8 @@
 <h4 id="ARP攻击"><a href="#ARP攻击" class="headerlink" title="ARP攻击"></a>ARP攻击</h4><ul>
 <li>ARP包可以直接发送给对端不经过路由器，有趣<br>在一个局域网中，客户端的几乎所有的包都是发往路由器的，这归结于默认路由设置，而在无线网，网卡其实可以接收所有数据，毕竟空气介质，所以，局域网中的设备可以直接通信<br>实验：在文件全能王中开启wifi文件传输，和它在同一个局域网的sta能访问该地址，抓包，发现目的地址和源地址都为同一个局域网的不同ip,且不为路由器网关ip，证明其两个设备是可以直接通信的</li>
 <li>再来做一个实验：通过pf_packet<br>1、在电脑A上写一个程序，mac目的地址为B,源地址为A,协议类型随机，数据随意，发送给B<br> 同时在B端进行接收，过滤掉其他mac地址，看是否可以接收到，在连接ap和不连接ap的条件下<br>2、在A和B设置静态ip地址，且不同网段，都不连接AP ,让A向B 发送ARP请求包，B接收到后回复arp响应包，接着做ping或其他操作，看是否能互相通信</li>
-<li>编程可以参考上述程序，改一下地址什么的就可以，或者参考其他：<br><a href="http://www.freebuf.com/articles/system/5157.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/system/5157.html</a><br>这篇文章讲的很具体，个人也喜欢这个网站，emm,实验过了，还可以，具体程序不贴了</li>
+<li>编程可以参考上述程序，改一下地址什么的就可以，或者参考其他：<br><a href="http://www.freebuf.com/articles/system/5157.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/system/5157.html</a><br>这篇文章讲的很具体，个人也喜欢这个网站，emm,实验过了，还可以，can also make your own program,具体程序不贴了  </li>
+<li>arp欺骗的基本原理：<br>在局域网中，设备A,B连接同一个路由器，他们之间可以直接相互通信，因此可以直接向对方发送arp包；<br>设备A ,B都会定期和AP交互arp请求和回复，相互知道对方的mac地址，这样，就能给ap发送请求，ap也能知道回复给谁；<br>arp欺骗的基本原理在于，如B是攻击方，则B向A发送ARP回复自己是AP ,即在ARP回复包中带上自己的mac地址，ap的ip地址；<br>同时向AP回复自己是A，即带上A的ip地址，自己的mac地址；<br>这样A就会以为B是AP，就会把请求发给B ,同时AP以为B是A，会把回复传给B,但是同时得配置B的转发功能，<br>echo 1 &gt;&gt; /proc/sys/net/ipv4/ip_forwardroot<br>该博文中有一处错误，见评论</li>
 </ul>
 
       
@@ -508,6 +509,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/03/tcpip-MAC/" rel="prev" title="tcpip_MAC">
+                tcpip_MAC <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -596,7 +601,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -731,7 +736,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共16.2k字</span>
+  <span class="post-count">博客全站共18.6k字</span>
 </div>
 
         
