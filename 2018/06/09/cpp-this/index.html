@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="数据结构," />
+  <meta name="keywords" content="cpp_keyword," />
 
 
 
@@ -81,27 +81,18 @@
 
 
 
-<meta name="description" content="数据结构之线性表：有序表：数组：单链表：链表定义">
-<meta name="keywords" content="数据结构">
+<meta name="description" content="c++关键字之thisthis指针是什么this是一个指向当前正在使用的对象的指针，它是一个指针；成员函数通过它来使用对象的值，通过它知道要对哪个对象的成员操作如：">
+<meta name="keywords" content="cpp_keyword">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DS_linklist">
-<meta property="og:url" content="http://xdksx.github.io/2018/05/26/DS-linklist/index.html">
+<meta property="og:title" content="cpp_this">
+<meta property="og:url" content="http://xdksx.github.io/2018/06/09/cpp-this/index.html">
 <meta property="og:site_name" content="追光者">
-<meta property="og:description" content="数据结构之线性表：有序表：数组：单链表：链表定义">
+<meta property="og:description" content="c++关键字之thisthis指针是什么this是一个指向当前正在使用的对象的指针，它是一个指针；成员函数通过它来使用对象的值，通过它知道要对哪个对象的成员操作如：">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/linklist.png">
-<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/headnode.png">
-<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/insert.png">
-<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/delete.png">
-<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/headbuild.png">
-<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/tailbuile.png">
-<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/sigrecyclelink.png">
-<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/mergerecycle.png">
-<meta property="og:updated_time" content="2018-05-26T23:08:24.999Z">
+<meta property="og:updated_time" content="2018-06-09T10:38:32.422Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DS_linklist">
-<meta name="twitter:description" content="数据结构之线性表：有序表：数组：单链表：链表定义">
-<meta name="twitter:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/linklist.png">
+<meta name="twitter:title" content="cpp_this">
+<meta name="twitter:description" content="c++关键字之thisthis指针是什么this是一个指向当前正在使用的对象的指针，它是一个指针；成员函数通过它来使用对象的值，通过它知道要对哪个对象的成员操作如：">
 
 
 
@@ -131,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://xdksx.github.io/2018/05/26/DS-linklist/"/>
+  <link rel="canonical" href="http://xdksx.github.io/2018/06/09/cpp-this/"/>
 
 
 
 
 
-  <title>DS_linklist | 追光者</title>
+  <title>cpp_this | 追光者</title>
   
 
 
@@ -308,7 +299,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/05/26/DS-linklist/">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/06/09/cpp-this/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="小兴">
@@ -325,7 +316,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">DS_linklist</h1>
+          <h1 class="post-title" itemprop="name headline">cpp_this</h1>
         
 
         <div class="post-meta">
@@ -337,8 +328,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-26T13:18:09+00:00">
-                2018-05-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-09T10:13:46+08:00">
+                2018-06-09
               </time>
             
 
@@ -360,8 +351,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据结构和算法/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构和算法</span>
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index">
+                    <span itemprop="name">c&cpp</span>
                   </a>
                 </span>
 
@@ -378,8 +369,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/05/26/DS-linklist/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/05/26/DS-linklist/" itemprop="commentsCount"></span>
+                <a href="/2018/06/09/cpp-this/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/06/09/cpp-this/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -407,78 +398,22 @@
       
 
       
-        <h2 id="数据结构之线性表："><a href="#数据结构之线性表：" class="headerlink" title="数据结构之线性表："></a>数据结构之线性表：</h2><h3 id="有序表：数组："><a href="#有序表：数组：" class="headerlink" title="有序表：数组："></a>有序表：数组：</h3><h3 id="单链表："><a href="#单链表：" class="headerlink" title="单链表："></a>单链表：</h3><p>链表定义  <a id="more"></a><br>{  </p>
+        <h3 id="c-关键字之this"><a href="#c-关键字之this" class="headerlink" title="c++关键字之this"></a>c++关键字之this</h3><h4 id="this指针是什么"><a href="#this指针是什么" class="headerlink" title="this指针是什么"></a>this指针是什么</h4><p>this是一个指向当前正在使用的对象的指针，它是一个指针；<br>成员函数通过它来使用对象的值，通过它知道要对哪个对象的成员操作<br>如：<a id="more"></a><br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Simple</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> m_id;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Simple(<span class="keyword">int</span> id)</span><br><span class="line">    &#123;</span><br><span class="line">        setID(id);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setID</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123; m_id = id; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getID</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> m_id; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Simple <span class="title">simple</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line">    simple.setID(<span class="number">2</span>);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; simple.getID() &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">simple.setID(<span class="number">2</span>);---&gt;</span><br><span class="line">setID(&amp;simple, <span class="number">2</span>); <span class="comment">// note that simple has been changed from an object prefix to a function argument!</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">setID</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123; m_id = id; &#125;---&gt;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">setID</span><span class="params">(Simple* <span class="keyword">const</span> <span class="keyword">this</span>, <span class="keyword">int</span> id)</span> </span>&#123; <span class="keyword">this</span>-&gt;m_id = id; &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="this指针用法"><a href="#this指针用法" class="headerlink" title="this指针用法"></a>this指针用法</h4><p>关键词 this 是一个纯右值表达式，其值是在调用成员函数时的对象地址。它能出现于下列语境：</p>
 <ul>
-<li>数据成员:常见的基本类型或者对象类型均可  </li>
-<li>数据关系:在链表中的块的成员在连续的内存中，块与块之间内存位置不连续  </li>
-<li>指向块的指针：单链表只有一个next,双链表加上pre  </li>
+<li>在任何非静态成员函数体内，含成员初始化列表</li>
+<li>在非静态成员函数的声明内任何(可选) cv 限定符序列后处，包含动态异常规定(弃用)、 noexcept 规定(C++11)及尾随返回类型(C++11 起)</li>
+<li>在默认成员初始化中 (C++11 起)</li>
+<li>在一个对象的构造期间，若通过不直接或间接从构造函数的 this 指针获得的泛左值，访问对象的值或任何其子对象，则如此获得的对象或子对象的值是未指定的。换言之，构造函数中 this 指针不能别名使用：</li>
 </ul>
-<p>}<br>基本运算：<br>{</p>
-<ul>
-<li>InitList(&amp;L);:初始化链表，在c/c++中需要做分配内存，初始化链表头和其值的操作；  </li>
-<li>DestroyList(&amp;L); 在销毁时需要free内存  </li>
-<li>Length(L);链表的长度是块的个数</li>
-<li>GetElem(L,i,&amp;e); 在链表中取元素需要一个一个遍历直到下标值，若为双链表会快些。所以这里取索引值对应的值和取链表的值，效率几乎一样；  </li>
-<li>LocateElem(L,e,compare()); 和链表中的元素做对比</li>
-<li>InsertElem(&amp;L,i,e); 在链表中插入元素，复杂度O(1),在提供位置的时候，若不提供位置，还需要加搜索的时间</li>
-<li>DeleteElem(&amp;L,i,&amp;e); 在链表中删除元素，复杂度O(1)<br>……  </li>
-</ul>
-<p>}<br>eg:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">LNode</span> &#123;</span> </span><br><span class="line">       ElemType data；<span class="comment">//数据域</span></span><br><span class="line">       <span class="class"><span class="keyword">struct</span> <span class="title">LNode</span>  *<span class="title">next</span>； //指针域</span></span><br><span class="line"><span class="class">&#125; <span class="title">LNode</span>,  *<span class="title">LinkList</span>;</span></span><br><span class="line">LNode  *L;</span><br><span class="line">LinkList  L;</span><br><span class="line">L =  (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">或 L = <span class="keyword">new</span> LNode;</span><br><span class="line">L-&gt;data;</span><br><span class="line">LNode  L;</span><br><span class="line">L.date</span><br></pre></td></tr></table></figure></p>
-<img src="/2018/05/26/DS-linklist/linklist.png" title="链表示意图">    
-<h3 id="链表的两种头部："><a href="#链表的两种头部：" class="headerlink" title="链表的两种头部："></a>链表的两种头部：</h3><ol>
-<li>没有头的链表：第一个块就开始存储数据  </li>
-<li>任何时候都有头的链表：  第一个块不存储数据，作为头节点，第二个块开始存数据  </li>
-<li>应用：在leetcode中的ReverseLinklist中，当反转的是从1开始的时候，若使用的是没有头的，则需要额外判断处理，否则可以统一处理；  </li>
-</ol>
-<img src="/2018/05/26/DS-linklist/headnode.png" title="头节点示意图">  
-<h3 id="链表的几个常见操作："><a href="#链表的几个常见操作：" class="headerlink" title="链表的几个常见操作：　"></a>链表的几个常见操作：　</h3><ul>
-<li><p>取第i个元素：  </p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">GetElem_L</span><span class="params">(LinkList L, <span class="keyword">int</span> i, ElemType &amp;e)</span></span></span><br><span class="line"><span class="function"></span>&#123;<span class="comment">//查找操作</span></span><br><span class="line">    p = L-&gt;next;  </span><br><span class="line">    j = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>( p &amp;&amp; j &lt; i)&#123;</span><br><span class="line">          p = p-&gt;next; </span><br><span class="line">          ++j;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!p || j&gt;i) <span class="keyword">return</span> ERROR;</span><br><span class="line">    e = p-&gt;data;</span><br><span class="line">    <span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>插入元素：在第i个位置上插入    </p>
-<img src="/2018/05/26/DS-linklist/insert.png" title="插入示意图">    
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">ListInsert_L</span><span class="params">(LinkList &amp;L, <span class="keyword">int</span> i, ElemType e)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  p = L; j = <span class="number">0</span>;</span><br><span class="line">     <span class="keyword">while</span> (p &amp;&amp; j &lt; i<span class="number">-1</span>) &#123; p = p-&gt;next; ++j &#125;</span><br><span class="line">     <span class="keyword">if</span> (!p || j&gt;i<span class="number">-1</span>)  <span class="keyword">return</span> ERROR;</span><br><span class="line">  s =  (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">     s-&gt;data = e;  </span><br><span class="line">  s-&gt;next = p-&gt;next;  </span><br><span class="line">  p-&gt;next = s;  </span><br><span class="line">     <span class="keyword">return</span> OK;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除元素:删除第i个元素:  </p>
-<img src="/2018/05/26/DS-linklist/delete.png" title="删除示意图">  
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function">Status <span class="title">ListDelete_L</span><span class="params">(LinkList &amp;L, <span class="keyword">int</span> i, ElemType &amp;e)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> p = L; j = <span class="number">0</span>;</span><br><span class="line">     <span class="keyword">while</span> (p-&gt;next &amp;&amp; j &lt; i<span class="number">-1</span>) &#123; p = p-&gt;next; ++j &#125;</span><br><span class="line">     <span class="keyword">if</span> (!(p-&gt;next) || j&gt;i<span class="number">-1</span>)  <span class="keyword">return</span> ERROR;</span><br><span class="line"> q = p-&gt;next;</span><br><span class="line">     e = q-&gt;data;  </span><br><span class="line"> p-&gt;next = p-&gt;next-&gt;next;  <span class="comment">//(p-&gt;next = q-&gt;next;)</span></span><br><span class="line"> <span class="built_in">free</span>(q);  </span><br><span class="line">  <span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="链表的建立："><a href="#链表的建立：" class="headerlink" title="链表的建立："></a>链表的建立：</h3><ul>
-<li><p>头插法：  </p>
-<img src="/2018/05/26/DS-linklist/headbuild.png" title="头插法示意图">  
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">CreateList_L(LinkList &amp;L, <span class="keyword">int</span> n)</span><br><span class="line">&#123;</span><br><span class="line">     L = (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">     L-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">     <span class="keyword">for</span>( i=n; i&gt;<span class="number">0</span>; --i)&#123;</span><br><span class="line">         s = (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">         <span class="built_in">scanf</span>( &amp;s-&gt;data);</span><br><span class="line">         s-&gt;next = L-&gt;next; ①</span><br><span class="line">         L-&gt;next = s; ②</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>尾插法：  </p>
-<img src="/2018/05/26/DS-linklist/tailbuile.png" title="尾插法示意图">  
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CreateList_L(LinkList &amp;L, <span class="keyword">int</span> n)</span><br><span class="line">&#123;</span><br><span class="line">     tail = L = (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">     L-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">     <span class="keyword">for</span>( i=n; i&gt;<span class="number">0</span>; --i)&#123;</span><br><span class="line">         s = (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">         <span class="built_in">scanf</span>( &amp;s-&gt;data);</span><br><span class="line">         tail-&gt;next = s; ①</span><br><span class="line">         tail = s; ②</span><br><span class="line">     &#125;      &#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="链表的常见复杂操作："><a href="#链表的常见复杂操作：" class="headerlink" title="链表的常见复杂操作："></a>链表的常见复杂操作：</h3><ul>
-<li>两个有序链表的合并：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MergeList_L</span><span class="params">(LinkList &amp;La, LinkList &amp;Lb, LinkList &amp;Lc)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    pa = La-&gt;next; pb = Lb-&gt;next;</span><br><span class="line">    Lc = pc = La;</span><br><span class="line">    <span class="keyword">while</span>( pa &amp;&amp; pb )&#123;</span><br><span class="line">        <span class="keyword">if</span>(pa-&gt;data &lt;= pb-&gt;data)&#123;</span><br><span class="line">             pc-&gt;next = pa; pc = pa; pa = pa-&gt;next;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span>&#123;</span><br><span class="line">             pc-&gt;next = pb; pc = pb; pb= pb-&gt;next;</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    pc-&gt;next = pa ? pa : pb;</span><br><span class="line">    <span class="built_in">free</span>( Lb );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="一些特殊的链表："><a href="#一些特殊的链表：" class="headerlink" title="一些特殊的链表："></a>一些特殊的链表：</h3><ul>
-<li>单向循环链表：</li>
-<li>图示：  <img src="/2018/05/26/DS-linklist/sigrecyclelink.png" title="单向循环链表">
-<img src="/2018/05/26/DS-linklist/mergerecycle.png" title="合并"></li>
-<li>多重循环链表：</li>
-<li>双向链表：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">DuLNode</span>&#123;</span></span><br><span class="line">     ElemType               data;</span><br><span class="line">     <span class="class"><span class="keyword">struct</span> <span class="title">DuLNode</span>    *<span class="title">prior</span>;</span></span><br><span class="line">     <span class="class"><span class="keyword">struct</span> <span class="title">DuLNode</span>    *<span class="title">next</span>;</span></span><br><span class="line">&#125;DuLNode,  *DuLinkList;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>双向循环链表：</p>
-<h3 id="探讨："><a href="#探讨：" class="headerlink" title="探讨："></a>探讨：</h3><ul>
-<li>链表作为最基础的数据结构，是对其他数据结构：如栈，树等的支撑，其他这些大部分是在链表的基础上建立的；  </li>
-<li>从较底层的层面：即深入到内存，链表实现了对零散内存的有效使用，内存在为链表分配空间的时候不用大段的连续空间；</li>
-<li>从较高层，即抽象的层面看，链表仅仅是一批数据的拓扑结构之一，就常见的栈，队列，树，图等等，你还可以想出其他可能有用没用的，如，立体的结构，方块，金字塔形(emm这个像堆），还有随意的，感觉想到了矩阵里面的压缩。   </li>
-</ul>
-<h3 id="应用："><a href="#应用：" class="headerlink" title="应用："></a>应用：</h3><ul>
-<li>链表的应用：如</li>
-<li>在文件中，对大文件的存储，采用类似链表的结构，</li>
-<li>大数相加，像两个100位的整数相加，使用链表，每个块为一位，就可以解决这个问题，数组也行</li>
-<li>倒排索引结构，在操作系统中用到，我的github上放着一个本科毕业设计做的简单搜索引擎，几乎全是自己搞的（解析网页那块自己c写了状态机，觉得效果不如beatifulsoup好，后面用它了),不过想想那会还不会很有意识的去想如果让它运行在大量用户下，各种使用条件（如输入条件下，会怎么样，年轻啊~)</li>
-<li>其他，当然是其他数据结构基于链表做的，多了去了</li>
-</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="class"><span class="keyword">struct</span> <span class="title">D</span> <span class="title">d</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">D</span> &#123;</span></span><br><span class="line">D(<span class="keyword">int</span> a) : a(a), b(d.a) &#123;&#125; <span class="comment">// a(a)will change to this-&gt;a(a),but b(d.a)--&gt;this-&gt;b(d.a),and will get random value,but b(a) 或 b(this-&gt;a) 是正确的</span></span><br><span class="line">    <span class="keyword">int</span> a, b;</span><br><span class="line">&#125;;</span><br><span class="line">D d = D(<span class="number">1</span>);   <span class="comment">// 因为 b(d.a) 不通过 this 访问， d.b 现在是未指定的,i try in g++.find it d.b==1</span></span><br></pre></td></tr></table></figure>
+<h4 id="this指针于内存哪里？"><a href="#this指针于内存哪里？" class="headerlink" title="this指针于内存哪里？"></a>this指针于内存哪里？</h4><p>this 指针是不占类的内存的，它是传入成员函数的参数，所以它在栈中  </p>
+<h4 id="this-指针总是指向正在操作的对象："><a href="#this-指针总是指向正在操作的对象：" class="headerlink" title="this 指针总是指向正在操作的对象："></a>this 指针总是指向正在操作的对象：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Simple <span class="title">A</span><span class="params">(<span class="number">1</span>)</span></span>; <span class="comment">// *this = &amp;A inside the Simple constructor</span></span><br><span class="line">    <span class="function">Simple <span class="title">B</span><span class="params">(<span class="number">2</span>)</span></span>; <span class="comment">// *this = &amp;B inside the Simple constructor</span></span><br><span class="line">    A.setID(<span class="number">3</span>); <span class="comment">// *this = &amp;A inside member function setID</span></span><br><span class="line">    B.setID(<span class="number">4</span>); <span class="comment">// *this = &amp;B inside member function setID</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">``</span><br><span class="line">+ <span class="keyword">this</span>指针的连锁使用：  </span><br><span class="line">由<span class="keyword">this</span>指针理解<span class="built_in">cout</span>&lt;&lt;xxx&lt;&lt;&lt;xxx&lt;&lt;&lt;xxxxx....</span><br><span class="line">对上述的表达式，<span class="built_in">cout</span>是一个类，&lt;&lt;是该类的操作符函数，则&lt;&lt;函数返回<span class="keyword">this</span>，若返回空，则无法进行：  </span><br><span class="line">```cpp</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Hello, "</span> &lt;&lt; userName;</span><br><span class="line">(<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Hello, "</span>) &lt;&lt; userName;</span><br><span class="line"></span><br><span class="line">(<span class="keyword">void</span>) &lt;&lt; userName;　错误</span><br><span class="line">(<span class="built_in">std</span>::<span class="built_in">cout</span>) &lt;&lt; userName;正确</span><br><span class="line">如何写？</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calc</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> m_value;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Calc() &#123; m_value = <span class="number">0</span>; &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function">Calc&amp; <span class="title">add</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123; m_value += value; <span class="keyword">return</span> *<span class="keyword">this</span>; &#125;</span><br><span class="line">    <span class="function">Calc&amp; <span class="title">sub</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123; m_value -= value; <span class="keyword">return</span> *<span class="keyword">this</span>; &#125;</span><br><span class="line">    <span class="function">Calc&amp; <span class="title">mult</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123; m_value *= value; <span class="keyword">return</span> *<span class="keyword">this</span>; &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> m_value; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Calc calc;</span><br><span class="line">    calc.add(<span class="number">5</span>).sub(<span class="number">3</span>).mult(<span class="number">4</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; calc.getValue() &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意Calc&amp; 和return *this</p>
+<h4 id="this指针到对象名代表的是什么"><a href="#this指针到对象名代表的是什么" class="headerlink" title="this指针到对象名代表的是什么"></a>this指针到对象名代表的是什么</h4><p>由above和以下例子：来看对象的地址等<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">set</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> m_i;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">set</span>()</span><br><span class="line">    &#123;</span><br><span class="line">        m_i = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="built_in">set</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        m_i += i;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span>  <span class="title">getval</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> m_i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">set</span> s;</span><br><span class="line">    s.add(<span class="number">2</span>).add(<span class="number">2</span>);</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;s.getval();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>//结果是２　因为函数返回的*this是一个值，它是set对象的值：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">set</span></span></span><br><span class="line"><span class="class">    5 &#123;</span>   </span><br><span class="line">    <span class="number">6</span>     <span class="keyword">int</span> m_e;</span><br><span class="line">    <span class="number">7</span>     <span class="keyword">int</span> m_i;</span><br><span class="line">    <span class="number">8</span>  <span class="keyword">public</span>:</span><br><span class="line">    <span class="number">9</span>     <span class="built_in">set</span>()</span><br><span class="line">   <span class="number">10</span>     &#123;</span><br><span class="line">   <span class="number">11</span>         m_e=<span class="number">0</span>;</span><br><span class="line">   <span class="number">12</span>         m_i=<span class="number">0</span>;</span><br><span class="line">   <span class="number">13</span>     &#125;</span><br><span class="line">   <span class="number">14</span>     <span class="function"><span class="built_in">set</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">   <span class="number">15</span>             m_i+=i;</span><br><span class="line">   <span class="number">16</span>             <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">   <span class="number">17</span>     &#125;</span><br><span class="line">   <span class="number">18</span>     <span class="function"><span class="keyword">int</span> <span class="title">getval</span><span class="params">()</span> </span>&#123; </span><br><span class="line">   <span class="number">19</span>             <span class="keyword">return</span> m_i;</span><br><span class="line">   <span class="number">20</span>     &#125;</span><br><span class="line">   <span class="number">21</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   33 </span>&#123;</span><br><span class="line">   <span class="number">34</span>         <span class="built_in">set</span> s;</span><br><span class="line">   <span class="number">35</span>         <span class="built_in">set</span> s2;</span><br><span class="line">&gt;&gt; <span class="number">36</span>         <span class="built_in">printf</span>(<span class="string">"%x\n"</span>,s.add(<span class="number">2</span>));--输出<span class="number">0</span>,返回的是*<span class="keyword">this</span>，为s的值，m_e是其第一个成员</span><br><span class="line">&gt;&gt; <span class="number">37</span>         <span class="built_in">printf</span>(<span class="string">"%x\n"</span>,s);－－输出<span class="number">0</span></span><br><span class="line">   <span class="number">38</span>         s2=s.add(<span class="number">2</span>);--s2被赋值了s，s此时的m_i=<span class="number">2</span>+<span class="number">2</span></span><br><span class="line">   <span class="number">39</span>         s2.add(<span class="number">2</span>);--s2的m_i=<span class="number">6</span></span><br><span class="line">&gt;&gt; <span class="number">40</span>         <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,s2);<span class="comment">//输出的是０－－－ m_e=0</span></span><br><span class="line">   <span class="number">41</span>         <span class="built_in">cout</span>&lt;&lt;s2.getval()&lt;&lt;<span class="built_in">endl</span>;-输出<span class="number">6</span>，因为</span><br><span class="line">   <span class="number">42</span>         <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">   <span class="number">43</span> &#125;</span><br><span class="line"> 由此可以看出<span class="keyword">this</span>-&gt;object  <span class="keyword">this</span>-&gt;s</span><br><span class="line">            *<span class="keyword">this</span>==s</span><br><span class="line">            *<span class="keyword">this</span>==s的内容</span><br><span class="line">　　　　　　取对象的地址　&amp;s</span><br></pre></td></tr></table></figure></p>
+<p>ref:<br><a href="http://zh.cppreference.com/w/cpp/language/this" target="_blank" rel="noopener">http://zh.cppreference.com/w/cpp/language/this</a><br><a href="http://www.learncpp.com/cpp-tutorial/8-8-the-hidden-this-pointer/" target="_blank" rel="noopener">http://www.learncpp.com/cpp-tutorial/8-8-the-hidden-this-pointer/</a></p>
 
       
     </div>
@@ -525,7 +460,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+            <a href="/tags/cpp-keyword/" rel="tag"># cpp_keyword</a>
           
         </div>
       
@@ -538,8 +473,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/05/26/code-efficandreadable/" rel="next" title="code_efficandreadable">
-                <i class="fa fa-chevron-left"></i> code_efficandreadable
+              <a href="/2018/06/08/cpp-static/" rel="next" title="cpp_static">
+                <i class="fa fa-chevron-left"></i> cpp_static
               </a>
             
           </div>
@@ -547,10 +482,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/05/27/tcpip-PF-PACKET/" rel="prev" title="tcpip_PF_PACKET">
-                tcpip_PF_PACKET <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -726,7 +657,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构之线性表："><span class="nav-number">1.</span> <span class="nav-text">数据结构之线性表：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有序表：数组："><span class="nav-number">1.1.</span> <span class="nav-text">有序表：数组：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单链表："><span class="nav-number">1.2.</span> <span class="nav-text">单链表：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表的两种头部："><span class="nav-number">1.3.</span> <span class="nav-text">链表的两种头部：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表的几个常见操作："><span class="nav-number">1.4.</span> <span class="nav-text">链表的几个常见操作：　</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表的建立："><span class="nav-number">1.5.</span> <span class="nav-text">链表的建立：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表的常见复杂操作："><span class="nav-number">1.6.</span> <span class="nav-text">链表的常见复杂操作：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一些特殊的链表："><span class="nav-number">1.7.</span> <span class="nav-text">一些特殊的链表：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#探讨："><span class="nav-number">1.8.</span> <span class="nav-text">探讨：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用："><span class="nav-number">1.9.</span> <span class="nav-text">应用：</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c-关键字之this"><span class="nav-number">1.</span> <span class="nav-text">c++关键字之this</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针是什么"><span class="nav-number">1.1.</span> <span class="nav-text">this指针是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针用法"><span class="nav-number">1.2.</span> <span class="nav-text">this指针用法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针于内存哪里？"><span class="nav-number">1.3.</span> <span class="nav-text">this指针于内存哪里？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this-指针总是指向正在操作的对象："><span class="nav-number">1.4.</span> <span class="nav-text">this 指针总是指向正在操作的对象：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针到对象名代表的是什么"><span class="nav-number">1.5.</span> <span class="nav-text">this指针到对象名代表的是什么</span></a></li></ol></li></ol></div>
             
 
           </div>
