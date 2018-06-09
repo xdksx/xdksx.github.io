@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="tcpip_ip," />
+  <meta name="keywords" content="cpp_memory," />
 
 
 
@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="IP 协议和路由IP的作用–路由路由是什么?一个数据包如何在网络上传输?会对ip包做什么动作? 从广义上讲，路由是路线图，就像百度地图上源地址到目的地址的路线，路线有很多，故路由也很多；">
-<meta name="keywords" content="tcpip_ip">
+<meta name="description" content="c++类内存布局：静态下编译后的“内存布局”，此时还未分配内存，不能算是内存，只能说是文件布局">
+<meta name="keywords" content="cpp_memory">
 <meta property="og:type" content="article">
-<meta property="og:title" content="tcpip_IP">
-<meta property="og:url" content="http://xdksx.github.io/2018/06/03/tcpip-IP/index.html">
+<meta property="og:title" content="cpp_class_memory">
+<meta property="og:url" content="http://xdksx.github.io/2018/06/09/cpp-class-memory/index.html">
 <meta property="og:site_name" content="追光者">
-<meta property="og:description" content="IP 协议和路由IP的作用–路由路由是什么?一个数据包如何在网络上传输?会对ip包做什么动作? 从广义上讲，路由是路线图，就像百度地图上源地址到目的地址的路线，路线有很多，故路由也很多；">
+<meta property="og:description" content="c++类内存布局：静态下编译后的“内存布局”，此时还未分配内存，不能算是内存，只能说是文件布局">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-06-03T19:32:38.830Z">
+<meta property="og:updated_time" content="2018-06-09T11:00:32.506Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="tcpip_IP">
-<meta name="twitter:description" content="IP 协议和路由IP的作用–路由路由是什么?一个数据包如何在网络上传输?会对ip包做什么动作? 从广义上讲，路由是路线图，就像百度地图上源地址到目的地址的路线，路线有很多，故路由也很多；">
+<meta name="twitter:title" content="cpp_class_memory">
+<meta name="twitter:description" content="c++类内存布局：静态下编译后的“内存布局”，此时还未分配内存，不能算是内存，只能说是文件布局">
 
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://xdksx.github.io/2018/06/03/tcpip-IP/"/>
+  <link rel="canonical" href="http://xdksx.github.io/2018/06/09/cpp-class-memory/"/>
 
 
 
 
 
-  <title>tcpip_IP | 追光者</title>
+  <title>cpp_class_memory | 追光者</title>
   
 
 
@@ -299,7 +299,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/06/03/tcpip-IP/">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/06/09/cpp-class-memory/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="小兴">
@@ -316,7 +316,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">tcpip_IP</h1>
+          <h1 class="post-title" itemprop="name headline">cpp_class_memory</h1>
         
 
         <div class="post-meta">
@@ -328,8 +328,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-03T11:31:27+00:00">
-                2018-06-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-09T10:44:41+08:00">
+                2018-06-09
               </time>
             
 
@@ -351,8 +351,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/tcpip/" itemprop="url" rel="index">
-                    <span itemprop="name">tcpip</span>
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index">
+                    <span itemprop="name">c&cpp</span>
                   </a>
                 </span>
 
@@ -369,8 +369,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/06/03/tcpip-IP/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/06/03/tcpip-IP/" itemprop="commentsCount"></span>
+                <a href="/2018/06/09/cpp-class-memory/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/06/09/cpp-class-memory/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -398,74 +398,53 @@
       
 
       
-        <h3 id="IP-协议和路由"><a href="#IP-协议和路由" class="headerlink" title="IP 协议和路由"></a>IP 协议和路由</h3><h4 id="IP的作用–路由"><a href="#IP的作用–路由" class="headerlink" title="IP的作用–路由"></a>IP的作用–路由</h4><h5 id="路由是什么-一个数据包如何在网络上传输-会对ip包做什么动作"><a href="#路由是什么-一个数据包如何在网络上传输-会对ip包做什么动作" class="headerlink" title="路由是什么?一个数据包如何在网络上传输?会对ip包做什么动作?"></a>路由是什么?一个数据包如何在网络上传输?会对ip包做什么动作?</h5><ol>
-<li><p>从广义上讲，路由是路线图，就像百度地图上源地址到目的地址的路线，路线有很多，故路由也很多；  <a id="more"></a><br>从网络层面讲，路由是一个数据包从源地址到目的地的传输路径，它如何被决定怎么走，即中间经过哪些路由器，选择哪一条路线等等。</p>
-</li>
-<li><p>一个数据包在网络上传输实例：<br>A,B连上AP进行上网，AP和外网连接，AP的下一站是D;<br>A 在构造了数据包后选择发送，要查询路由表，若该数据包发送给B,则通过路由表中的直连路由，找到B的ip,发送时不知道B的mac地址，故先做arp,得到后将数据包发给B:<br>数据包：源ip：A,源mac A ，目的IP:B,目的mac:B<br>若A在构造了数据包后，查询路由，该数据包是发送给外网，目的地址是百度ip,则无此条目，向默认路由；即发给路由器，此时若不知道mac地址会做arp;<br>数据包：源ip:A,源mac：A  ,目的ip:百度，目的mac：路由器(arp代理）<br>数据包到路由器后，将做下一步转发：<br>在路由发送的数据包：源ip:路由外网地址，源mac:路由，目的ip:百度ip.目的mac,D<br>(注意，在源ip改为路由外网地址后，此时ip唯一，源地址在传输过程中不会再改变）  </p>
-</li>
-<li><p>内网的路由器会将源地址改为路由器的外网地址<br>—想想像192.168.0.4这样的源地址是内网地址，如果在包的传输过程中不做处理，到达目的地如QQ的服务器，那QQ处理完要发给你，这时得到包是从192.168.0.4来的，它作为内网地址，全世界很多个，怎么决定—–所以ip首部中的源地址和目的地址必须是全球唯一的ip地址，即外网地址；</p>
-</li>
-<li>路由器会对ttl做减1,然后再重新做校验和–即直接加1</li>
-<li>路由器会将数据包的mac首部，源地址改为路由的mac地址，目的地址改为默认路由（或其他导向路由）ip对应的mac地址</li>
-</ol>
-<h4 id="网络地址和子网"><a href="#网络地址和子网" class="headerlink" title="网络地址和子网"></a>网络地址和子网</h4><p>这里不记录太多的ip地址相关的内容，毕竟比较基础，且协议卷或者网上很多介绍</p>
-<h5 id="网络地址简介"><a href="#网络地址简介" class="headerlink" title="网络地址简介"></a>网络地址简介</h5><p>网络地址用来在网络上代表一台设备，就像家庭地址一样，当然现在的设备，如手机可以同时拥有几个ip地址（数据网，wifi，等等，可以理解为家有多个门）<br>而现在的网络地址从32位点分十进制地址，  </p>
+        <h3 id="c-类内存布局："><a href="#c-类内存布局：" class="headerlink" title="c++类内存布局："></a>c++类内存布局：</h3><h4 id="静态"><a href="#静态" class="headerlink" title="静态"></a>静态</h4><p>下编译后的“内存布局”，此时还未分配内存，不能算是内存，只能说是文件布局<a id="more"></a></p>
 <ul>
-<li>决定了它的数量–&gt;一个网络中的设备数量决定了它如何划分网络   </li>
-<li>网络中的设备数量动态性，可能很少，ip地址不够用–&gt;子网出现（CIDR)  </li>
-<li>网络地址不够用了–&gt;NAT出现，内网  </li>
+<li>two question:<br>多少内存能表现一个ob:?<br>多少内存能表现一个class?–编译期，如　int 大小为４ </li>
+<li>静态下，编译后同C一样分为代码段等；而类的特性有些类似于struct,定义类的文件中包含了成员变量，成员函数。</li>
+<li>类：<pre><code>非静态成员变量：存于对象中
+vptr指针：存于对象中
+vt表:vptr指向这个表，这个表在构造函数中默认隐士初始化，将对应的虚拟函数地址赋给表中的各个值（表本身with&quot;类&quot;）
+obj:         class:
+_vptr ---&gt;   table: ptr1 --&gt;virtual func1
+                    ptr2 --&gt;virtual func2
+静态变量: 存入数据段中
+成员函数:代码段,通过this和成员变量建立联系
+静态函数：　存于代码段中
+全局函数
+main函数
+全局变量和静态变量
+局部变量：栈
+something extra depend on compiler~
+</code></pre></li>
+<li>some rules<ul>
+<li>每个类产生一堆指向virtual func的指针，放在表格中，表称为：vtbl;   </li>
+<li>每个obj被添加了一个指针，指向相关的tirtual table ,为vptr;</li>
+<li>vptr的设定和重置由constructor，destructor,copy assignment运算服自动完成）　</li>
+<li>注意每一个class所关联的type info object(用于支持runtime type identification  )也经由virtual table指出，放在vptr[0]处）</li>
+<li>虚函数有可能被转换为：(*px-&gt;vtbl[1])(px)<pre><code>具体见深入c++模型书
+</code></pre></li>
 </ul>
-<h5 id="网段，网络范围内，由谁主导生效进行实际的网络隔离和连接"><a href="#网段，网络范围内，由谁主导生效进行实际的网络隔离和连接" class="headerlink" title="网段，网络范围内，由谁主导生效进行实际的网络隔离和连接?"></a>网段，网络范围内，由谁主导生效进行实际的网络隔离和连接?</h5><p>—其实本质上，设备间可以通过知道mac地址相互通信，即没有网络的隔离（只要介质支持如wifi,或者有线网下设备能被连在一起)在二层上考虑的    </p>
-<ul>
-<li>到了三层，ip层，设备与设备之间的通信，取决于网络的大小，在同一个局域网中，设备间可以直接通信，但是不同局域网，就必须借助路由器，网络，为什么?<br>首先，考虑他们的距离，若很远，则单纯直连很难，则需要转发，转发单知道mac地址（好吧，假设一开始知道对方的mac地址），很难像现在用ip地址的方式去找到它emm感觉考虑到协议设计了。。。<br>其次，考虑相邻的不同网络，对应不同的网段，路由表规定了只能和该网络地址范围的主机直接连接，否则就要用默认路由了</li>
-<li>考虑这样一个例子：A 在子网192.168.0.0中，地址为192.168.0.3,B在子网10.170.3.0,地址为10.170.3.2,使用wifi,他们之间相邻，此时，A向B发送ARP请求，广播帧，所以B可以接收到，接着B给A回复了响应帧，单波能收到，因为在二层传递，能接收到，不被内核过滤，此时arp表中应该多了条目；接着为了能在三层通信，在路由表中增加一条路由指示不同网段的一个地址，表示他们可以直连，接着测试看看能不能相互发送ip包，ping通，当然可能因为防火墙等；就理论而言，应该是能通的，没试过~–&gt;问题总结：IP地址网段不同的两个设备，一定不能直接通信码?<ul>
-<li>网关地址必须是.1结尾码?<br>恩当然可以是别的地址</li>
-<li>路由表和路由规则决定了这些<br>路由表如何决定了网络的方向，下一跳，和限制了网络范围？<h4 id="网络的拓扑结构"><a href="#网络的拓扑结构" class="headerlink" title="网络的拓扑结构:"></a>网络的拓扑结构:</h4>理论上，网络中的每台设备都能相互通信，即使是点对点通信p2p.但是这要求设备能在网络上被唯一标示，如外网ip地址；</li>
-<li>所以常见的设备A和B的通信借助服务器如：<br>主机A<-->路由器(给主机唯一标识)<-->服务器<-->路由器<-->主机B<br>(现有的大部分通信软件等都是这样的)</--></--></--></--></li>
-<li>而主机A可以直接和主机B通信不通过服务器吗?<br>答案是可以，我们使用的迅雷，bt,这些下载资源就是利用的各个主机的资源，其结构如何：<br>主机A<-->路由器(做NAPT等)<-->路由器<-->主机B<br>那和主机A和B如何在网络上被唯一标示，且被B知道该地址呢?路由器在其中充当什么角色，会做什么限制呢？<br>见下NAT和NAT穿透<h4 id="路由深入–NAT和NAT穿透"><a href="#路由深入–NAT和NAT穿透" class="headerlink" title="路由深入–NAT和NAT穿透"></a>路由深入–NAT和NAT穿透</h4>感谢这两篇文章把我带进门：<br><a href="https://blog.csdn.net/u012908515/article/details/53518062" target="_blank" rel="noopener">https://blog.csdn.net/u012908515/article/details/53518062</a><br><a href="https://blog.csdn.net/ustcgy/article/details/5655050" target="_blank" rel="noopener">https://blog.csdn.net/ustcgy/article/details/5655050</a><br>rfc ：nat<br><a href="https://tools.ietf.org/html/rfc1631" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc1631</a><br><a href="https://tools.ietf.org/html/rfc2663" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc2663</a><br>rfc：p2p<br><a href="https://tools.ietf.org/html/rfc5694" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc5694</a><h5 id="NAT的由来"><a href="#NAT的由来" class="headerlink" title="NAT的由来"></a>NAT的由来</h5></--></--></--></li>
-<li>NAT的出现是因为ipv4的地址不够用，所以大量主机在内网使用内网地址，这样在互联网上通信的时候不能被寻找到，此时路由器将内网的设备发送的包中的ip转换为外网的ip,并记录映射在路由器中，这样就能实现主机在互联网上的正常通信，即发包和收包都能找到；</li>
-<li>而这种方式阻碍了不同内网的主机之间的通信，即p2p;<h4 id="NAT的分类（路由器决定）"><a href="#NAT的分类（路由器决定）" class="headerlink" title="NAT的分类（路由器决定）"></a>NAT的分类（路由器决定）</h4></li>
-<li>静态NAT:即内网的一个IP对应外网的一个IP，且一一对应，即每次分配的时候都是相同的，永久的</li>
-<li>动态NAT：即内网的一个IP对应外网的一个IP,但是每次分配的外网IP可能不同，映射不同</li>
-<li>NAPT:即为了使同一个外网IP能被多个内网的主机使用而出现；<br>如何区分各个主机？即路由器发包时和收包时，如收包时，如何确定该包是发给主机A还是B?即用NAPT,IP加端口号的形式来区分  </li>
-<li>NAPT分为以下两大类：cone锥形NAT和symmetric 对称NAT</li>
-</ul>
-<ol>
-<li>cone NAT的特点是对内网的主机A，和外网所有的服务器通信，都使用相同的端口号；<br>如：内网：192.168.4.5:4323–&gt;server:222.33.22.334:80<br>则经过路由器：外网ip:122.332.43.32:1234–&gt;server:22…路由器把源地址改为122.332.43.32:1234后发送<br>进过服务器2也是类似的，使用同一个端口1234<br>//这里有个疑问，即内网下相同的ip地址，不同的端口时，经过路由器转换后是否为不同端口<br>考虑在接收服务器回复的内容时:<br>222.33.22.334:80–&gt;122.332.43.32：1234此时路由器根据映射，即端口122.332.43.32：1234对应的是192.168.4.5把目的地址和端口更改为它后发送。所以为了能让包在主机内找到对应端口的程序，路由器的设置应为内网同ip不同端口，映射外网的ip+不同端口（待验证）</li>
-</ol>
-<ul>
-<li>锥形NAT类型：完全锥形full cone和受限锥形( restricted cone) 以及端口受限锥形（port restricted cone)  </li>
-</ul>
-<ul>
-<li>完全锥形：任何知道主机B银蛇在NAT上的外部地址和端口的主机都可以通过它发包给内部主机B,即使A在内网(在内网时通过映射的外网地址）</li>
-<li>受限锥形：只有内部主机B向其发送过包的主机A才能对这个内部主机B发包（通过主机B映射在外部的地址端口）</li>
-<li>端口受限：在受限锥形的基础上加了端口限制</li>
-</ul>
-<ol start="2">
-<li>对称NAT(symmetric nat):<br>会为新的session分配新的端口，即和服务器1通信时使用端口1234，接着发起新的服务器2访问时，使用端口1235等<br>如何检测类型？<a href="https://blog.csdn.net/u012908515/article/details/53518062" target="_blank" rel="noopener">https://blog.csdn.net/u012908515/article/details/53518062</a></li>
-</ol>
 </li>
 </ul>
-<h5 id="ipv6不需要NAT"><a href="#ipv6不需要NAT" class="headerlink" title="ipv6不需要NAT"></a>ipv6不需要NAT</h5><p>ipv6地址很多，有人形容世界上的每个沙子都能被定址，所以地址够用，也就不用内网，所以用来做p2p更适用，自然也就不用什么nat转换</p>
-<h5 id="p2p网络架构和内网穿透"><a href="#p2p网络架构和内网穿透" class="headerlink" title="p2p网络架构和内网穿透"></a>p2p网络架构和内网穿透</h5><p>基于上面的napt类型介绍，可以知道内网的主机如何和外网的服务器通信，那内网的主机1如何和另一个内网的主机2直接通信?（不借助服务器）<br>答案:基于上面的限制，有几种方案：  </p>
-<ul>
-<li>针对full cone类型的，内网主机2只要知道内网主机1映射到外部的ip地址和端口，就可以直接发送数据包给1，且能接收；</li>
-<li>针对受限的cone类型，内网机2像上面的方式是不行的：得满足两个条件：1是知道主机1映射到外部的ip和端口，2是主机1曾向主机2发送过请求，相当于开了个口，显然这个条件下2为服务器或者有公网ip的设备；所以针对此受限的类型，有一下场景+方案：<ul>
-<li>场景1：主机1在nat后，打开了和服务器A通信，主机2想和1通信，主机2不在nat后；显然直接向主机1发起请求是不行的，上述条件2不满足，主机1不曾向2发起请求；  </li>
-<li>解决方案是，借助服务器A请求主机1做一个反向连接，即向2发起请求，从而打开通道，进而2就可以跟1通信了</li>
-<li>场景2：主机1在nat后，主机2在nat后，主机1，2均打开了和服务器A通信，主机1想直接和2通过双方映射到外网的地址端口进行通信 </li>
-<li>解决方案：UDP打洞：假如1开始发送一个UDP信息到2的公网地址上,与此同时,他又通过A中转发送了一个邀请信息给2,请求2也给1发送一个UDP信息到1的公网地址上.这时1向2的公网IP发送的信息导致 NAT 1 打开一个处于1的私有地址和2的公网地址之间的新的通信会话,与此同时NAT 2也打开了一个处于2的私有地址和1的公网地址之间的新的通信会话.一旦这个新的UDP会话各自向对方打开了,1和2之间就可以直接通信,而无需A来牵线搭桥了.这就是所谓的打洞技术.一旦这种处于NAT之后的端对端的直连建立之后,连接的双方可以轮流担任对方的”媒人”,把对方介绍给其他的客户端,这样就极大的降低了服务器A的工作量.</li>
-<li>场景3：主机1和2处于同一个NAT下，他们却不知道：</li>
-<li>解决方案：综合相同内网下主机可以直接相互通信原理：在主机1发送给A的包中携带其内网地址和端口，A从而知道了1的外网端口地址和内网端口地址，相互都发给1,2，若接着1发起请求给2能收到回复说明在同一个内网，否则采用场景2的解决方案</li>
-<li>场景4：主机1处于多层NAT下</li>
-<li>问题：udp空闲状态下超时断开的问题：使用心跳包</li>
-<li>扩展：tcp的打洞，同时开放tcp连接，原理类似，较复杂</li>
-</ul>
+<h4 id="多少内存能表现一个ob"><a href="#多少内存能表现一个ob" class="headerlink" title="多少内存能表现一个ob:?"></a>多少内存能表现一个ob:?</h4><ul>
+<li>non static data members</li>
+<li>padding</li>
+<li>virtual—vptr<h4 id="多少内存能表现一个class"><a href="#多少内存能表现一个class" class="headerlink" title="多少内存能表现一个class?"></a>多少内存能表现一个class?</h4>见datamember_memory  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">最小是１　  size  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">T</span>&#123;</span> &#125;;   --<span class="number">-1</span> 一个<span class="keyword">char</span> 表示这个类型  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">X</span> :</span><span class="keyword">public</span> <span class="keyword">virtual</span> T&#123;&#125;;　　--指针大小，指针指向T    <span class="keyword">virtual</span> base <span class="class"><span class="keyword">class</span> <span class="title">subobject</span>  </span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Y</span> :</span><span class="keyword">public</span> <span class="keyword">virtual</span> T&#123;&#125;;  --指针大小</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>:</span><span class="keyword">public</span> X,<span class="keyword">public</span> Y &#123;&#125;;　--两个指针大小</span><br></pre></td></tr></table></figure>
 </li>
-<li>针对对称性的cone,不定因素多，不建议写</li>
-<li>所以p2p网络即是多个内网主机1,2,3,4等之间的相互直接通信，即他们之间的下载数据可以相互共享，也就是平常说的挂种子，bt下载，也是为什么能达到那么快速的原因;当然可想这个过程和普通的cs架构区别：</li>
-<li>p2p架构，bt模型（猜测)：首先客户端负责下载和挂种的基本功能。下载:需要向服务器取得可以获取资源的主机的nat外网地址和ip,接着服务器为其打洞，将正在挂种的客户ip等提供给该客户端，从而能下载；挂种：给服务器声明自己能提供资源，并通过心跳维持一个持续的洞；BT服务器做什么?综合客户端资源和打洞，即让下载方能方访问挂种放 。   这个过程需要考虑：下载方面对多个挂种方，如何下载文件块和组装，最多同时和几个挂种方下载等等；</li>
-<li>回忆：之前学校的rs bt站就是这样，只是开放在学校的内网，可以说是相同nat下的不同主机???好像也不能这么说。。然后采用的原理就是上述的，记得一开始速度不是很快，但是后面15年吧，下载速度能达到10+m/s,很快的，我想可能是优化了下载多个挂种方的方案，增加了最多的下载源，或者学校的网络变优～<h5 id="Cbitterrot源码分析（待"><a href="#Cbitterrot源码分析（待" class="headerlink" title="Cbitterrot源码分析（待~)"></a>Cbitterrot源码分析（待~)</h5><a href="https://linux.cn/thread-5529-1-1.html" target="_blank" rel="noopener">https://linux.cn/thread-5529-1-1.html</a><br>对于p2p架构的软件设计，其实跟平常的cs架构很象，都需要用到socket等</li>
+</ul>
+<p>more seee datamember_memory</p>
+<h4 id="运行时"><a href="#运行时" class="headerlink" title="运行时"></a>运行时</h4><p>的内存布局，即作为进程运行时，其内存是如何的；</p>
+<ul>
+<li>运行时，涉及类的对象模型，对象的内存部分只包含非静态成员变量和虚拟函数指针表；</li>
+<li>可以通过gdb 或kgdb进行查看类对象的地址或者类函数的地址：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line">	Circle c12;</span><br><span class="line">		<span class="function">Circle <span class="title">c1</span><span class="params">(<span class="number">1.2</span>,<span class="string">"red"</span>)</span></span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"getRadius:%x\n"</span>,&amp;Circle::getRadius);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%x, %x\n"</span>,&amp;c12,c12);</span><br><span class="line"> <span class="keyword">void</span> *cc;</span><br><span class="line">        cc=(Circle*)(&amp;c12);</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;*((<span class="keyword">double</span>*)cc)&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">```		</span><br><span class="line">    		</span><br><span class="line">所以c++的对象带来的开销在于操作多态时的vptr等效率低）		</span><br><span class="line"></span><br><span class="line">一个例子</span><br><span class="line">```cpp</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				    <span class="function"><span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">"A"</span>; &#125;</span><br><span class="line">					<span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">getage</span><span class="params">()</span></span>&#123; <span class="keyword">return</span> <span class="number">3</span>;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span>:</span> <span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				    <span class="function"><span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">"B"</span>; &#125;</span><br><span class="line">					<span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">getage</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">5</span>;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>:</span> <span class="keyword">public</span> B</span><br><span class="line">&#123;</span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				    <span class="function"><span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">"C"</span>; &#125;</span><br><span class="line">					<span class="function"><span class="keyword">int</span> <span class="title">getage</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">6</span>;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span>:</span> <span class="keyword">public</span> C</span><br><span class="line">&#123;</span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				    <span class="function"><span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">"D"</span>; &#125;</span><br><span class="line"><span class="number">0x400ae8</span> push   %rbp</span><br><span class="line"><span class="number">0x400ae9</span> mov    %rsp,%rbp</span><br><span class="line"><span class="number">0x400aec</span> mov    %rdi,<span class="number">-0x8</span>(%rbp)</span><br><span class="line">					<span class="function"><span class="keyword">int</span> <span class="title">getage</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> <span class="number">8</span>;&#125;</span><br><span class="line"><span class="number">0x400af8</span> push   %rbp</span><br><span class="line"><span class="number">0x400af9</span> mov    %rsp,%rbp</span><br><span class="line"><span class="number">0x400afc</span> mov    %rdi,<span class="number">-0x8</span>(%rbp)</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">		    A aa;</span><br><span class="line">			aa.getName();</span><br><span class="line">		    D d;</span><br><span class="line">			d.getName();</span><br><span class="line">			A &amp;rBase = d;</span><br><span class="line">			rBase.getName();</span><br><span class="line"><span class="number">0x400986</span> mov    <span class="number">-0x28</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x40098a</span> mov    (%rax),%rax</span><br><span class="line"><span class="number">0x40098d</span> mov    (%rax),%rax</span><br><span class="line"><span class="number">0x400990</span> mov    <span class="number">-0x28</span>(%rbp),%rdx</span><br><span class="line"><span class="number">0x400994</span> mov    %rdx,%rdi</span><br><span class="line"><span class="number">0x400997</span> callq  *%rax</span><br><span class="line">            rBase.getage();</span><br><span class="line"><span class="number">0x400999</span> mov    <span class="number">-0x28</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x40099d</span> mov    (%rax),%rax</span><br><span class="line"><span class="number">0x4009a0</span> add    $<span class="number">0x8</span>,%rax</span><br><span class="line"><span class="number">0x4009a4</span> mov    (%rax),%rax</span><br><span class="line"><span class="number">0x4009a7</span> mov    <span class="number">-0x28</span>(%rbp),%rdx</span><br><span class="line"><span class="number">0x4009ab</span> mov    %rdx,%rdi</span><br><span class="line"><span class="number">0x4009ae</span> callq  *%rax</span><br><span class="line">		    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"rBase is a "</span> &lt;&lt; rBase.getName() &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">					 </span><br><span class="line">			D d2;</span><br><span class="line">            A &amp;rBase2 =d2;</span><br><span class="line"><span class="number">0x4009f9</span> lea    <span class="number">-0x30</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x4009fd</span> mov    %rax,<span class="number">-0x20</span>(%rbp)</span><br><span class="line">		   rBase2.getName();	</span><br><span class="line"><span class="number">0x400a01</span> mov    <span class="number">-0x20</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x400a05</span> mov    (%rax),%rax</span><br><span class="line"><span class="number">0x400a08</span> mov    (%rax),%rax</span><br><span class="line"><span class="number">0x400a0b</span> mov    <span class="number">-0x20</span>(%rbp),%rdx</span><br><span class="line"><span class="number">0x400a0f</span> mov    %rdx,%rdi</span><br><span class="line"><span class="number">0x400a12</span> callq  *%rax</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>something else:  </p>
+<ul>
+<li>成员函数也是只有一份被存于代码区中，而对象并没有指向成员函数的指针，对象只存成员和虚拟表　；那在对象.成员函数使用时，</li>
+<li>是如何确定该函数中使用的成员是该对象的成员?<br>这里是this指针的作用<br>从汇编看，是否是成员函数在取的成员变量时，会做一些动作，这时的成员变量是在栈区；；<br>或者从调用成员函数时，是否有传入或控制函数的一些动作，让它知道从哪里取得对应的成员返回；</li>
+<li>成员函数最终被编译成与对象无关的普通函数，除了成员变量，会丢失所有信息，所以编译时要在成员函数中添加一个额外的参数，把当前对象的首地址传入，以此来关联成员函数和成员变量。这个额外的参数，实际上就是 this，它是成员函数和成员变量关联的桥梁</li>
 </ul>
 
       
@@ -513,7 +492,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/tcpip-ip/" rel="tag"># tcpip_ip</a>
+            <a href="/tags/cpp-memory/" rel="tag"># cpp_memory</a>
           
         </div>
       
@@ -526,8 +505,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/03/tcpip-MAC/" rel="next" title="tcpip_MAC">
-                <i class="fa fa-chevron-left"></i> tcpip_MAC
+              <a href="/2018/06/09/cpp-this/" rel="next" title="cpp_this">
+                <i class="fa fa-chevron-left"></i> cpp_this
               </a>
             
           </div>
@@ -536,8 +515,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/06/03/leetcode-linklist1/" rel="prev" title="leetcode_linklist1">
-                leetcode_linklist1 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/06/09/cpp-conandde/" rel="prev" title="cpp_conandde">
+                cpp_conandde <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -714,7 +693,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#IP-协议和路由"><span class="nav-number">1.</span> <span class="nav-text">IP 协议和路由</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#IP的作用–路由"><span class="nav-number">1.1.</span> <span class="nav-text">IP的作用–路由</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#路由是什么-一个数据包如何在网络上传输-会对ip包做什么动作"><span class="nav-number">1.1.1.</span> <span class="nav-text">路由是什么?一个数据包如何在网络上传输?会对ip包做什么动作?</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络地址和子网"><span class="nav-number">1.2.</span> <span class="nav-text">网络地址和子网</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#网络地址简介"><span class="nav-number">1.2.1.</span> <span class="nav-text">网络地址简介</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#网段，网络范围内，由谁主导生效进行实际的网络隔离和连接"><span class="nav-number">1.2.2.</span> <span class="nav-text">网段，网络范围内，由谁主导生效进行实际的网络隔离和连接?</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络的拓扑结构"><span class="nav-number">1.3.</span> <span class="nav-text">网络的拓扑结构:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由深入–NAT和NAT穿透"><span class="nav-number">1.4.</span> <span class="nav-text">路由深入–NAT和NAT穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#NAT的由来"><span class="nav-number">1.4.1.</span> <span class="nav-text">NAT的由来</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NAT的分类（路由器决定）"><span class="nav-number">1.5.</span> <span class="nav-text">NAT的分类（路由器决定）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ipv6不需要NAT"><span class="nav-number">1.5.1.</span> <span class="nav-text">ipv6不需要NAT</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#p2p网络架构和内网穿透"><span class="nav-number">1.5.2.</span> <span class="nav-text">p2p网络架构和内网穿透</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Cbitterrot源码分析（待"><span class="nav-number">1.5.3.</span> <span class="nav-text">Cbitterrot源码分析（待~)</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c-类内存布局："><span class="nav-number">1.</span> <span class="nav-text">c++类内存布局：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#静态"><span class="nav-number">1.1.</span> <span class="nav-text">静态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多少内存能表现一个ob"><span class="nav-number">1.2.</span> <span class="nav-text">多少内存能表现一个ob:?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多少内存能表现一个class"><span class="nav-number">1.3.</span> <span class="nav-text">多少内存能表现一个class?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行时"><span class="nav-number">1.4.</span> <span class="nav-text">运行时</span></a></li></ol></li></ol></div>
             
 
           </div>
