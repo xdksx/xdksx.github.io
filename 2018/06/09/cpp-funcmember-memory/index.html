@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="cpp_class," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="追光者" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="c++ function语意学something:恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。 可以参考；">
+<meta name="keywords" content="cpp_class">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_funcmember_memory">
+<meta property="og:url" content="http://xdksx.github.io/2018/06/09/cpp-funcmember-memory/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="c++ function语意学something:恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。 可以参考；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-09T16:46:30.850Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpp_funcmember_memory">
+<meta name="twitter:description" content="c++ function语意学something:恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。 可以参考；">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xdksx.github.io/2018/06/09/cpp-funcmember-memory/"/>
+
+
+
+
+
+  <title>cpp_funcmember_memory | 追光者</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/xdksx/"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小兴的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/06/09/cpp-funcmember-memory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/headicon2.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">cpp_funcmember_memory</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-09T16:21:29+08:00">
+                2018-06-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index">
+                    <span itemprop="name">c&cpp</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/06/09/cpp-funcmember-memory/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/06/09/cpp-funcmember-memory/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="c-function语意学"><a href="#c-function语意学" class="headerlink" title="c++ function语意学"></a>c++ function语意学</h3><p>something:<br>恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。<br> 可以参考；<a id="more"></a></p>
+<ul>
+<li>实现类的成员函数和类之间的关联，即通过对象能调用成员函数。这种实现，可以是以下几种方式：<br>1）struct+函数指针：结构体中，一个成员函数对应一个指针，增加空间 如何操作成员？<br>2）函数+this指针，普通函数，this指针一个，不添加额外多的空间，this 操作成员<br>。。。</li>
+</ul>
+<ul>
+<li>c++的类主要是将成员和函数封装起来。那么成员的封装就像struct一样，而函数呢？成员函数如何和类，对象联系起来？–this指针</li>
+</ul>
+<ul>
+<li>c++中的成员函数和普通函数一样，只是多了个this指针，这个指针指向当前调用这个函数的对象，并以形参传入，这样，成员函数就可以使用对象成员了，通过<br>this指针；</li>
+</ul>
+<ul>
+<li><p>这里也是根据深入探索c++模型中第四章，function语义学总结的：</p>
+<h4 id="引入这个问题："><a href="#引入这个问题：" class="headerlink" title="引入这个问题："></a>引入这个问题：</h4><p>通过对象和对象指针来调用成员函数的不同：<br>Point3d obj;<br>Point3d *p=&obj;<br>两者效率有何不同？</p>
+<p>通过上面分析：当这个成员函数为普通的成员函数时，则直接调用函数，传入this指针，所以基本没有大的区别  </p>
+<h4 id="以下分为几种函数讨论："><a href="#以下分为几种函数讨论：" class="headerlink" title="以下分为几种函数讨论："></a>以下分为几种函数讨论：</h4><h5 id="非静态成员函数："><a href="#非静态成员函数：" class="headerlink" title="非静态成员函数："></a>非静态成员函数：</h5><p>为了支持this指针等构成成员函数，c++做了如下步骤：  </p>
+<ul>
+<li>a;改写函数原型：安插了一个this参数</li>
+<li>b；对对象成员的操作，通过this</li>
+<li>c;对成员函数写成外部函数，并将其名称进行mangling处理，成独一无二～类似：函数名___类名参数名 等等</li>
+<li>如何命名：成员函数和成员都会被名称特殊化处理：一般加上base class &amp;derived class名<br> 对重载函数而言如何区分：加上参数链表；<br> 当extern C时，会压抑这种特殊命名化<br> 具体编译器实现不同，可以通过汇编等。gdb等看</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>鉴于此：看一个例子：<br>当你需要构造一个（拷贝构造函数）或者改变一个类的成员： 伪代码：  </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">normalize__Point</span><span class="params">(<span class="keyword">register</span> <span class="keyword">const</span> Point3d *<span class="keyword">const</span> <span class="keyword">this</span>,Point3d &amp;_result)</span></span></span><br><span class="line"><span class="function"> </span>&#123;</span><br><span class="line">    _reuslt.Point3d::Point3d() <span class="comment">//默认构造函数：</span></span><br><span class="line">    _result._x=<span class="keyword">this</span>-&gt;__x/<span class="number">2</span>;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line"> &#125;</span><br><span class="line"> 那么，以下这种方式：更好：</span><br><span class="line"> Point3d Point3d::normmalize() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span>  Point3d(_x/<span class="number">2</span> ...)直接构建会更快） </span><br><span class="line">  =》转换为<span class="keyword">return</span> Point3d(<span class="keyword">this</span>-&gt;_x/<span class="number">2</span>,...)</span><br></pre></td></tr></table></figure>
+<h5 id="virtual-func"><a href="#virtual-func" class="headerlink" title="virtual func"></a>virtual func</h5><p>若normilaze是虚拟函数，则<br>ptr-&gt;normilaze()=》 （*ptr-&gt;vptr[1])(ptr);<br>可以看到效率较低，所以当确认不用多态机制的时候，最好抑制它，直接使用：Point3d::xxx  这种方式调用函数<br>而若被写成内连函数会更优–原因待探索：</p>
+</li>
+</ul>
+<h5 id="静态成员函数："><a href="#静态成员函数：" class="headerlink" title="静态成员函数："></a>静态成员函数：</h5><p> 显然这种能被类直接调用的函数，没有this指针，从而也就无法用成员<br> 这种函数的出现，是因为一种需求：即不用每个成员函数都会使用成员，不一定需要this<br> 不用声明一个对象就可以调用函数，当非要对象不可，又不用成员时：<br> <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((Point3d*)<span class="number">0</span>)-&gt;object_count() ;</span><br></pre></td></tr></table></figure></p>
+<p> 有了static后，就不用上述方式了<br> 所以static的特性完全来源它的原理：  </p>
+<ul>
+<li>它不能直接存取non static 成员</li>
+<li>它不能被声明为const volatile virtual</li>
+<li><p>能直接被类调用<br>静态成员函数和普通函数更像，因为它没有this指针，也就不是这种类型：~ unsigned int(*) ();<br>所以更可以和类之外的元素沟通，比如回调函数</p>
+<h5 id="虚拟成员函数"><a href="#虚拟成员函数" class="headerlink" title="虚拟成员函数"></a>虚拟成员函数</h5><ul>
+<li>a 为了支持多态，需要在执行期间能判断到底调用哪个函数？即pz-&gt;z()这个函数，pz为基类指针，而能调用子类函数</li>
+<li>b 基类指针或引用参考到的（指向的）子类，，子类中的重写父类的函数，在调用时并不知道传入哪个this,即表现为调用哪个函数</li>
+<li>c　那么为了支持通过基类能调用它，通过子类也能调用该函数，则需要基类和子类共享某个东西，他能正确决议出要调用的函数</li>
+</ul>
+</li>
+<li><p>带来：额外的空间，和c的兼容性</p>
+<h5 id="积极多态的概念："><a href="#积极多态的概念：" class="headerlink" title="积极多态的概念："></a>积极多态的概念：</h5><p>（１）被指出的对象真正被使用；（２）dynamic_cast<br>那么哪些函数需要支持这样的特性－－－》由virtual标志来指出<br>如何在执行期间调用真正的函数？－－－》ptr所指的对象真实类型＋函数的位置　真实类型放在vtable[0]</p>
+</li>
+<li><p>编译期间做的：<br>在每个对象中加入：一个字符串或数字来表示class　类型＋一个指针，指向表格vtable,它带有程序的virtual func执行期地址<br>确定表格中的函数指针，执行期无法改变表格一个类对应一个表格，每个virtual func被指定一个固定的索引值</p>
+</li>
+<li>执行期间做的：<br>为vptr分配内存地址。它的值在编译期间确定，类似于x=3;  指向vtable<br>调用函数时激活　。编译器已经为其转换语义为xxx-&gt;vptr<a href="this">n</a>.. </li>
+<li>注意，当一个子类继承基类时，vptr继承过来，当子类改写virtual函数时，则改变表中的指针指向子类的；当子类添加一个新的virtual func时，则在表中加一个slot</li>
+<li>唯一在执行期间才知道的：slot(n)到底指向哪个函数实体<br>细想一下：  <pre><code>derived de; //编译期间，符号表确认要分配的对象类型,执行期间分配内存和调用构造函数等，构造函数中会初始化vptr,    
+base *p=&amp;de;//编译期间，类似于int x=3;,执行期间分
+配内存给x,并将３给x,确定p所指的真正对象，从而才能取得vptr,到调用到最终的函数
+p-&gt;xx();//xx为virtual (*p-&gt;vptr[1])(p)
+</code></pre></li>
+</ul>
+<h5 id="some-question"><a href="#some-question" class="headerlink" title="some question"></a>some question</h5><p> //关于执行期和编译期确定的东西，有些困惑，为啥编译器不能在p-&gt;xx()的时候指定调用子类的xx()?<br> //在编译器扫描代码的时候，知道定义了一个derived类型的变量，知道，定义了一个base指针，并指向的变量类型为derived,后面调用时也能<br> 确定函数名，为啥不能根据已存的这些信息。来得到哦。这时p指向的是derive类型的。所以调用derived的函数？<br> 不过也是，编译器从做词汇扫描，到语义扫描，出符号表，到语法检查，语义规则等</p>
+<h5 id="多重继承下面的virtual-func"><a href="#多重继承下面的virtual-func" class="headerlink" title="多重继承下面的virtual func"></a>多重继承下面的virtual func</h5><p> 考虑以下例子：<br> <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">base1</span>&#123;</span></span><br><span class="line">   <span class="keyword">public</span> :</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">　　　<span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">a</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> a;&#125;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> base1* <span class="title">clone</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">base2</span>&#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">   <span class="keyword">int</span> b;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">b</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> b;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> base2* <span class="title">clone</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">   &#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">derive</span>:</span><span class="keyword">public</span> base1,<span class="keyword">public</span> base2</span><br><span class="line">   <span class="keyword">int</span> c;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">c</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> c;&#125;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> derive* <span class="title">clone</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<p> 对于和derived有相同起点的base1不用考虑太多，关键是base2,;有三个问题要解决：<br><figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">　(<span class="number">1</span>)<span class="keyword">virtual</span> <span class="function"><span class="keyword">destructor</span> <span class="params">(记得之前是逐层调用）</span></span></span><br><span class="line"><span class="function"><span class="params"> 　（２）被继承下来的b()</span></span></span><br><span class="line"><span class="function">  <span class="params">(3）一组clone函数 </span></span></span><br><span class="line"><span class="function"><span class="params">（a)</span>   做<span class="title">base2</span> *<span class="title">pbase2</span>=<span class="title">new</span> <span class="title">derive</span>;</span></span><br><span class="line">　　　　＆＆＆编译期间确定：＆＆＆</span><br><span class="line"> =&gt;  derived *tmp=new derive;</span><br><span class="line"> 　　　base2 *pbase2=tmp?tmp+sizeof(base1):<span class="number">0</span>;</span><br></pre></td></tr></table></figure></p>
+<p> 为了使pbase2能访问到　b 即pbase２-&gt;b, 多重继承下使用 base *p=de;时，注意此时需要调整，让p指向的是de中的base对应部分</p>
+<ul>
+<li>当通过delete pbase2时，此时需要删除完整的对象，所以pbase２指针需要调整到指出完整对象的起始点<br>他也要通过上述a类似的加法，以及调用virtual destructor函数  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> 如base2 *pbase2=<span class="keyword">new</span> derive;  </span><br><span class="line"><span class="keyword">delete</span> pbase2;<span class="comment">//invoke derive class's destructor (virtual )</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> 　首先这个调用要通过vptr,其次，传入的this指针需要调整<br>  ＆＆＆执行期间确定＆＆＆</p>
+<ul>
+<li><p>注意：然而，这种offset加法无法在编译期间直接设定。pbase2所指的真正对象只有在执行期间才能确定<br>//如何调整；早期的想法是：将vtable中的slot改为一个slot放置函数指针faddr和this的offset<br>//则：（<em>pbase2-&gt;vptr[1])(pbase2);<br>//改为　（</em>pbase2-&gt;vptr[1].faddr)(pbase2+pbase2-  &gt;vptr[1].offset);但是连带处罚了其他形式virtual func调用，</p>
+<ul>
+<li>那如何处理？  </li>
+<li>[１]方法１：thunk<br>　　　～：this+=sizeof(base1)<pre><code>Derived::~Derived(this);//只有汇编才有效率
+</code></pre>如何使能？在virtual table slot继续内含一个简单的指针，slot中的地址可以指向一个virtual func或者一个thunk(若需要调整this)<br>其实多重继承来讲，每个继承的基类，都需要一个virtual table;,这样派生类就会维护多个基类的vtable</li>
+<li>1)经由derived或第一个base class)调用，不需要调整this</li>
+<li><p>2)经由&gt;=2的base class 调用，同一种函数在virtual table中可能需要多笔对应的slot</p>
+<pre><code>base1 *pbase1 =new derived;
+base2 *pbase2=new derived;
+delete pbase1//不需要调整this,virtual table slot放置正真的destructor地址
+
+delete pbase2//需要调整this ,放置thunk
+vptr和vtable命名也会被特殊化
+参考图在书中，这里不放
+</code></pre></li>
+</ul>
+</li>
+<li><p>[２]方法２　：<br> 因为动态链接器的原因，使得符号链接变得缓慢<br> 为了调整执行期链接器的效率，sun编译器将多个vtable 连锁为一个，指向次要表格的指针可以由主要表格加offset<br>　  其他类似。<br>例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">　　　　　　　base2 *ptr =<span class="keyword">new</span> derived;</span><br><span class="line"><span class="keyword">delete</span> ptr;<span class="comment">//此时调用derived::~deirved,故ptr需要被调整，若为virtual，需要更多</span></span><br><span class="line"></span><br><span class="line">derived *pder=<span class="keyword">new</span> derived;</span><br><span class="line">pder-&gt;b();<span class="comment">//注意b没有被改写，所以需要调整pder指向base2 subobj</span></span><br><span class="line"></span><br><span class="line">base2 *pb1=<span class="keyword">new</span> derived;</span><br><span class="line">base2 *pb2=pb1-&gt;clone()<span class="comment">//注意是调用derived:clone,所以调用后返回值要改变器指向base2 subobj</span></span><br><span class="line"></span><br><span class="line">当函数被认为足够小　，sun编译器会采用某种算法优化，split。。，否则不会，具体待了解。</span><br><span class="line">所以<span class="keyword">virtual</span> func的通常大小为８行</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>[３]IBM:<br>函数若支持多重进入点，将不必有许多thunk;将thunk操作放在virtual func中，里面判断是否需要调整this指针</p>
+</li>
+</ul>
+<h5 id="虚拟继承下的virtual-func"><a href="#虚拟继承下的virtual-func" class="headerlink" title="虚拟继承下的virtual func"></a>虚拟继承下的virtual func</h5><p>这种情况相当复杂了。需要探索上述的这些问题：point2d.point3d的对象不再相符，即使只继承一个，即单一虚拟继承，也需要调整this指针<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">point2d</span>&#123;</span></span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">  point2d()</span><br><span class="line">  <span class="keyword">virtual</span> ~point2d()</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">mumble</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  virutal  <span class="keyword">float</span> <span class="title">z</span><span class="params">()</span></span></span><br><span class="line">  protected:</span><br><span class="line">  <span class="keyword">float</span> _x,_y;</span><br><span class="line">  &#125; </span><br><span class="line">  <span class="class"><span class="keyword">class</span> <span class="title">point3d</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> point2d&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    point3d()</span><br><span class="line">    ~point3d</span><br><span class="line">    <span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">float</span> _z;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<pre><code>可以尝试下写出例子比较point2d和point3d指针看指向是否相同
+当virtual base class中包含virtual func和nonstatic member时，各个厂商实现不同，复杂，作者不建议这么做
+
+－－－－－－－－－－－－－－－－－－－
+</code></pre><h4 id="函数的效能："><a href="#函数的效能：" class="headerlink" title="函数的效能："></a>函数的效能：</h4><p>  这部分可以通过函数的调用方式感性的了解，或者根据不同的编译器。测试对比几种调用的时间，以及是否已经开启优化等<br>  （如编译器将被视为不变的表达式提到循环之外）<br>  （通过消除局部对象的使用可以消除对constructor的调用）</p>
+<h4 id="指向memeber-func的指针："><a href="#指向memeber-func的指针：" class="headerlink" title="指向memeber　func的指针："></a>指向memeber　func的指针：</h4><p>  取一个nonstatic member func的地址，若为nonvirtual 则为其在内存中的真正地址。<br>  但需要this参数。　<br>  指向member func的指针：double (Point::<em>pmf)();类似<br>  定义：double (point::</em>coord)() =&amp;point::x;<br>       赋值:coord=&amp;point::y<br>       调用：（origin.<em>coord)()/(ptr-&gt;</em>coord)()<br>       转换为：(coord)(&amp;origin)/(coord)(ptr)</p>
+<h5 id="指向virtual-memeber-func指针"><a href="#指向virtual-memeber-func指针" class="headerlink" title="指向virtual memeber func指针"></a>指向virtual memeber func指针</h5><p>  在g++中<br>  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">  <span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base1</span> &#123;</span></span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">float</span> <span class="title">getp</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> mp;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">void</span> <span class="title">setp</span><span class="params">(<span class="keyword">float</span> mmp)</span></span>&#123;mp=mmp;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">test</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">3</span>;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">test1</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">4</span>;&#125;</span><br><span class="line">		<span class="keyword">private</span>:</span><br><span class="line">				<span class="keyword">float</span> mp;</span><br><span class="line">&#125;; </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">		<span class="keyword">float</span> (Base1::*pmf)()=&amp;Base1::getp;</span><br><span class="line">		Base1 *ptr=<span class="keyword">new</span> Base1;</span><br><span class="line">		ptr-&gt;setp(<span class="number">3.2</span>);</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;ptr-&gt;getp()&lt;&lt;<span class="built_in">endl</span>;<span class="comment">//3.2</span></span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;(ptr-&gt;*pmf)()&lt;&lt;<span class="built_in">endl</span>;<span class="comment">//3.2　　会被内部转换：（*ptr-&gt;vptr[(int)pmf])(ptr)</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::getp);<span class="comment">//1　索引值</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::setp);<span class="comment">//40xxx真实地址</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::test);<span class="comment">// 9，为什么是９不清楚</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::test1);<span class="comment">//11</span></span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span>  <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　所以，对于虚拟函数也是可以通过函数指针来访问的，只不过得到的地址是索引值，但不影响访问<br>或者对以下<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base1</span> &#123;</span></span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">float</span> <span class="title">getp</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> mp;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">void</span> <span class="title">setp</span><span class="params">(<span class="keyword">float</span> mmp)</span></span>&#123;mp=mmp;&#125;</span><br><span class="line">			        <span class="function"><span class="keyword">int</span> <span class="title">test</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">3</span>;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">test1</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">4</span>;&#125;</span><br><span class="line">		<span class="keyword">private</span>:</span><br><span class="line">				<span class="keyword">float</span> mp;</span><br><span class="line">&#125;; </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">		<span class="keyword">float</span> (Base1::*pmf)()=&amp;Base1::getp;</span><br><span class="line">		Base1 *ptr=<span class="keyword">new</span> Base1;</span><br><span class="line">		ptr-&gt;setp(<span class="number">3.2</span>);</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;ptr-&gt;getp()&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;(ptr-&gt;*pmf)()&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::getp);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::setp);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::test);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::test1);</span><br><span class="line">                  </span><br><span class="line">                <span class="keyword">int</span> (Base1::*pmi)()=&amp;Base1::test1;<span class="comment">//or test　可以指向两种，编译器如何区分呢？cfront２　通过判断是索引（may &lt;127)还是函数地址来区分</span></span><br><span class="line">                Base1 *ptr2=<span class="keyword">new</span> Base1;</span><br><span class="line">                <span class="built_in">cout</span>&lt;&lt;(ptr2-&gt;*pmi)()&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">                <span class="keyword">delete</span> ptr;</span><br><span class="line">                <span class="keyword">delete</span> ptr2;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span>  <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="多重继承下指向member-func指针"><a href="#多重继承下指向member-func指针" class="headerlink" title="多重继承下指向member func指针"></a>多重继承下指向member func指针</h5><p>为了让mem func point能支持多重继承和虚拟继承：<br>噢这种情况很复杂了。你得知道它指向的是virtual 还是non virtual<br>书中并没有探讨太多，野比较复杂，这里举一个例子，探索细节可以看编译器，gdb等结果：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base1</span> &#123;</span></span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">float</span> <span class="title">getp</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> mp;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">void</span> <span class="title">setp</span><span class="params">(<span class="keyword">float</span> mmp)</span></span>&#123;mp=mmp;&#125;</span><br><span class="line">			        <span class="function"><span class="keyword">int</span> <span class="title">test</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">3</span>;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">test1</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">4</span>;&#125;</span><br><span class="line">		<span class="keyword">private</span>:</span><br><span class="line">				<span class="keyword">float</span> mp;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base2</span> &#123;</span></span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">float</span> <span class="title">get2p</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> m2p;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">set2p</span><span class="params">(<span class="keyword">float</span> m2pp)</span></span>&#123;m2p=m2pp;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">int</span> <span class="title">test22</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> <span class="number">5</span>;&#125;</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">test21</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">6</span>;&#125;</span><br><span class="line">		<span class="keyword">private</span>:</span><br><span class="line">				<span class="keyword">float</span> m2p;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Der</span>:</span><span class="keyword">public</span> Base1,<span class="keyword">public</span> Base2&#123;</span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">				<span class="function"><span class="keyword">virtual</span> <span class="keyword">float</span> <span class="title">get3p</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> m3p;&#125;</span><br><span class="line">		<span class="keyword">private</span>:</span><br><span class="line">				<span class="keyword">float</span> m3p;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">		<span class="keyword">float</span> (Base1::*pmf)()=&amp;Base1::getp;<span class="comment">//这后面的调用就发挥想象把，想怎么尝试都行</span></span><br><span class="line">		Base1 *ptr=<span class="keyword">new</span> Der;</span><br><span class="line">		ptr-&gt;setp(<span class="number">3.2</span>);</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;ptr-&gt;getp()&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;(ptr-&gt;*pmf)()&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Der::getp);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::setp);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::test);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>,&amp;Base1::test1);</span><br><span class="line">                  </span><br><span class="line">                <span class="keyword">int</span> (Base1::*pmi)()=&amp;Base1::test1;<span class="comment">//or test</span></span><br><span class="line">                Base1 *ptr2=<span class="keyword">new</span> Base1;</span><br><span class="line">                <span class="built_in">cout</span>&lt;&lt;(ptr2-&gt;*pmi)()&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">                <span class="keyword">delete</span> ptr;</span><br><span class="line">                <span class="keyword">delete</span> ptr2;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span>  <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="效能"><a href="#效能" class="headerlink" title="效能"></a>效能</h5><h5 id="inline-func"><a href="#inline-func" class="headerlink" title="inline func:"></a>inline func:</h5><p>首先得直到，内联函数实际上表现为什么？函数本质上被经过栈调用，而内联函数是直接　在主函数中铺开为表达式，所以调用内联函数　能提高效率，但是响应的<br>源代码会变大，而且有参数的限制<br>应用：在操作符函数中，指定set,get类函数，使得操作符函数能被写成普通的函数。　而set get 写成inline函数，会减少效率降低<br>inline关键词只是请求，并不会所有都inline展开，编译器会做判断权衡<br>具体看书，不是很细<br>内联函数两个注意点：<br>形式参数：inline扩展时，每一个形式参数会被对应的实际参数代替：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">　　　　　　　　<span class="function"><span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">min</span> <span class="params">(<span class="keyword">int</span> i,<span class="keyword">int</span> j)</span></span>&#123;</span><br><span class="line">          <span class="keyword">return</span> i&lt;j?i:j;</span><br><span class="line">          &#125;</span><br><span class="line">三个调用：</span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">bar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> minval;</span><br><span class="line">   <span class="keyword">int</span> val1=<span class="number">1024</span>;</span><br><span class="line">   <span class="keyword">int</span> val2=<span class="number">2048</span>;</span><br><span class="line">   minval=min(val1,val2); 参数直接替换val1&lt;val2?val1:val2;</span><br><span class="line">   minval=min(<span class="number">1024</span>,<span class="number">2048</span>);替换后直接使用常量：<span class="number">1024</span></span><br><span class="line">   minval=min(fool(),bar()+<span class="number">1</span>) 引发参数副作用，需要导入一个临时对象，以避免重复求值：</span><br><span class="line">   　　　　     <span class="keyword">int</span> t1,t2; minval=(t1=foo()),(t2=bar()+<span class="number">1</span>),t1&lt;t2?...)</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">   <span class="keyword">return</span> minval&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 局部变量:在内联函数中加入局部变量，会导致因为维护局部变量带来的成本；<br> 内联函数在替代c宏，是比较安全的；但是若宏中参数有副作用的话，如上，会导致大的扩展码以维护局部变量或者生成临时的变量</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>看了我的博客，学习到点啥?来点分享吧，打赏也行</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpeg" alt="小兴 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpeg" alt="小兴 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/cpp-class/" rel="tag"># cpp_class</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/09/cpp-datamember-memory/" rel="next" title="cpp_datamember_memory">
+                <i class="fa fa-chevron-left"></i> cpp_datamember_memory
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/headicon2.png"
+                alt="小兴" />
+            
+              <p class="site-author-name" itemprop="name">小兴</p>
+              <p class="site-description motion-element" itemprop="description">始于歧路，愿归于征途</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xdksx/" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github-square"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="ksance@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.facebook.com/572897439" target="_blank" title="FB Page">
+                      
+                        <i class="fa fa-fw fa-facebook"></i></a>
+                  </span>
+                
+            </div>
+          
+          
+           <div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=461525011&auto=0&height=66"></iframe>
+ </div>
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c-function语意学"><span class="nav-number">1.</span> <span class="nav-text">c++ function语意学</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#引入这个问题："><span class="nav-number">1.1.</span> <span class="nav-text">引入这个问题：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#以下分为几种函数讨论："><span class="nav-number">1.2.</span> <span class="nav-text">以下分为几种函数讨论：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#非静态成员函数："><span class="nav-number">1.2.1.</span> <span class="nav-text">非静态成员函数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#virtual-func"><span class="nav-number">1.2.2.</span> <span class="nav-text">virtual func</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态成员函数："><span class="nav-number">1.2.3.</span> <span class="nav-text">静态成员函数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟成员函数"><span class="nav-number">1.2.4.</span> <span class="nav-text">虚拟成员函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#积极多态的概念："><span class="nav-number">1.2.5.</span> <span class="nav-text">积极多态的概念：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#some-question"><span class="nav-number">1.2.6.</span> <span class="nav-text">some question</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#多重继承下面的virtual-func"><span class="nav-number">1.2.7.</span> <span class="nav-text">多重继承下面的virtual func</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟继承下的virtual-func"><span class="nav-number">1.2.8.</span> <span class="nav-text">虚拟继承下的virtual func</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#函数的效能："><span class="nav-number">1.3.</span> <span class="nav-text">函数的效能：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#指向memeber-func的指针："><span class="nav-number">1.4.</span> <span class="nav-text">指向memeber　func的指针：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#指向virtual-memeber-func指针"><span class="nav-number">1.4.1.</span> <span class="nav-text">指向virtual memeber func指针</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#多重继承下指向member-func指针"><span class="nav-number">1.4.2.</span> <span class="nav-text">多重继承下指向member func指针</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#效能"><span class="nav-number">1.4.3.</span> <span class="nav-text">效能</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#inline-func"><span class="nav-number">1.4.4.</span> <span class="nav-text">inline func:</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+
+  
+</div>
+
+
+<span id="busuanzi_container_site_uv">
+  本站总访问量<span id="busuanzi_value_site_uv"></span>次
+</span>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共47.4k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'xdksx',
+            repo: 'xdksx.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+            
+                client_id: '06e6b70d396f6928e45a'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>
