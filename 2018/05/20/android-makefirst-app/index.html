@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android_make," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="追光者" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="install and make first app20170608今天主要是安装了android-studio环境并成功开发第一个helloworld   app 在模拟器和手机上运行，下面是整个教程：在ubuntu下 1 安装java-jdk:">
+<meta name="keywords" content="android_make">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android_makefirst_app">
+<meta property="og:url" content="http://xdksx.github.io/2018/05/20/android-makefirst-app/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="install and make first app20170608今天主要是安装了android-studio环境并成功开发第一个helloworld   app 在模拟器和手机上运行，下面是整个教程：在ubuntu下 1 安装java-jdk:">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-05-20T20:38:13.274Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android_makefirst_app">
+<meta name="twitter:description" content="install and make first app20170608今天主要是安装了android-studio环境并成功开发第一个helloworld   app 在模拟器和手机上运行，下面是整个教程：在ubuntu下 1 安装java-jdk:">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xdksx.github.io/2018/05/20/android-makefirst-app/"/>
+
+
+
+
+
+  <title>android_makefirst_app | 追光者</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/xdksx/"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小兴的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/05/20/android-makefirst-app/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/headicon2.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">android_makefirst_app</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-20T09:38:24+00:00">
+                2018-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/20/android-makefirst-app/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/05/20/android-makefirst-app/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="install-and-make-first-app"><a href="#install-and-make-first-app" class="headerlink" title="install and make first app"></a>install and make first app</h3><p>20170608<br>今天主要是安装了android-studio环境并成功开发第一个helloworld   app 在模拟器和手机上运行，下面是整个教程：在ubuntu下</p>
+<h4 id="1-安装java-jdk"><a href="#1-安装java-jdk" class="headerlink" title="1 安装java-jdk:"></a>1 安装java-jdk:<a id="more"></a></h4><p>a  先下载java-jdk:Java SE Development Kit 8 Downloads<br><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a><br>下载对应系统的版本</p>
+<p>b  下载到某个目录，解压到要安装的目录：如：/usr/jdk-8/</p>
+<p>c   设置全局环境变量：如上述的安装目录，则将<br>export JAVA_HOME=/usr/jdk-8<br>export JRE_HOME=$JAVA_HOME/jre<br>export CLASSPATH=.:$CLASSPATH:$JAVA_HOME/lib:$JRE_HOME/lib<br>export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin<br>添加到/etc/profile文件中，在末尾另起一行添加</p>
+<p>d 使用source /etc/profile命令使刚才配置的信息生效</p>
+<p>e 测试是否成功：java -version<br>测试,编写java文件：<br>public class test{<br>    public static void main(String[] args){<br>        System.out.println(“hello world”);<br>    }<br>}<br>保存为test.java，<br>生成字节码：javac test.java<br>运行:java test</p>
+<h3 id="2-安装android-studio"><a href="#2-安装android-studio" class="headerlink" title="2 安装android-studio:"></a>2 安装android-studio:</h3><p>a 下载：在官网或者其他网站下载后<br>b 按照installion说明进行：一般是先选择要安装的目录：如/usr/android-studio<br>c　直接在终端,进入bin目录后:./studio.sh<br>d 还有其他配置．比如在任意目录都能打开软件．<br>e 其他见说明文件等</p>
+<p>3 第一个app helloworld<br>在模拟器上运行<br>打开软件－－&gt;选择新建一个工程，适当选择之后-&gt;选择build-&gt;make project-&gt;点击run–<br>–&gt;会提示选择安装下载模拟器–&gt;选择合适的，最好不要是带锁的<br>－－－&gt;之后会提示成功．再选择建立一个模拟器，之后就可以了</p>
+<p>注意有两种架构，x86的比arm的快10倍,但是，linux下需要加速kvm<br>如果不能运行x86的，可能需要安装kvm:<br>也可以使用genymotion模拟器</p>
+<h4 id="4-安装kvm可选"><a href="#4-安装kvm可选" class="headerlink" title="4 安装kvm可选"></a>4 安装kvm可选</h4><p>要知道Android的编译环境Google首推Linux平台（64位的Ubuntu）而Mac系统排到第二位。那么在Linux平台下是如何硬件加速的呢？<br>那就是传说中的kvm（Kernel-based Virtual Machine），同样的，它需要硬件的支持，比如intel的VT和AMD的V，它是基于硬件的完全虚拟化。<br>首先要确定你的cpu满足要求，下面有几个命令可以参考：</p>
+<p>$ egrep -c ‘(vmx|svm)’ /proc/cpuinfo<br>4</p>
+<p>打印的值不为0即可。</p>
+<p>下面安装kvm：</p>
+<p>$ sudo apt-get install qemu-kvm<br>$ sudo adduser linc kvm<br>$ sudo apt-get install libvirt-bin ubuntu-vm-builder bridge-utils<br>$ sudo adduser linc libvirtd</p>
+<p>(linc为用户名，适当改）<br>检验安装是否成功：</p>
+<p>$ sudo virsh -c qemu:///system list</p>
+<h2 id="Id-Name-State"><a href="#Id-Name-State" class="headerlink" title=" Id    Name                           State"></a> Id    Name                           State</h2><p>运行，在有模拟器的目录中：<br>如/home/ksx/Android/Sdk/emulator/emulator -avd Nexus_4_API_22 -qemu -m 2047 -enable-kvm</p>
+<p>使用起来果然飞快，连打开网页的速度都令人惊奇。当然了，如果不用命令行启动，直接在Android Studio中启动x86_64架构的模拟器，速度也是很快，唯独arm架构的模拟器启动速度奇慢无比。话又说回来，既然有了比较不错的cpu，那么机器的其他配置一定差不了，这样的配置跑起模拟器来肯定要比原来强。</p>
+<p>如果觉得用自带的模拟器不能够满足你的要求，那么可以使用第三方的模拟器Genymotion,网传开发者反应良好。</p>
+<h4 id="5在手机上运行app"><a href="#5在手机上运行app" class="headerlink" title="5在手机上运行app"></a>5在手机上运行app</h4><p>首先连接手机，打开usb调试<br>还是一样，但是选择app那里不是app,而是选择Edit Configurations<br>之后选择usb　device，ok，就可以了，接着运行</p>
+<h4 id="关于项目结构模式："><a href="#关于项目结构模式：" class="headerlink" title="关于项目结构模式："></a>关于项目结构模式：</h4><p>默认为android<br>设置为project可以看到整个完整的目录结构：<br>　　　　　.gradle和.idea 为自动生成<br>　　　　　app<br>　　　　　build   编译时自动生成的文件，不用太关心<br>　　　　　gradle   包含gradle wrapper的配置文件，使用gradle wrapper的方式不需要提前将gradle下载好，会自动根据本地缓存情况来决定是否联网下载gradle<br>     .gitignore<br>     build.gradle<br>     gradle.properties  全局的gradle配置文件，这里配置的属性会影响项目中所有的的gradle编译脚本<br>     gradlew　和gradlew.bat在命令行中执行gradle命令<br>     local.properties　　指定本机android sdk路径<br>     setting.gradle指定项目中引入的模块</p>
+<pre><code>app目录下
+build　　为自动生成，同上
+lib   项目使用的第三方库
+test 测试用例
+proguard-rules.pro  代码混淆规则
+</code></pre><h4 id="build-gradle-intruduce"><a href="#build-gradle-intruduce" class="headerlink" title="build gradle intruduce"></a>build gradle intruduce</h4><p>gradle  Groovy 领域语言　　DSL    摒弃了Ant 和Maven </p>
+<p>在app 外有一个 build.gradle。在app中有一个build.gradle</p>
+<p>在外面的　gradle 也可以构建c++等项目，<br>buildscript {<br>    repositories {<br>        jcenter()　　　//代码托管仓库　利用它可以轻松引用jcenter开源项目</p>
+<pre><code>}
+dependencies {
+    classpath &apos;com.android.tools.build:gradle:2.3.2&apos;　　//声明构建的是android
+
+    // NOTE: Do not place your application dependencies here; they belong
+    // in the individual module build.gradle files
+}
+</code></pre><p>}</p>
+<p>allprojects {<br>    repositories {<br>        jcenter()<br>    }<br>}</p>
+<p>task clean(type: Delete) {<br>    delete rootProject.buildDir<br>}</p>
+<p>app中<br>apply plugin: ‘com.android.application’　//表明为android 应用程序模块，为com.android.library表示库模块</p>
+<p>android {　　　//安卓闭包<br>    compileSdkVersion 25　　　　//项目的编译版本，25为API 25,对应android 7.1<br>    buildToolsVersion “25.0.3”   //项目构建工具版本<br>    defaultConfig {<br>        applicationId “org.example.myactivity1”　　　项目包名<br>        minSdkVersion 25　　　　　//项目最低兼容的android系统版本<br>        targetSdkVersion 25　　//表明如22表示只在22测试充分，如不启动运行时权限，android６　的运行时权限就不会加，表明只在5上做充分测试<br>        versionCode 1　　　项目版本编号<br>        versionName “1.0”　　　项目版本名<br>        testInstrumentationRunner “android.support.test.runner.AndroidJUnitRunner”<br>    }<br>    buildTypes {//分debug和release版本<br>        release {<br>            minifyEnabled false　//是否混淆代码<br>            proguardFiles getDefaultProguardFile(‘proguard-android.txt’), ‘proguard-rules.pro’//混淆时使用的规则文件，.txt为sdk文件。pro为根目录文件<br>        }<br>    }<br>}</p>
+<p>dependencies {//分本地依赖，库依赖和远程依赖<br>    compile fileTree(dir: ‘libs’, include: [‘*.jar’])　　//本地依赖声明<br>    androidTestCompile(‘com.android.support.test.espresso:espresso-core:2.2.2’, {<br>        exclude group: ‘com.android.support’, module: ‘support-annotations’<br>    })<br>    compile ‘com.android.support:appcompat-v7:25.3.1’　　//　依赖库<br>    compile ‘com.android.support.constraint:constraint-layout:1.0.2’<br>    testCompile ‘junit:junit:4.12’　　//测试用例库<br>}</p>
+<p>其他：分区工具：gpart,在官网上找到live usb之后下载并做成启动盘，就可以对任意的格式文件系统进行分区，在ubuntu 本地是无法对根目录扩容的，所以可以这样做来扩容</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>看了我的博客，学习到点啥?来点分享吧，打赏也行</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpeg" alt="小兴 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpeg" alt="小兴 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android-make/" rel="tag"># android_make</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/20/android-howto-makeapk-cmd/" rel="next" title="android_howto_makeapk_cmd">
+                <i class="fa fa-chevron-left"></i> android_howto_makeapk_cmd
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/20/android-AndroidManifest/" rel="prev" title="android_AndroidManifest">
+                android_AndroidManifest <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/headicon2.png"
+                alt="小兴" />
+            
+              <p class="site-author-name" itemprop="name">小兴</p>
+              <p class="site-description motion-element" itemprop="description">始于歧路，愿归于征途</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xdksx/" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github-square"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="ksance@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.facebook.com/572897439" target="_blank" title="FB Page">
+                      
+                        <i class="fa fa-fw fa-facebook"></i></a>
+                  </span>
+                
+            </div>
+          
+          
+           <div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=461525011&auto=0&height=66"></iframe>
+ </div>
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#install-and-make-first-app"><span class="nav-number">1.</span> <span class="nav-text">install and make first app</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-安装java-jdk"><span class="nav-number">1.1.</span> <span class="nav-text">1 安装java-jdk:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-安装android-studio"><span class="nav-number">2.</span> <span class="nav-text">2 安装android-studio:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-安装kvm可选"><span class="nav-number">2.1.</span> <span class="nav-text">4 安装kvm可选</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Id-Name-State"><span class="nav-number"></span> <span class="nav-text"> Id    Name                           State</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5在手机上运行app"><span class="nav-number">0.1.</span> <span class="nav-text">5在手机上运行app</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于项目结构模式："><span class="nav-number">0.2.</span> <span class="nav-text">关于项目结构模式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#build-gradle-intruduce"><span class="nav-number">0.3.</span> <span class="nav-text">build gradle intruduce</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+
+  
+</div>
+
+
+<span id="busuanzi_container_site_uv">
+  本站总访问量<span id="busuanzi_value_site_uv"></span>次
+</span>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共63.1k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'xdksx',
+            repo: 'xdksx.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+            
+                client_id: '06e6b70d396f6928e45a'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>

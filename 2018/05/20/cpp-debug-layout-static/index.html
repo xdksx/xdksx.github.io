@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="cpp_memory," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="追光者" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="c compile time memory layout　　标题：从一个简单的程序开始，介绍几种间接或直接debug出c程序内存布局的方法： 　　概述：首先介绍几个概念：">
+<meta name="keywords" content="cpp_memory">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_debug_layout_static">
+<meta property="og:url" content="http://xdksx.github.io/2018/05/20/cpp-debug-layout-static/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="c compile time memory layout　　标题：从一个简单的程序开始，介绍几种间接或直接debug出c程序内存布局的方法： 　　概述：首先介绍几个概念：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-05-20T20:35:59.866Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpp_debug_layout_static">
+<meta name="twitter:description" content="c compile time memory layout　　标题：从一个简单的程序开始，介绍几种间接或直接debug出c程序内存布局的方法： 　　概述：首先介绍几个概念：">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xdksx.github.io/2018/05/20/cpp-debug-layout-static/"/>
+
+
+
+
+
+  <title>cpp_debug_layout_static | 追光者</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/xdksx/"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小兴的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/05/20/cpp-debug-layout-static/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/headicon2.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">cpp_debug_layout_static</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-20T10:54:58+00:00">
+                2018-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index">
+                    <span itemprop="name">c&cpp</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/20/cpp-debug-layout-static/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/05/20/cpp-debug-layout-static/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="c-compile-time-memory-layout"><a href="#c-compile-time-memory-layout" class="headerlink" title="c compile time memory layout"></a>c compile time memory layout</h3><p>　　标题：从一个简单的程序开始，介绍几种间接或直接debug出c程序内存布局的方法：</p>
+<p>　　概述：首先介绍几个概念：<a id="more"></a><br>　　程序从源代码编译之后，即经过预处理，编译，汇编，连接的过程后生成一个可执行程序，在linux为elf,此时程序还是静态的，没有被执行，可以说是编译期或者静态的时候；<br>　　当程序在终端被运行，此时会将pc指向main开始执行程序，并一步一步根据程序需要分配内存，栈区，堆区等等，此时为动态期；成为进程或线程；<br>      注意：c语言经过词法分析语法分析等，期间有符号表等的生成（可能存储着和struct，class和定义的类型基本类型等信息），之后生成汇编语言代码不会体现类型信息如无法在其中见到struct的定义代码，并且char定义的变量的值被转化为ASICC码　。汇编代码中体现struct的只有其变量的偏移等等；至于它如何知道，是通过符号表得到的，但是啊生成汇编后不需要符号表了。。汇编执行的过程中并无太多变量相关的内容，之后将变量的值存入某个内存位置的语句；</p>
+<p>　　本文主要探索通过linux下的工具如size gdb等深入学习c程序静态和动态下在内存中的分布和执行情况，以进一步理解c</p>
+<p>前言：<br>一个源代码通过编译后生成一个目标文件.o它是一个elf　relocatable文件,以下.o文件指此类，elf文件为executable文件<br>.o文件(elf)文件的结构： 通过objdump -h xx.o可以查看到</p>
+<pre><code>other data  ...
+.comment    offset 0x000000c6.
+.rodata      ...　　　//const &amp; str 常量
+.data
+.text
+.elf header
+</code></pre><p>一个elf文件的结构是这样的：可以通过readelf来看：<br>    　　　　　　　　elfheader　　　　　　　　文件头包含了平台信息：/usr/include/elf.h<br>            .text　　　　　　　　　　　　段表　各个段：应用程序也可以自己定义段，和指定变量在哪个段<br>            .data<br>            .bss<br>            ..<br>            other sections<br>            section header table　　　　<br>            string tables　　　　　　　　重定位表和字符串表<br>            symbol tables　　　　　　　　 符号表是链接的接口<br> 符号表是链接的接口：符号修饰和函数有很大关系，涉及调用的，其中c的符号比较简单，c++为了冲突处理，采用了命名空间，又包含类，所以符号比较复杂<br> 可以通过readelf -s　xx.o查看；且加了签名机制，将函数名又做进一步转换（类似乱码），减少冲突<br>  强符号和弱符号（强引用和若引用），调试信息　－g<br> 扩展：<br> １）比如应用程序可以增加非系统保留字的段如：添加一个music段：当elf运行起来后可以读取这个段播放音乐；但是自定义的段名不能使用.作为前缀；<br> 如objcopy工具将图片段加入：objcopy -I binary -O elf32-i386 -B  i386 image.jpg image.o<br>   objdump -ht image.o<br>   可以看到图片在内存中的起始地址等，可以在程序中直接声明后使用他们<br>   具体看文档<br>２）自定义段：<strong>attribute</strong>((section(“FOO”))) int global=24;<br>           <strong>attribute</strong>((section(“BAR”))) void  foo(){}  既可以把变量或函数放入该段中　段名：BAR FOO</p>
+<p>正文：</p>
+<h4 id="0、先从几个命令："><a href="#0、先从几个命令：" class="headerlink" title="0、先从几个命令："></a>0、先从几个命令：</h4><p>1)size filename:查看elf或.o文件中各个段大小：<br>  text       data        bss        dec        hex    filename<br>     74          0          0         74         4a    simplest.o<br>　　代码段　　　数据段　　<br>代码段：只读，可共享，代码中的常量数据在编译时在代码段中分配空间，如int x=3;中的3及const 声明的常量和字符串常量 ,其他数据只引用地址<br>数据段：为全局初始化数据区和静态数据区：已经初始化的全局变量和静态变量（全局和局部）<br>bss:为初始化数据取，存放为初始化的全局变量和静态变量，但在开始执行时会被内核赋值０或null</p>
+<p>2)其他工具：<br> readelf -a simplest.o<br> 可以看到更清楚的段信息<br> objdump -t simplest<br> objdump -h simplest.o   替代size可以看到更多信息</p>
+<p>此时显示出来的一些地址并不是装载后的地址</p>
+<p>objdump -s -d xx.o:　　-s 16进制，-d反汇编　　－－－查看代码段<br>objdump -s -x -d xx.o:   –查看数据段和rodata</p>
+<p>3)查看目标文件文件属性如relocatable –.o/executable –elf/share object –.so..<br> file xxx</p>
+<h4 id="１、从最简单的程序开始：simplest-c"><a href="#１、从最简单的程序开始：simplest-c" class="headerlink" title="１、从最简单的程序开始：simplest.c"></a>１、从最简单的程序开始：simplest.c</h4><pre><code>int main()
+{
+   return 0;
+}
+</code></pre><p>将它进行预处理：gcc -E simplest.c 可以看到没有引用到其他头文件：</p>
+<pre><code># 1 &quot;simplest.c&quot;
+# 1 &quot;&lt;built-in&gt;&quot;
+# 1 &quot;&lt;command-line&gt;&quot;
+# 1 &quot;/usr/include/stdc-predef.h&quot; 1 3 4
+# 1 &quot;&lt;command-line&gt;&quot; 2
+# 1 &quot;simplest.c&quot;
+int main()
+ {
+  return 0;
+ }
+</code></pre><p>将它进行汇编：gcc -S simplest.c<br>        .file    “simplest.c”<br>        .text<br>        .globl    main<br>        .type    main, @function<br>    main:<br>    .LFB0:<br>        .cfi_startproc<br>        pushq    %rbp<br>        .cfi_def_cfa_offset 16<br>        .cfi_offset 6, -16<br>        movq    %rsp, %rbp<br>        .cfi_def_cfa_register 6<br>        movl    $0, %eax<br>        popq    %rbp<br>        .cfi_def_cfa 7, 8<br>        ret<br>        .cfi_endproc<br>    .LFE0:<br>        .size    main, .-main<br>        .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>        .section    .note.GNU-stack,””,@progbits</p>
+<p>生成.o文件：gcc -c simplest.c<br>并通过file xx.o查看类型<br>simplest.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped</p>
+<p>通过size 查看各个段：<br>size simplest.o:  可以看到只有代码段，数据为空，bss为空，是比较纯净的</p>
+<p>text       data        bss        dec        hex    filename<br>     67          0          0         67         43    simplest.o</p>
+<p>接着编译成elf:gcc -o simplest simplest.c<br>file simplest<br>simplest: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked,<br>interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=<br>56beff50d6dfd6d435c9556630737121d59c1cc7, not stripped<br>可以看到连接器等信息</p>
+<p>size simplest<br>  text       data        bss        dec        hex    filename<br>   1099        544          8       1651        673    simplest<br>注意这里的和.o的文件大小和分段不同，</p>
+<h4 id="２、加入头文件和局部变量"><a href="#２、加入头文件和局部变量" class="headerlink" title="２、加入头文件和局部变量"></a>２、加入头文件和局部变量</h4><pre><code>#include&lt;stdio.h&gt;
+int main()
+{
+  int locala;
+  int localb=3;
+  return 0;
+  }
+</code></pre><p>进行gcc -E simplest.c会看到很多导入的部分，从输出可以看到头文件的位置和引入的函数<br>汇编，可以看到分配３到内存中<br>        .file    “simplest.c”<br>        .text<br>        .globl    main<br>        .type    main, @function<br>    main:<br>    .LFB0:<br>        .cfi_startproc<br>        pushq    %rbp<br>        .cfi_def_cfa_offset 16<br>        .cfi_offset 6, -16<br>        movq    %rsp, %rbp<br>        .cfi_def_cfa_register 6<br>        movl    $3, -4(%rbp)<br>        movl    $0, %eax<br>        popq    %rbp<br>        .cfi_def_cfa 7, 8<br>        ret<br>        .cfi_endproc<br>    .LFE0:<br>        .size    main, .-main<br>        .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>        .section    .note.GNU-stack,””,@progbits</p>
+<p>　　生成.o文件：可以看到未改变data和bss,但是代码段变大<br>  text       data        bss        dec        hex    filename<br>     74          0          0         74         4a    simplest.o</p>
+<p>生成elf:数据区和bss未改变，代码段也未改变？<br> text       data        bss        dec        hex    filename<br>   1099        544          8       1651        673    simplest</p>
+<h4 id="３、加入已经初始化的局部静态变量："><a href="#３、加入已经初始化的局部静态变量：" class="headerlink" title="３、加入已经初始化的局部静态变量："></a>３、加入已经初始化的局部静态变量：</h4><pre><code>int main()
+{
+ static int statica=3;
+..
+}
+</code></pre><p>看生成的汇编：<br>        .file    “simplest.c”<br>        .text<br>        .globl    main<br>        .type    main, @function<br>    main:<br>    .LFB0:<br>        .cfi_startproc<br>        pushq    %rbp<br>        .cfi_def_cfa_offset 16<br>        .cfi_offset 6, -16<br>        movq    %rsp, %rbp<br>        .cfi_def_cfa_register 6<br>        movl    $3, -4(%rbp)<br>        movl    $0, %eax<br>        popq    %rbp<br>        .cfi_def_cfa 7, 8<br>        ret<br>        .cfi_endproc<br>    .LFE0:<br>        .size    main, .-main<br>        .data<br>        .align 4<br>        .type    statica.2285, @object　//新加的段<br>        .size    statica.2285, 4<br>    statica.2285:<br>        .long    3<br>        .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>        .section    .note.GNU-stack,””,@progbits</p>
+<p>.o大小：在静态数据区增加了，４　１个int的长度<br> text       data        bss        dec        hex    filename<br>     74          4          0         78         4e    simplest.o</p>
+<p>elf:有点费解，。。<br> text       data        bss        dec        hex    filename<br>   1099        548          4       1651        673    simplest</p>
+<h4 id="４、加入已经初始化的全局变量和全局静态变量"><a href="#４、加入已经初始化的全局变量和全局静态变量" class="headerlink" title="４、加入已经初始化的全局变量和全局静态变量"></a>４、加入已经初始化的全局变量和全局静态变量</h4><pre><code>int golbala=6;
+    　static long gs=12;
+</code></pre><p>生成的汇编<br>        .file    “simplest.c”<br>        .globl    golbala<br>        .data<br>        .align 4<br>        .type    golbala, @object<br>        .size    golbala, 4<br>    golbala://变量名<br>        .long    6<br>        .align 8<br>        .type    gs, @object<br>        .size    gs, 8<br>    gs://变量名<br>        .quad    12<br>        .text<br>        .globl    main<br>        .type    main, @function<br>    main:<br>    .LFB0:<br>        .cfi_startproc<br>        pushq    %rbp<br>        .cfi_def_cfa_offset 16<br>        .cfi_offset 6, -16<br>        movq    %rsp, %rbp<br>        .cfi_def_cfa_register 6<br>        movl    $3, -4(%rbp)<br>        movl    $0, %eax<br>        popq    %rbp<br>        .cfi_def_cfa 7, 8<br>        ret<br>        .cfi_endproc<br>    .LFE0:<br>        .size    main, .-main<br>        .data<br>        .align 4<br>        .type    statica.2287, @object<br>        .size    statica.2287, 4<br>    statica.2287:<br>        .long    3<br>        .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>        .section    .note.GNU-stack,””,@progbits</p>
+<p>size : 从４变到20:一个long 和int 4+4齐（见汇编）+8（long)+4=20<br>      text       data        bss        dec        hex    filename<br>       74         20          0         94         5e    simplest.o</p>
+<p>elf size:548–&gt;564  16<br>  text       data        bss        dec        hex    filename<br>   1099        564          4       1667        683    simplest</p>
+<h4 id="5-将-int-golbala-6"><a href="#5-将-int-golbala-6" class="headerlink" title="5 将 　　int golbala=6;"></a>5 将 　　int golbala=6;</h4><pre><code>　static long gs=12;　　倒换位置！！！！！！！！！
+</code></pre><p> 则对齐成：size x.o为：１６比原来小，可以用于节省内存：<br>   text       data        bss        dec        hex    filename<br>     74         16          0         90         5a    simplest.o<br>　　汇编：<br>    .file    “simplest.c”<br>    .data<br>    .align 8<br>    .type    gs, @object<br>    .size    gs, 8<br>gs:<br>    .quad    12<br>    .globl    golbala<br>    .align 4<br>    .type    golbala, @object<br>    .size    golbala, 4<br>golbala:<br>    .long    6<br>    .text<br>    .globl    main<br>    .type    main, @function<br>main:<br>.LFB0:<br>    .cfi_startproc<br>    pushq    %rbp<br>    .cfi_def_cfa_offset 16<br>    .cfi_offset 6, -16<br>    movq    %rsp, %rbp<br>    .cfi_def_cfa_register 6<br>    movl    $3, -4(%rbp)<br>    movl    $0, %eax<br>    popq    %rbp<br>    .cfi_def_cfa 7, 8<br>    ret<br>    .cfi_endproc<br>.LFE0:<br>    .size    main, .-main<br>    .data<br>    .align 4<br>    .type    statica.2287, @object<br>    .size    statica.2287, 4<br>statica.2287:<br>    .long    3<br>    .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>    .section    .note.GNU-stack,””,@progbits<br>elf文件的也变小：但bss变大，费解。。<br> text       data        bss        dec        hex    filename<br>   1099        560          8       1667        683    simplest</p>
+<h4 id="6、加入未初始化的全局变量和全局与局部静态变量"><a href="#6、加入未初始化的全局变量和全局与局部静态变量" class="headerlink" title="6、加入未初始化的全局变量和全局与局部静态变量"></a>6、加入未初始化的全局变量和全局与局部静态变量</h4><pre><code>  1 #include&lt;stdio.h&gt;
+    2 static long gs=12;
+    3 int golbala=6;
+    4      
+    5     
+    6 static long gsl;
+    7 int gi;
+    8 int main()
+    9 {   
+   10      static int staticn;
+11      static int statica=3;
+   12      int locala;
+   13      int localb=3;
+   14      return 0;
+   15 }
+</code></pre><p>汇编没有看到什么变化：<br>    .file    “simplest.c”<br>    .data<br>    .align 8<br>    .type    gs, @object<br>    .size    gs, 8<br>gs:<br>    .quad    12<br>    .globl    golbala<br>    .align 4<br>    .type    golbala, @object<br>    .size    golbala, 4<br>golbala:<br>    .long    6<br>    .local    gsl<br>    .comm    gsl,8,8<br>    .comm    gi,4,4<br>    .text<br>    .globl    main<br>    .type    main, @function<br>main:<br>.LFB0:<br>    .cfi_startproc<br>    pushq    %rbp<br>    .cfi_def_cfa_offset 16<br>    .cfi_offset 6, -16<br>    movq    %rsp, %rbp<br>    .cfi_def_cfa_register 6<br>    movl    $3, -4(%rbp)<br>    movl    $0, %eax<br>    popq    %rbp<br>    .cfi_def_cfa 7, 8<br>    ret<br>    .cfi_endproc<br>.LFE0:<br>    .size    main, .-main<br>    .data<br>    .align 4<br>    .type    statica.2290, @object<br>    .size    statica.2290, 4<br>statica.2290:<br>    .long    3<br>    .local    staticn.2289<br>    .comm    staticn.2289,4,4<br>    .ident    “GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609”<br>    .section    .note.GNU-stack,””,@progbits</p>
+<p>.o文件：+12 未包含未初始化的全局变量<br>text       data        bss        dec        hex    filename<br>     74         16         12        102         66    simplest.o</p>
+<p>elf:+16 未包含未初始化的全局变量<br>text       data        bss        dec        hex    filename<br>   1099        560         24       1683        693    simplest</p>
+<p>至此分析完c程序静态下各个段的大小。在执行时才会有堆和栈的出现；链接前后大小也不同</p>
+<p>参考：程序员的自我修养</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>看了我的博客，学习到点啥?来点分享吧，打赏也行</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpeg" alt="小兴 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpeg" alt="小兴 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/cpp-memory/" rel="tag"># cpp_memory</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/20/cpp-debug-layout-dynamic/" rel="next" title="cpp_debug_layout_dynamic">
+                <i class="fa fa-chevron-left"></i> cpp_debug_layout_dynamic
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/20/hello-world/" rel="prev" title="Hello World">
+                Hello World <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/headicon2.png"
+                alt="小兴" />
+            
+              <p class="site-author-name" itemprop="name">小兴</p>
+              <p class="site-description motion-element" itemprop="description">始于歧路，愿归于征途</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xdksx/" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github-square"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="ksance@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.facebook.com/572897439" target="_blank" title="FB Page">
+                      
+                        <i class="fa fa-fw fa-facebook"></i></a>
+                  </span>
+                
+            </div>
+          
+          
+           <div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=461525011&auto=0&height=66"></iframe>
+ </div>
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c-compile-time-memory-layout"><span class="nav-number">1.</span> <span class="nav-text">c compile time memory layout</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#0、先从几个命令："><span class="nav-number">1.1.</span> <span class="nav-text">0、先从几个命令：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#１、从最简单的程序开始：simplest-c"><span class="nav-number">1.2.</span> <span class="nav-text">１、从最简单的程序开始：simplest.c</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#２、加入头文件和局部变量"><span class="nav-number">1.3.</span> <span class="nav-text">２、加入头文件和局部变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#３、加入已经初始化的局部静态变量："><span class="nav-number">1.4.</span> <span class="nav-text">３、加入已经初始化的局部静态变量：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#４、加入已经初始化的全局变量和全局静态变量"><span class="nav-number">1.5.</span> <span class="nav-text">４、加入已经初始化的全局变量和全局静态变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-将-int-golbala-6"><span class="nav-number">1.6.</span> <span class="nav-text">5 将 　　int golbala=6;</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6、加入未初始化的全局变量和全局与局部静态变量"><span class="nav-number">1.7.</span> <span class="nav-text">6、加入未初始化的全局变量和全局与局部静态变量</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+
+  
+</div>
+
+
+<span id="busuanzi_container_site_uv">
+  本站总访问量<span id="busuanzi_value_site_uv"></span>次
+</span>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共63.1k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'xdksx',
+            repo: 'xdksx.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+            
+                client_id: '06e6b70d396f6928e45a'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>

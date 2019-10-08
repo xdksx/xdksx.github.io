@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="tcpip_mac," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="追光者" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="mac数据链路层的理解mac层的功能介绍mac层在理论上赋予了较全的功能，但是其实，实际上在使用的时候，由于无噪声通道，或者一些功能交给了上层的协议，所以实际的mac功能没有理论那么全面。mac层的实现包括在驱动和固件中，所以实际的功能得看芯片和固件的支持，比如是否支持监听模式；">
+<meta name="keywords" content="tcpip_mac">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tcpip_MAC">
+<meta property="og:url" content="http://xdksx.github.io/2018/06/03/tcpip-MAC/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="mac数据链路层的理解mac层的功能介绍mac层在理论上赋予了较全的功能，但是其实，实际上在使用的时候，由于无噪声通道，或者一些功能交给了上层的协议，所以实际的mac功能没有理论那么全面。mac层的实现包括在驱动和固件中，所以实际的功能得看芯片和固件的支持，比如是否支持监听模式；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-03T12:32:12.966Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="tcpip_MAC">
+<meta name="twitter:description" content="mac数据链路层的理解mac层的功能介绍mac层在理论上赋予了较全的功能，但是其实，实际上在使用的时候，由于无噪声通道，或者一些功能交给了上层的协议，所以实际的mac功能没有理论那么全面。mac层的实现包括在驱动和固件中，所以实际的功能得看芯片和固件的支持，比如是否支持监听模式；">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xdksx.github.io/2018/06/03/tcpip-MAC/"/>
+
+
+
+
+
+  <title>tcpip_MAC | 追光者</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/xdksx/"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">小兴的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/06/03/tcpip-MAC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/headicon2.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">tcpip_MAC</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-03T04:29:48+00:00">
+                2018-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index">
+                    <span itemprop="name">tcpip</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/06/03/tcpip-MAC/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/06/03/tcpip-MAC/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="mac数据链路层的理解"><a href="#mac数据链路层的理解" class="headerlink" title="mac数据链路层的理解"></a>mac数据链路层的理解</h3><h4 id="mac层的功能介绍"><a href="#mac层的功能介绍" class="headerlink" title="mac层的功能介绍"></a>mac层的功能介绍</h4><p>mac层在理论上赋予了较全的功能，但是其实，实际上在使用的时候，由于无噪声通道，或者一些功能交给了上层的协议，所以实际的mac功能没有理论那么全面。mac层的实现包括在驱动和固件中，所以实际的功能得看芯片和固件的支持，比如是否支持监听模式；  <a id="more"></a><br>理论上：建议书籍《数据通信与网络》<br>寻址：实际的端到端通信，都是需要先知到对方的mac地址(通过arp),才能进行实际传输的；<br>帧构建：这一层结束后就是完成了包封装，下一步传送给物理层编码发送了；<br>数据差错检查；传送控制，流量控制，差错控制，编码，校验和等等；，编码是指在原始数据mac封包后，在实际传输时进行编码（按照某个80x协议等，这个属于偏物理层的事情了）<br>实际上：数据差错检查，流量控制，差错控制等都没做，或者要看具体的厂商实现如高通，mtk等</p>
+<h4 id="mac层的传输限制"><a href="#mac层的传输限制" class="headerlink" title="mac层的传输限制"></a>mac层的传输限制</h4><p> 考虑一个包从电脑发出去，最后一次封包根据接口不同(有线，无线),协议不同，采用的mac头也不同，如ppp协议要加其他信息；<br> –&gt;简述:接着可能发给无线路由器或者交换机，路由器会判断是wifi的mac头，接着要向以太网传输时，或者无线传输时，需要去掉mac头，并加上自己的mac头，改变mac源地址为自己，目的地址为(路由表对应)arp寻找的下一跳mac地址;若为以太网，还要转换为以太网的头类型等<br> …<br> 整个过程，从物理层角度看，是可以顺利进行的，但是实际为了效率，不接受无用的包，不发送无效的包和安全等，在驱动和固件都会有做相应的过滤处理，从而使发包收包，转发包等受到了限制，见下实验等；</p>
+<h4 id="mac层的封包-mtu-msdu-mpdu"><a href="#mac层的封包-mtu-msdu-mpdu" class="headerlink" title="mac层的封包,mtu,msdu,mpdu"></a>mac层的封包,mtu,msdu,mpdu</h4><p>在包的封装上，有线网和无线网不同，更确切的是协议不同，其mac层封包也不同–对相同的ip包(ip头+上层数据/arp/…）带有不同的mac头：<br>例如对以太网（有线）：常见有一下四种mac头封装的帧：</p>
+<ul>
+<li>EthernetII:  dest addr+src addr+type+data+fcs</li>
+<li>Ethernet 802.2:dest addr+srcaddr+len+ llc+data+fcs</li>
+<li>Ethernet 802.3:dest addr+src addr+len+data+fcs </li>
+<li>Ethernet SNAP:dest addr+src addr+len+llc+snap+data+fcs<br>参考：<a href="https://blog.csdn.net/xiao628945/article/details/8006022" target="_blank" rel="noopener">https://blog.csdn.net/xiao628945/article/details/8006022</a><br>针对无线网络：802.11n等，更复杂些：</li>
+<li>802.11头+msdu(数据部分)+fcs(crc)<br>而802.11wifi无线帧分为控制帧，管理帧和数据帧，因为在无线网络中的安全性等考虑，需要扫描，关联，认证四次握手等步骤,在802.11头就包含了subtype，即数据部分是什么类型（控制，。。）<a href="https://blog.csdn.net/suiyuan19840208/article/details/17200745或者啃spec:文末" target="_blank" rel="noopener">https://blog.csdn.net/suiyuan19840208/article/details/17200745或者啃spec:文末</a><br><a href="https://blog.csdn.net/robertsong2004/article/details/42805803这篇更详细，能查到的不想记录了" target="_blank" rel="noopener">https://blog.csdn.net/robertsong2004/article/details/42805803这篇更详细，能查到的不想记录了</a><br>这么多的封包类型，除却ip层只有一种，那在传递的过程中如何处理?即有线到无线，怎么识别?答案是在路由器，主机中进行去头和加头<br>不同厂商实现不同，在无线中，非数据帧部分：底层的实现分为full mac driver（Full Mac的Driver，一般Auth和Assoc的包直接在芯片里边处理了，Driver通过command形式告诉Firmware要连接AP的信息，Firmware处理了Assoc Response之后，report给Driver一个Event，说明连接的情况（result和AID）以及assoc相关的IE，Driver会直接调用cfg80211的接口报告给supplicant，然后处理EAPOL的握手过程，因为之后的EAPOL Data的处理会用到Assoc Response里边的IE）  而用soft mac则软件可以控制较多的事情(Soft Mac模块开源代码mac80211的WiFi芯片，会将这两种包送到Mac80211处理，mac80211处理完后调用cfg80211的接口通过nl80211(netlink)通知wpa_supplicant准备认证以及四次握手的状态机，等待处理EAPOL包，EAPOL是二层的Data包，会在Supplicant里边处理，连接加密的路由情况就是这样处理的，如果不加密，那就直接DHCP了)；扯远了。。<br>在pc等设备中，在封装到数据链路层时，封装时用的是ethernetII，到底层驱动时就被替换为对应的802.11的头了，进而发送出去，而在接收数据包的时候，底层上报上来又会把802.11格式的转换为ehternetII的形式，所以我在实验wifi的时候，用的PF_PACKET来操作数据包，加的是ethernetII的头，接收到打印出来后还是ethernetII的头<br>晒张空中包的和本地tcpdump抓到的包对比：<br>//to do</li>
+</ul>
+<p>当然除却mac头的不同，mtu的概念还是存在:<br>mac层在传输时一次传输一帧，这一帧即是封装了mac头的数据包，它常为[46-1500]+mac头,而mtu即是最大的传输单元，是去掉mac头的负载部分最大值，如1500<br>而在实际传输的空中包，情况又可能不同，这里看msdu 和mpdu:<br><a href="https://blog.csdn.net/zhengnice/article/details/51923132" target="_blank" rel="noopener">https://blog.csdn.net/zhengnice/article/details/51923132</a><br>这篇文章讲的很好，在理解了上述的内容后，看这篇文章里面的msdu和mpdu就能很好的理解了，spec的416页也有相关的内容</p>
+<h5 id="mac头格式：不同协议可能不同："><a href="#mac头格式：不同协议可能不同：" class="headerlink" title="mac头格式：不同协议可能不同："></a>mac头格式：不同协议可能不同：</h5><p>常见：dest addr,src addr ,proto type; 14byte<br>见上文</p>
+<h4 id="mac层的发包和收包限制"><a href="#mac层的发包和收包限制" class="headerlink" title="mac层的发包和收包限制"></a>mac层的发包和收包限制</h4><p>考虑一个问题，即在不考虑网络网段的情况下，两台设备在开启wifi或者连接网线的情况下，能相互直接通信吗？<br>从理论上是可以的，首先是发送，无问题，接收，可以接收；其次，接收之后解码，需要双方使用相同的编码协议等；<br>其次：实际上，需要几个条件，且有线和无线的方式不同：</p>
+<ul>
+<li>有线：需要双方相同的编码，直连的情况下，可以直接通信；</li>
+<li>无线: (分为数据部分和管理部分，需要双方相同的编码)，但是仅开启wifi，只能接收小量信息的beacon帧；即wifi为了安全性，效率等(wifi本身可以接收所有数据），做了连接前的扫描，关联认证，四次握手等过程，并且对mac地址进行过滤，使不同网段的两个相邻设备不能通过直接发送接收mac层数据来交互；具体见厂商的实现，可以参考实验部分；  </li>
+<li>所以关键看厂商怎么实现，底层的东西，他们提供接口给你，你就能操作了balalal<h5 id="普通模式，混杂模式和监听模式"><a href="#普通模式，混杂模式和监听模式" class="headerlink" title="普通模式，混杂模式和监听模式"></a>普通模式，混杂模式和监听模式</h5><h4 id="mac层的几个实验"><a href="#mac层的几个实验" class="headerlink" title="mac层的几个实验"></a>mac层的几个实验</h4>普通模式下，wifi实验，以station架构进行：<br>设备A，B,路由器C，D;  </li>
+<li>A,B连接同一个路由器C,A,B通过PF_PACKET发送和接收mac头加任意数据，成功发送接收，即使arp表无对方的条目  </li>
+<li>A,B都不连接wifi,只是打开wifi，此时无法发送和接收数据，厂商默认的只会发送主动扫苗和接收beacon帧，扫描的具体过程待文章写,在没有连接上时，只会发送小数据</li>
+<li>A,B间任意设备连上路由器，同上</li>
+<li><em>A连接路由C,B连接路由D,相互发送和接收mac头加任意数据，目的地址为对方mac，源地址为自己的mac—失败，其实一开始是怀着疑问的，从理论分析是可以的，但是还是不行，若只是在二层的话，对方怎么知道这个源mac地址是在不同网段并做过滤?难道发之前，底层进行了隐式arp？但是我发的包里面没有带ip信息啊，同时进行了广播帧的发送接收，还是失败了；应该都是出在接收的环节；也有可能是两个ap使用的协议不同导致编码方式不同从而接收失败</em></li>
+<li>考虑到可能是两个路由器编码和使用的协议如一个是802.11n,一个是ac，等，可能导致接收不到，所以可以再尝试使用两个相同的型号的路由器；//待测试</li>
+<li>发送方普通模式，接收方监听模式，接收方可以收到所有包，所以可以接收到</li>
+</ul>
+<h4 id="openwrt开源路由系统，驱动，固件"><a href="#openwrt开源路由系统，驱动，固件" class="headerlink" title="openwrt开源路由系统，驱动，固件"></a>openwrt开源路由系统，驱动，固件</h4><p>了解一下。。。<br>spec:Wireless LAN Medium Access Control<br>(MAC)<br>and Physical Layer (PHY) Specifications</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>看了我的博客，学习到点啥?来点分享吧，打赏也行</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpeg" alt="小兴 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpeg" alt="小兴 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tcpip-mac/" rel="tag"># tcpip_mac</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/27/tcpip-ARP/" rel="next" title="tcpip_ARP">
+                <i class="fa fa-chevron-left"></i> tcpip_ARP
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/03/tcpip-IP/" rel="prev" title="tcpip_IP">
+                tcpip_IP <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/headicon2.png"
+                alt="小兴" />
+            
+              <p class="site-author-name" itemprop="name">小兴</p>
+              <p class="site-description motion-element" itemprop="description">始于歧路，愿归于征途</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xdksx/" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github-square"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="ksance@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.facebook.com/572897439" target="_blank" title="FB Page">
+                      
+                        <i class="fa fa-fw fa-facebook"></i></a>
+                  </span>
+                
+            </div>
+          
+          
+           <div id="music163player">
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=461525011&auto=0&height=66"></iframe>
+ </div>
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#mac数据链路层的理解"><span class="nav-number">1.</span> <span class="nav-text">mac数据链路层的理解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mac层的功能介绍"><span class="nav-number">1.1.</span> <span class="nav-text">mac层的功能介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mac层的传输限制"><span class="nav-number">1.2.</span> <span class="nav-text">mac层的传输限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mac层的封包-mtu-msdu-mpdu"><span class="nav-number">1.3.</span> <span class="nav-text">mac层的封包,mtu,msdu,mpdu</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#mac头格式：不同协议可能不同："><span class="nav-number">1.3.1.</span> <span class="nav-text">mac头格式：不同协议可能不同：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mac层的发包和收包限制"><span class="nav-number">1.4.</span> <span class="nav-text">mac层的发包和收包限制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#普通模式，混杂模式和监听模式"><span class="nav-number">1.4.1.</span> <span class="nav-text">普通模式，混杂模式和监听模式</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mac层的几个实验"><span class="nav-number">1.5.</span> <span class="nav-text">mac层的几个实验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#openwrt开源路由系统，驱动，固件"><span class="nav-number">1.6.</span> <span class="nav-text">openwrt开源路由系统，驱动，固件</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+
+  
+</div>
+
+
+<span id="busuanzi_container_site_uv">
+  本站总访问量<span id="busuanzi_value_site_uv"></span>次
+</span>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共63.1k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'xdksx',
+            repo: 'xdksx.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+            
+                client_id: '06e6b70d396f6928e45a'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>
