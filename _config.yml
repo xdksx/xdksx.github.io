@@ -88,16 +88,26 @@ theme: next
 deploy: 
   type: git 
   repo: https://github.com/xdksx/xdksx.github.io.git
-  branch: 20200321_newbranch
+  branch: master #20200321_newbranch
 sitemap:
     path: sitemap.xml
 baidusitemap:
     path: baidusitemap.xm
 
+
 feed:
-    type: atom
-    path: atom.xml
-    limit: 100
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub:
+  content:
+  content_limit: 140
+  content_limit_delim: ' '
+  order_by: -date
+  icon: icon.png
+  autodiscovery: true
+  template:
+
 
 jsonContent:
   meta: false
@@ -121,8 +131,20 @@ search:
   path: search.xml
   field: post
   format: html
-  limit: 10000
-#live2d:
-#  model: shizuku
-#  mobileShow: false
-#  bottom: -30
+  limit: 100
+live2d:
+  enable: false
+  scriptFrom: local
+  pluginRootPath: live2dw/
+  pluginJsPath: lib/
+  pluginModelPath: assets/
+  tagMode: false
+  debug: false
+  model:
+    use: live2d-widget-model-wanko
+  display:
+    position: left
+    width: 150
+    height: 300
+  mobile:
+    show: false
