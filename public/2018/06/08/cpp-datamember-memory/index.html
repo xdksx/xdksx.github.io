@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="c++ class  datamemory详细介绍c++的成员布局，类本身的布局和在各种情况下的布局 “类”本身的大小： the simplest 引入 1.2 多少内存能表现一个class?最小是１　  size">
+<meta name="keywords" content="cpp_class">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_datamember_memory">
+<meta property="og:url" content="http://xdksx.github.io/2018/06/08/cpp-datamember-memory/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="c++ class  datamemory详细介绍c++的成员布局，类本身的布局和在各种情况下的布局 “类”本身的大小： the simplest 引入 1.2 多少内存能表现一个class?最小是１　  size">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-09T08:01:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpp_datamember_memory">
+<meta name="twitter:description" content="c++ class  datamemory详细介绍c++的成员布局，类本身的布局和在各种情况下的布局 “类”本身的大小： the simplest 引入 1.2 多少内存能表现一个class?最小是１　  size">
+
+<link rel="canonical" href="http://xdksx.github.io/2018/06/08/cpp-datamember-memory/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_datamember_memory | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/06/08/cpp-datamember-memory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_datamember_memory
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2018-06-09 14:46:49 / 修改时间：16:01:48" itemprop="dateCreated datePublished" datetime="2018-06-09T14:46:49+08:00">2018-06-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="c-class-datamemory"><a href="#c-class-datamemory" class="headerlink" title="c++ class  datamemory"></a>c++ class  datamemory</h3><p>详细介绍c++的成员布局，类本身的布局和在各种情况下的布局</p>
+<h4 id="“类”本身的大小："><a href="#“类”本身的大小：" class="headerlink" title="“类”本身的大小："></a>“类”本身的大小：</h4><ul>
+<li>the simplest 引入</li>
+<li>1.2 多少内存能表现一个class?<br>最小是１　  size<a id="more"></a></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">T</span>&#123;</span> &#125;;   --<span class="number">-1</span> 一个<span class="keyword">char</span> 表示这个类型</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">X</span> :</span><span class="keyword">public</span> <span class="keyword">virtual</span> T&#123;&#125;;　　--指针大小，指针指向T  <span class="keyword">virtual</span> base <span class="class"><span class="keyword">class</span> <span class="title">subobject</span></span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Y</span> :</span><span class="keyword">public</span> <span class="keyword">virtual</span> T&#123;&#125;;  --指针大小</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>:</span><span class="keyword">public</span> X,<span class="keyword">public</span> Y &#123;&#125;;　--两个指针大小　```  </span><br><span class="line">－－从深入那本书中说有两种方式，体现<span class="class"><span class="keyword">class</span>的大小，这里是优化的特殊的类型，这些好理解，但是需要类的空间的真正原因是什么？这<span class="title">T</span>的一个<span class="title">char</span>存储了什么？  </span></span><br><span class="line"><span class="class">用来干嘛？那在<span class="title">X</span>中指向<span class="title">T</span>的又是为什么需要？  </span></span><br><span class="line"><span class="class">最小１<span class="title">char</span>?  </span></span><br><span class="line"><span class="class">我们知道，当一个类中仅包含一个<span class="title">nonstatic</span> <span class="title">member</span>时，如<span class="title">int</span> ,则对象为<span class="title">int</span>大小，但是当类为空时，对象如何去分配内存？</span></span><br><span class="line"><span class="class">如果同时定义了两个对象，那如何去区分这两个对象？让他们地址不相同？－－－所以这里需要一个<span class="title">char</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">+ 注意，类本身也是一个类型，像<span class="title">int</span>，<span class="title">struct</span>一样，它的大小为４，<span class="title">struct</span>成员和对齐，则类也一样，<span class="title">sizeof</span>是在编译期间（确定<span class="title">c89</span>中）  </span></span><br><span class="line"><span class="class">一个例子：</span></span><br><span class="line"><span class="class">```<span class="title">cpp</span></span></span><br><span class="line"><span class="class">#<span class="title">include</span>&lt;iostream&gt;</span></span><br><span class="line"><span class="class">#<span class="title">define</span> _<span class="title">sizeof</span>(<span class="title">T</span>) ((<span class="title">size_t</span>)((<span class="title">T</span>*)0+1))</span></span><br><span class="line"><span class="class">#<span class="title">include</span>&lt;stdio.h&gt;</span></span><br><span class="line"><span class="class"><span class="title">using</span> <span class="title">namespace</span> <span class="title">std</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">T</span> &#123;</span>&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">X</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> T&#123;&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Y</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> T&#123;&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> :</span><span class="keyword">public</span> X,<span class="keyword">public</span> Y&#123;&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TT</span>&#123;</span><span class="keyword">public</span>:<span class="keyword">int</span> q;<span class="keyword">int</span> x;&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">		T t1,t2;</span><br><span class="line">		<span class="keyword">int</span> xx;</span><br><span class="line">		<span class="keyword">if</span> (&amp;t1==&amp;t2)</span><br><span class="line">				<span class="built_in">cout</span>&lt;&lt;<span class="string">"same"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%x\n"</span>,&amp;t1);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%x\n"</span>,&amp;t2);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%x\n"</span>,&amp;xx);</span><br><span class="line">	<span class="comment">//	int sie=(Y*)0+1;</span></span><br><span class="line">	<span class="comment">//	printf("%x\n",X&#123;&#125;);</span></span><br><span class="line">	    <span class="keyword">int</span> s= _sizeof(TT);　８　编译期间确定，直接把８赋给内存</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;_sizeof(T)&lt;&lt;<span class="built_in">endl</span>;　１</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="keyword">sizeof</span>(TT)&lt;&lt;<span class="built_in">endl</span>;　　８</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="keyword">sizeof</span>(T)&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="keyword">sizeof</span>(X)&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="keyword">sizeof</span>(Y)&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="keyword">sizeof</span>(A)&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>自然t1,t2地址不同，相邻</p>
+<h4 id="那么一个类大的方面需要这些："><a href="#那么一个类大的方面需要这些：" class="headerlink" title="那么一个类大的方面需要这些："></a>那么一个类大的方面需要这些：</h4><p>１）类中定义的普通成员<br>２）语言本身所造成的额外负担如virtual机制，virtual table ,virtual base class subobject<br>３）Aligmnment带来的<br>（编译器的优化会带来内存布局的影响）</p>
+<p>上述例子：当编译器不做优化时，为１，8+1+3,8+1+3 ,1(X)+8+8+3(ali)</p>
+<h4 id="总结datamember的布局"><a href="#总结datamember的布局" class="headerlink" title="总结datamember的布局"></a>总结datamember的布局</h4><ul>
+<li>对象只存非静态的成员变量，而无论中间放置了几个静态变量都不会影响他们之间的排布。<br>　　　大部分的编译器将先定义的非静态成员变量放在低地址，而后的放在高地址。最好用时先用kdbg或测试程序等看下</li>
+<li>静态成员的存取不通过对象，他们放在数据段中</li>
+<li>vptr一般会放在哪里？　<br>　　对象的头或者尾巴</li>
+<li>align:C++标准要求，在同一个access section(private,public,protect等区段），member的排列只需要符和较晚出现放在较高的地址“即可，<br>　　access sections的多少并不会带来额外的负担</li>
+<li>我在g++上做了测试:</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TT</span>&#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">    &#125;;</span><br><span class="line">   <span class="keyword">sizeof</span>&#123;TT);   <span class="number">8</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TT</span>&#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line"> protect:</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="keyword">char</span> d;</span><br><span class="line">    &#125;;</span><br><span class="line">   <span class="keyword">sizeof</span>(TT)=<span class="number">16</span></span><br><span class="line">class TT&#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line"> protect:</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="keyword">char</span> d;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> e;</span><br><span class="line">    <span class="keyword">char</span> f;</span><br><span class="line">    &#125;;</span><br><span class="line">  <span class="keyword">sizeof</span>(TT)=<span class="number">24</span> </span><br><span class="line">class TT&#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">    <span class="keyword">int</span> e;</span><br><span class="line">    <span class="keyword">char</span> f;</span><br><span class="line"> protect:</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="keyword">char</span> d;</span><br><span class="line">    &#125;;</span><br><span class="line">  <span class="keyword">sizeof</span>(TT)=<span class="number">24</span></span><br><span class="line">class TT&#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">int</span> e;</span><br><span class="line">    <span class="keyword">char</span> f;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line"> protect:</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="keyword">char</span> d;</span><br><span class="line">    &#125;;</span><br><span class="line">  <span class="keyword">sizeof</span>(TT)=<span class="number">20</span></span><br></pre></td></tr></table></figure>
+<p>  由此看来这个编译器是按着c的struct对齐来的啊， </p>
+<h4 id="data-member的存取："><a href="#data-member的存取：" class="headerlink" title="data member的存取："></a>data member的存取：</h4><ul>
+<li><p>成本<br>比较：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">        TT tt1;</span><br><span class="line">		TT *tt2=&amp;tt1;</span><br><span class="line"><span class="number">0x400b87</span> lea    <span class="number">-0x20</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x400b8b</span> mov    %rax,<span class="number">-0x48</span>(%rbp)</span><br><span class="line">		<span class="keyword">int</span> d=tt1.d;</span><br><span class="line"><span class="number">0x400b8f</span> mov    <span class="number">-0x1c</span>(%rbp),%eax</span><br><span class="line"><span class="number">0x400b92</span> mov    %eax,<span class="number">-0x68</span>(%rbp)</span><br><span class="line">		<span class="keyword">int</span> f=tt2-&gt;d;</span><br><span class="line"><span class="number">0x400b95</span> mov    <span class="number">-0x48</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x400b99</span> mov    <span class="number">0x4</span>(%rax),%eax</span><br><span class="line"><span class="number">0x400b9c</span> mov    %eax,<span class="number">-0x64</span>(%rbp)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对static成员啊而言，实际是在数据段中，所以不管什么形式的访问都是相同的<br>待测试</p>
+</li>
+<li>通过成员函数<br>需要通过this 指针，则同上例子中的指针访问</li>
+</ul>
+<h3 id="总结几种情况下的的布局"><a href="#总结几种情况下的的布局" class="headerlink" title="总结几种情况下的的布局"></a>总结几种情况下的的布局</h3><h4 id="单一继承不含多态"><a href="#单一继承不含多态" class="headerlink" title="单一继承不含多态"></a>单一继承不含多态</h4><h5 id="一个典型的例子如下"><a href="#一个典型的例子如下" class="headerlink" title="一个典型的例子如下"></a>一个典型的例子如下</h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point2d</span>&#123;</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">    Point2d( <span class="keyword">float</span> x=<span class="number">0.0</span>,<span class="keyword">float</span> y=<span class="number">0.0</span>):_x(x),_y(y)&#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">float</span> <span class="title">x</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> _x;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">float</span> <span class="title">y</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> _y;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">x</span><span class="params">(<span class="keyword">float</span> newX)</span> </span>&#123; _x=newX;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">y</span><span class="params">(<span class="keyword">float</span> newY)</span> </span>&#123; _y=newY;&#125;</span><br><span class="line">    <span class="keyword">void</span> <span class="keyword">operator</span>+= (<span class="keyword">const</span> Point2d&amp;  rhs) &#123;</span><br><span class="line">        _x+=rhs.x();</span><br><span class="line">        _y+=rhs.y();</span><br><span class="line">        &#125;</span><br><span class="line">    ...more member;</span><br><span class="line">   <span class="keyword">protected</span>:</span><br><span class="line">      <span class="keyword">float</span> _x,_y;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Point3d</span>:</span> <span class="keyword">public</span> Point2d&#123;</span><br><span class="line">     <span class="keyword">public</span>: </span><br><span class="line">        Point3d(<span class="keyword">float</span> x=<span class="number">0.0</span>,<span class="keyword">float</span> y=<span class="number">0.0</span>,<span class="keyword">float</span> z=<span class="number">0.0</span>):Point2d(x,y),_z(z)&#123;&#125;;</span><br><span class="line">        <span class="function"><span class="keyword">float</span> <span class="title">z</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> _z;&#125;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">z</span><span class="params">(<span class="keyword">float</span> newZ)</span></span>&#123;_z=newZ;&#125; </span><br><span class="line">        <span class="keyword">void</span> <span class="keyword">operator</span>+=(<span class="keyword">const</span> Point3d&amp; rhs) &#123;</span><br><span class="line">           Point2d::<span class="keyword">operator</span>+=(rhs);</span><br><span class="line">           _z+=rhs.z();</span><br><span class="line">           &#125;</span><br><span class="line">          ...more member               </span><br><span class="line">     <span class="keyword">protected</span>:</span><br><span class="line">      <span class="keyword">float</span> _z;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h5 id="单一继承"><a href="#单一继承" class="headerlink" title="单一继承"></a>单一继承</h5><p>则　基类的成员被子类包含，放在较低的地址；相比之下，多了对齐的空间；<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Concrete</span> &#123;</span></span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    ...</span><br><span class="line">  <span class="keyword">private</span>:</span><br><span class="line">     <span class="keyword">int</span> val;</span><br><span class="line">     <span class="keyword">char</span> c1;</span><br><span class="line">     <span class="keyword">char</span> c2;</span><br><span class="line">     <span class="keyword">char</span> c3;</span><br><span class="line">     &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>则需要占用８bytes;</p>
+<p>而当被继承实现时：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Concrete1</span>&#123;</span></span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">  <span class="keyword">private</span>: </span><br><span class="line">     <span class="keyword">int</span> val;</span><br><span class="line">     <span class="keyword">char</span> bit1;</span><br><span class="line"> &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Concrete2</span>：<span class="title">public</span> <span class="title">Concrete1</span>&#123;</span></span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">  <span class="keyword">private</span>:</span><br><span class="line">       <span class="keyword">char</span> bit2;</span><br><span class="line"> &#125;;</span><br><span class="line"> <span class="class"><span class="keyword">class</span>  <span class="title">Concrete3</span>:</span><span class="keyword">public</span> Concrete2&#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">char</span> bit3;</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>  由此带来成本 8+4+4=16</p>
+<ul>
+<li>那为什么要这么做的？继承的时候不能挤在一起吗？<br>（在深入c++对象模型中有图容易理解。这里仅说明：<br>　　　若：　Concrete2  *pc2;<pre><code>Concrete1 *pc1_1,*pc1_2;
+*pc1_2=*pc1_1; -默认复制构造
+pc1_1 = pc2; //pc1_1指向pc2;
+*pc1_2=*pc1_1;//覆盖掉了，如果继承是成员挤在一起，而不是对齐来的
+</code></pre></li>
+</ul>
+<h5 id="单一继承含多态："><a href="#单一继承含多态：" class="headerlink" title="单一继承含多态："></a>单一继承含多态：</h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"> <span class="class"><span class="keyword">class</span> <span class="title">Point2d</span>&#123;</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">    Point2d( <span class="keyword">float</span> x=<span class="number">0.0</span>,<span class="keyword">float</span> y=<span class="number">0.0</span>):_x(x),_y(y)&#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">float</span> <span class="title">x</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> _x;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">float</span> <span class="title">y</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> _y;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">float</span> <span class="title">z</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="number">0.0</span>;&#125; </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">z</span><span class="params">(<span class="keyword">float</span>)</span></span>&#123;&#125;  </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">x</span><span class="params">(<span class="keyword">float</span> newX)</span> </span>&#123; _x=newX;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">y</span><span class="params">(<span class="keyword">float</span> newY)</span> </span>&#123; _y=newY;&#125;</span><br><span class="line">    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="keyword">operator</span>+= (<span class="keyword">const</span> Point2d&amp;  rhs) &#123;</span><br><span class="line">        _x+=rhs.x();</span><br><span class="line">        _y+=rhs.y();</span><br><span class="line">        &#125;</span><br><span class="line">    ...more member;</span><br><span class="line">   <span class="keyword">protected</span>:</span><br><span class="line">      <span class="keyword">float</span> _x,_y;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Point3d</span>:</span> <span class="keyword">public</span> Point2d&#123;</span><br><span class="line">     <span class="keyword">public</span>: </span><br><span class="line">        Point3d(<span class="keyword">float</span> x=<span class="number">0.0</span>,<span class="keyword">float</span> y=<span class="number">0.0</span>,<span class="keyword">float</span> z=<span class="number">0.0</span>):Point2d(x,y),_z(z)&#123;&#125;;</span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="keyword">float</span> <span class="title">z</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> _z;&#125;</span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">z</span><span class="params">(<span class="keyword">float</span> newZ)</span></span>&#123;_z=newZ;&#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="keyword">operator</span>+=(<span class="keyword">const</span> Point3d&amp; rhs) &#123;</span><br><span class="line">           Point2d::<span class="keyword">operator</span>+=(rhs);</span><br><span class="line">           _z+=rhs.z();</span><br><span class="line">           &#125;</span><br><span class="line">          ...more member     </span><br><span class="line">     <span class="keyword">protected</span>:</span><br><span class="line">      <span class="keyword">float</span> _z;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>由此可以满足<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">　　　<span class="function"><span class="keyword">void</span> <span class="title">fool</span><span class="params">(Point2d &amp;p1,Point2d &amp;p2)</span></span>&#123;</span><br><span class="line">p1+=p2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以是Point2d和Point3d 这种弹性，牺牲了时间和空间<br>加入了什么呢？  </p>
+<pre><code>virtual table
+vptr
+add constructor vptr setting
+add destructor vptr virtual table dele
+</code></pre><p>所以需要视情况而定，如若只是涉及到2d&amp;3d之间，则可以是<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="keyword">operator</span>+=(<span class="keyword">const</span> Point２d&amp; rhs) &#123;</span><br><span class="line">           Point2d::<span class="keyword">operator</span>+=(rhs);</span><br><span class="line">           _z+=rhs.z();<span class="comment">//此时＋０</span></span><br><span class="line">           &#125;</span><br><span class="line"><span class="function">Point2d <span class="title">p2d</span><span class="params">(...)</span></span></span><br><span class="line"><span class="function">Point3d <span class="title">p3d</span><span class="params">(,,,,)</span></span>;</span><br><span class="line">p3d+=p2d</span><br></pre></td></tr></table></figure></p>
+<p>另外：对vptr的摆放位置，若放在最后面，则兼容c<br>但是损失了对继承的更好支持，所以现在放在最前面</p>
+<h5 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h5><p>多重继承考虑的问题较多？但从设计角度看，你可能会问？<br>对比单一继承，子类成员起始地址和基类相同，那多重继承，和哪个基类一样？其他基类怎么办，在向上转型如何处理，指针呢？</p>
+<p>另外，在单一继承中，vptr放在最开始的地方，如果base class没有virtual func而derived　class有呢？则此时单一继承的自然多态被打破，<br>若此时把一个derived class 转换为base class则　需要编译器介入，在多重继承+虚拟继承下就更有必要了</p>
+<p>考虑这个例子：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">　<span class="class"><span class="keyword">class</span> <span class="title">Point2d</span>&#123;</span> 带<span class="keyword">virtual</span> 接口</span><br><span class="line">  <span class="keyword">public</span>: </span><br><span class="line">  <span class="keyword">protected</span>:</span><br><span class="line">      <span class="keyword">float</span> _x _y;</span><br><span class="line">      &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point3d</span>:</span><span class="keyword">public</span> Point2d&#123;</span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">   protectd:</span><br><span class="line">      <span class="keyword">float</span> _z;</span><br><span class="line">      &#125;'</span><br><span class="line"> <span class="class"><span class="keyword">class</span> <span class="title">Vertex</span> &#123;</span>带<span class="keyword">virtual</span>接口</span><br><span class="line">     <span class="keyword">protected</span>:</span><br><span class="line">        Vertex *next;</span><br><span class="line">   &#125;;    </span><br><span class="line"> <span class="class"><span class="keyword">class</span> <span class="title">Vertex3d</span>:</span><span class="keyword">public</span> Point3d,<span class="keyword">public</span> Vertex &#123;</span><br><span class="line">   protexted:</span><br><span class="line">     <span class="keyword">float</span> mumble;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure></p>
+<p>对多重继承派生对象，若将其地址　指定给最左端的base class则情况同单一继承一样，因为二者指向相同的地址。但是对第二个及以上时<br>需要将地址修改，加上或减去　介于中间的base class subobject<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">  eg:  Vertex3d v3d;</span><br><span class="line">        Vertex *pv;</span><br><span class="line">        Point２d *p2d</span><br><span class="line">        POint3d  *p3d;  </span><br><span class="line">        pv=&amp;v3d</span><br><span class="line">     则内部为：pv=(Vertex*)(((<span class="keyword">char</span>*)&amp;v3d)+<span class="keyword">sizeof</span>(Point3d));     </span><br><span class="line">     而对p2d=&amp;v3d;</span><br><span class="line">         p3d=&amp;v3d则只需要简单的拷贝</span><br><span class="line">```              </span><br><span class="line">      若为Vertex3d　*v3d;  pv=v3d;则内部还要进行判断空。因为*v3d可能为空，</span><br><span class="line">      而引用不用，因为引用不可能参考到无</span><br><span class="line">对存取其第二个基类成员，也是做类似的offset操作</span><br><span class="line">##### 虚拟继承</span><br><span class="line">在多重继承加虚拟继承时，如ios istream ostream</span><br><span class="line">前面的内容会好理解一些，这部分的内容不好理解，也有些繁琐，于是，我回到之前学习的方法，即为什么，出现的原因，如果是自己实现又如何，等思考：</span><br><span class="line">+ 为什么需要虚拟继承？  </span><br><span class="line">虚拟继承出现，是因为当基类<span class="number">2</span>和<span class="number">3</span>都继承了基类<span class="number">1</span>，而基类<span class="number">4</span>继承了<span class="number">2</span>和<span class="number">3</span>，则基类<span class="number">4</span>会同时拥有两份基类<span class="number">1</span>，而虚拟继承就是为了让基类<span class="number">4</span>只包含一份基类<span class="number">1</span>，形成菱形继承结构</span><br><span class="line">```cpp</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ios</span>&#123;</span>..&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">istream</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> ios&#123;..&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ostream</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> ios&#123;..&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">iostream</span>:</span></span><br><span class="line"><span class="keyword">public</span> istream, <span class="keyword">public</span> ostream &#123;..&#125;</span><br></pre></td></tr></table></figure></p>
+<p>那么，虚拟继承是如何做，使得类4能只包含1份基类1，而不影响其他功能呢：</p>
+<ul>
+<li><p>梳理下：<br>上述例子：挑战在于，将istream 和ostream 各自维护的一个ios subobj ，折叠为一个由iostream维护的单一ios subobj ，<br>并且还可以保存base class 和derived class的指针（以及reference)之间的多态操作<br>一般的实现方式如下： class 如果内含一个或者多个virtual base class obj,像istream那样，将被分割为两部分，一个不变的局部和一个共享局部<br>不变的局部中的数据，不管后继如何演化，都总是拥有固定的offset(从obj头算起），这部分数据可以直接存取，共享局部，则是virtual base class subject，这部分数据位置会因为每次派生发生变化，所以他们只能被间接存取  </p>
+<p>所以就是：istream 中有自己的和ios相关的部分，这部分为共享部分</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> <span class="class"><span class="keyword">class</span> <span class="title">Point2d</span> _<span class="title">x</span> _<span class="title">y</span></span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Point3d</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> Point2d  _z</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vertex</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> Point2d</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vertex3d</span>:</span><span class="keyword">public</span> Point3d <span class="keyword">public</span> Vertex</span><br></pre></td></tr></table></figure>
+<p>那 istream 如何存取这部分共享的数据？和iostream共享？感觉有点像单例模式</p>
+</li>
+<li><p>cfront是这样实现的：（这语言没见过）： 会在每个derived class obj中安插一些指针，每个指针 指向一个virtual base class 存取继承得来的virtual base<br>class member;所以在存取时通过这个指针存取<br>在多层继承时间接存取次数多；每个对象需要为每个virtual base class 背负一个指针）</p>
+<pre><code> void Point3d::operator+=(const Point3d &amp;rhs) {
+  _x+=rhs._x;
+  _y+=rhs._y;
+  _z+=rhs._z;
+  }
+ 则在这里：被转为：伪代码：_vbcPoint2d-&gt;_x+=rhs.__vbcPoint2d-&gt;_x;//vbc==virtual base class
+ ....
+
+而Point2d *2d=3d;
+Point2d *2d=3d? 3d-&gt;__vbcPoint2d:0;
+</code></pre></li>
+</ul>
+<ul>
+<li><p>microsoft ：引入类似于vbtable的方法，引入virtual base class table 。而在对象中放一个指针指向该表，表则放置那些指向virtual base class 指针<br>Bjarne: g++等（现在可能变了，但是类似）：</p>
+<pre><code>在虚函数表中放置virtual base class 的offset而不是地址。
+在这里，上面的例子：（this+__vbtr__point3d[-1])-&gt;_x+= (&amp;rhs+rhs.__vptr__point3d[-1])-&gt;_x;
+...
+Point2d *2d=3d?3d+3d-&gt;__vptr__point3d[-1]:0
+</code></pre></li>
+<li><p>注意：若是基类1含有virtual func则会拥有一个vptr指向自己的vtable. 而虚拟继承它的基类2,3，基类2,3本身含有virtual func则不会通过继承基类1的方式<br>继承它的vptr,所以可以看到在书中的图中point3d有两个指针vptr,以下例子通过kdbg调试可以看到这个两个vptr</p>
+</li>
+</ul>
+<ul>
+<li>两个问题：</li>
+<li>基类1在继承连增加时位置如何变化？</li>
+<li>在基类自己有virtual func时为什么要自己独用一个vptr?<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point2d</span> &#123;</span></span><br><span class="line">                <span class="keyword">public</span>: <span class="function"><span class="keyword">virtual</span> <span class="keyword">float</span> <span class="title">printx</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> _x;&#125;</span><br><span class="line">		<span class="keyword">protected</span>:</span><br><span class="line">				<span class="keyword">float</span> _x,_y;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vertex</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> Point2d&#123;</span><br><span class="line">		<span class="keyword">protected</span>:</span><br><span class="line">				Vertex *next;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point3d</span>:</span><span class="keyword">public</span> <span class="keyword">virtual</span> Point2d&#123;</span><br><span class="line">		<span class="keyword">protected</span>:</span><br><span class="line">				<span class="keyword">float</span> _z;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vertex3d</span>:</span><span class="keyword">public</span> Vertex,<span class="keyword">public</span> Point3d&#123;</span><br><span class="line">		<span class="keyword">protected</span>:</span><br><span class="line">				<span class="keyword">float</span> mumble;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PO</span>&#123;</span></span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">		    <span class="comment">// virtual ~PO();</span></span><br><span class="line">			 <span class="keyword">static</span> <span class="keyword">int</span> origin;</span><br><span class="line">			 <span class="keyword">float</span> x,y,z;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">int</span> PO::origin =<span class="number">3</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">		Point2d d2d;</span><br><span class="line">		Point3d d3d;</span><br><span class="line">		Vertex vx;</span><br><span class="line">		Vertex3d v3x;</span><br><span class="line">		PO po;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,&amp; PO::z);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%d\n"</span>,&amp;po);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%d\n"</span>,&amp;po.x);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%d\n"</span>,&amp;po.y);</span><br><span class="line"><span class="comment">//		printf("%d\n",&amp;po.origin);</span></span><br><span class="line">		<span class="keyword">float</span> PO::*p1=<span class="number">0</span>;</span><br><span class="line">		<span class="keyword">float</span> PO::*p2=&amp;PO::x;</span><br><span class="line">		<span class="keyword">if</span>(p1==p2)</span><br><span class="line">				<span class="built_in">cout</span>&lt;&lt;<span class="string">"sma"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="使用gdb调试："><a href="#使用gdb调试：" class="headerlink" title="使用gdb调试："></a>使用gdb调试：</h5><p>写完程序后：<br>编译时加-g<br>gdb 科执行程序名</p>
+<ul>
+<li>设置断点：break 行号<br>s向下执行<br>set p obj &lt;on/off&gt;: 在C++中，如果一个对象指针指向其派生类，如果打开这个选项，GDB会自动按照虚方法调用的规则显示输出，如果关闭这个选项的话，GDB就不管虚函数表了。这个选项默认是off。 使用show print object查看对象选项的设置。<br>set p pertty &lt;on/off&gt;: 按照层次打印结构体。可以从设置前后看到这个区别。on的确更容易阅读。<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> p obj on</span><br><span class="line"><span class="built_in">set</span> p pertty on</span><br><span class="line">p 对象名</span><br><span class="line">p /a ((<span class="keyword">void</span> ***)d3d)[<span class="number">0</span>]@<span class="number">18</span> <span class="comment">//看到更详细的内存 @18为打印的成员数，[0]指从第0个开始打印--感觉不太对</span></span><br><span class="line">p /a ((<span class="keyword">void</span> **)vx)[<span class="number">0</span>]@<span class="number">16</span><span class="comment">//同上</span></span><br><span class="line">(gdb) p b</span><br><span class="line">$<span class="number">1</span> = &#123;_vptr.Base = <span class="number">0x400a60</span> &lt;vtable <span class="keyword">for</span> Base+<span class="number">16</span>&gt;&#125;</span><br><span class="line">(gdb) x/<span class="number">16</span>x <span class="number">0x400a60</span></span><br><span class="line"><span class="number">0x400a60</span> &lt;_ZTV4Base+<span class="number">16</span>&gt;:    <span class="number">0x0040094c</span>  <span class="number">0x00000000</span>  <span class="number">0x72654437</span>  <span class="number">0x64657669</span></span><br><span class="line">(gdb) x/<span class="number">16</span>x <span class="number">0x0040094c</span></span><br><span class="line"><span class="number">0x40094c</span> &lt;Base::f()&gt;:   <span class="number">0xe5894855</span>  <span class="number">0x10ec8348</span>  <span class="number">0xf87d8948</span>  <span class="number">0x400a15be</span></span><br><span class="line"><span class="number">0x40095c</span> &lt;Base::f()+<span class="number">16</span>&gt;:    <span class="number">0x10c0bf00</span>  <span class="number">0xf9e80060</span>  <span class="number">0xc9fffffd</span>  <span class="number">0x485590c3</span></span><br><span class="line"><span class="number">0x40096c</span> &lt;Derived::f()+<span class="number">2</span>&gt;:  <span class="number">0x8348e589</span>  <span class="number">0x894810ec</span>  <span class="number">0x1bbef87d</span>  <span class="number">0xbf00400a</span></span><br><span class="line"><span class="number">0x40097c</span> &lt;Derived::f()+<span class="number">18</span>&gt;: <span class="number">0x006010c0</span>  <span class="number">0xfffddbe8</span>  <span class="number">0x66c3c9ff</span>  <span class="number">0x00841f0f</span></span><br><span class="line">  (gdb) <span class="built_in">set</span> $i = <span class="number">0</span></span><br><span class="line">  (gdb) <span class="keyword">while</span> $i &lt; <span class="number">10</span></span><br><span class="line">     &gt;print $i</span><br><span class="line">     &gt;p /a (*(<span class="keyword">void</span> ***)obj)[$i]</span><br><span class="line">     &gt;<span class="built_in">set</span> $i = $i + <span class="number">1</span></span><br><span class="line">     &gt;end</span><br><span class="line">Where <span class="string">"obj"</span> is the object whose vtable you'd like to print, <span class="keyword">and</span> <span class="number">10</span> is the number of methods.</span><br><span class="line">p /a (*(<span class="keyword">void</span> ***)obj)[<span class="number">0</span>]@<span class="number">10</span></span><br><span class="line">info address _ZTV3Bar</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="对象成员的效率"><a href="#对象成员的效率" class="headerlink" title="对象成员的效率"></a>对象成员的效率</h4><h4 id="指向对象成员变量的指针"><a href="#指向对象成员变量的指针" class="headerlink" title="指向对象成员变量的指针"></a>指向对象成员变量的指针</h4><p>可以用于测试底层布局，如vptr放在哪，access section 次序。等<br>例子：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">　　　<span class="class"><span class="keyword">class</span> <span class="title">Point3d</span> &#123;</span></span><br><span class="line">     <span class="keyword">public</span> :</span><br><span class="line">        <span class="keyword">virtual</span> ~Point3d();</span><br><span class="line">     <span class="keyword">protected</span>:</span><br><span class="line">        <span class="keyword">static</span> Point3d origin；</span><br><span class="line">        <span class="keyword">float</span> x,y,z;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>1)&amp;Point3d::z  –得到z在class obj中的偏移量<br>需用printf</p>
+<p>书中说的为了使得指向对象和对象成员的指针区分，而+1,在g++中没有怎么体现：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point3d</span>&#123;</span></span><br><span class="line">		<span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">//			virtual ~Point3d()&#123;;&#125;</span></span><br><span class="line">				<span class="keyword">static</span> Point3d origin;</span><br><span class="line">				<span class="keyword">float</span> x,y,z;</span><br><span class="line">&#125;;</span><br><span class="line">Point3d Point3d::origin;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        Point3d p3d;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"&amp;Point3d=%p\n"</span>,&amp;p3d);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"&amp;Point3d=%p\n"</span>,&amp;p3d.x);<span class="comment">//这两个地址相同</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"&amp;Point3d=%p\n"</span>,&amp;p3d.y);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"&amp;Point3d::x=%p\n"</span>,&amp;Point3d::x);<span class="comment">//nil,若Point3d带virtual func,则为8</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"&amp;Point3d::y=%p\n"</span>,&amp;Point3d::y);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"&amp;Point3d::z=%p\n"</span>,&amp;Point3d::z);</span><br><span class="line">		<span class="keyword">if</span>((<span class="keyword">float</span>*)&amp;p3d==(<span class="keyword">float</span>*)&amp;p3d.x)<span class="built_in">cout</span>&lt;&lt;<span class="string">"yes"</span>&lt;&lt;<span class="built_in">endl</span>; <span class="comment">//输出yes</span></span><br><span class="line">		<span class="keyword">float</span> Point3d::*p1=<span class="number">0</span>;</span><br><span class="line">		<span class="keyword">float</span> Point3d::*p2=&amp;Point3d::x;</span><br><span class="line">		<span class="keyword">float</span> Point3d::*p3=<span class="literal">NULL</span>;</span><br><span class="line">		<span class="keyword">if</span>(p1==p2)<span class="comment">//未输出</span></span><br><span class="line">		&#123;</span><br><span class="line">				<span class="built_in">cout</span>&lt;&lt;<span class="string">"p1==p2"</span>&lt;&lt;<span class="built_in">endl</span>;<span class="comment">//no output in g++</span></span><br><span class="line">		&#125;</span><br><span class="line">        <span class="keyword">if</span>(p2==p3)</span><br><span class="line">		&#123;</span><br><span class="line">				<span class="built_in">cout</span>&lt;&lt;<span class="string">"p2==p3"</span>&lt;&lt;<span class="built_in">endl</span>;<span class="comment">//no output in g++</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在这里若是加了virtual func则，x为8，说明是vptr是放在前面的<br>通过指针取得对象成员:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> *p=origin.z  </span><br><span class="line">struct  Base1&#123;<span class="keyword">int</span> val1;&#125;</span><br><span class="line"><span class="function">struct <span class="title">Base2</span> <span class="params">(<span class="keyword">int</span> val2;&#125;</span></span></span><br><span class="line"><span class="function"><span class="params">struct Derved:Base1,Base2&#123;..&#125;</span></span></span><br><span class="line"><span class="function"><span class="params"><span class="keyword">void</span> func1(<span class="keyword">int</span> Derved::*bmp,Derved *pd)</span><span class="comment">//传入offset等，多继承时易出错</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   pd-&gt;*dmp;.....</span><br></pre></td></tr></table></figure></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-class/" rel="tag"># cpp_class</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/08/cpp-polymorphism/" rel="prev" title="cpp_polymorphism">
+      <i class="fa fa-chevron-left"></i> cpp_polymorphism
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/09/cpp-funcmember-memory/" rel="next" title="cpp_funcmember_memory">
+      cpp_funcmember_memory <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c-class-datamemory"><span class="nav-number">1.</span> <span class="nav-text">c++ class  datamemory</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#“类”本身的大小："><span class="nav-number">1.1.</span> <span class="nav-text">“类”本身的大小：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#那么一个类大的方面需要这些："><span class="nav-number">1.2.</span> <span class="nav-text">那么一个类大的方面需要这些：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结datamember的布局"><span class="nav-number">1.3.</span> <span class="nav-text">总结datamember的布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#data-member的存取："><span class="nav-number">1.4.</span> <span class="nav-text">data member的存取：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结几种情况下的的布局"><span class="nav-number">2.</span> <span class="nav-text">总结几种情况下的的布局</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单一继承不含多态"><span class="nav-number">2.1.</span> <span class="nav-text">单一继承不含多态</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#一个典型的例子如下"><span class="nav-number">2.1.1.</span> <span class="nav-text">一个典型的例子如下</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#单一继承"><span class="nav-number">2.1.2.</span> <span class="nav-text">单一继承</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#单一继承含多态："><span class="nav-number">2.1.3.</span> <span class="nav-text">单一继承含多态：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#多重继承"><span class="nav-number">2.1.4.</span> <span class="nav-text">多重继承</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用gdb调试："><span class="nav-number">2.1.5.</span> <span class="nav-text">使用gdb调试：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对象成员的效率"><span class="nav-number">2.2.</span> <span class="nav-text">对象成员的效率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#指向对象成员变量的指针"><span class="nav-number">2.3.</span> <span class="nav-text">指向对象成员变量的指针</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>

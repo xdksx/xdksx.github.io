@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="数据结构之线性表：有序表：数组：单链表：链表定义">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DS_linklist">
+<meta property="og:url" content="http://xdksx.github.io/2018/05/26/DS-linklist/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="数据结构之线性表：有序表：数组：单链表：链表定义">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/linklist.png">
+<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/headnode.png">
+<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/insert.png">
+<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/delete.png">
+<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/headbuild.png">
+<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/tailbuile.png">
+<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/sigrecyclelink.png">
+<meta property="og:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/mergerecycle.png">
+<meta property="og:updated_time" content="2018-05-26T15:08:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DS_linklist">
+<meta name="twitter:description" content="数据结构之线性表：有序表：数组：单链表：链表定义">
+<meta name="twitter:image" content="http://xdksx.github.io/2018/05/26/DS-linklist/linklist.png">
+
+<link rel="canonical" href="http://xdksx.github.io/2018/05/26/DS-linklist/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>DS_linklist | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/05/26/DS-linklist/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DS_linklist
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2018-05-26 21:18:09 / 修改时间：23:08:24" itemprop="dateCreated datePublished" datetime="2018-05-26T21:18:09+08:00">2018-05-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构和算法/" itemprop="url" rel="index"><span itemprop="name">数据结构和算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="数据结构之线性表："><a href="#数据结构之线性表：" class="headerlink" title="数据结构之线性表："></a>数据结构之线性表：</h2><h3 id="有序表：数组："><a href="#有序表：数组：" class="headerlink" title="有序表：数组："></a>有序表：数组：</h3><h3 id="单链表："><a href="#单链表：" class="headerlink" title="单链表："></a>单链表：</h3><p>链表定义  <a id="more"></a><br>{  </p>
+<ul>
+<li>数据成员:常见的基本类型或者对象类型均可  </li>
+<li>数据关系:在链表中的块的成员在连续的内存中，块与块之间内存位置不连续  </li>
+<li>指向块的指针：单链表只有一个next,双链表加上pre  </li>
+</ul>
+<p>}<br>基本运算：<br>{</p>
+<ul>
+<li>InitList(&amp;L);:初始化链表，在c/c++中需要做分配内存，初始化链表头和其值的操作；  </li>
+<li>DestroyList(&amp;L); 在销毁时需要free内存  </li>
+<li>Length(L);链表的长度是块的个数</li>
+<li>GetElem(L,i,&amp;e); 在链表中取元素需要一个一个遍历直到下标值，若为双链表会快些。所以这里取索引值对应的值和取链表的值，效率几乎一样；  </li>
+<li>LocateElem(L,e,compare()); 和链表中的元素做对比</li>
+<li>InsertElem(&amp;L,i,e); 在链表中插入元素，复杂度O(1),在提供位置的时候，若不提供位置，还需要加搜索的时间</li>
+<li>DeleteElem(&amp;L,i,&amp;e); 在链表中删除元素，复杂度O(1)<br>……  </li>
+</ul>
+<p>}<br>eg:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">LNode</span> &#123;</span> </span><br><span class="line">       ElemType data；<span class="comment">//数据域</span></span><br><span class="line">       <span class="class"><span class="keyword">struct</span> <span class="title">LNode</span>  *<span class="title">next</span>； //指针域</span></span><br><span class="line"><span class="class">&#125; <span class="title">LNode</span>,  *<span class="title">LinkList</span>;</span></span><br><span class="line">LNode  *L;</span><br><span class="line">LinkList  L;</span><br><span class="line">L =  (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">或 L = <span class="keyword">new</span> LNode;</span><br><span class="line">L-&gt;data;</span><br><span class="line">LNode  L;</span><br><span class="line">L.date</span><br></pre></td></tr></table></figure></p>
+<img src="/2018/05/26/DS-linklist/linklist.png" title="链表示意图">    
+<h3 id="链表的两种头部："><a href="#链表的两种头部：" class="headerlink" title="链表的两种头部："></a>链表的两种头部：</h3><ol>
+<li>没有头的链表：第一个块就开始存储数据  </li>
+<li>任何时候都有头的链表：  第一个块不存储数据，作为头节点，第二个块开始存数据  </li>
+<li>应用：在leetcode中的ReverseLinklist中，当反转的是从1开始的时候，若使用的是没有头的，则需要额外判断处理，否则可以统一处理；  </li>
+</ol>
+<img src="/2018/05/26/DS-linklist/headnode.png" title="头节点示意图">  
+<h3 id="链表的几个常见操作："><a href="#链表的几个常见操作：" class="headerlink" title="链表的几个常见操作：　"></a>链表的几个常见操作：　</h3><ul>
+<li><p>取第i个元素：  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">GetElem_L</span><span class="params">(LinkList L, <span class="keyword">int</span> i, ElemType &amp;e)</span></span></span><br><span class="line"><span class="function"></span>&#123;<span class="comment">//查找操作</span></span><br><span class="line">    p = L-&gt;next;  </span><br><span class="line">    j = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>( p &amp;&amp; j &lt; i)&#123;</span><br><span class="line">          p = p-&gt;next; </span><br><span class="line">          ++j;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!p || j&gt;i) <span class="keyword">return</span> ERROR;</span><br><span class="line">    e = p-&gt;data;</span><br><span class="line">    <span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>插入元素：在第i个位置上插入    </p>
+<img src="/2018/05/26/DS-linklist/insert.png" title="插入示意图">    
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">ListInsert_L</span><span class="params">(LinkList &amp;L, <span class="keyword">int</span> i, ElemType e)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  p = L; j = <span class="number">0</span>;</span><br><span class="line">     <span class="keyword">while</span> (p &amp;&amp; j &lt; i<span class="number">-1</span>) &#123; p = p-&gt;next; ++j &#125;</span><br><span class="line">     <span class="keyword">if</span> (!p || j&gt;i<span class="number">-1</span>)  <span class="keyword">return</span> ERROR;</span><br><span class="line">  s =  (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">     s-&gt;data = e;  </span><br><span class="line">  s-&gt;next = p-&gt;next;  </span><br><span class="line">  p-&gt;next = s;  </span><br><span class="line">     <span class="keyword">return</span> OK;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除元素:删除第i个元素:  </p>
+<img src="/2018/05/26/DS-linklist/delete.png" title="删除示意图">  
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function">Status <span class="title">ListDelete_L</span><span class="params">(LinkList &amp;L, <span class="keyword">int</span> i, ElemType &amp;e)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> p = L; j = <span class="number">0</span>;</span><br><span class="line">     <span class="keyword">while</span> (p-&gt;next &amp;&amp; j &lt; i<span class="number">-1</span>) &#123; p = p-&gt;next; ++j &#125;</span><br><span class="line">     <span class="keyword">if</span> (!(p-&gt;next) || j&gt;i<span class="number">-1</span>)  <span class="keyword">return</span> ERROR;</span><br><span class="line"> q = p-&gt;next;</span><br><span class="line">     e = q-&gt;data;  </span><br><span class="line"> p-&gt;next = p-&gt;next-&gt;next;  <span class="comment">//(p-&gt;next = q-&gt;next;)</span></span><br><span class="line"> <span class="built_in">free</span>(q);  </span><br><span class="line">  <span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="链表的建立："><a href="#链表的建立：" class="headerlink" title="链表的建立："></a>链表的建立：</h3><ul>
+<li><p>头插法：  </p>
+<img src="/2018/05/26/DS-linklist/headbuild.png" title="头插法示意图">  
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">CreateList_L(LinkList &amp;L, <span class="keyword">int</span> n)</span><br><span class="line">&#123;</span><br><span class="line">     L = (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">     L-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">     <span class="keyword">for</span>( i=n; i&gt;<span class="number">0</span>; --i)&#123;</span><br><span class="line">         s = (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">         <span class="built_in">scanf</span>( &amp;s-&gt;data);</span><br><span class="line">         s-&gt;next = L-&gt;next; ①</span><br><span class="line">         L-&gt;next = s; ②</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>尾插法：  </p>
+<img src="/2018/05/26/DS-linklist/tailbuile.png" title="尾插法示意图">  
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CreateList_L(LinkList &amp;L, <span class="keyword">int</span> n)</span><br><span class="line">&#123;</span><br><span class="line">     tail = L = (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">     L-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">     <span class="keyword">for</span>( i=n; i&gt;<span class="number">0</span>; --i)&#123;</span><br><span class="line">         s = (LinkList) <span class="built_in">malloc</span>( <span class="keyword">sizeof</span> (LNode) );</span><br><span class="line">         <span class="built_in">scanf</span>( &amp;s-&gt;data);</span><br><span class="line">         tail-&gt;next = s; ①</span><br><span class="line">         tail = s; ②</span><br><span class="line">     &#125;      &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="链表的常见复杂操作："><a href="#链表的常见复杂操作：" class="headerlink" title="链表的常见复杂操作："></a>链表的常见复杂操作：</h3><ul>
+<li>两个有序链表的合并：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MergeList_L</span><span class="params">(LinkList &amp;La, LinkList &amp;Lb, LinkList &amp;Lc)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    pa = La-&gt;next; pb = Lb-&gt;next;</span><br><span class="line">    Lc = pc = La;</span><br><span class="line">    <span class="keyword">while</span>( pa &amp;&amp; pb )&#123;</span><br><span class="line">        <span class="keyword">if</span>(pa-&gt;data &lt;= pb-&gt;data)&#123;</span><br><span class="line">             pc-&gt;next = pa; pc = pa; pa = pa-&gt;next;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span>&#123;</span><br><span class="line">             pc-&gt;next = pb; pc = pb; pb= pb-&gt;next;</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    pc-&gt;next = pa ? pa : pb;</span><br><span class="line">    <span class="built_in">free</span>( Lb );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="一些特殊的链表："><a href="#一些特殊的链表：" class="headerlink" title="一些特殊的链表："></a>一些特殊的链表：</h3><ul>
+<li>单向循环链表：</li>
+<li>图示：  <img src="/2018/05/26/DS-linklist/sigrecyclelink.png" title="单向循环链表">
+<img src="/2018/05/26/DS-linklist/mergerecycle.png" title="合并"></li>
+<li>多重循环链表：</li>
+<li>双向链表：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">DuLNode</span>&#123;</span></span><br><span class="line">     ElemType               data;</span><br><span class="line">     <span class="class"><span class="keyword">struct</span> <span class="title">DuLNode</span>    *<span class="title">prior</span>;</span></span><br><span class="line">     <span class="class"><span class="keyword">struct</span> <span class="title">DuLNode</span>    *<span class="title">next</span>;</span></span><br><span class="line">&#125;DuLNode,  *DuLinkList;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>双向循环链表：</p>
+<h3 id="探讨："><a href="#探讨：" class="headerlink" title="探讨："></a>探讨：</h3><ul>
+<li>链表作为最基础的数据结构，是对其他数据结构：如栈，树等的支撑，其他这些大部分是在链表的基础上建立的；  </li>
+<li>从较底层的层面：即深入到内存，链表实现了对零散内存的有效使用，内存在为链表分配空间的时候不用大段的连续空间；</li>
+<li>从较高层，即抽象的层面看，链表仅仅是一批数据的拓扑结构之一，就常见的栈，队列，树，图等等，你还可以想出其他可能有用没用的，如，立体的结构，方块，金字塔形(emm这个像堆），还有随意的，感觉想到了矩阵里面的压缩。   </li>
+</ul>
+<h3 id="应用："><a href="#应用：" class="headerlink" title="应用："></a>应用：</h3><ul>
+<li>链表的应用：如</li>
+<li>在文件中，对大文件的存储，采用类似链表的结构，</li>
+<li>大数相加，像两个100位的整数相加，使用链表，每个块为一位，就可以解决这个问题，数组也行</li>
+<li>倒排索引结构，在操作系统中用到，我的github上放着一个本科毕业设计做的简单搜索引擎，几乎全是自己搞的（解析网页那块自己c写了状态机，觉得效果不如beatifulsoup好，后面用它了),不过想想那会还不会很有意识的去想如果让它运行在大量用户下，各种使用条件（如输入条件下，会怎么样，年轻啊~)</li>
+<li>其他，当然是其他数据结构基于链表做的，多了去了</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/25/code-efficandreadable/" rel="prev" title="code_efficandreadable">
+      <i class="fa fa-chevron-left"></i> code_efficandreadable
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/05/27/tcpip-PF-PACKET/" rel="next" title="tcpip_PF_PACKET">
+      tcpip_PF_PACKET <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构之线性表："><span class="nav-number">1.</span> <span class="nav-text">数据结构之线性表：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有序表：数组："><span class="nav-number">1.1.</span> <span class="nav-text">有序表：数组：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单链表："><span class="nav-number">1.2.</span> <span class="nav-text">单链表：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表的两种头部："><span class="nav-number">1.3.</span> <span class="nav-text">链表的两种头部：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表的几个常见操作："><span class="nav-number">1.4.</span> <span class="nav-text">链表的几个常见操作：　</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表的建立："><span class="nav-number">1.5.</span> <span class="nav-text">链表的建立：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表的常见复杂操作："><span class="nav-number">1.6.</span> <span class="nav-text">链表的常见复杂操作：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一些特殊的链表："><span class="nav-number">1.7.</span> <span class="nav-text">一些特殊的链表：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#探讨："><span class="nav-number">1.8.</span> <span class="nav-text">探讨：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用："><span class="nav-number">1.9.</span> <span class="nav-text">应用：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>

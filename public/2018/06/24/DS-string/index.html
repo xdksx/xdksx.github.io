@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="数据结构之串欢迎来到简单而又复杂的串世界,博主许久没有去研究串，还停留在以前学习和使用串的水平，再来一波学习和归纳，发现串的基本用法其实简单，也好理解，但是衍生出来的和应用相关，而且复杂，下面道来；">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DS_string">
+<meta property="og:url" content="http://xdksx.github.io/2018/06/24/DS-string/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="数据结构之串欢迎来到简单而又复杂的串世界,博主许久没有去研究串，还停留在以前学习和使用串的水平，再来一波学习和归纳，发现串的基本用法其实简单，也好理解，但是衍生出来的和应用相关，而且复杂，下面道来；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-30T13:30:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DS_string">
+<meta name="twitter:description" content="数据结构之串欢迎来到简单而又复杂的串世界,博主许久没有去研究串，还停留在以前学习和使用串的水平，再来一波学习和归纳，发现串的基本用法其实简单，也好理解，但是衍生出来的和应用相关，而且复杂，下面道来；">
+
+<link rel="canonical" href="http://xdksx.github.io/2018/06/24/DS-string/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>DS_string | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/06/24/DS-string/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DS_string
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-24 16:01:32" itemprop="dateCreated datePublished" datetime="2018-06-24T16:01:32+08:00">2018-06-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-06-30 21:30:22" itemprop="dateModified" datetime="2018-06-30T21:30:22+08:00">2018-06-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构和算法/" itemprop="url" rel="index"><span itemprop="name">数据结构和算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="数据结构之串"><a href="#数据结构之串" class="headerlink" title="数据结构之串"></a>数据结构之串</h3><p>欢迎来到简单而又复杂的串世界,博主许久没有去研究串，还停留在以前学习和使用串的水平，再来一波学习和归纳，发现串的基本用法其实简单，也好理解，但是衍生出来的和应用相关，而且复杂，下面道来；<a id="more"></a></p>
+<h4 id="串的基本"><a href="#串的基本" class="headerlink" title="串的基本"></a>串的基本</h4><h5 id="串的定义"><a href="#串的定义" class="headerlink" title="串的定义"></a>串的定义</h5><ul>
+<li>“a1a2…..an”,其中包含字母，广义上可以是任意字符</li>
+<li>在c/c++中结尾带’\0’，python则不带，长度均不包含’\0’</li>
+<li>串长度-不同编码不同，根据具体需要如字节，实际字符等</li>
+<li>空串和空白串，空白又可能是tab,回车，空格等等“</li>
+<li>串的子串:子串个数：n(n+1)/2–等差数列，<h5 id="串常用的数据结构"><a href="#串常用的数据结构" class="headerlink" title="串常用的数据结构"></a>串常用的数据结构</h5></li>
+<li><p>串常量–存在从汇编去看－数据段(data)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">    .file	<span class="string">"test.c"</span></span><br><span class="line">	.section	.rodata</span><br><span class="line">.LC0:</span><br><span class="line">	.<span class="built_in">string</span>	<span class="string">"kesance"</span></span><br><span class="line">.LC1:</span><br><span class="line">	.<span class="built_in">string</span>	<span class="string">"%d\n"</span></span><br><span class="line">	.text</span><br><span class="line">	.globl	main</span><br><span class="line">	.type	main, @function</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>串数组:<br>将字符串存在顺序数组中</p>
+</li>
+<li>堆分配存在链表中<h5 id="字符串常用函数"><a href="#字符串常用函数" class="headerlink" title="字符串常用函数"></a>字符串常用函数</h5></li>
+<li>子串个数：</li>
+<li>串赋值</li>
+<li>串比较</li>
+<li>求串长</li>
+<li>串拼接</li>
+<li>求子串</li>
+<li>替换子串</li>
+<li>定位子串的位置<h4 id="字符编码和字符串匹配"><a href="#字符编码和字符串匹配" class="headerlink" title="字符编码和字符串匹配"></a>字符编码和字符串匹配</h4><h5 id="字符串的编码"><a href="#字符串的编码" class="headerlink" title="字符串的编码"></a>字符串的编码</h5></li>
+<li>所谓字符编码，就是将字符用二进制唯一表示。在计算机的世界里不是1就是0，无论什么字符最后存入的还是二进制数，只是从内存中读出来时解析不同而已，即如让计算机将读出来的00111000解析成数字8,如文本显示程序，当设定为某种编码时，将字节流解析成对应的字符～现在看到的许多字体库也是这样的，将一串二进制串和某个字体对应起来，解析程序负责处理匹配和显示等</li>
+<li><a href="https://en.wikipedia.org/wiki/Unicode" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Unicode</a>　unicode编码了解一下</li>
+</ul>
+<h5 id="传统模式匹配算法"><a href="#传统模式匹配算法" class="headerlink" title="传统模式匹配算法"></a>传统模式匹配算法</h5><p>模式匹配，就是在字符串里面匹配另一个串相似或者相同的子串，传统的想法也和一般人想到的一样，扫描并一个一个字符对比，若第二串失配，则第二串重新匹配第一串的第二个，接着往下。。</p>
+<h5 id="KMP算法"><a href="#KMP算法" class="headerlink" title="KMP算法"></a>KMP算法</h5><p>kmp作为完全匹配算法中的高效算法，基本原理如下：ps:大学学这个算法只学了它是什么原理，还没去想为什么这么做等）</p>
+<ul>
+<li><p><strong>基本思想</strong>：从上面看传统的匹配算法：  </p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> c <span class="selector-tag">a</span> e f g </span><br><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> d <span class="selector-tag">a</span> e f</span><br></pre></td></tr></table></figure>
+<p> 像上面的字符串匹配，第一次失配的地方是在c,则按照传统的方式，则应该重新：</p>
+ <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> c <span class="selector-tag">a</span> e f g</span><br><span class="line">  <span class="selector-tag">a</span> <span class="selector-tag">b</span> d <span class="selector-tag">a</span> e f</span><br></pre></td></tr></table></figure>
+<p>但是其实如果是我们人去做匹配时，则会直接从：  </p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> c <span class="selector-tag">a</span> e f g</span><br><span class="line">      <span class="selector-tag">a</span> <span class="selector-tag">b</span> d <span class="selector-tag">a</span> e f</span><br></pre></td></tr></table></figure>
+<p>开始匹配，而kmp的基本思想也是这样；<br>例子：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> c d <span class="selector-tag">a</span> <span class="selector-tag">b</span> c f g e </span><br><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> c e <span class="selector-tag">a</span> <span class="selector-tag">b</span> c t</span><br><span class="line">第一次失配在d,那下一次应该在  </span><br><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> c d <span class="selector-tag">a</span> <span class="selector-tag">b</span> c f g e </span><br><span class="line">        <span class="selector-tag">a</span> <span class="selector-tag">b</span> c e <span class="selector-tag">a</span> <span class="selector-tag">b</span> c t</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>所以它分为两部分，１是模式串在移动时候遵循的基本原理，２是当失配时，模式串的哪个位置的字符和源串的当前位置进行重新匹配；</li>
+<li>1基本原理，重复：当模式串中存在大量的重复时，效果尤为明显<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> c d <span class="selector-tag">a</span> <span class="selector-tag">b</span> c e f g </span><br><span class="line"><span class="selector-tag">a</span> <span class="selector-tag">b</span> c d <span class="selector-tag">a</span> <span class="selector-tag">b</span> c t</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>上述例子一样，可以看到 以d 为中点，前后有相同的串，abc,则显然next函数也能隐士检测到这个，所以当显然因为模式串的前后abc相等，而后abc又和源串的后abc相等，所以源串的后abc和模式串的前abc想等，自然失配时候就可以从模式串的d开始匹配起</p>
+<ul>
+<li><p><strong>2重点在next的计算，它决定当发生失配时，模式串如何移动</strong>：  </p>
+<ul>
+<li>假设模式串为P,j是当前模式串正在匹配的位置，源串为S,i是源串的当前位置，k是当P[j]!=S[i]时，P应该和S[i]比较的位置，以next[j]=k表示，故关键是求出next数组，显然k&lt;j</li>
+<li>next如何计算得到:其实要利用前面的基本原理，<br>P[0-k-1]==P[j-k~j-1]==S[i-k到i-1] (即next[j]=k)<br>所以要求next[j+1]=?<br>-若P[k]==P[j]<br>P[0-k-1]+P[k]==P[j-k~j-1]+P[j]<br>即：P[0 ~ k] == P[j-k ~ j]，即next[j+1] == k + 1 == next[j] + 1<br>-若P[k]!=P[j]<br>我们已经知道（0，k-1）串和（j-k,j-1）串是相等的，所以可以把（0，k-1）串当做一个新的模式串，发现在新模式串中<br>（0，next[k]-1）串与（k-next[k],k-1）串相等，所以（j-k,j-1）中存在与（0，next[k]-1）相等的串，所以可以把j移动到next[k],继续比较和移动。</li>
+</ul>
+</li>
+<li><p>具体程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//显然，next[0]=-1,此时无法向左边移动了源串模式串都要移动</span></span><br><span class="line">next[<span class="number">1</span>]=<span class="number">0</span>,此时只能向左移动到<span class="number">0.</span></span><br><span class="line"><span class="keyword">int</span> getnext(<span class="keyword">char</span> *P,<span class="keyword">int</span> next[])&#123;</span><br><span class="line">    j=<span class="number">1</span>,next[j]=<span class="number">0</span>,k=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(j&lt;<span class="keyword">sizeof</span>(P)&#123;</span><br><span class="line">      <span class="keyword">if</span>(k==<span class="number">0</span>||P[j++]==P[k++])</span><br><span class="line">            next[j]==k;<span class="comment">//next[j]=next[j]+1</span></span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">           k=next[k];</span><br><span class="line">           &#125;</span><br><span class="line">           &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="串和哈夫曼编码"><a href="#串和哈夫曼编码" class="headerlink" title="串和哈夫曼编码"></a>串和哈夫曼编码</h5><ul>
+<li>霍夫曼编码是和编码相关的一个算法，是将一个串编码为二进制整数，如类似AABXBDHADFBFJD编码为1010011100011101001,而霍夫曼编码则作为转换算法，Huffman编码使得每一个字符的编码都与另一个字符编码的前一部分不同，不会出现像’A’：00，  ’B’：001，这样的情况，解码也不会出现冲突。</li>
+</ul>
+<h4 id="论文查重对比的几个算法-文本相似度）"><a href="#论文查重对比的几个算法-文本相似度）" class="headerlink" title="论文查重对比的几个算法(文本相似度）"></a>论文查重对比的几个算法(文本相似度）</h4><ul>
+<li>杰卡德（Jaccard）相似系数<br>这种相似度计算方式相对简单，原理也易于理解，就是计算单词集合之间的交集和并集大小的比例，该值越大，表示两个文本越相似。在涉及到大规模并行计算时，该方法效率上有一定的优势。</li>
+<li>余弦（Cosine）相似度<br>余弦相似度是利用计算两个向量之间的夹角，夹角越小相似度越高，其公式为：<br>假定A和B是两个n维向量，A是[A1,A2,…,An],B是[B1,B2,B3,…,Bn],则A与B的夹角余弦等于</li>
+<li>等等,用时再看：<br><a href="https://www.cnblogs.com/huilixieqi/p/6493089.html" target="_blank" rel="noopener">https://www.cnblogs.com/huilixieqi/p/6493089.html</a></li>
+<li>linux下的diff命令<br>还有win上的beyondcompare软件，这两个是用于比较文本的差异的，在代码移植时经常用到</li>
+</ul>
+<h4 id="串匹配－正则表达式"><a href="#串匹配－正则表达式" class="headerlink" title="串匹配－正则表达式"></a>串匹配－正则表达式</h4><ul>
+<li>正则表达式用于匹配文本字符串，但是并不一定是完全匹配，且是匹配的串出现有随意性</li>
+</ul>
+<h5 id="正则表达式的理论基础"><a href="#正则表达式的理论基础" class="headerlink" title="正则表达式的理论基础"></a>正则表达式的理论基础</h5><ul>
+<li>最早接触到正则表达式，是在大三学习编译原理的时候，解析词法语法的时候会用到正则表达式，用来过滤关键词，像c语言的很多关键词，以及判断它是不是合法的表达式，等等，常用的是lex和yacc,最原始的是自己的实现对词法和语法的解析，而不借助的lex；</li>
+<li>正则表达，语法树，常用有限状态机来来实现，功能强大的如图灵机；</li>
+</ul>
+<h5 id="正则表达式和编译原理"><a href="#正则表达式和编译原理" class="headerlink" title="正则表达式和编译原理"></a>正则表达式和编译原理</h5><h5 id="正则表达式的基本实现"><a href="#正则表达式的基本实现" class="headerlink" title="正则表达式的基本实现"></a>正则表达式的基本实现</h5><ul>
+<li>用c实现正则表达实现词法分析：</li>
+<li><h5 id="常用的正则表达式"><a href="#常用的正则表达式" class="headerlink" title="常用的正则表达式"></a>常用的正则表达式</h5></li>
+<li>语言支持</li>
+<li>脚本语言支持情况</li>
+<li>sed,awk</li>
+</ul>
+<h4 id="串和流"><a href="#串和流" class="headerlink" title="串和流"></a>串和流</h4><ul>
+<li>流，所有的文本流</li>
+<li>流分为二进制流和文本流</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/10/tcpip-routeicmp/" rel="prev" title="tcpip_routeicmp">
+      <i class="fa fa-chevron-left"></i> tcpip_routeicmp
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/24/leetcode-string/" rel="next" title="leetcode_string">
+      leetcode_string <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构之串"><span class="nav-number">1.</span> <span class="nav-text">数据结构之串</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#串的基本"><span class="nav-number">1.1.</span> <span class="nav-text">串的基本</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#串的定义"><span class="nav-number">1.1.1.</span> <span class="nav-text">串的定义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#串常用的数据结构"><span class="nav-number">1.1.2.</span> <span class="nav-text">串常用的数据结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字符串常用函数"><span class="nav-number">1.1.3.</span> <span class="nav-text">字符串常用函数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字符编码和字符串匹配"><span class="nav-number">1.2.</span> <span class="nav-text">字符编码和字符串匹配</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#字符串的编码"><span class="nav-number">1.2.1.</span> <span class="nav-text">字符串的编码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#传统模式匹配算法"><span class="nav-number">1.2.2.</span> <span class="nav-text">传统模式匹配算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#KMP算法"><span class="nav-number">1.2.3.</span> <span class="nav-text">KMP算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#串和哈夫曼编码"><span class="nav-number">1.2.4.</span> <span class="nav-text">串和哈夫曼编码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#论文查重对比的几个算法-文本相似度）"><span class="nav-number">1.3.</span> <span class="nav-text">论文查重对比的几个算法(文本相似度）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#串匹配－正则表达式"><span class="nav-number">1.4.</span> <span class="nav-text">串匹配－正则表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#正则表达式的理论基础"><span class="nav-number">1.4.1.</span> <span class="nav-text">正则表达式的理论基础</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#正则表达式和编译原理"><span class="nav-number">1.4.2.</span> <span class="nav-text">正则表达式和编译原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#正则表达式的基本实现"><span class="nav-number">1.4.3.</span> <span class="nav-text">正则表达式的基本实现</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#常用的正则表达式"><span class="nav-number">1.4.4.</span> <span class="nav-text">常用的正则表达式</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#串和流"><span class="nav-number">1.5.</span> <span class="nav-text">串和流</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>

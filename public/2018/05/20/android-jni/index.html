@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="a example of JNI static way:first step: write a middle java file:mkdir jnicd jni/">
+<meta name="keywords" content="android_coding">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android_jni">
+<meta property="og:url" content="http://xdksx.github.io/2018/05/20/android-jni/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="a example of JNI static way:first step: write a middle java file:mkdir jnicd jni/">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-05-20T12:37:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android_jni">
+<meta name="twitter:description" content="a example of JNI static way:first step: write a middle java file:mkdir jnicd jni/">
+
+<link rel="canonical" href="http://xdksx.github.io/2018/05/20/android-jni/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>android_jni | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/05/20/android-jni/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          android_jni
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2018-05-20 17:53:27 / 修改时间：20:37:58" itemprop="dateCreated datePublished" datetime="2018-05-20T17:53:27+08:00">2018-05-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index"><span itemprop="name">android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="a-example-of-JNI-static-way"><a href="#a-example-of-JNI-static-way" class="headerlink" title="a example of JNI static way:"></a>a example of JNI static way:</h3><h4 id="first-step-write-a-middle-java-file"><a href="#first-step-write-a-middle-java-file" class="headerlink" title="first step: write a middle java file:"></a>first step: write a middle java file:</h4><p>mkdir jni<br>cd jni/<a id="more"></a><br>vim TestJni.java</p>
+<pre><code>import java.util.*;
+public class TestJni
+{
+    public native void xprint(String content);
+    static
+    {
+        System.loadLibrary(&quot;TestJni&quot;);
+    }
+}
+</code></pre><p>  javac TestJni.java  and make a class</p>
+<p>then<br>  javah -jni TestJni  to make a .h file:</p>
+<pre><code>  /* DO NOT EDIT THIS FILE - it is machine generated */
+#include &lt;jni.h&gt;
+/* Header for class TestJni */
+
+#ifndef _Included_TestJni
+#define _Included_TestJni
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+/*
+ * Class:     TestJni
+ * Method:    xprint
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_TestJni_xprint
+  (JNIEnv *, jobject, jstring);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+</code></pre><h4 id="step-two-write-jni-file-c"><a href="#step-two-write-jni-file-c" class="headerlink" title="step two write jni file.c:"></a>step two write jni file.c:</h4><p>TestJni.c:</p>
+<pre><code>#include&lt;jni.h&gt;
+#include&lt;stdio.h&gt;
+#include &quot;TestJni.h&quot;
+
+JNIEXPORT void JNICALL Java_TestJni_xprint(JNIEnv *env,jobject obj,jstring content)
+{
+    const jbyte *str=(const jbyte*)(*env)-&gt;GetStringUTFChars(env,content,JNI_FALSE);
+    printf(&quot;hello--wo%s \n&quot;,str);
+    (*env)-&gt;ReleaseStringUTFChars(env,content,(const char*)str);
+    return;
+}
+</code></pre><h4 id="three-build-so-lib"><a href="#three-build-so-lib" class="headerlink" title="three build .so lib"></a>three build .so lib</h4><pre><code>cc -I/usr/jdk-8/include/ -I/usr/jdk-8/include/linux/ -I .../jni/ -fPIC -shared -o libTestJni.so TestJni.c
+</code></pre><h4 id="four-write-a-test-hellow-java"><a href="#four-write-a-test-hellow-java" class="headerlink" title="four write a test:hellow.java"></a>four write a test:hellow.java</h4><pre><code>import java.util.*;
+public class hellow
+{
+    public static void main(String argc[])
+    { 
+        new hellow();
+    }
+    public hellow()
+    { 
+       new TestJni().xprint(&quot;hi my name is keee&quot;);
+    }
+}
+</code></pre><h4 id="question"><a href="#question" class="headerlink" title="question:"></a>question:</h4><p>如果你这步发生问题，如果这步你收到java.lang.UnsatisfiedLinkError异常，可以通过如下方式指明共享库的路径：</p>
+<p>java -Djava.library.path=’.’ HelloWorld<br>或者输入命令：<br>export LD_LIBRARY_PATH=“HelloWorld路径”:$LD_LIBRARY_PATH   设置环境变量</p>
+<p>然后再 java HelloWorld 一样OK</p>
+<h4 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h4><p><a href="http://www.cnblogs.com/bastard/archive/2012/05/17/2506877.html" target="_blank" rel="noopener">http://www.cnblogs.com/bastard/archive/2012/05/17/2506877.html</a><br><a href="http://www.cnblogs.com/wzben/p/5733571.html" target="_blank" rel="noopener">http://www.cnblogs.com/wzben/p/5733571.html</a></p>
+<h3 id="a-example-of-JNI-dynamic-way"><a href="#a-example-of-JNI-dynamic-way" class="headerlink" title="a example of JNI dynamic way:"></a>a example of JNI dynamic way:</h3><h4 id="step-1"><a href="#step-1" class="headerlink" title="step 1:"></a>step 1:</h4><p>write a TestJni.java</p>
+<pre><code>public class SimpleJni{
+    static {
+        System.out.println(&quot;[java] static code block,start load shared library...&quot;);
+        System.loadLibrary(&quot;SimpleJni&quot;);
+        System.out.println(&quot;[java]load library end...&quot;);
+    }
+    static native int add(int a,int b);
+    public static void main(String args[])
+    {
+        System.out.println(&quot;[java] in main...&quot;);
+        System.out.println(&quot;[java] 3+4=&quot;+SimpleJni.add(3,4));
+        System.out.println(&quot;end...&quot;);
+    }
+}
+</code></pre><h4 id="step-2"><a href="#step-2" class="headerlink" title="step 2:"></a>step 2:</h4><p>write a Jni file:</p>
+<pre><code>#include &lt;jni.h&gt;
+#include&lt;stdio.h&gt;
+const char *classPathName=&quot;com/bt/jni/SimpleJni&quot;;
+
+jint myadd(JNIEnv *env,jobject thiz,jint a,jint b)
+{
+    return a+b;
+}
+static JNINativeMethod methods[]={
+    {&quot;add&quot;,&quot;(II)I&quot;,(void*)myadd},};
+int registerNatives(JNIEnv *env)
+{
+    jclass clazz;
+
+    clazz=(*env)-&gt;FindClass(env,classPathName);
+    if(NULL==clazz){
+       printf(&quot;[C] FindClass fail\n&quot;);
+       goto failed;
+    }
+     if (0&gt;(*env)-&gt;RegisterNatives(env,clazz,methods,sizeof(methods)/sizeof(methods[0]))){
+         printf(&quot;RegisterNatives fail.\n&quot;);
+         goto failed;
+     }
+     return JNI_TRUE;
+failed:
+     return JNI_FALSE;
+}
+
+
+jint JNI_OnLoad(JavaVM *vm,void *reserved)
+{
+    JNIEnv *env=NULL;
+    jint result=-1;
+    void **env_p=NULL;
+
+    printf(&quot;start register native func\n&quot;);
+    env_p=(void**)&amp;env;
+
+    if(JNI_OK!=(*vm)-&gt;GetEnv(vm,env_p,0x00010006)){
+        printf(&quot;get env failed..\n&quot;);
+        goto err;
+    }
+    if(JNI_TRUE!=registerNatives(env)){
+        printf(&quot;register fail...exit....\n&quot;);
+        goto err;
+    }
+    result=0x00010006;
+err:
+    return result;
+}
+</code></pre><h4 id="step-use"><a href="#step-use" class="headerlink" title="step use:"></a>step use:</h4><p>1.首先编写SimpleJni.java和simpel_jni.c<br>    2.编译java和c文件<br>$ java -d .  SimpleJni.java<br>$gcc -fPIC -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/ -o libsimpleJni.so simple_jni.c</p>
+<pre><code>3.执行
+$java -Djava.library.path=. com.bt.jni.SimpleJni
+</code></pre><h4 id="other-example"><a href="#other-example" class="headerlink" title="other example:"></a>other example:</h4><p>java file:<br>    import java.util.*;<br>    public class TestJni<br>    {<br>        public native void xprint(String content);<br>        static<br>        {<br>            System.loadLibrary(“TestJni”);<br>        }<br>        public native static String native_hello();<br>    }</p>
+<p>JNI file:</p>
+<pre><code>#include&lt;jni.h&gt;
+#include&lt;stdio.h&gt;
+//#include &quot;TestJni.h&quot;
+#include&lt;iostream&gt;
+using namespace std;
+ void xprint(JNIEnv *env,jobject obj,jstring content)
+{  
+//    const jbyte *str=(const jbyte*)(env-&gt;GetStringUTFChars(env,content,JNI_FALSE));
+    //printf(&quot;hello--wo%s \n&quot;,str);
+//    env-&gt;ReleaseStringUTFChars(env,content,(const char*)str);
+        cout&lt;&lt;&quot;here:&quot;&lt;&lt;content&lt;&lt;endl;
+    return;
+}
+static jstring  native_hello(JNIEnv *env,jobject object)
+{ 
+
+
+    return (env)-&gt;NewStringUTF(&quot;keshixi&quot;);
+}
+
+static JNINativeMethod method_table[]={
+    { &quot;xprint&quot;,&quot;(Ljava/lang/String;)V&quot;,(void*)xprint},
+    {&quot;native_hello&quot;,&quot;()Ljava/lang/String;&quot;,(void*)native_hello}
+//    {,,(void*)xprint},{,,(void*)native_hello}
+};
+
+ jint JNI_OnLoad(JavaVM *jvm,void *reserved){
+    JNIEnv *env;
+    if(jvm-&gt;GetEnv((void**)&amp;env,JNI_VERSION_1_6)!=JNI_OK){
+        return -1;
+    }
+    jclass clz=env-&gt;FindClass(&quot;TestJni&quot;);
+    if(clz==NULL)
+    {
+        return JNI_FALSE;
+    }
+    if(env-&gt;RegisterNatives(clz,method_table,sizeof(method_table)/sizeof(method_table[0]))==JNI_OK){
+        return JNI_VERSION_1_6;
+    }
+  }
+</code></pre><p>####reference:<br>jni有两种使用方式，一种是静态注册的，依赖于头文件的。另一种是动态注册的不依赖头文件，静态的看里面文件夹的实例和博客就行</p>
+<p>动态方式也可以参见dy文件夹下的网页教程，以及对应的两个例子</p>
+<p>另外可以作为ndk在android中使用及在android　stdio也可以直接生成so</p>
+<p>一些链接：android_jni_ndk:<a href="http://www.cnblogs.com/wzben/p/5733571.html" target="_blank" rel="noopener">http://www.cnblogs.com/wzben/p/5733571.html</a><br>动态注册无运行实例：<a href="http://www.linuxidc.com/Linux/2017-02/140130.htm" target="_blank" rel="noopener">http://www.linuxidc.com/Linux/2017-02/140130.htm</a><br>静态注册：<a href="http://www.cnblogs.com/bastard/archive/2012/05/17/2506877.html" target="_blank" rel="noopener">http://www.cnblogs.com/bastard/archive/2012/05/17/2506877.html</a><br>动态注册：有实例<a href="http://www.linuxidc.com/Linux/2017-02/140129.htm" target="_blank" rel="noopener">http://www.linuxidc.com/Linux/2017-02/140129.htm</a></p>
+<p><a href="http://www.fer.unizg.hr/_download/repository/jni.pdf文档" target="_blank" rel="noopener">www.fer.unizg.hr/_download/repository/jni.pdf文档</a>    </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/android-coding/" rel="tag"># android_coding</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/20/android-adb/" rel="prev" title="android_adb">
+      <i class="fa fa-chevron-left"></i> android_adb
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/05/20/cpp-debug-layout-dynamic/" rel="next" title="cpp_debug_layout_dynamic">
+      cpp_debug_layout_dynamic <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-example-of-JNI-static-way"><span class="nav-number">1.</span> <span class="nav-text">a example of JNI static way:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#first-step-write-a-middle-java-file"><span class="nav-number">1.1.</span> <span class="nav-text">first step: write a middle java file:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#step-two-write-jni-file-c"><span class="nav-number">1.2.</span> <span class="nav-text">step two write jni file.c:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#three-build-so-lib"><span class="nav-number">1.3.</span> <span class="nav-text">three build .so lib</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#four-write-a-test-hellow-java"><span class="nav-number">1.4.</span> <span class="nav-text">four write a test:hellow.java</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#question"><span class="nav-number">1.5.</span> <span class="nav-text">question:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reference"><span class="nav-number">1.6.</span> <span class="nav-text">reference</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#a-example-of-JNI-dynamic-way"><span class="nav-number">2.</span> <span class="nav-text">a example of JNI dynamic way:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#step-1"><span class="nav-number">2.1.</span> <span class="nav-text">step 1:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#step-2"><span class="nav-number">2.2.</span> <span class="nav-text">step 2:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#step-use"><span class="nav-number">2.3.</span> <span class="nav-text">step use:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#other-example"><span class="nav-number">2.4.</span> <span class="nav-text">other example:</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>

@@ -3,6 +3,9 @@
 menu:
   主页: /
   随笔: /tags/随笔/
+  c/c++: /categories/c-cpp
+  安卓: /categories/android
+  tcpip: /categories/tcpip
 
 # SubNav
 subnav:
@@ -68,7 +71,7 @@ google_analytics: ''
 favicon: /favicon.png
 
 #你的头像url
-avatar:
+avatar: /img/headicon.jpeg
 
 #是否开启分享
 share_jia: true
@@ -120,11 +123,6 @@ smart_menu:
   aboutme: '关于我'
 
 friends:
-  友情链接1: http://localhost:4000/
-  友情链接2: http://localhost:4000/
-  友情链接3: http://localhost:4000/
-  友情链接4: http://localhost:4000/
-  友情链接5: http://localhost:4000/
-  友情链接6: http://localhost:4000/
+  google: http://www.google.com 
 
-aboutme: 很惭愧<br><br>只做了一点微小的工作<br>谢谢大家
+aboutme: 西北搞基大学出生，带着浓浓的土味，崇尚自由，又需要养家糊口，崇尚技术，曾跨过山海，看过青海，曾踏过长城，上过华山；看惯各种技术，力求能架构稳定高质量的软件产品，且正在努力。

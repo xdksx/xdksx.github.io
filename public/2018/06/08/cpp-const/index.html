@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="c++关键词之constconst介绍，用法，原理，注意点等const 介绍：const是用于标示不可修改的变量，对象或函数的。在其前面添加const就无法在之后做修改   用法">
+<meta name="keywords" content="cpp_keyword">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_const">
+<meta property="og:url" content="http://xdksx.github.io/2018/06/08/cpp-const/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="c++关键词之constconst介绍，用法，原理，注意点等const 介绍：const是用于标示不可修改的变量，对象或函数的。在其前面添加const就无法在之后做修改   用法">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-08T14:42:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpp_const">
+<meta name="twitter:description" content="c++关键词之constconst介绍，用法，原理，注意点等const 介绍：const是用于标示不可修改的变量，对象或函数的。在其前面添加const就无法在之后做修改   用法">
+
+<link rel="canonical" href="http://xdksx.github.io/2018/06/08/cpp-const/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_const | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/06/08/cpp-const/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_const
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2018-06-08 22:07:46 / 修改时间：22:42:22" itemprop="dateCreated datePublished" datetime="2018-06-08T22:07:46+08:00">2018-06-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="c-关键词之const"><a href="#c-关键词之const" class="headerlink" title="c++关键词之const"></a>c++关键词之const</h3><h4 id="const介绍，用法，原理，注意点等"><a href="#const介绍，用法，原理，注意点等" class="headerlink" title="const介绍，用法，原理，注意点等"></a>const介绍，用法，原理，注意点等</h4><h5 id="const-介绍："><a href="#const-介绍：" class="headerlink" title="const 介绍："></a>const 介绍：</h5><p>const是用于标示不可修改的变量，对象或函数的。<br>在其前面添加const就无法在之后做修改  </p>
+<h5 id="用法"><a href="#用法" class="headerlink" title="用法 "></a>用法 <a id="more"></a></h5><p>const总结起来有以下用法：</p>
+<ul>
+<li>const 修饰基本类型的变量  <ul>
+<li>const int xx=4; const double xd=3.3;   </li>
+<li>const int array[3]={3,4,5};</li>
+<li>const　修饰指针和引用</li>
+</ul>
+</li>
+<li>const 指针： <ul>
+<li>const int *p=&value;<br>//无法改变指针指向的值，但是可以改变指针,<br>value可以是int value;/const int value;</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">          <span class="keyword">int</span> va=<span class="number">4</span>;</span><br><span class="line">    <span class="number">6</span>         <span class="keyword">const</span> <span class="keyword">int</span> *p=&amp;va ;</span><br><span class="line">    <span class="number">7</span>         va=<span class="number">5</span>;</span><br><span class="line">&gt;&gt;  <span class="number">8</span>         *p=<span class="number">6</span>;<span class="comment">//error</span></span><br><span class="line">    <span class="number">9</span>         <span class="built_in">cout</span>&lt;&lt;*p&lt;&lt;<span class="built_in">endl</span>;<span class="comment">//5</span></span><br><span class="line">   <span class="number">10</span>         <span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>int *const p=&value; //无法改变指针的值，但是可以改变指针指向的值</li>
+<li>const int *const p=&value;//指针的值和指针指向的值　都不可以改变<ul>
+<li>const 引用：</li>
+<li>const int &amp;ref=value;</li>
+</ul>
+</li>
+</ul>
+<h5 id="const-c-amp-cpp差异"><a href="#const-c-amp-cpp差异" class="headerlink" title="const  c&amp;cpp差异"></a>const  c&amp;cpp差异</h5><ul>
+<li>不同于CPP，c将const存入的内存中设为只读，还是在栈中，而取其值时需要从内存中获取，所以从这个点看其效率比cpp差<br>why?see follow <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    c code:</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> cc=<span class="number">8</span>;</span><br><span class="line"><span class="number">0x4004da</span> movl   $<span class="number">0x8</span>,<span class="number">-0x8</span>(%rbp)</span><br><span class="line">		<span class="keyword">int</span> ccc=cc;</span><br><span class="line"><span class="number">0x4004e1</span> mov    <span class="number">-0x8</span>(%rbp),%eax</span><br><span class="line"><span class="number">0x4004e4</span> mov    %eax,<span class="number">-0x4</span>(%rbp)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="const和类"><a href="#const和类" class="headerlink" title="const和类"></a>const和类</h5><ul>
+<li><p>const 对象 const对象不能调用非const成员函数，也不能改变成员</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">constobj</span>&#123;</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">     <span class="keyword">int</span> ax;</span><br><span class="line">     <span class="keyword">int</span> bx;</span><br><span class="line">     constonj(<span class="keyword">int</span> a,<span class="keyword">int</span> b):ax(a),bx(b)&#123;&#125;;</span><br><span class="line">     <span class="function"><span class="keyword">int</span> <span class="title">getax</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;<span class="keyword">return</span> ax;&#125;</span><br><span class="line">     <span class="function"><span class="keyword">int</span> <span class="title">getbx</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;<span class="keyword">return</span> bx;&#125;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">setax</span><span class="params">(<span class="keyword">int</span> a)</span></span>&#123;ax=a;&#125;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"> </span>&#123;</span><br><span class="line">     constobj cobj;</span><br><span class="line">     <span class="keyword">const</span> constobj ccobj;</span><br><span class="line">     ccobj.setax(<span class="number">3</span>);<span class="comment">//error</span></span><br><span class="line">     <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>const 成员函数（只有成员函数能被声明为const )，它不能改变成员</p>
+</li>
+<li>不能在const成员函数中修改成员变量，但是可以修改其他变量。</li>
+<li>非const对象可以调用const成员函数</li>
+<li>一个灵活使用const成员函数的例子：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Something</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> m_value;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Something(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;value=<span class="string">""</span>) &#123; m_value= value; &#125;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span>&amp; <span class="title">getValue</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> m_value; &#125; <span class="comment">// getValue() for const objects</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span>&amp; <span class="title">getValue</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> m_value; &#125; <span class="comment">// getValue() for non-const objects</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Something something;</span><br><span class="line">	something.getValue() = <span class="string">"Hi"</span>; <span class="comment">// calls non-const getValue();</span></span><br><span class="line"> </span><br><span class="line">	<span class="keyword">const</span> Something something2;</span><br><span class="line">	something2.getValue(); <span class="comment">// calls const getValue();</span></span><br><span class="line"> </span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="c-11中的添加的新内容"><a href="#c-11中的添加的新内容" class="headerlink" title="c++11中的添加的新内容"></a>c++11中的添加的新内容</h5><ul>
+<li>constexp，cv限定  <h5 id="c-const内存和原理"><a href="#c-const内存和原理" class="headerlink" title="c++ const内存和原理"></a>c++ const内存和原理</h5></li>
+<li>基本变量<br>const变量是在栈中分配内存的，但是仅限于定义的时候，之后其他地方使用这个const变量都直接是使用该值<br>从汇编中可以看到</li>
+</ul>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    const int  co1=<span class="number">3</span>;</span><br><span class="line"><span class="number">0x4008ed</span> movl   $<span class="number">0x3</span>,<span class="number">-0x14</span>(%rbp)</span><br><span class="line">		 int  nor=co1;</span><br><span class="line"><span class="number">0x4008f4</span> movl   $<span class="number">0x3</span>,<span class="number">-0x10</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<p>所以无法当进行co1=4;的赋值操作时会被编译器拦截，想想，编译后会变成3=4;是不对的； </p>
+<ul>
+<li>这也解释了为什么一开始就要给const的变量赋值 *</li>
+</ul>
+<ul>
+<li>数组:save in stack</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">const</span> <span class="keyword">int</span> a[<span class="number">3</span>]=&#123;<span class="number">2</span>,<span class="number">3</span>,<span class="number">5</span>&#125;;</span><br><span class="line"><span class="number">0x4008fb</span> movl   $<span class="number">0x2</span>,<span class="number">-0x20</span>(%rbp)</span><br><span class="line"><span class="number">0x400902</span> movl   $<span class="number">0x3</span>,<span class="number">-0x1c</span>(%rbp)</span><br><span class="line"><span class="number">0x400909</span> movl   $<span class="number">0x5</span>,<span class="number">-0x18</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>指针：<br>const指针结合，其并不像基本类型那样贴出值，而是每次还是得去内存中取值，它的限定改变值，由编译器控制报错  </li>
+</ul>
+<p>指针并不是像前面那样，如<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> *p=&amp;value;</span><br><span class="line">    <span class="keyword">int</span> xx=*p;<span class="comment">//被替换成值?不是的，而是去内存中先取出指针的值，再以此为地址去取值；</span></span><br><span class="line">     <span class="keyword">int</span> pv=<span class="number">4</span>;</span><br><span class="line"><span class="number">0x400a12</span> movl   $<span class="number">0x4</span>,<span class="number">-0x58</span>(%rbp)</span><br><span class="line">      <span class="keyword">const</span> <span class="keyword">int</span> *p=&amp;pv;</span><br><span class="line"><span class="number">0x400a19</span> lea    <span class="number">-0x58</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x400a1d</span> mov    %rax,<span class="number">-0x40</span>(%rbp)</span><br><span class="line"></span><br><span class="line">	  <span class="keyword">int</span> px=*p;</span><br><span class="line"><span class="number">0x400a69</span> mov    <span class="number">-0x40</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x400a6d</span> mov    (%rax),%eax</span><br><span class="line"><span class="number">0x400a6f</span> mov    %eax,<span class="number">-0x48</span>(%rbp)</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">　　　   <span class="keyword">int</span> pv=<span class="number">4</span>;</span><br><span class="line"><span class="number">0x400a12</span> movl   $<span class="number">0x4</span>,<span class="number">-0x70</span>(%rbp)<span class="comment">//put 4 in mem(statck)</span></span><br><span class="line">		 <span class="keyword">const</span> <span class="keyword">int</span> *p=&amp;pv;</span><br><span class="line"><span class="number">0x400a19</span> lea    <span class="number">-0x70</span>(%rbp),%rax<span class="comment">//get its addr</span></span><br><span class="line"><span class="number">0x400a1d</span> mov    %rax,<span class="number">-0x58</span>(%rbp)<span class="comment">//addr to p</span></span><br><span class="line">         <span class="keyword">int</span> *<span class="keyword">const</span> pp=&amp;pv; </span><br><span class="line"><span class="number">0x400a21</span> lea    <span class="number">-0x70</span>(%rbp),%rax</span><br><span class="line"><span class="number">0x400a25</span> mov    %rax,<span class="number">-0x50</span>(%rbp)<span class="comment">//adddr to pp</span></span><br><span class="line">         <span class="keyword">int</span>  *ppp=pp;</span><br><span class="line"><span class="number">0x400a29</span> mov    <span class="number">-0x50</span>(%rbp),%rax<span class="comment">//get pp num</span></span><br><span class="line"><span class="number">0x400a2d</span> mov    %rax,<span class="number">-0x48</span>(%rbp)<span class="comment">//to ppp</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>引用：<br>引用同指针，是会去内存中取值的,same to pointer</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">follow above</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> &amp;ref=pv;</span><br><span class="line"><span class="number">0x400aba</span> lea    <span class="number">-0x7c</span>(%rbp),%rax<span class="comment">//get pv</span></span><br><span class="line"><span class="number">0x400abe</span> mov    %rax,<span class="number">-0x38</span>(%rbp)<span class="comment">//to ref</span></span><br><span class="line">		 <span class="keyword">int</span> cs=ref;</span><br><span class="line"><span class="number">0x400ac2</span> mov    <span class="number">-0x38</span>(%rbp),%rax<span class="comment">//get ref</span></span><br><span class="line"><span class="number">0x400ac6</span> mov    (%rax),%eax<span class="comment">//get *ref</span></span><br><span class="line"><span class="number">0x400ac8</span> mov    %eax,<span class="number">-0x64</span>(%rbp)<span class="comment">//to cs</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>const类对象：  </p>
+<ul>
+<li>const对象为什么不能更改成员：<br>成员是存在对象中的，如int,char等成员，存在栈中<br>const对象的成员也是放在栈中的，它们之所以不能赋值，是在编译期间确定，更具体的细节未知；  　</li>
+</ul>
+</li>
+<li>const对象为什么不能调用非const成员函数：<ul>
+<li>一个成员函数如何被调用：   　　</li>
+<li>其实成员函数也是全局函数，所以它能被调用，<br>　eg:    <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  obj.show();---&gt;实际上被转换为：</span><br><span class="line">  show(&amp;obj)  --传递给<span class="keyword">this</span>指针：</span><br><span class="line"> 所以当：<span class="function"><span class="keyword">const</span> OB <span class="title">obj</span><span class="params">()</span></span>;</span><br><span class="line">obj.show();时，翻译为　<span class="keyword">const</span> OB *<span class="keyword">this</span>;</span><br><span class="line">在传递给OB *<span class="keyword">this</span>时会出现不能将<span class="keyword">this</span>指针</span><br><span class="line">从<span class="keyword">const</span> OB转换为OB &amp;的错误</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p>可以做个实验试试</p>
+<ul>
+<li><p>conclude:<br>if it can use non const func ,it will change member by non const this pointer;</p>
+</li>
+<li><p>为什么可以调用const函数：<br>const函数：void show() const转换为：show(const OB *this);所以匹配上了，就可以调用了</p>
+</li>
+</ul>
+<p>注意：有最小权限原则，非const对象可以调用const成员函数，就像可以赋值一样。非const变量可以用const赋值</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-keyword/" rel="tag"># cpp_keyword</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/07/leetcode-linklist3/" rel="prev" title="leetcode_linklist3">
+      <i class="fa fa-chevron-left"></i> leetcode_linklist3
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/08/cpp-static/" rel="next" title="cpp_static">
+      cpp_static <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c-关键词之const"><span class="nav-number">1.</span> <span class="nav-text">c++关键词之const</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#const介绍，用法，原理，注意点等"><span class="nav-number">1.1.</span> <span class="nav-text">const介绍，用法，原理，注意点等</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#const-介绍："><span class="nav-number">1.1.1.</span> <span class="nav-text">const 介绍：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#用法"><span class="nav-number">1.1.2.</span> <span class="nav-text">用法 </span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#const-c-amp-cpp差异"><span class="nav-number">1.1.3.</span> <span class="nav-text">const  c&amp;cpp差异</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#const和类"><span class="nav-number">1.1.4.</span> <span class="nav-text">const和类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#c-11中的添加的新内容"><span class="nav-number">1.1.5.</span> <span class="nav-text">c++11中的添加的新内容</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#c-const内存和原理"><span class="nav-number">1.1.6.</span> <span class="nav-text">c++ const内存和原理</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>

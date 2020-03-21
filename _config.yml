@@ -1,19 +1,19 @@
-# Hexo Configuration
+# Hexo Configurtion
 ## Docs: https://hexo.io/docs/configuration.html
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Ksance
-subtitle: second ksance
-description: this a test
-keywords:  may be class test
-author: Ksance 
+title: 追光者
+subtitle: 小兴的博客
+description: 始于歧路，愿归于征途
+keywords:  wifi,安卓，搜索，后台，c/c++,网球，科幻，动漫
+author: 小兴 
 language: zh-CN
 timezone: Asia/Shanghai
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: http://xdksx.github.io
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -35,7 +35,7 @@ titlecase: false # Transform title into titlecase
 external_link: true # Open external links in new tab
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 highlight:
@@ -80,8 +80,9 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: yilia
-
+plugins: hexo-generate-feed
+#theme: yilia
+theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy: 
@@ -116,3 +117,12 @@ jsonContent:
     excerpt: false
     categories: false
     tags: true
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10000
+#live2d:
+#  model: shizuku
+#  mobileShow: false
+#  bottom: -30

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入:">
+<meta name="keywords" content="cpp_memory">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_debug_layout_dynamic">
+<meta property="og:url" content="http://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入:">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-05-21T16:06:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpp_debug_layout_dynamic">
+<meta name="twitter:description" content="c执行期内存布局和调试：在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等１、将目标文件装入:">
+
+<link rel="canonical" href="http://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_debug_layout_dynamic | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_debug_layout_dynamic
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-05-20 18:33:09" itemprop="dateCreated datePublished" datetime="2018-05-20T18:33:09+08:00">2018-05-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-05-22 00:06:54" itemprop="dateModified" datetime="2018-05-22T00:06:54+08:00">2018-05-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="c执行期内存布局和调试："><a href="#c执行期内存布局和调试：" class="headerlink" title="c执行期内存布局和调试："></a>c执行期内存布局和调试：</h3><p>在生成目标文件后，还没被执行时还是一个静态文件，当被执行时，可能会进行，动态链接等<br>１、将目标文件装入: <a id="more"></a><br><em>１）重定位－－－　放在内存哪里<br> 2)  等待调度执行</em><br>这里可以使用gdb进行调试查看</p>
+<p>一个进程是一个运行着的程序段，一个程序有可能有多个进程在运行（程序中fork).<br>一个进程主要包括：<br>   在内存中申请的空间，代码（加载的程序段，包括代码段，数据段和bss).堆，栈，以及内核进程信息结构task_struct，打开的文件，上下文信息和挂起的信号等</p>
+<blockquote>
+<p>栈区　　高地址到低地址<br>堆区　　低地址到高地址<br>bss<br>数据<br>代码</p>
+</blockquote>
+<p> 以下将从两个维度进行对一个程序被执行成进程时，内存的情况：<br> １、各种段区的内存分布<br> ２、gdb 调试程序执行时的过程。－－可能涉及到汇编<br> －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－</p>
+<h4 id="1、gdb-常用的命令和用法："><a href="#1、gdb-常用的命令和用法：" class="headerlink" title="1、gdb　常用的命令和用法："></a>1、gdb　常用的命令和用法：</h4><p>1)通过gcc 编译出带调试信息的程序：gcc -o gdbtest gdbtest.c -g 回车重复上一次命令<br> 2)设置断点：　<br>b 行号<br>b 函数名<br>b 行号　if 条件<br>eg:<br>break main  /  b main<br>  删除断点:delete 行号</p>
+<p>3)列出代码<br>l /list</p>
+<p>4)运行，start<br>  跳转到断点:c/continue   r/run<br>  until  行号　　　运行直到该行<br>5)观察变量b和地址<br>watch b  若变量值发生变化，则程序停止</p>
+<p>　p/print  b  看变量值<br>　p/print &amp;b　看变量地址<br> i  locals</p>
+<p> info registers 显示所有寄存器的值<br> 查看特定内存位置的值如：<br> print/x $eax   显示为16进制<br> print/t  2进制，　<br> print/d 十进制,<br>x/nyz  : n表示字段数，y为输出格式，z是字段长度</p>
+<p>６）单步调试<br> n/next   /   s/step　</p>
+<p> 7) 保存断点：<br> info b  查看断点信息<br> save breakpoint fig.dp 保存断点<br> 读取断点文件：　gdb hello -x fig.dp</p>
+<p> 退出quit</p>
+<p> <a href="http://bbs.chinaunix.net/thread-150524-1-1.html" target="_blank" rel="noopener">http://bbs.chinaunix.net/thread-150524-1-1.html</a></p>
+<h4 id="2-使用kdbg"><a href="#2-使用kdbg" class="headerlink" title="2 使用kdbg"></a>2 使用kdbg</h4><p> 界面版本gdb  在gcc … -g后，用kdbg打开即可、<br> 查看程序运行时各个地址：<br>    <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SHW_ADR(ID,I) printf(<span class="meta-string">"the id %s \t is at adr:%8X\n"</span>,ID,&amp;I);</span></span><br><span class="line"><span class="keyword">extern</span> etext,edata,end;</span><br><span class="line"><span class="keyword">char</span> *cptr=<span class="string">"Hello World\n"</span>;</span><br><span class="line"><span class="keyword">char</span> buffer1[<span class="number">25</span>];</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">showit</span><span class="params">(<span class="keyword">char</span> *)</span></span>;</span><br><span class="line">	<span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line">   	<span class="built_in">printf</span>(<span class="string">"Adr etext:%8x\tAdr edata:%8x \t Adr end :%8x \n\n"</span>,&amp;etext,&amp;edata,&amp;end);</span><br><span class="line">	SHW_ADR(<span class="string">"main"</span>,main);</span><br><span class="line">	SHW_ADR(<span class="string">"showit"</span>,showit);</span><br><span class="line">	SHW_ADR(<span class="string">"cptr"</span>,cptr);</span><br><span class="line">	SHW_ADR(<span class="string">"buffer1"</span>,buffer1);</span><br><span class="line">	SHW_ADR(<span class="string">"i"</span>,i);</span><br><span class="line">	<span class="built_in">strcpy</span>(buffer1,<span class="string">"A demonstration\n"</span>);</span><br><span class="line">	write(<span class="number">1</span>,buffer1,<span class="built_in">strlen</span>(buffer1)+<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">for</span>(;i&lt;<span class="number">1</span>;++i)</span><br><span class="line">		showit(cptr);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">showit</span><span class="params">(<span class="keyword">char</span> *p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> *buffer2;</span><br><span class="line">	SHW_ADR(<span class="string">"buffer2"</span>,buffer2);</span><br><span class="line">	<span class="keyword">if</span>((buffer2=(<span class="keyword">char</span> *)<span class="built_in">malloc</span>((<span class="keyword">unsigned</span>)(<span class="built_in">strlen</span>(p)+<span class="number">1</span>)))!=<span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">strcpy</span>(buffer2,p);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%s"</span>,buffer2);</span><br><span class="line">		<span class="built_in">free</span>(buffer2);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Allocation error.\n"</span>);</span><br><span class="line">		<span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－<br>    <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;alloca.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">afunc</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"><span class="keyword">extern</span> etext,edata,end;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> bss_var;				<span class="comment">//no init globel data must be in bss</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> data_var=<span class="number">42</span>;			<span class="comment">//init globel data must be in data</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SHW_ADR(ID,I) printf(<span class="meta-string">"the %8s\t is at adr:%8x\n"</span>,ID,&amp;I);		<span class="comment">//the macro to printf the addr</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> *p,*b,*nb;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Adr etext:%8x\t Adr edata %8x\t Adr end %8x\t\n"</span>,&amp;etext,&amp;edata,&amp;end);</span><br><span class="line">	</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\ntext Location:\n"</span>);</span><br><span class="line">	SHW_ADR(<span class="string">"main"</span>,main);			<span class="comment">//text section function</span></span><br><span class="line">	SHW_ADR(<span class="string">"afunc"</span>,afunc);			<span class="comment">//text section function</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\nbss Location:\n"</span>);</span><br><span class="line">	SHW_ADR(<span class="string">"bss_var"</span>,bss_var);		<span class="comment">//bss section var</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\ndata location:\n"</span>);</span><br><span class="line">	SHW_ADR(<span class="string">"data_var"</span>,data_var);	<span class="comment">//data section var</span></span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\nStack Locations:\n"</span>);</span><br><span class="line">	afunc();</span><br><span class="line">	</span><br><span class="line">	p=(<span class="keyword">char</span> *)alloca(<span class="number">32</span>);			<span class="comment">//alloc memory from statck</span></span><br><span class="line">	<span class="keyword">if</span>(p!=<span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		SHW_ADR(<span class="string">"start"</span>,p);</span><br><span class="line">		SHW_ADR(<span class="string">"end"</span>,p+<span class="number">31</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	b=(<span class="keyword">char</span> *)<span class="built_in">malloc</span>(<span class="number">32</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));	<span class="comment">//malloc memory from heap</span></span><br><span class="line">	nb=(<span class="keyword">char</span> *)<span class="built_in">malloc</span>(<span class="number">16</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">	</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\nHeap Locations:\n"</span>);	</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"the Heap start: %p\n"</span>,b);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"the Heap end:%p\n"</span>,(nb+<span class="number">16</span>*<span class="keyword">sizeof</span>(<span class="keyword">char</span>)));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\nb and nb in Stack\n"</span>);</span><br><span class="line">	SHW_ADR(<span class="string">"b"</span>,b);</span><br><span class="line">	SHW_ADR(<span class="string">"nb"</span>,nb);</span><br><span class="line">	<span class="built_in">free</span>(b);</span><br><span class="line">	<span class="built_in">free</span>(nb);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afunc</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">int</span> <span class="keyword">long</span> level=<span class="number">0</span>;	<span class="comment">//data section static var</span></span><br><span class="line">	<span class="keyword">int</span>	 stack_var;				<span class="comment">//temp var ,in stack section</span></span><br><span class="line">	<span class="keyword">if</span>(++level==<span class="number">5</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	SHW_ADR(<span class="string">"stack_var in stack section"</span>,stack_var);</span><br><span class="line">	SHW_ADR(<span class="string">"Level in data section"</span>,level);</span><br><span class="line">	afunc();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-memory/" rel="tag"># cpp_memory</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/20/android-jni/" rel="prev" title="android_jni">
+      <i class="fa fa-chevron-left"></i> android_jni
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/05/20/cpp-debug-layout-static/" rel="next" title="cpp_debug_layout_static">
+      cpp_debug_layout_static <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c执行期内存布局和调试："><span class="nav-number">1.</span> <span class="nav-text">c执行期内存布局和调试：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、gdb-常用的命令和用法："><span class="nav-number">1.1.</span> <span class="nav-text">1、gdb　常用的命令和用法：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-使用kdbg"><span class="nav-number">1.2.</span> <span class="nav-text">2 使用kdbg</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body>
+</html>
