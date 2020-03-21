@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdksx.github.io/"/>
-  <updated>2020-03-21T07:30:55.165Z</updated>
+  <updated>2020-03-21T08:20:24.432Z</updated>
   <id>http://xdksx.github.io/</id>
   
   <author>
@@ -15,28 +15,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="http://xdksx.github.io/2020/03/21/hello-world/"/>
-    <id>http://xdksx.github.io/2020/03/21/hello-world/</id>
-    <published>2020-03-21T07:30:55.165Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a
-        
-      
-    
-    </summary>
-    
-    
-  </entry>
   
   <entry>
     <title>cpp_runtime_semantis</title>
@@ -441,6 +419,26 @@
     
     
       <category term="tcpip_ip" scheme="http://xdksx.github.io/tags/tcpip-ip/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>tcpip_MAC</title>
+    <link href="http://xdksx.github.io/2018/06/02/tcpip-MAC/"/>
+    <id>http://xdksx.github.io/2018/06/02/tcpip-MAC/</id>
+    <published>2018-06-03T04:29:48.000Z</published>
+    <updated>2020-03-21T07:30:55.165Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;mac数据链路层的理解&quot;&gt;&lt;a href=&quot;#mac数据链路层的理解&quot; class=&quot;headerlink&quot; title=&quot;mac数据链路层的理解&quot;&gt;&lt;/a&gt;mac数据链路层的理解&lt;/h3&gt;&lt;h4 id=&quot;mac层的功能介绍&quot;&gt;&lt;a href=&quot;#mac层的功能介绍&quot; class=&quot;headerlink&quot; title=&quot;mac层的功能介绍&quot;&gt;&lt;/a&gt;mac层的功能介绍&lt;/h4&gt;&lt;p&gt;mac层在理论上赋予了较全的功能，但是其实，实际上在使用的时候，由于无噪声通道，或者一些功能交给了上层的协议，所以实际的mac功能没有理论那么全面。mac层的实现包括在驱动和固件中，所以实际的功能得看芯片和固件的支持，比如是否支持监听模式；
+    
+    </summary>
+    
+      <category term="tcpip" scheme="http://xdksx.github.io/categories/tcpip/"/>
+    
+    
+      <category term="tcpip_mac" scheme="http://xdksx.github.io/tags/tcpip-mac/"/>
     
   </entry>
   
