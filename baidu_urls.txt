@@ -1,3 +1,4 @@
+https://xdksx.github.io/2020/04/03/mentaily-test/
 https://xdksx.github.io/2018/07/29/cpp-runtime-semantis/
 https://xdksx.github.io/2018/06/24/tcpip-pingtraceroute/
 https://xdksx.github.io/2018/06/24/leetcode-string/
@@ -27,4 +28,3 @@ https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/
 https://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/
 https://xdksx.github.io/2018/05/20/android-jni/
 https://xdksx.github.io/2018/05/20/android-adb/
-https://xdksx.github.io/2018/05/20/android-AndroidManifest/

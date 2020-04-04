@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>mentaily test</title>
+    <url>/2020/04/03/mentaily-test/</url>
+    <content><![CDATA[<p>#zhe<br>is a test for mentaily</p>
+]]></content>
+      <categories>
+        <category>心理</category>
+      </categories>
+  </entry>
+  <entry>
     <title>cpp_runtime_semantis</title>
     <url>/2018/07/29/cpp-runtime-semantis/</url>
     <content><![CDATA[<h3 id="c-执行期语意学"><a href="#c-执行期语意学" class="headerlink" title="c++ 执行期语意学"></a>c++ 执行期语意学</h3><h4 id="执行期和编译期的理解"><a href="#执行期和编译期的理解" class="headerlink" title="执行期和编译期的理解"></a>执行期和编译期的理解</h4><ul>
