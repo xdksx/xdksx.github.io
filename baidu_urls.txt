@@ -1,3 +1,4 @@
+https://xdksx.github.io/2020/07/11/gdb基本使用/
 https://xdksx.github.io/2020/04/03/我理解的心理模型/
 https://xdksx.github.io/2018/07/29/cpp-runtime-semantis/
 https://xdksx.github.io/2018/06/24/tcpip-pingtraceroute/
@@ -27,4 +28,3 @@ https://xdksx.github.io/2018/05/20/tcpip-mtu/
 https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/
 https://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/
 https://xdksx.github.io/2018/05/20/android-jni/
-https://xdksx.github.io/2018/05/20/android-adb/
