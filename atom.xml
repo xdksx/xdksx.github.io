@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2020-07-11T07:45:16.137Z</updated>
+  <updated>2021-01-10T08:32:42.466Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>cpp_template_deepin</title>
+    <link href="https://xdksx.github.io/2021/01/09/cpp-template-deepin/"/>
+    <id>https://xdksx.github.io/2021/01/09/cpp-template-deepin/</id>
+    <published>2021-01-09T16:23:38.000Z</published>
+    <updated>2021-01-10T08:32:42.466Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;模板是什么，为什么要引入模板：&quot;&gt;&lt;a href=&quot;#模板是什么，为什么要引入模板：&quot; class=&quot;headerlink&quot; title=&quot;模板是什么，为什么要引入模板：&quot;&gt;&lt;/a&gt;模板是什么，为什么要引入模板：&lt;/h3&gt;&lt;p&gt;模板是用来生成代码的，通过模板可以定义一组类型的共同行为；&lt;br&gt;为什么要引入模板：&lt;br&gt;继承和组合是实现重用代码的方法，而容器也是，为了实现能承载不同类型的容器，java等其他语言用所有类都继承于根类型等方式，
+    
+    </summary>
+    
+      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
+    
+    
+      <category term="cpp_template" scheme="https://xdksx.github.io/tags/cpp-template/"/>
+    
+  </entry>
   
   <entry>
     <title>gdb基础</title>
@@ -406,30 +426,6 @@
     <summary type="html">
     
       &lt;h3 id=&quot;leetcode——单链表2&quot;&gt;&lt;a href=&quot;#leetcode——单链表2&quot; class=&quot;headerlink&quot; title=&quot;leetcode——单链表2&quot;&gt;&lt;/a&gt;leetcode——单链表2&lt;/h3&gt;&lt;h4 id=&quot;partition-list&quot;&gt;&lt;a href=&quot;#partition-list&quot; class=&quot;headerlink&quot; title=&quot;partition list&quot;&gt;&lt;/a&gt;partition list&lt;/h4&gt;&lt;p&gt;这个是快速排序中一个很重要的步骤，即比该数大于等于的放其前小的放后。在链表中，基本思路:扫描链表，比给定数字小的不处理，比给定数字大的取下并插入到末尾
-    
-    </summary>
-    
-      <category term="leetcode" scheme="https://xdksx.github.io/categories/leetcode/"/>
-    
-    
-      <category term="leetcode_linklist" scheme="https://xdksx.github.io/tags/leetcode-linklist/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>leetcode_linklist1</title>
-    <link href="https://xdksx.github.io/2018/06/03/leetcode-linklist1/"/>
-    <id>https://xdksx.github.io/2018/06/03/leetcode-linklist1/</id>
-    <published>2018-06-03T13:37:57.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;leetcode——单链表&quot;&gt;&lt;a href=&quot;#leetcode——单链表&quot; class=&quot;headerlink&quot; title=&quot;leetcode——单链表&quot;&gt;&lt;/a&gt;leetcode——单链表&lt;/h3&gt;&lt;h4 id=&quot;两数相加：&quot;&gt;&lt;a href=&quot;#两数相加：&quot; class=&quot;headerlink&quot; title=&quot;两数相加：&quot;&gt;&lt;/a&gt;两数相加：&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;这道题是经一年多没刷题目之后，重新开始的第一道题，本来想着只是本地刷刷，后面开始就到leetcode提交了，毕竟写的程序还是得经过检验&lt;/li&gt;
-&lt;li&gt;所以这道题就纯粹的解答，未经检验，只是本地跑通，并且加上了自己的一些看法，比如对该题目该思路可能可以应用在哪些地方，这样算法才有了真正的意义，个人十分不赞同一些在公司呆久了的人说数据结构算法没什么用的人2333&lt;/li&gt;
-&lt;li&gt;废话不多说：  好久没写，第一道就别吐槽了，慢慢来&lt;/li&gt;
-&lt;li&gt;题目描述：
     
     </summary>
     
