@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述：为什么需要函数模板：类型限制了函数的通用性，参数换一种类型，即得重新再定义一个处理流程相同的函数；">
+<meta name="keywords" content="cpp_template">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_template_func">
+<meta property="og:url" content="https://xdksx.github.io/2021/01/09/cpp-template-func/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="概述：为什么需要函数模板：类型限制了函数的通用性，参数换一种类型，即得重新再定义一个处理流程相同的函数；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-01-10T08:50:57.573Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpp_template_func">
+<meta name="twitter:description" content="概述：为什么需要函数模板：类型限制了函数的通用性，参数换一种类型，即得重新再定义一个处理流程相同的函数；">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/01/09/cpp-template-func/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_template_func | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/心理/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/01/09/cpp-template-func/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_template_func
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-10 00:50:01 / 修改时间：16:50:57" itemprop="dateCreated datePublished" datetime="2021-01-10T00:50:01+08:00">2021-01-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="概述："><a href="#概述：" class="headerlink" title="概述："></a>概述：</h3><p>为什么需要函数模板：类型限制了函数的通用性，参数换一种类型，即得重新再定义一个处理流程相同的函数；<a id="more"></a><br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">eg：</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (x &gt; y) ? x : y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">max</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (x &gt; y) ? x : y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">char</span>,ints等等，甚至实现了&gt;运算符函数的类也是如此；</span><br></pre></td></tr></table></figure></p>
+<h3 id="什么是函数模板："><a href="#什么是函数模板：" class="headerlink" title="什么是函数模板："></a>什么是函数模板：</h3><p>In C++, function templates are functions that serve as a pattern for creating other similar functions.<br>在c++中，函数模板即是能作为一个模式来创建其他相似函数的一组函数；<br>在c++函数模板中，我们使用占位符来替代部分或全部的函数中具体类型的变量；<br>返回值，形参，以及函数内定义的局部变量等都能使用；<br>typename和class 的区别：<a href="http://www.cplusplus.com/forum/general/8027/" target="_blank" rel="noopener">http://www.cplusplus.com/forum/general/8027/</a></p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;                                                             </span></span></span><br><span class="line"><span class="comment">//using namespace std;导入这个为什么会出错？这里也定义了min函数，那么会冲突？                            </span></span><br><span class="line"><span class="keyword">using</span>  <span class="built_in">std</span>::<span class="built_in">cout</span>;                                                              </span><br><span class="line"><span class="keyword">using</span>  <span class="built_in">std</span>::<span class="built_in">endl</span>;                                                              </span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;                                                          </span><br><span class="line">   <span class="comment">/* T min( T x, T y)&#123; </span></span><br><span class="line"><span class="comment">            T t=x;                                          </span></span><br><span class="line"><span class="comment">        return (x+t&gt;y)?y:x;                                                      </span></span><br><span class="line"><span class="comment">&#125;   */</span></span><br><span class="line"><span class="function">T <span class="title">min</span><span class="params">( T x, T y)</span></span>&#123;                                       </span><br><span class="line">        <span class="keyword">return</span> (x&gt;y)?y:x;                                                      </span><br><span class="line">&#125;                                                                               </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span>                                                                    </span></span><br><span class="line"><span class="function"></span>&#123;                                                                              </span><br><span class="line">    <span class="keyword">int</span> i = min(<span class="number">3</span>,<span class="number">4</span>);                                                          </span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;i&lt;&lt;<span class="built_in">endl</span>;                                                             </span><br><span class="line">                                                                               </span><br><span class="line">    <span class="keyword">double</span> d=min(<span class="number">6.38</span>,<span class="number">12.32</span>);                                                  </span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;d&lt;&lt;<span class="built_in">endl</span>;                                                             </span><br><span class="line">                                                                               </span><br><span class="line">    <span class="keyword">char</span> ch=min(<span class="string">'a'</span>,<span class="string">'6'</span>);                                                      </span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;ch&lt;&lt;<span class="built_in">endl</span>;                                                            </span><br><span class="line">                                                                               </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;                                                                  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">建议，这里的模板定义加上<span class="keyword">const</span>和使用引用会更好，使用引用的原因是传入的参数有可能是类类型(这样参数类型和返回值应为引用更通用），使用<span class="keyword">const</span>是为了避免对传入参数的原变量造成影响；如下：</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">    <span class="keyword">const</span> T&amp; min(<span class="keyword">const</span> T&amp; x,<span class="keyword">const</span> T&amp; y)&#123;</span><br><span class="line">        <span class="keyword">return</span> (x&gt;y)?y:x;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="更多使用例子"><a href="#更多使用例子" class="headerlink" title="更多使用例子"></a>更多使用例子</h4><p>用于类类型:注意类需要实现对应的运算符函数等；<br>模板类型和实际类型混合<br>指针类型：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">T</span> <span class="title">average</span>(<span class="title">T</span> *<span class="title">array</span>, <span class="title">int</span> <span class="title">length</span>)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    T sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count &lt; length; ++count)</span><br><span class="line">        sum += <span class="built_in">array</span>[count];</span><br><span class="line"> </span><br><span class="line">    sum /= length;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>多个模板类型</p>
+<h3 id="假设这里我传入了int-会怎么样？"><a href="#假设这里我传入了int-会怎么样？" class="headerlink" title="假设这里我传入了int* 会怎么样？"></a>假设这里我传入了int* 会怎么样？</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">来看一个例子：指针的话会优先匹配指针</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="comment">//using namespace std;导入这个为什么会出错？这里也定义了min函数，那么会冲突？                            </span></span><br><span class="line"><span class="keyword">using</span>  <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span>  <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">   <span class="comment">/* T min( T x, T y)&#123; </span></span><br><span class="line"><span class="comment">            T t=x;                                          </span></span><br><span class="line"><span class="comment">        return (x+t&gt;y)?y:x;                                                      </span></span><br><span class="line"><span class="comment">&#125;   */</span></span><br><span class="line"><span class="function">T <span class="title">min</span><span class="params">( T* x, T* y)</span></span>&#123;<span class="comment">//这样的话，这里的x实际上是指针类型，比如传入int* ==&gt; T* ，要返回int的话，得对x做*，如*x</span></span><br><span class="line">      <span class="built_in">cout</span>&lt;&lt;<span class="string">"real"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">      <span class="keyword">return</span> (*x&gt;*y)?*y:*x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*template&lt;typename T&gt; 模板只能匹配参数，不能匹配返回值，所以这里和上面的是重复的；编译会报错；</span></span><br><span class="line"><span class="comment">T* min(T* x,T* y)</span></span><br><span class="line"><span class="comment">&#123;</span></span><br><span class="line"><span class="comment">     return (x&gt;y)?y:x;</span></span><br><span class="line"><span class="comment">&#125;*/</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">T <span class="title">min</span><span class="params">(T x,T y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x+y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = min(<span class="number">3</span>,<span class="number">4</span>);</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;i&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">double</span> d=min(<span class="number">6.38</span>,<span class="number">12.32</span>);</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;d&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span> ch=min(<span class="string">'a'</span>,<span class="string">'6'</span>);</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;ch&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line"><span class="comment">//以上匹配的是非指针的版本+</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"now pointer"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">int</span> m =<span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> n = <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">int</span> jj=min(&amp;m,&amp;n); <span class="comment">//这里匹配的是指针的</span></span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"m:"</span>&lt;&lt;&amp;m&lt;&lt;<span class="string">"n:"</span>&lt;&lt;&amp;n&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;min(&amp;m,&amp;n)&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;jj&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">~</span><br></pre></td></tr></table></figure>
+<h3 id="函数模板的特化-什么时候需要"><a href="#函数模板的特化-什么时候需要" class="headerlink" title="函数模板的特化 什么时候需要"></a>函数模板的特化 什么时候需要</h3><p>引入：有时候，针对具体的类型，我们想定义具体的函数，而不是用模板中对所有类型通用的函数时，可以定义一个函数模板的特化函数；<br>语法：<br>eg</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Storage</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T m_value;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Storage(T value)</span><br><span class="line">    &#123;</span><br><span class="line">         m_value = value;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    ~Storage()</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; m_value &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Define some storage units</span></span><br><span class="line">    Storage&lt;<span class="keyword">int</span>&gt; nValue(<span class="number">5</span>);</span><br><span class="line">    Storage&lt;<span class="keyword">double</span>&gt; dValue(<span class="number">6.7</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Print out some values</span></span><br><span class="line">    nValue.print();</span><br><span class="line">    dValue.print();</span><br><span class="line">&#125;</span><br><span class="line">那么当我们想针对<span class="keyword">double</span>有个特殊专属的print函数时，应该怎么做？</span><br><span class="line">答案是针对其写一个函数：特化：</span><br><span class="line"><span class="keyword">template</span> &lt;&gt;</span><br><span class="line"><span class="keyword">void</span> Storage&lt;<span class="keyword">double</span>&gt;::print()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::scientific &lt;&lt; m_value &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">&#125;</span><br><span class="line">这样，当编译器实例化模板时，<span class="keyword">double</span>时，就会使用这个特化的print;</span><br><span class="line">The template &lt;&gt; tells the compiler that this is a template function, but that there are no template parameters (since in this case, we’re explicitly specifying all of the types). Some compilers may allow you to omit this, but it’s proper to include it.</span><br></pre></td></tr></table></figure>
+<h3 id="类相关例子："><a href="#类相关例子：" class="headerlink" title="类相关例子："></a>类相关例子：</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">类模板的构造函数也可以这样处理：</span><br><span class="line"><span class="keyword">template</span> &lt;&gt;</span><br><span class="line">Storage&lt;<span class="keyword">char</span>*&gt;::Storage(<span class="keyword">char</span>* value)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Figure out how long the string in value is</span></span><br><span class="line">    <span class="keyword">int</span> length=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (value[length] != <span class="string">'\0'</span>)</span><br><span class="line">        ++length;</span><br><span class="line">    ++length; <span class="comment">// +1 to account for null terminator</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Allocate memory to hold the value string</span></span><br><span class="line">    m_value = <span class="keyword">new</span> <span class="keyword">char</span>[length];</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Copy the actual value string into the m_value memory we just allocated</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count &lt; length; ++count)</span><br><span class="line">        m_value[count] = value[count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-template/" rel="tag"># cpp_template</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/09/cpp-template-deepin/" rel="prev" title="cpp_template_deepin">
+      <i class="fa fa-chevron-left"></i> cpp_template_deepin
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/09/cpp-template-class/" rel="next" title="cpp_template_class">
+      cpp_template_class <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述："><span class="nav-number">1.</span> <span class="nav-text">概述：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是函数模板："><span class="nav-number">2.</span> <span class="nav-text">什么是函数模板：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">3.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#更多使用例子"><span class="nav-number">3.1.</span> <span class="nav-text">更多使用例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#假设这里我传入了int-会怎么样？"><span class="nav-number">4.</span> <span class="nav-text">假设这里我传入了int* 会怎么样？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数模板的特化-什么时候需要"><span class="nav-number">5.</span> <span class="nav-text">函数模板的特化 什么时候需要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类相关例子："><span class="nav-number">6.</span> <span class="nav-text">类相关例子：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com" title="http://yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '97551f7b907a0a9804ddb37ebb6039de',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,3 +1,5 @@
+https://xdksx.github.io/2021/01/09/cpp-template-class/
+https://xdksx.github.io/2021/01/09/cpp-template-func/
 https://xdksx.github.io/2021/01/09/cpp-template-deepin/
 https://xdksx.github.io/2020/07/11/gdb基本使用/
 https://xdksx.github.io/2020/04/03/我理解的心理模型/
@@ -26,5 +28,3 @@ https://xdksx.github.io/2018/05/27/tcpip-PF-PACKET/
 https://xdksx.github.io/2018/05/26/DS-linklist/
 https://xdksx.github.io/2018/05/25/code-efficandreadable/
 https://xdksx.github.io/2018/05/20/tcpip-mtu/
-https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/
-https://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/

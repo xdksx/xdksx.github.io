@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="类模板的基本概念类模板的引入：">
+<meta name="keywords" content="cpp_template">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_template_class">
+<meta property="og:url" content="https://xdksx.github.io/2021/01/09/cpp-template-class/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="类模板的基本概念类模板的引入：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-01-10T09:09:29.814Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpp_template_class">
+<meta name="twitter:description" content="类模板的基本概念类模板的引入：">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/01/09/cpp-template-class/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_template_class | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/心理/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/01/09/cpp-template-class/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_template_class
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-10 01:07:05 / 修改时间：17:09:29" itemprop="dateCreated datePublished" datetime="2021-01-10T01:07:05+08:00">2021-01-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="类模板的基本概念"><a href="#类模板的基本概念" class="headerlink" title="类模板的基本概念"></a>类模板的基本概念</h3><h3 id="类模板的引入："><a href="#类模板的引入：" class="headerlink" title="类模板的引入："></a>类模板的引入：<a id="more"></a></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line">一个例子：</span><br><span class="line">用类封装一个包含多操作的IntArray:</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> INTARRAY_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INTARRAY_H</span></span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt; // for assert()</span></span></span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IntArray</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> m_length;</span><br><span class="line">    <span class="keyword">int</span> *m_data;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    IntArray()</span><br><span class="line">    &#123;</span><br><span class="line">        m_length = <span class="number">0</span>;</span><br><span class="line">        m_data = <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    IntArray(<span class="keyword">int</span> length)</span><br><span class="line">    &#123;</span><br><span class="line">        assert(length &gt; <span class="number">0</span>);</span><br><span class="line">        m_data = <span class="keyword">new</span> <span class="keyword">int</span>[length];</span><br><span class="line">        m_length = length;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    ~IntArray()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] m_data;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Erase</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">delete</span>[] m_data;</span><br><span class="line">        <span class="comment">// We need to make sure we set m_data to 0 here, otherwise it will</span></span><br><span class="line">        <span class="comment">// be left pointing at deallocated memory!</span></span><br><span class="line">        m_data = <span class="literal">nullptr</span>;</span><br><span class="line">        m_length = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">int</span>&amp; <span class="keyword">operator</span>[](<span class="keyword">int</span> index)</span><br><span class="line">    &#123;</span><br><span class="line">        assert(index &gt;= <span class="number">0</span> &amp;&amp; index &lt; m_length);</span><br><span class="line">        <span class="keyword">return</span> m_data[index];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getLength</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> m_length; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">用类封装一个包含多操作的DoubleArray:</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> DOUBLEARRAY_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DOUBLEARRAY_H</span></span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt; // for assert()</span></span></span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DoubleArray</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> m_length;</span><br><span class="line">    <span class="keyword">double</span> *m_data;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    DoubleArray()</span><br><span class="line">    &#123;</span><br><span class="line">        m_length = <span class="number">0</span>;</span><br><span class="line">        m_data = <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    DoubleArray(<span class="keyword">int</span> length)</span><br><span class="line">    &#123;</span><br><span class="line">        assert(length &gt; <span class="number">0</span>);</span><br><span class="line">        m_data = <span class="keyword">new</span> <span class="keyword">double</span>[length];</span><br><span class="line">        m_length = length;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    ~DoubleArray()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] m_data;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Erase</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">delete</span>[] m_data;</span><br><span class="line">        <span class="comment">// We need to make sure we set m_data to 0 here, otherwise it will</span></span><br><span class="line">        <span class="comment">// be left pointing at deallocated memory!</span></span><br><span class="line">        m_data = <span class="literal">nullptr</span>;</span><br><span class="line">        m_length = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">double</span> &amp; <span class="keyword">operator</span>[](<span class="keyword">int</span> index)</span><br><span class="line">    &#123;</span><br><span class="line">        assert(index &gt;= <span class="number">0</span> &amp;&amp; index &lt; m_length);</span><br><span class="line">        <span class="keyword">return</span> m_data[index];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getLength</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> m_length; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">以上两个定义内容只有里面的类型不同，那么为什么不忽略类型的差异，定义通用的容器？于是类模板出现：</span><br><span class="line">类模板的定义和使用：</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> ARRAY_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ARRAY_H</span></span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt; // for assert()</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt; // <span class="title">This</span> <span class="title">is</span> <span class="title">a</span> <span class="title">template</span> <span class="title">class</span>, <span class="title">the</span> <span class="title">user</span> <span class="title">will</span> <span class="title">provide</span> <span class="title">the</span> <span class="title">data</span> <span class="title">type</span> <span class="title">for</span> <span class="title">T</span></span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Array</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> m_length;<span class="comment">//注意这里可以指定具体类型；</span></span><br><span class="line">    T *m_data;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Array()</span><br><span class="line">    &#123;</span><br><span class="line">        m_length = <span class="number">0</span>;</span><br><span class="line">        m_data = <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    Array(<span class="keyword">int</span> length)</span><br><span class="line">    &#123;</span><br><span class="line">        m_data = <span class="keyword">new</span> T[length];</span><br><span class="line">        m_length = length;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    ~Array()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] m_data;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Erase</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">delete</span>[] m_data;</span><br><span class="line">        <span class="comment">// We need to make sure we set m_data to 0 here, otherwise it will</span></span><br><span class="line">        <span class="comment">// be left pointing at deallocated memory!</span></span><br><span class="line">        m_data = <span class="literal">nullptr</span>;</span><br><span class="line">        m_length = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    T&amp; <span class="keyword">operator</span>[](<span class="keyword">int</span> index)</span><br><span class="line">    &#123;</span><br><span class="line">        assert(index &gt;= <span class="number">0</span> &amp;&amp; index &lt; m_length);</span><br><span class="line">        <span class="keyword">return</span> m_data[index];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// The length of the array is always an integer</span></span><br><span class="line">    <span class="comment">// It does not depend on the data type of the array</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getLength</span><span class="params">()</span></span>; <span class="comment">// templated getLength() function defined below</span></span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="comment">// member functions defined outside the class need their own template declaration</span></span><br><span class="line"><span class="keyword">int</span> Array&lt;T&gt;::getLength() &#123; <span class="keyword">return</span> m_length; &#125; <span class="comment">// note class name is Array&lt;T&gt;, not Array</span></span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">使用：</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Array.h"</span></span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Array&lt;<span class="keyword">int</span>&gt; intArray(<span class="number">12</span>);</span><br><span class="line">	Array&lt;<span class="keyword">double</span>&gt; doubleArray(<span class="number">12</span>);</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> count = <span class="number">0</span>; count &lt; intArray.getLength(); ++count)</span><br><span class="line">	&#123;</span><br><span class="line">		intArray[count] = count;</span><br><span class="line">		doubleArray[count] = count + <span class="number">0.5</span>;</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> count = intArray.getLength()<span class="number">-1</span>; count &gt;= <span class="number">0</span>; --count)</span><br><span class="line">		<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; intArray[count] &lt;&lt; <span class="string">"\t"</span> &lt;&lt; doubleArray[count] &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="类模板和标准库："><a href="#类模板和标准库：" class="headerlink" title="类模板和标准库："></a>类模板和标准库：</h3><p>从上面的例子可以看到，类模板定义的Array和Vector容器很类似，而类似vector的容器就是类模板实现的；</p>
+<h3 id="模板类无法进行定义和函数实现的分离："><a href="#模板类无法进行定义和函数实现的分离：" class="headerlink" title="模板类无法进行定义和函数实现的分离："></a>模板类无法进行定义和函数实现的分离：</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">如下例子，在链接时会出现问题：</span><br><span class="line">Array.h:</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> ARRAY_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ARRAY_H</span></span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt; // for assert()</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Array</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> m_length;</span><br><span class="line">    T *m_data;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Array()</span><br><span class="line">    &#123;</span><br><span class="line">        m_length = <span class="number">0</span>;</span><br><span class="line">        m_data = <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    Array(<span class="keyword">int</span> length)</span><br><span class="line">    &#123;</span><br><span class="line">        m_data = <span class="keyword">new</span> T[length];</span><br><span class="line">        m_length = length;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    ~Array()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] m_data;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Erase</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">delete</span>[] m_data;</span><br><span class="line">        <span class="comment">// We need to make sure we set m_data to 0 here, otherwise it will</span></span><br><span class="line">        <span class="comment">// be left pointing at deallocated memory!</span></span><br><span class="line">        m_data = <span class="literal">nullptr</span>;</span><br><span class="line">        m_length = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    T&amp; <span class="keyword">operator</span>[](<span class="keyword">int</span> index)</span><br><span class="line">    &#123;</span><br><span class="line">        assert(index &gt;= <span class="number">0</span> &amp;&amp; index &lt; m_length);</span><br><span class="line">        <span class="keyword">return</span> m_data[index];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// The length of the array is always an integer</span></span><br><span class="line">    <span class="comment">// It does not depend on the data type of the array</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getLength</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">Array.cpp:</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Array.h"</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">int</span> Array&lt;T&gt;::getLength() &#123; <span class="keyword">return</span> m_length; &#125;</span><br><span class="line">使用时：链接时出错</span><br><span class="line">main.cpp:</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Array.h"</span></span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Array&lt;<span class="keyword">int</span>&gt; intArray(<span class="number">12</span>);</span><br><span class="line">	Array&lt;<span class="keyword">double</span>&gt; doubleArray(<span class="number">12</span>);</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> count = <span class="number">0</span>; count &lt; intArray.getLength(); ++count)</span><br><span class="line">	&#123;</span><br><span class="line">		intArray[count] = count;</span><br><span class="line">		doubleArray[count] = count + <span class="number">0.5</span>;</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> count = intArray.getLength()<span class="number">-1</span>; count &gt;= <span class="number">0</span>; --count)</span><br><span class="line">		<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; intArray[count] &lt;&lt; <span class="string">"\t"</span> &lt;&lt; doubleArray[count] &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">```cpp</span><br><span class="line"></span><br><span class="line">为什么呢：？</span><br><span class="line">实例化模板的必要条件：</span><br><span class="line">   为了让编译器去使用一个模板，它必须看到包括模板定义(而不是只有一个声明),和用于实例化模板的模板类型如<span class="keyword">int</span>等；</span><br><span class="line">上述例子为什么不成功？</span><br><span class="line">   且记住C++是单独编译文件的；当Array.h头文件被包含到main时，模板类定义被拷贝到main.cpp,当编译器看到我们需</span><br><span class="line">要两个模板实例，Array&lt;<span class="keyword">int</span>&gt;和Array&lt;<span class="keyword">double</span>&gt;,它将实例化他们，且编译他们作为main.cpp中的一部分；</span><br><span class="line">然而，当他单独的获取和编译Array.cpp时，他已经忘记我们需要一个Array&lt;<span class="keyword">int</span>&gt;和Array&lt;<span class="keyword">double</span>&gt;（单独编译，看不到main),所以Array.cpp中的模板函数不会被实例化；因此会因为找不到函数getLength()的定义而得到链接错误；</span><br><span class="line"></span><br><span class="line">```cpp</span><br><span class="line">   针对上述问题，有几种处理方式：</span><br><span class="line">     <span class="number">1</span>)把定义全放在.h头文件</span><br><span class="line">  <span class="number">2</span>)把 rename Array.cpp to Array.inl (.inl stands <span class="keyword">for</span> <span class="keyword">inline</span>), <span class="keyword">and</span> then include Array.inl from the bottom of the Array.h header. That yields the same result as putting all the code in the header, but helps keep things a little cleaner.</span><br><span class="line"> <span class="number">3</span>）在main中include所有：</span><br><span class="line"><span class="comment">// Ensure the full Array template definition can be seen</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Array.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Array.cpp"</span> <span class="comment">// we're breaking best practices here, but only in this one place</span></span></span><br><span class="line"> </span><br><span class="line"><span class="comment">// #include other .h and .cpp template definitions you need here</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">template</span> <span class="class"><span class="keyword">class</span> <span class="title">Array</span>&lt;int&gt;;</span> <span class="comment">// Explicitly instantiate template Array&lt;int&gt;</span></span><br><span class="line"><span class="keyword">template</span> <span class="class"><span class="keyword">class</span> <span class="title">Array</span>&lt;double&gt;;</span> <span class="comment">// Explicitly instantiate template Array&lt;double&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">// instantiate other templates here</span></span><br></pre></td></tr></table></figure>
+<h3 id="模板类类参数多样性"><a href="#模板类类参数多样性" class="headerlink" title="模板类类参数多样性"></a>模板类类参数多样性</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">模板类参数可以是无类型，即某种特定的类型：</span><br><span class="line">A value that has an integral type <span class="keyword">or</span> enumeration</span><br><span class="line">A pointer <span class="keyword">or</span> reference to a <span class="class"><span class="keyword">class</span> <span class="title">object</span></span></span><br><span class="line"><span class="class"><span class="title">A</span> <span class="title">pointer</span> <span class="title">or</span> <span class="title">reference</span> <span class="title">to</span> <span class="title">a</span> <span class="title">function</span></span></span><br><span class="line"><span class="class"><span class="title">A</span> <span class="title">pointer</span> <span class="title">or</span> <span class="title">reference</span> <span class="title">to</span> <span class="title">a</span> <span class="title">class</span> <span class="title">member</span> <span class="title">function</span></span></span><br><span class="line"><span class="class"><span class="title">std</span>:</span>:<span class="keyword">nullptr_t</span></span><br><span class="line">例子：</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>, <span class="title">int</span> <span class="title">size</span>&gt; // <span class="title">size</span> <span class="title">is</span> <span class="title">the</span> <span class="title">non</span>-<span class="title">type</span> <span class="title">parameter</span></span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">StaticArray</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="comment">// The non-type parameter controls the size of the array</span></span><br><span class="line">    T m_array[size];</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">T* <span class="title">getArray</span><span class="params">()</span></span>;</span><br><span class="line">	</span><br><span class="line">    T&amp; <span class="keyword">operator</span>[](<span class="keyword">int</span> index)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> m_array[index];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// Showing how a function for a class with a non-type parameter is defined outside of the class</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>, <span class="title">int</span> <span class="title">size</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">T</span>* <span class="title">StaticArray</span>&lt;T, size&gt;:</span>:getArray()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> m_array;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// declare an integer array with room for 12 integers</span></span><br><span class="line">    StaticArray&lt;<span class="keyword">int</span>, <span class="number">12</span>&gt; intArray;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Fill it up in order, then print it backwards</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count &lt; <span class="number">12</span>; ++count)</span><br><span class="line">        intArray[count] = count;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">11</span>; count &gt;= <span class="number">0</span>; --count)</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; intArray[count] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// declare a double buffer with room for 4 doubles</span></span><br><span class="line">    StaticArray&lt;<span class="keyword">double</span>, <span class="number">4</span>&gt; doubleArray;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count &lt; <span class="number">4</span>; ++count)</span><br><span class="line">        doubleArray[count] = <span class="number">4.4</span> + <span class="number">0.1</span>*count;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count &lt; <span class="number">4</span>; ++count)</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; doubleArray[count] &lt;&lt; <span class="string">' '</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="类模板的特化"><a href="#类模板的特化" class="headerlink" title="类模板的特化"></a>类模板的特化</h3><p>什么是类模板的特化，为什么需要，什么时候使用？<br>类模板的特化和函数模板特化类似，当我们定义了一个类模板后，这个类模板可以实例成int ,bool,char等等类型，都是同样的处理逻辑；<br>当我们想针对bool特殊化，比如bool本身用一个bit就可以实现，节省空间，时，可以用类模板的特化，来为实例成bool时定义一个类模板的特化，这样，bool就和其他int等不同了；</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Storage8</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T m_array[<span class="number">8</span>];</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, <span class="keyword">const</span> T &amp;value)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        m_array[index] = value;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">const</span> T&amp; <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> m_array[index];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">特化<span class="keyword">bool</span>:</span><br><span class="line"><span class="keyword">template</span> &lt;&gt; <span class="comment">// the following is a template class with no templated parameters</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Storage8</span>&lt;bool&gt; // <span class="title">we</span>'<span class="title">re</span> <span class="title">specializing</span> <span class="title">Storage8</span> <span class="title">for</span> <span class="title">bool</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="comment">// What follows is just standard class implementation details</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> m_data;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Storage8() : m_data(<span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, <span class="keyword">bool</span> value)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// Figure out which bit we're setting/unsetting</span></span><br><span class="line">        <span class="comment">// This will put a 1 in the bit we're interested in turning on/off</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span> mask = <span class="number">1</span> &lt;&lt; index;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (value)  <span class="comment">// If we're setting a bit</span></span><br><span class="line">            m_data |= mask;  <span class="comment">// Use bitwise-or to turn that bit on</span></span><br><span class="line">        <span class="keyword">else</span>  <span class="comment">// if we're turning a bit off</span></span><br><span class="line">            m_data &amp;= ~mask;  <span class="comment">// bitwise-and the inverse mask to turn that bit off</span></span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// Figure out which bit we're getting</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span> mask = <span class="number">1</span> &lt;&lt; index;</span><br><span class="line">        <span class="comment">// bitwise-and to get the value of the bit we're interested in</span></span><br><span class="line">        <span class="comment">// Then implicit cast to boolean</span></span><br><span class="line">        <span class="keyword">return</span> (m_data &amp; mask);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Define a Storage8 for integers (instantiates Storage8&lt;T&gt;, where T = int)</span></span><br><span class="line">    Storage8&lt;<span class="keyword">int</span>&gt; intStorage;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count&lt;<span class="number">8</span>; ++count)</span><br><span class="line">        intStorage.<span class="built_in">set</span>(count, count);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count&lt;<span class="number">8</span>; ++count)</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; intStorage.get(count) &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Define a Storage8 for bool  (instantiates Storage8&lt;bool&gt; specialization)</span></span><br><span class="line">    Storage8&lt;<span class="keyword">bool</span>&gt; boolStorage;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count&lt;<span class="number">8</span>; ++count)</span><br><span class="line">        boolStorage.<span class="built_in">set</span>(count, count &amp; <span class="number">3</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> count=<span class="number">0</span>; count&lt;<span class="number">8</span>; ++count)</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; (boolStorage.get(count) ? <span class="string">"true"</span> : <span class="string">"false"</span>) &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="模板的偏特化"><a href="#模板的偏特化" class="headerlink" title="模板的偏特化"></a>模板的偏特化</h3><p>区别于前文说的特化，偏特化指的是部分的特化，比如两个模板类型，将其中一个特化了，或者是<br>特化为指针等等；见下面例子：</p>
+<h4 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>) 两个类型特化了其中一个</span><br><span class="line">泛化：</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>,<span class="title">class</span> <span class="title">Alloc</span>=<span class="title">alloc</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">vector</span>&#123;</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br><span class="line">特化：</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Alloc</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">vector</span>&lt;bool,Alloc&gt;//在类型化时，若传入的第一个参数为<span class="title">bool</span>，则用以下版<span class="title">zf</span>本；</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="偏特化为指针"><a href="#偏特化为指针" class="headerlink" title="偏特化为指针"></a>偏特化为指针</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">泛化：</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">iterator</span>&#123;</span></span><br><span class="line">    <span class="keyword">typedef</span> <span class="keyword">typename</span> <span class="keyword">int</span> ittt;</span><br><span class="line">&#125;;</span><br><span class="line">偏特化：</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>*&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">iterator</span>&#123;</span></span><br><span class="line">    <span class="keyword">typedef</span> <span class="keyword">typename</span> <span class="keyword">double</span> ittt;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-template/" rel="tag"># cpp_template</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/09/cpp-template-func/" rel="prev" title="cpp_template_func">
+      <i class="fa fa-chevron-left"></i> cpp_template_func
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#类模板的基本概念"><span class="nav-number">1.</span> <span class="nav-text">类模板的基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类模板的引入："><span class="nav-number">2.</span> <span class="nav-text">类模板的引入：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类模板和标准库："><span class="nav-number">3.</span> <span class="nav-text">类模板和标准库：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模板类无法进行定义和函数实现的分离："><span class="nav-number">4.</span> <span class="nav-text">模板类无法进行定义和函数实现的分离：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模板类类参数多样性"><span class="nav-number">5.</span> <span class="nav-text">模板类类参数多样性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类模板的特化"><span class="nav-number">6.</span> <span class="nav-text">类模板的特化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">7.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模板的偏特化"><span class="nav-number">8.</span> <span class="nav-text">模板的偏特化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#例子-1"><span class="nav-number">8.1.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#偏特化为指针"><span class="nav-number">8.2.</span> <span class="nav-text">偏特化为指针</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com" title="http://yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '2030e5a37e8c72664f70f308ea1c2fda',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
