@@ -1,6 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>live_media_audioformat</title>
+    <url>/2021/02/17/live-media-audioformat/</url>
+    <content><![CDATA[<h3 id="音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念"><a href="#音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念" class="headerlink" title="音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念"></a>音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念</h3><ul>
+<li>原始音频： 采集后得到的是音频的裸数据：在采集时需要指定采样率，量化位数(一般采样也会有几种协议，比如常见的PCM，里面会自带量化位数指定)，channle数，以及必要的大小端数据等<a id="more"></a></li>
+<li><p>音频的裸数据有以下特点，在用Audacity导入原始数据播放时，需要填写相关参数(采样率，量化协议，channel数，数据的大小端情况等)：<br>由此可以知道，在播放裸数据(解释)裸音频数据时，至少需要上面的几个参数；</p>
+</li>
+<li><p>音频编码在音频裸数据的基础上做了什么？可以用来干嘛?<br>那么对于音频编码来说，主要是在裸数据上做了封装，带了以下几件事：<br>1）加上音频编码的头：主要内容是采样率，channel数，量化协议，大小端等，用来告诉解码器如何解释这个音频；<br>2)  加上其他的元数据：比如音频编码本身的协议标志，版本号，等等<br>3)  带上裸数据，长度size等，有的音频编码会对裸数据进行合理的压缩，去噪等等，减少文件大小等，如opus；</p>
+</li>
+<li><p>常见的音频编码：AAC,OPUS,FLAC,MP3,SBC,Vorbis等，更多可以看wiki:<br><a href="https://zh.wikipedia.org/wiki/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F%E7%9A%84%E6%AF%94%E8%BE%83" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F%E7%9A%84%E6%AF%94%E8%BE%83</a></p>
+</li>
+<li><p>如何查看音频编码：最直接的就是用notepad++ ,vim等二进制方式打开，然后对着协议标志看等；<br>或者根据文件名使用工具查看；用播放软件查看文件信息看编码格式；但是只能看元信息；</p>
+</li>
+<li><p>查看AAC:<br>AAC Audio ES Viewer </p>
+<h3 id="音频编码文件容器："><a href="#音频编码文件容器：" class="headerlink" title="音频编码文件容器："></a>音频编码文件容器：</h3></li>
+<li>音频为什么需要容器：<br>如果说编码主要是压缩和携带解析的元数据，那容器的出现，除了增加更多元数据信息外，还加了时间戳dts等信息，封装为容器，一个重要的因素是为了和视频封装在一起，音视频<br>做同步解码播放；</li>
+<li>音频编码和容器的关系<br> 音频容器是在音频编码的基础上增加了一些信息，和编码格式不同，比如opus编码的容器格式是oggs，是在opus封装为一页一页，并且加了页头；<br> 大部分容器其实可以封装视频和音频；比如Oggs也可以封装视频，只是现在不流行；所以你看到的Oggs基本都是音频的；而纯音频容器：如wav,mp3等</li>
+<li>音视频容器常见: flv，avi,mov,mp4,3gp等<h3 id="音频编码流媒体-比如aac是怎么在直播系统中传输的；"><a href="#音频编码流媒体-比如aac是怎么在直播系统中传输的；" class="headerlink" title="音频编码流媒体: 比如aac是怎么在直播系统中传输的；"></a>音频编码流媒体: 比如aac是怎么在直播系统中传输的；</h3>流媒体是在网络传输中流式媒体数据，在网络中传输音视频数据时，也是主要是压缩的数据，比如音频，在网络上传输以opus的流格式，其实可以是oggs封装再加到其他传输协议中；<br>或者是Opus直接封装到完善的协议比如Rtp中；<br>而流媒体考虑到带宽利用率等，往往不会传输太多多余的东西，所以一些头带了的信息就不会重复封装头；<br>总的理解就是： 流媒体传输中，使用适合于音视频传输的(比如专门做了网络优化)的网络协议如Srt,Rtmp等，封装流媒体编码或容器进行传输；</li>
+</ul>
+]]></content>
+      <categories>
+        <category>audio</category>
+      </categories>
+      <tags>
+        <tag>audio</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>live_media_video</title>
+    <url>/2021/02/17/live-media-video/</url>
+    <content><![CDATA[<h3 id="图像科技发展史："><a href="#图像科技发展史：" class="headerlink" title="图像科技发展史："></a>图像科技发展史：</h3><h4 id="图像的本质："><a href="#图像的本质：" class="headerlink" title="图像的本质："></a>图像的本质：</h4><p>图像的本质可以说是反射光的集合，不同的物质分子组成等不同，那么光照射到物质上，有部分频率的光被吸收，剩下的反射出来，就形成不同的<a id="more"></a><br>颜色，反映了物质的基本特征；可以说每个像素点是一维值，就像声音的采样值；但图片还有大小位置，等信息；所以以一个方图为例，有图片的x轴<br>大小，y轴大小，甚至z轴空间信息，反映出来就是光影形成的三维效果；另外还有物体的位置；<br>而声音其实也有这些信息，声音的位置，不同物体的振动不同，在空气中振动的大小等；只是声音这些信息不能像图像一样能被人更好的利用；<br>或者说信息含量比较小；所以自然界中动物不止出现听觉还有视觉；<br>图像作为这种波动类型的物理信号的特点和表示：振幅，频率，相位，波长，共振等等，这些不赘述，有兴趣再翻阅资料；</p>
+<h4 id="图像的记录发展史："><a href="#图像的记录发展史：" class="headerlink" title="图像的记录发展史："></a>图像的记录发展史：</h4><pre><code>图像最开始只能通过绘画记录下来，直到后来，人们发现了透镜成像原理和感光物质显像原理，即时记录图像的工具-相机才慢慢被开发出来；
+</code></pre><ul>
+<li>简单来说，图像的记录经历了一下的时代:<br>图像-<->湿版摄影法： 即通过成像后，一些感光的化学物质记录，形成图像<br>图像<--> 胶卷相机时代：即：图像反射光-&gt;小孔成像-&gt;感光物质曝光底片-&gt;冲洗照片<br>图像<-->数字信号和处理时代：即图像反射光–&gt;光敏电阻(单色)–&gt;电信号–&gt;模数转换–&gt;101010的数字信号–&gt;  像素值-&gt;计算机处理–&gt;屏幕呈现<br>PS:<a href="https://zhuanlan.zhihu.com/p/161200077" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/161200077</a></--></--></-></li>
+</ul>
+<h4 id="图像基本入门："><a href="#图像基本入门：" class="headerlink" title="图像基本入门："></a>图像基本入门：</h4><img src="/2021/02/17/live-media-video/basic.png" title="This is an example image">
+<p>图像由像素点构成，简称像素(Pixel:picture Element）：像素是图像显示的基本单位，通常说一幅图片的大小，例如是1920<em>1080，即长度为1920个像素点，宽度为1080个像素点，乘积为2,073,600，即这个图片是两百万像素的，拍照中常说的也是这个；<br>PPI: 分辨率也是显示器的重要指标，而PPI是Pixels Per Inch，即每英寸像素；即手机或显示器屏幕上每英寸面积可以放多少个像素点；苹果的PPI值高达326<br><img src="/2021/02/17/live-media-video/pixel.png" title="This is an example image"><br>像素堆积成图片，所以像素本身需要颜色；如上那副图；每个像素点用一个数字来代表颜色，人眼的视锥细胞有三种分别过滤红蓝绿，其他颜色按照比例刺激；所以任何一种颜色可以通过R(红色), G(绿色),B(蓝色)按照一定的比例调配出来；这三种颜色被称为三原色；<br>而比例：是R,G,B的取值，分别从0-255，即8bit表示，所以一个像素点用3</em>8bit 即3个字节表示；而可以代表的颜色在256<em>256</em>256种；任何颜色，都可以用这三个值的组合表示；现在可以用画图试试；我们常说的RGB24就是3*8bit的形式；而一个颜色的16进制即是RGB的16进制即如：R:01,G:02,B:03–&gt; 010203</p>
+<h4 id="原始图像和原始视频的文件表示和格式："><a href="#原始图像和原始视频的文件表示和格式：" class="headerlink" title="原始图像和原始视频的文件表示和格式："></a>原始图像和原始视频的文件表示和格式：</h4><ul>
+<li>原始图像和原始视频：<br> 一个原始的图片是RGB或YUV格式的，即每个像素点都由8*3 24bit/yuv的数据格式，决定即：Red Green Blue<br>一个原始的视频也是没经过编码压缩的，每一帧都是完整的图像；</li>
+<li>RGB YUV 表示和打开，修改等：<br><a href="https://blog.csdn.net/leixiaohua1020/article/details/50534150" target="_blank" rel="noopener">https://blog.csdn.net/leixiaohua1020/article/details/50534150</a><br>另外还有 ffmpeg对图片格式的转换，也能转换为rgb,yuv;<br>RGB和OpenCV,可以直接采集后用opencv调试；<br>RGB： 即每个像素由三个通道值组成R G B,都是8bit;<br>YUV:<br>人们常用RGB表示三基色，而且RGB也可以表示出所有颜色。但视觉心理学研究表明，人眼主要是对光的感知，人的视觉系统对光的感知程度用亮度（luminance）和色度（chrominance）两个属性表示，也就是我们常说的YUV。Y就是亮度感知，而色度感知分为两个属性：色相（hue）和色饱和度（saturation）。色相也就是U,是由光波的峰值定义的，描述的是光的颜色；色饱和度V是光波的谱宽定义的，描述的是光的纯度。 采用YUV色度空间比采用RGB颜色空间更利于视频的压缩，也能更有效的表示彩色视频图像<br><a href="https://www.jianshu.com/p/6a361e86ccd5" target="_blank" rel="noopener">https://www.jianshu.com/p/6a361e86ccd5</a><br>实践：<br>1） 先通过ffmpeg 将jpg或其他通用图片格式转换为 yuv或rgb ffmpeg -i 1.jpg -vcodec rawvideo -pix_fmt rgba raw1.rgb<br>2)   通过程序如<a href="https://blog.csdn.net/leixiaohua1020/article/details/50534150" target="_blank" rel="noopener">https://blog.csdn.net/leixiaohua1020/article/details/50534150</a> 或opencv来处理图像；<br>3） 用相关工具打开：<a href="https://github.com/leixiaohua1020/YUVplayer/blob/master/Release/yuvplayer.exe" target="_blank" rel="noopener">https://github.com/leixiaohua1020/YUVplayer/blob/master/Release/yuvplayer.exe</a><br>验证；</li>
+<li>图像基本编码：<br>从RGB–&gt;YUV–&gt;JPEG/BMP/JPG/…</li>
+<li>视频基本编码：<img src="/2021/02/17/live-media-video/video.png" title="This is an example image">
+从yuv-&gt;h264</li>
+<li>I,P,B帧和GOP的基本概念：其中I帧也叫关键帧，是一副完整的画面，而P帧则是记录I帧的变化（H.264中通过补偿算法根据I帧得到的差异文件），B帧类似。<br>I 帧：一个可以独立解码的帧，size大<br>P 帧：依赖前面的帧来解码，size小<br>B 帧：依赖前后的帧来解码，size小<br>GOP: 两个I帧之间的间隔，GOP = I(帧内编码帧) + B（双向预测帧） + P（前向预测帧）<br>其中I帧也叫关键帧，是一副完整的画面，而P帧则是记录I帧的变化（H.264中通过补偿算法根据I帧得到的差异文件），B帧类似。再简单点说，如果没有I帧，P帧和B帧也无法解码。这也很好理解，没有原始对比文件，只有差异文件是无法渲染画面的。<br>GOP结构一般两个数字，如M=1，N=2。M指定I帧和P帧之间的距离，N指定两个I帧之间的距离，其他都是B帧填充。如M=1，N=2这里的例子是IDR PB I排序。<br>有些地方会讲IDR帧，其实就是GOP的第一个I帧，这个帧很重要，因为关于首开优化基本上都在去尽可能减小IDR帧的大小</li>
+<li>视频的几个参数和影响：<br>帧率：即每秒有多少帧，帧率越大，说明每秒帧数越多，即视频越流畅；若是假设一段10s的视频总帧数在200，则原本帧率为20fps,增大帧率<pre><code>到40fps会导致只需要5s就能放完，即加速了x2; 所以视频加速播放和慢速播放就是控制帧率的大小；
+</code></pre>dts：DTS：Decode Time Stamp。DTS主要是标识读入内存中的bit流在什么时候开始送入解码器中进行解码。<br>DTS主要用于视频的解码,在解码阶段使用,每帧都有一个dts值，一般是个数值，一般视频帧之间差30，音频帧之间差20<br>pts:PTS主要用于视频的同步和输出.在display的时候使用.在没有B frame的情况下.DTS和PTS的输出顺序是一样的.<br>音视频同步的概念： 一般在看视频画面时，音频也要跟上嘴型和情节，所以音画同步需要借助dts/pts; 线性传递时，一般是一个音频帧一个视频帧；<pre><code>而音频帧和视频帧的dts也是有序的，如：a1:123 v1: 134 a2: 145 v2: 155
+</code></pre></li>
+</ul>
+]]></content>
+      <categories>
+        <category>video</category>
+      </categories>
+      <tags>
+        <tag>video</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>live_media_audio</title>
+    <url>/2021/02/17/live-media-audio/</url>
+    <content><![CDATA[<h3 id="音频科技发展史："><a href="#音频科技发展史：" class="headerlink" title="音频科技发展史："></a>音频科技发展史：</h3><h4 id="声音的本质："><a href="#声音的本质：" class="headerlink" title="声音的本质："></a>声音的本质：</h4><p>声音的本质是一种振动，可以说是一种一维的物理信号；可以通过敲击，让物体振动产生，并且可以使空气产生振动，从而传播，不过会能量衰减，导致只能传播一定的距离，原始振动<br>能量越大，传输的距离就越大；<a id="more"></a><br>声音作为这种波动类型的物理信号的特点和表示：振幅，频率，相位，波长，共振等等，这些不赘述，有兴趣再翻阅资料；</p>
+<h4 id="音频的录制发展史："><a href="#音频的录制发展史：" class="headerlink" title="音频的录制发展史："></a>音频的录制发展史：</h4><p><em>豆瓣有篇文章说的还可以：<a href="https://www.douban.com/group/topic/28212958/" target="_blank" rel="noopener">https://www.douban.com/group/topic/28212958/</a></em></p>
+<ul>
+<li>简单来说，声音的录制经历了一下的时代:<br>声音-<->动能(机械)的时代： 即通过声波振记器，比如：可以将声波变换成金属针的震动，然后将波形刻录在圆筒形腊管的锡箔上。当针再一次沿着刻录的轨迹行进时，便可以重新发出留下的声音。<br>声音<-->电信号的时代：即：声音–&gt;振动–麦克风振动膜放大–&gt;线圈磁铁–&gt;电信号磁信号： 由磁带记录，播放；<br>声音<-->数字信号和处理时代：即声音–&gt;麦克风–&gt;电信号–&gt;模拟信号处理AD/DA转换成数字信号：具体学习数字信号和模拟信号处理，了解示波器等器件；–&gt;101010的数字信号–&gt;<br>电脑接收和处理–&gt;数字信号转模拟信号AD/DA –&gt;转为声音信号–&gt;扬声器  增加了立体声；<br>PS:<a href="https://zhuanlan.zhihu.com/p/64050348" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/64050348</a><br>ADC=Analog Digital Change 模数转换<br>DAC= Digital Analog Change 数模转换<h4 id="现代声音录制采集处理的基本过程："><a href="#现代声音录制采集处理的基本过程：" class="headerlink" title="现代声音录制采集处理的基本过程："></a>现代声音录制采集处理的基本过程：</h4>即上述的第三个时代，这里稍微详细解释：现代为了提高声音的质量，在采集上也有各种细分： 环境的保证，声音无损传递，放大，麦克风的设计和材料，声音芯片的设计和材料(语音芯片有多种，涉及<br>声音从模拟信号到数字信号的过程：AD/DA转换), 采样也有相关定理：奈奎斯特采样定律；(模拟信号数字化必须经过三个过程，即抽样、量化和编码，以实现话音数字化的脉冲编码调制（PCM，Pulse Coding Modulation）技术。)，至此，完成声音的数字化过程，但是对声音的处理还远不止于此，采集到的声音可能有噪声，对噪声的处理，降噪技术等，采集到的声音的转换，混合，传输<br>识别，智能转文本等等。</--></--></-></li>
+</ul>
+<h3 id="音频的组成："><a href="#音频的组成：" class="headerlink" title="音频的组成："></a>音频的组成：</h3><h4 id="音频的表示和基本参数："><a href="#音频的表示和基本参数：" class="headerlink" title="音频的表示和基本参数："></a>音频的表示和基本参数：</h4><pre><code>+ 简单介绍PCM 声音如何从模拟信号转换为数字信号：  
+</code></pre><img src="/2021/02/17/live-media-audio/pcmall.png" title="This is an example image">
+<pre><code>      + 采样：采样是将模拟信号以其带宽两倍以上的频率提取样值，变为在时间轴上离散数据的过程：
+         采样率：每秒从连续信号中提取出并组成离散信号的采样个数：用Hz表示；  
+         如：
+    如音频信号采样率为8000hz。
+    可以理解上图采样对应图中 那段电压随时间变化的曲线 为1秒 那下面那个1 2 3 …10那就因该有1-8000个点，即将1秒均分为8000份，依次取出来那8000个点时间 对应的电压值。
+      + 量化：
+         可以看到，在时间轴上连续的值已经变为离散的了，但是在电压上(y轴)上的值还是可能有无限多个值的情况，所以这个时候需要将电压上的值进行量化,举个例子：
+         采样位数： 即描述数字信号所用的位数：如t1时间的电压值V1用8bit的数值表示： 3： 00000011 ，8bit最大可以表示数值为256,16位类似；
+         量化精度，即将一个范围的值转换为另一个范围的值，两个值之间的间隔： 比如：将0-3.3V的范围电压值存储在8位的数字里即： 3.3/256=0.0128
+         量化： 即比如将0-3.3V的电压值放到8位数字中：即 电压值1.65V对应的值就是128，以此类推；
+         量化的后果：量化后的抽样信号与量化前的抽样信号相比较，当然有所失真，且不再是模拟信号。这种量化失真在接收端还原模拟信号时表现为噪声，并称为量化噪声。量化噪声的大小取决于把样值分级“取整”的方式，分的级数越多，即          量化级差或间隔越小，量化噪声也越小。
+
+      + 编码：将量化后得到的类似十进制数字码流经过一定的规则转换为二进制码流进入数字系统的过程；  
+         常见的有PCM音频编码：
+         PCM协议：  
+PCM（PCM-clock、PCM-sync、PCM-in、PCM-out）脉冲编码调制，模拟语音信号经过采样量化以及一定数据排列就是PCM了。理论上可以传   输单声道，双声道立体声和多声道。是数字音频的raw data.
+         PCM信号：PCM信号未经过任何编码和压缩处理(无损压缩)。与模拟信号比，它不易受传送系统的杂波及失真的影响。动态范围宽，可得到音质相当好的效果。编码上采用A律13折线编码。
+        关于双声道的采样：  
+</code></pre><img src="/2021/02/17/live-media-audio/channel.png" title="This is an example image">
+<pre><code>  +  关于采样频率：
+   人对频率的识别范围是 20HZ - 20000HZ, 如果每秒钟能对声音做 20000 个采样, 回放时就足可以满足人耳的需求.
+      8000hz 为电话采样。
+      22050 的采样频率是常用的。
+      44100已是CD音质, 超过48000的采样对人耳已经没有意义
+      对采样率为44.1kHz的AAC（Advanced Audio Coding）音频进行解码时，一帧的解码时间须控制在23.22毫秒内。通常是按1024个采样点一帧。
+      而一个采样点，可以理解为就是一个8bit/16bit的音频值/hz
+      PS： 音频其实没有帧的概念，音频是一连串的采样值，比如采样率为44.1kHZ，采样精度为16位的音频，你可以算出bitrate（比特率）是4410016kbps，每秒的音频数据是固定的4410016/8 字节。而一般是每次返回1024个采样值；
++ 什么样的采样和音频值位数叫无损呢？
+</code></pre><h5 id="音频的采集和表示："><a href="#音频的采集和表示：" class="headerlink" title="音频的采集和表示："></a>音频的采集和表示：</h5><ul>
+<li>pcm的格式的raw data数据；<pre><code>在linux下的采集
+1）采集白噪音，播放并导入到/null  cat /dev/urandom | padsp tee /dev/audio &gt; /dev/null 
+2）采集内存内容到播放audio,和/null cat /dev/mem | padsp tee /dev/audio &gt; /dev/null 
+3)  采集白噪音并播放和保存：cat /dev/urandom | padsp tee /dev/audio &gt; /home/some.raw
+注意这里是按默认的采样率，声道数，量化位数的；
+更多接口：音频的linux下的编程接口；https://docs.google.com/viewerng/viewer?url=https://www.programmer-books.com/wp-content/uploads/2019/06/Linux-Sound-Programming.pdf
+</code></pre></li>
+<li>音频音量，pcm格式等表示；见上</li>
+<li>音频编码情况：<br>WAV:pcm是无损wav文件中音频数据的一种编码方式，但wav还可以用其它方式编码<h5 id="音频的基本参数：采样率，音频值位数，比特率等；"><a href="#音频的基本参数：采样率，音频值位数，比特率等；" class="headerlink" title="音频的基本参数：采样率，音频值位数，比特率等；"></a>音频的基本参数：采样率，音频值位数，比特率等；</h5><h4 id="音频查看的相关工具：Audacity-可以导入原始格式进行播放和查看："><a href="#音频查看的相关工具：Audacity-可以导入原始格式进行播放和查看：" class="headerlink" title="音频查看的相关工具：Audacity 可以导入原始格式进行播放和查看："></a>音频查看的相关工具：Audacity 可以导入原始格式进行播放和查看：</h4>将wav或其他格式转换为pcm: eg:<br>ffmpeg -i file.wav -f s16be -ar 8000 -acodec pcm_s16be file.raw<br>PCM数据格式：即原始的音频采样数据：<br>比如：在得到file.raw后，用audacity播放，用文本编辑器打开，删除一半或一些数据，保存后再次用audacity播放，即可得到剩一半的数据；<br>WAV数据格式：PCM的基础上加上一些头，meta信息<br>其他工具：praat</li>
+</ul>
+]]></content>
+      <categories>
+        <category>audio</category>
+      </categories>
+      <tags>
+        <tag>audio</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>live_media_overiew</title>
+    <url>/2021/02/17/live-media-overiew/</url>
+    <content><![CDATA[<h3 id="音视频基础知识：理论-实践"><a href="#音视频基础知识：理论-实践" class="headerlink" title="音视频基础知识：理论+实践"></a>音视频基础知识：理论+实践</h3><h4 id="音频的基本原理和组成"><a href="#音频的基本原理和组成" class="headerlink" title="音频的基本原理和组成"></a>音频的基本原理和组成</h4><ul>
+<li>音频的表示和基本参数： Hz, 音量，pcm等以及基本编码；</li>
+<li>音频查看的相关工具； <a id="more"></a></li>
+</ul>
+<h4 id="视频的基本原理和组成"><a href="#视频的基本原理和组成" class="headerlink" title="视频的基本原理和组成"></a>视频的基本原理和组成</h4><ul>
+<li>图像基础知识：RGB,YUV </li>
+<li>图像和视频：</li>
+<li>关键帧和参考帧的概念：I,P,B</li>
+<li>GOP的概念和应用；</li>
+</ul>
+<h4 id="音频文件和直播中的音频流"><a href="#音频文件和直播中的音频流" class="headerlink" title="音频文件和直播中的音频流"></a>音频文件和直播中的音频流</h4><ul>
+<li>音频文件和直播中的音频流的基本区别和原理</li>
+<li>音频编码格式和容器封装，以及相关格式和特点  </li>
+</ul>
+<h4 id="视频文件和直播中的视频流"><a href="#视频文件和直播中的视频流" class="headerlink" title="视频文件和直播中的视频流"></a>视频文件和直播中的视频流</h4><ul>
+<li>视频文件和直播中的视频的基本区别和原理</li>
+<li>视频编码格式和容器封装，以及相关格式和特点；  </li>
+</ul>
+<h3 id="音视频高级知识：-理论-实践"><a href="#音视频高级知识：-理论-实践" class="headerlink" title="音视频高级知识： 理论+实践"></a>音视频高级知识： 理论+实践</h3><h4 id="音频的编码技术："><a href="#音频的编码技术：" class="headerlink" title="音频的编码技术："></a>音频的编码技术：</h4><ul>
+<li>AAC和ADTS</li>
+<li>OPUS和OGG</li>
+<li>其他  </li>
+</ul>
+<h4 id="视频的编码技术："><a href="#视频的编码技术：" class="headerlink" title="视频的编码技术："></a>视频的编码技术：</h4><ul>
+<li>H.264/H.265和MPEG系列</li>
+<li>VP8/VP9 google</li>
+<li>其他，MS的VC-1  </li>
+</ul>
+<h4 id="实践：ffmpeg"><a href="#实践：ffmpeg" class="headerlink" title="实践：ffmpeg:"></a>实践：ffmpeg:</h4><ul>
+<li>专注在ffmpeg的接口如何使用，并构建类似播放器这种例子；在遇到问题时查阅接口的源代码，这种学习方式；<br>在这种路子，可以学习各种ffmpeg支持的常用协议  </li>
+</ul>
+<h3 id="直播技术栈全貌"><a href="#直播技术栈全貌" class="headerlink" title="直播技术栈全貌"></a>直播技术栈全貌</h3><h4 id="直播技术架构：客户端，服务端，网络CDN等等；"><a href="#直播技术架构：客户端，服务端，网络CDN等等；" class="headerlink" title="直播技术架构：客户端，服务端，网络CDN等等；"></a>直播技术架构：客户端，服务端，网络CDN等等；</h4><h3 id="服务器后台直播技术栈：构建基本的直播后台架构；"><a href="#服务器后台直播技术栈：构建基本的直播后台架构；" class="headerlink" title="服务器后台直播技术栈：构建基本的直播后台架构；"></a>服务器后台直播技术栈：构建基本的直播后台架构；</h3><h4 id="分布式系统的技术栈"><a href="#分布式系统的技术栈" class="headerlink" title="分布式系统的技术栈"></a>分布式系统的技术栈</h4><h4 id="所在公司的直播网系统；"><a href="#所在公司的直播网系统；" class="headerlink" title="所在公司的直播网系统；"></a>所在公司的直播网系统；</h4><h4 id="所在公司的分发网系统"><a href="#所在公司的分发网系统" class="headerlink" title="所在公司的分发网系统"></a>所在公司的分发网系统</h4><h4 id="所在公司的直播网，分发网，p2p和cdn的融合；"><a href="#所在公司的直播网，分发网，p2p和cdn的融合；" class="headerlink" title="所在公司的直播网，分发网，p2p和cdn的融合；"></a>所在公司的直播网，分发网，p2p和cdn的融合；</h4><h3 id="服务器后台直播技术栈高级：-优化"><a href="#服务器后台直播技术栈高级：-优化" class="headerlink" title="服务器后台直播技术栈高级： 优化"></a>服务器后台直播技术栈高级： 优化</h3><h4 id="网络协议"><a href="#网络协议" class="headerlink" title="网络协议"></a>网络协议</h4><h4 id="网络本身：路由等等；延迟和卡顿-jitterbuffer-重传和fec"><a href="#网络本身：路由等等；延迟和卡顿-jitterbuffer-重传和fec" class="headerlink" title="网络本身：路由等等；延迟和卡顿(jitterbuffer,重传和fec)"></a>网络本身：路由等等；延迟和卡顿(jitterbuffer,重传和fec)</h4><h4 id="直播后台性能：缓存，资源调度和流量管理"><a href="#直播后台性能：缓存，资源调度和流量管理" class="headerlink" title="直播后台性能：缓存，资源调度和流量管理"></a>直播后台性能：缓存，资源调度和流量管理</h4><h3 id="音视频编码技术："><a href="#音视频编码技术：" class="headerlink" title="音视频编码技术："></a>音视频编码技术：</h3><h4 id="基本编码原理"><a href="#基本编码原理" class="headerlink" title="基本编码原理"></a>基本编码原理</h4><h4 id="opencv等视觉"><a href="#opencv等视觉" class="headerlink" title="opencv等视觉"></a>opencv等视觉</h4><h4 id="ai"><a href="#ai" class="headerlink" title="ai"></a>ai</h4><h3 id="更多：TODO"><a href="#更多：TODO" class="headerlink" title="更多：TODO:"></a>更多：TODO:</h3>]]></content>
+      <categories>
+        <category>live_media</category>
+      </categories>
+      <tags>
+        <tag>overiew</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>my_funds_and_stocks</title>
     <url>/2021/02/09/my-funds-and-stocks/</url>
     <content><![CDATA[<h3 id="简介和写这篇文章的目的："><a href="#简介和写这篇文章的目的：" class="headerlink" title="简介和写这篇文章的目的："></a>简介和写这篇文章的目的：</h3><p>  其实在上大学，大三大四的时候就有财商的思考了，而触发这个思考一开始是大学期间看的穷爸爸和富爸爸那本书，和那个老鼠赛跑的游戏，再之后，财商这个词，<a id="more"></a>主要源于一个做生意的初中同学在某句话中出现了这个词，其实不用解释很多，仅仅是一个新概念，就足以引人深思；但是那会其实没有钱，也没啥概念，也单单只是停留在如何通过一些渠道更快更便捷的赚更多的钱；所以那个时候做一些兼职，也停留在简单的生意层面；  </p>

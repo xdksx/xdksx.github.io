@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-02-10T13:25:33.152Z</updated>
+  <updated>2021-02-18T11:50:26.156Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,89 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>live_media_audioformat</title>
+    <link href="https://xdksx.github.io/2021/02/17/live-media-audioformat/"/>
+    <id>https://xdksx.github.io/2021/02/17/live-media-audioformat/</id>
+    <published>2021-02-17T19:49:29.000Z</published>
+    <updated>2021-02-18T11:50:26.156Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念&quot;&gt;&lt;a href=&quot;#音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念&quot; class=&quot;headerlink&quot; title=&quot;音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念&quot;&gt;&lt;/a&gt;音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;原始音频： 采集后得到的是音频的裸数据：在采集时需要指定采样率，量化位数(一般采样也会有几种协议，比如常见的PCM，里面会自带量化位数指定)，channle数，以及必要的大小端数据等
+    
+    </summary>
+    
+      <category term="audio" scheme="https://xdksx.github.io/categories/audio/"/>
+    
+    
+      <category term="audio" scheme="https://xdksx.github.io/tags/audio/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>live_media_video</title>
+    <link href="https://xdksx.github.io/2021/02/17/live-media-video/"/>
+    <id>https://xdksx.github.io/2021/02/17/live-media-video/</id>
+    <published>2021-02-17T18:44:49.000Z</published>
+    <updated>2021-02-18T10:48:36.600Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;图像科技发展史：&quot;&gt;&lt;a href=&quot;#图像科技发展史：&quot; class=&quot;headerlink&quot; title=&quot;图像科技发展史：&quot;&gt;&lt;/a&gt;图像科技发展史：&lt;/h3&gt;&lt;h4 id=&quot;图像的本质：&quot;&gt;&lt;a href=&quot;#图像的本质：&quot; class=&quot;headerlink&quot; title=&quot;图像的本质：&quot;&gt;&lt;/a&gt;图像的本质：&lt;/h4&gt;&lt;p&gt;图像的本质可以说是反射光的集合，不同的物质分子组成等不同，那么光照射到物质上，有部分频率的光被吸收，剩下的反射出来，就形成不同的
+    
+    </summary>
+    
+      <category term="video" scheme="https://xdksx.github.io/categories/video/"/>
+    
+    
+      <category term="video" scheme="https://xdksx.github.io/tags/video/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>live_media_audio</title>
+    <link href="https://xdksx.github.io/2021/02/17/live-media-audio/"/>
+    <id>https://xdksx.github.io/2021/02/17/live-media-audio/</id>
+    <published>2021-02-17T18:28:34.000Z</published>
+    <updated>2021-02-18T10:37:27.537Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;音频科技发展史：&quot;&gt;&lt;a href=&quot;#音频科技发展史：&quot; class=&quot;headerlink&quot; title=&quot;音频科技发展史：&quot;&gt;&lt;/a&gt;音频科技发展史：&lt;/h3&gt;&lt;h4 id=&quot;声音的本质：&quot;&gt;&lt;a href=&quot;#声音的本质：&quot; class=&quot;headerlink&quot; title=&quot;声音的本质：&quot;&gt;&lt;/a&gt;声音的本质：&lt;/h4&gt;&lt;p&gt;声音的本质是一种振动，可以说是一种一维的物理信号；可以通过敲击，让物体振动产生，并且可以使空气产生振动，从而传播，不过会能量衰减，导致只能传播一定的距离，原始振动&lt;br&gt;能量越大，传输的距离就越大；
+    
+    </summary>
+    
+      <category term="audio" scheme="https://xdksx.github.io/categories/audio/"/>
+    
+    
+      <category term="audio" scheme="https://xdksx.github.io/tags/audio/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>live_media_overiew</title>
+    <link href="https://xdksx.github.io/2021/02/17/live-media-overiew/"/>
+    <id>https://xdksx.github.io/2021/02/17/live-media-overiew/</id>
+    <published>2021-02-17T18:09:48.000Z</published>
+    <updated>2021-02-18T10:26:57.876Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;音视频基础知识：理论-实践&quot;&gt;&lt;a href=&quot;#音视频基础知识：理论-实践&quot; class=&quot;headerlink&quot; title=&quot;音视频基础知识：理论+实践&quot;&gt;&lt;/a&gt;音视频基础知识：理论+实践&lt;/h3&gt;&lt;h4 id=&quot;音频的基本原理和组成&quot;&gt;&lt;a href=&quot;#音频的基本原理和组成&quot; class=&quot;headerlink&quot; title=&quot;音频的基本原理和组成&quot;&gt;&lt;/a&gt;音频的基本原理和组成&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;音频的表示和基本参数： Hz, 音量，pcm等以及基本编码；&lt;/li&gt;
+&lt;li&gt;音频查看的相关工具；
+    
+    </summary>
+    
+      <category term="live_media" scheme="https://xdksx.github.io/categories/live-media/"/>
+    
+    
+      <category term="overiew" scheme="https://xdksx.github.io/tags/overiew/"/>
+    
+  </entry>
   
   <entry>
     <title>my_funds_and_stocks</title>
@@ -351,86 +434,6 @@
     
     
       <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_conandde</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-conandde/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-conandde/</id>
-    <published>2018-06-09T03:03:35.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;c-class-constructor-and-destructor&quot;&gt;&lt;a href=&quot;#c-class-constructor-and-destructor&quot; class=&quot;headerlink&quot; title=&quot;c++ class constructor and destructor&quot;&gt;&lt;/a&gt;c++ class constructor and destructor&lt;/h2&gt;&lt;h3 id=&quot;构造函数&quot;&gt;&lt;a href=&quot;#构造函数&quot; class=&quot;headerlink&quot; title=&quot;构造函数&quot;&gt;&lt;/a&gt;构造函数&lt;/h3&gt;&lt;h4 id=&quot;构造函数表现&quot;&gt;&lt;a href=&quot;#构造函数表现&quot; class=&quot;headerlink&quot; title=&quot;构造函数表现&quot;&gt;&lt;/a&gt;构造函数表现&lt;/h4&gt;&lt;h5 id=&quot;构造函数的作用：&quot;&gt;&lt;a href=&quot;#构造函数的作用：&quot; class=&quot;headerlink&quot; title=&quot;构造函数的作用：&quot;&gt;&lt;/a&gt;构造函数的作用：&lt;/h5&gt;&lt;p&gt;构造函数主要是用来初始化对象的－－－一般是成员，函数不用&lt;br&gt;–所以它需要在构建对象时就执行
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_class_memory</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-class-memory/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-class-memory/</id>
-    <published>2018-06-09T02:44:41.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-类内存布局：&quot;&gt;&lt;a href=&quot;#c-类内存布局：&quot; class=&quot;headerlink&quot; title=&quot;c++类内存布局：&quot;&gt;&lt;/a&gt;c++类内存布局：&lt;/h3&gt;&lt;h4 id=&quot;静态&quot;&gt;&lt;a href=&quot;#静态&quot; class=&quot;headerlink&quot; title=&quot;静态&quot;&gt;&lt;/a&gt;静态&lt;/h4&gt;&lt;p&gt;下编译后的“内存布局”，此时还未分配内存，不能算是内存，只能说是文件布局
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_memory" scheme="https://xdksx.github.io/tags/cpp-memory/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_this</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-this/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-this/</id>
-    <published>2018-06-09T02:13:46.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-关键字之this&quot;&gt;&lt;a href=&quot;#c-关键字之this&quot; class=&quot;headerlink&quot; title=&quot;c++关键字之this&quot;&gt;&lt;/a&gt;c++关键字之this&lt;/h3&gt;&lt;h4 id=&quot;this指针是什么&quot;&gt;&lt;a href=&quot;#this指针是什么&quot; class=&quot;headerlink&quot; title=&quot;this指针是什么&quot;&gt;&lt;/a&gt;this指针是什么&lt;/h4&gt;&lt;p&gt;this是一个指向当前正在使用的对象的指针，它是一个指针；&lt;br&gt;成员函数通过它来使用对象的值，通过它知道要对哪个对象的成员操作&lt;br&gt;如：
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_keyword" scheme="https://xdksx.github.io/tags/cpp-keyword/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_static</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-static/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-static/</id>
-    <published>2018-06-08T14:44:43.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-关键词之static&quot;&gt;&lt;a href=&quot;#c-关键词之static&quot; class=&quot;headerlink&quot; title=&quot;c++关键词之static&quot;&gt;&lt;/a&gt;c++关键词之static&lt;/h3&gt;&lt;h5 id=&quot;something-share&quot;&gt;&lt;a href=&quot;#something-share&quot; class=&quot;headerlink&quot; title=&quot;something share:&quot;&gt;&lt;/a&gt;something share:&lt;/h5&gt;&lt;p&gt;其实，一开始学习c++的时候，并没有想去了解它的语法原理。虽然学c的时候，附带学了汇编，也学到了内存段，和学编译原理的时候顺带了解了它的相关词法语法处理。　　&lt;br&gt;现在开始从原因，历史，内存，汇编等角度去看cpp，觉得清晰了一些。虽然没有去学习g++或者其他编译器
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_keyword" scheme="https://xdksx.github.io/tags/cpp-keyword/"/>
     
   </entry>
   
