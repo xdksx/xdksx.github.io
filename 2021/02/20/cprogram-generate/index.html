@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="关于编译链接执行，编译器和cpu相关目标： 学完这个部分的知识和调试方法后，一方面可以在写程序时，减少编译错误等，在遇到编译和运行时错误，可以更快的解决或者知道怎么解决，用什么工具可以更快的解决，另一方面，在处理cpu高载，dump问题时，能知道怎么处理和更好的处理；">
+<meta name="keywords" content="compilelink">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cprogram_generate">
+<meta property="og:url" content="https://xdksx.github.io/2021/02/20/cprogram-generate/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="关于编译链接执行，编译器和cpu相关目标： 学完这个部分的知识和调试方法后，一方面可以在写程序时，减少编译错误等，在遇到编译和运行时错误，可以更快的解决或者知道怎么解决，用什么工具可以更快的解决，另一方面，在处理cpu高载，dump问题时，能知道怎么处理和更好的处理；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-02-21T09:29:33.553Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cprogram_generate">
+<meta name="twitter:description" content="关于编译链接执行，编译器和cpu相关目标： 学完这个部分的知识和调试方法后，一方面可以在写程序时，减少编译错误等，在遇到编译和运行时错误，可以更快的解决或者知道怎么解决，用什么工具可以更快的解决，另一方面，在处理cpu高载，dump问题时，能知道怎么处理和更好的处理；">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/02/20/cprogram-generate/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cprogram_generate | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/心理/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/20/cprogram-generate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cprogram_generate
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-21 01:27:32 / 修改时间：17:29:33" itemprop="dateCreated datePublished" datetime="2021-02-21T01:27:32+08:00">2021-02-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="关于编译链接执行，编译器和cpu相关"><a href="#关于编译链接执行，编译器和cpu相关" class="headerlink" title="关于编译链接执行，编译器和cpu相关"></a>关于编译链接执行，编译器和cpu相关</h3><p>目标： 学完这个部分的知识和调试方法后，一方面可以在写程序时，减少编译错误等，在遇到编译和运行时错误，可以更快的解决或者知道怎么解决，用什么工具可以<br>更快的解决，另一方面，在处理cpu高载，dump问题时，能知道怎么处理和更好的处理； <a id="more"></a></p>
+<h4 id="预处理，编译，链接实践和相关gnu工具"><a href="#预处理，编译，链接实践和相关gnu工具" class="headerlink" title="预处理，编译，链接实践和相关gnu工具"></a>预处理，编译，链接实践和相关gnu工具</h4><h5 id="c-c-的预处理，编译，静态链接，运行时动态链接的基本原理和调试工具；"><a href="#c-c-的预处理，编译，静态链接，运行时动态链接的基本原理和调试工具；" class="headerlink" title="c/c++的预处理，编译，静态链接，运行时动态链接的基本原理和调试工具；"></a>c/c++的预处理，编译，静态链接，运行时动态链接的基本原理和调试工具；</h5><p>1) 预处理阶段<br>c/c++是编译类型的语言，即c/c++源文件，是比较符合人类语言的文本文件，需要将这个文件翻译为机器能直接执行的可执行文件，这个翻译成可执行文件的过程，就是编译的过程；<br>运行： 可执行文件是怎么运行的，见下的说明；</p>
+<p>程序在编译的过程中，需要经过几个阶段，第一个阶段是预处理阶段：<br>在正式的编译阶段之前进行。预处理阶段将根据已放置在文件中的预处理指令来修改源文件的内容。如#include指令就是一个预处理指令，它把头文件的内容添加到.cpp文件中。<br>预处理指令，不是真正的程序语句，而是给预处理器的命令；</p>
+<p>预处理指令不止于#include,还有：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span></span></span><br><span class="line"><span class="meta">#end</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span></span></span><br><span class="line">一些已定义好的宏：</span><br><span class="line">__LINE__	整数值，表示当前正在编译的行在源文件中的行数。</span><br><span class="line">__FILE__	字符串，表示被编译的源文件的文件名。</span><br><span class="line">__DATE__	一个格式为 <span class="string">"Mmm dd yyyy"</span> 的字符串，存储编译开始的日期。</span><br><span class="line">__TIME__	一个格式为 <span class="string">"hh:mm:ss"</span> 的字符串，存储编译开始的时间。</span><br><span class="line">__cplusplus	整数值，所有C++编译器都定义了这个常量为某个值。如果这个编译器是完全遵守C++标准的，它的值应该等于或大于<span class="number">199711L</span>，具体值取决于它遵守的是哪个版本的标准。</span><br><span class="line">ref: 见手册；</span><br></pre></td></tr></table></figure></p>
+<p>预处理阶段，是预处理器对预处理指令的解析，并将解析后的内容输出出来或者到下个阶段的输入；<br>实践：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"hello world\n"</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">gcc -E test.c -o test.i 或 gcc -E test.c  或用cpp</span><br><span class="line">将它进行预处理：gcc -E simplest.c 可以看到没有引用到其他头文件：</span><br><span class="line"></span><br><span class="line"># <span class="number">1</span> <span class="string">"simplest.c"</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"&lt;built-in&gt;"</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"&lt;command-line&gt;"</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"/usr/include/stdc-predef.h"</span> <span class="number">1</span> <span class="number">3</span> <span class="number">4</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"&lt;command-line&gt;"</span> <span class="number">2</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"simplest.c"</span></span><br><span class="line">stdio.h的内容在这里铺开;</span><br><span class="line">包含了各种函数的声明；</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"hello world\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其他c/cpp文件也是一样，但是一个程序(进程)只能有一个main函数<br>PS:关于g++和gcc的不同： g++ 比gcc 多了一些库的链接功能，当使用了c++的标准库的时候，必须用g++;</p>
+<p>2) 编译阶段；<br>这个阶段，编译器会把每个实现文件，结合头文件编译成中间文件(其实编译过程是不需要头文件的，原因是一些文件中会引用头文件，所以需要，而也可以引用.c文件，但是会出现重复定义，而声明是可以重复)，一般是一个二进制.o文件，并进行相关的编译器优化，即将一些语句顺序进行调节等；<br>先把源文件翻译成汇编文件，再通过汇编器将汇编文件翻译为二进制文件；<br>一个例子：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">m</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line">   <span class="keyword">return</span> a;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>gcc -S hh.cpp<br>生成hh.s:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">	.file	<span class="string">"hh.cpp"</span></span><br><span class="line">	.text</span><br><span class="line">	.globl	_Z1mv</span><br><span class="line">	.type	_Z1mv, @function</span><br><span class="line">_Z1mv:</span><br><span class="line">.LFB0:</span><br><span class="line">	.cfi_startproc</span><br><span class="line">	pushq	%rbp</span><br><span class="line">	.cfi_def_cfa_offset <span class="number">16</span></span><br><span class="line">	.cfi_offset <span class="number">6</span>, <span class="number">-16</span></span><br><span class="line">	movq	%rsp, %rbp</span><br><span class="line">	.cfi_def_cfa_register <span class="number">6</span></span><br><span class="line">	movl	$<span class="number">3</span>, <span class="number">-4</span>(%rbp)</span><br><span class="line">	movl	<span class="number">-4</span>(%rbp), %eax</span><br><span class="line">	popq	%rbp</span><br><span class="line">	.cfi_def_cfa <span class="number">7</span>, <span class="number">8</span></span><br><span class="line">	ret</span><br><span class="line">	.cfi_endproc</span><br><span class="line">.LFE0:</span><br><span class="line">	.size	_Z1mv, .-_Z1mv</span><br><span class="line">	.ident	<span class="string">"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04.4) 4.8.4"</span></span><br><span class="line">	.section	.note.GNU-<span class="built_in">stack</span>,<span class="string">""</span>,@progbits</span><br></pre></td></tr></table></figure>
+<p>暂时不解析</p>
+<p>接着通过汇编器将汇编文件翻译为.o中间文件，这里汇编器其实已经包含到gcc中了，也可以自己下载一个特定平台的比如：NASM<br>输出可执行程序时，必须实现入口函数，比如main;<br>gcc -o main main.s</p>
+<p>3) 关于编译时的链接：<br>我们在编译一个完整的程序时，除了指定含有main函数的程序文件外，这个文件还可能依赖定义在其他源程序中的函数，这个时候，编译时需要指定如：<br>gcc -o main main.cpp func.cpp …<br>有时候这些源文件以编译好的.o的形式呈现，也可以进行：gcc -o main main.cpp func.o<br>而当许多.o需要指定比较麻烦，所以库出现了，用来将.o文件汇总，分为两种形式，一种是静态库，一种是动态库；<br>静态库，就是在编译时将文件的执行代码都聚合到可执行文件中，包括调用的功能函数等，执行时不需要额外的库支持；编译出来的可执行文件会比较大；<br>动态库，即在编译时只是将调用的函数符号指定到符号表中，在执行时才去系统默认库路径(头文件指定的)寻找库,并链接该函数执行；</p>
+<p>静态链接：在编译时，要指定链接的静态库，包括位置等；<br>eg:<br>gcc -o main main.cpp func.a /home/zhangsan/lib/funall.a local/local.a<br>动态链接：编译时，需要指定链接的动态库，包括位置等；默认会找默认位置的动态库<br>gcc -o main main.cpp -L./xxx   -lcurl -lpthread<br>-L./xx 为指定了目录下有动态链接库，也可以链接成功；<br>注意形式为：libxxx.so 链接为 -lxxx<br>在运行的时候：<br>ldd a.out这种可以得到可执行文件希望在哪里找到库；而一般要设置export LD_LIBRARY_PATH=/home/think/c++/ 或者放在<br>系统默认搜索路径下，或者修改系统文件/etc/ld.so.conf，添加路径，运行ldconfig命令<br>默认搜索路径：<br>/lib<br>/usr/lib<br>/usr/local/lib </p>
+<p>4) 关于目标文件：<br>在编译时除了可以生成可执行文件，还可以生产静态库，动态库，中间文件，汇编文件等，这里看静态库和动态库的生成规则<br>生成静态库文件：<br>ar rvs libfunc.a func.o func2.o<br>man ar 查看更多<br>生成动态库文件:<br>gcc func.cpp  -fPIC -shared -o libfunc.so<br>-shared 该选项指定生成动态连接库（让连接器生成T类型的导出符号表，有时候也生成弱连接W类型的导出符号），不用该标志外部程序无法连接<br>Produce a shared object which can then be linked with other objects to form an executable.  Not all systems support this option.  For predictable results, you must also specify the same</p>
+<p>-fPIC：表示编译为位置独立的代码，不用此选项的话编译后的代码是位置相关的所以动态载入时是通过代码拷贝的方式来满足不同进程的需要，而不能达到真正代码段共享的目的。<br>更多见man gcc<br>5) 总：<br>一个完整的gcc/g++编译命令，除了指定上面的内容，还需要指定头文件的位置，默认目录有哪些？，优化选项，-c/-o/-S/-E其他选项等，这里把这些汇总下，并给上参考地址方便查阅；man gcc<br>-c:  -c  Compile or assemble the source files, but do not link.  The linking stage simply is not done.  The ultimate output is in the form of an object file for each source file.<br>-I: 指定头文件的路径<br>gcc -I. -I /home/include/ ..<br>指定了头文件路径后，在#include时可以省略路径；</p>
+<h5 id="c-c-的反汇编，二进制查看，可执行文件格式等；"><a href="#c-c-的反汇编，二进制查看，可执行文件格式等；" class="headerlink" title="c/c++的反汇编，二进制查看，可执行文件格式等；"></a>c/c++的反汇编，二进制查看，可执行文件格式等；</h5><p>1) 可执行文件的结构：<br>think@think-VirtualBox:~/c++$ size hh.o<br>   text       data        bss        dec        hex    filename<br>     72          0          0         72         48    hh.o<br>代码段：只读，可共享，代码中的常量数据在编译时在代码段中分配空间，如int x=3;中的3及const 声明的常量和字符串常量;还有就是代码本身的0101机器码<br>数据段：为全局初始化数据区和静态数据区：已经初始化的全局变量和静态变量（全局和局部）<br>bss:为初始化数据取，存放为初始化的全局变量和静态变量，但在开始执行时会被内核赋值０或null</p>
+<p>2）可执行文件的查看工具等；<br>为了看清楚可执行文件的结构，也可以使用如下工具，在unix类系统下使用，elf等；<br>上面的hh.cpp编译为.o后：readelf工具可以清晰看到elf文件的魔数，架构，大小端等信息；<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">think@think-VirtualBox:~/c++$ readelf -a hh.o</span><br><span class="line">ELF Header:</span><br><span class="line">  Magic:   <span class="number">7f</span> <span class="number">45</span> <span class="number">4</span>c <span class="number">46</span> <span class="number">02</span> <span class="number">01</span> <span class="number">01</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line">  Class:                             ELF64</span><br><span class="line">  Data:                              <span class="number">2'</span>s complement, little endian</span><br><span class="line">  Version:                           <span class="number">1</span> (current)</span><br><span class="line">  OS/ABI:                            UNIX - System V</span><br><span class="line">  ABI Version:                       <span class="number">0</span></span><br><span class="line">  Type:                              REL (Relocatable file)</span><br><span class="line">  Machine:                           Advanced Micro Devices X86<span class="number">-64</span></span><br><span class="line">  Version:                           <span class="number">0x1</span></span><br><span class="line">  Entry point address:               <span class="number">0x0</span></span><br><span class="line">  Start of program headers:          <span class="number">0</span> (bytes into file)</span><br><span class="line">  Start of section headers:          <span class="number">272</span> (bytes into file)</span><br><span class="line">  Flags:                             <span class="number">0x0</span></span><br><span class="line">  Size of <span class="keyword">this</span> header:               <span class="number">64</span> (bytes)</span><br><span class="line">  Size of program headers:           <span class="number">0</span> (bytes)</span><br><span class="line">  Number of program headers:         <span class="number">0</span></span><br><span class="line">  Size of section headers:           <span class="number">64</span> (bytes)</span><br><span class="line">  Number of section headers:         <span class="number">11</span></span><br><span class="line">  Section header <span class="built_in">string</span> table index: <span class="number">8</span></span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type             Address           Offset</span><br><span class="line">       Size              EntSize          Flags  Link  Info  Align</span><br><span class="line">  [ <span class="number">0</span>]                   <span class="literal">NULL</span>             <span class="number">0000000000000000</span>  <span class="number">00000000</span></span><br><span class="line">       <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>           <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span></span><br><span class="line">  [ <span class="number">1</span>] .text             PROGBITS         <span class="number">0000000000000000</span>  <span class="number">00000040</span></span><br><span class="line">       <span class="number">0000000000000010</span>  <span class="number">0000000000000000</span>  AX       <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">2</span>] .data             PROGBITS         <span class="number">0000000000000000</span>  <span class="number">00000050</span></span><br><span class="line">       <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>  WA       <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">3</span>] .bss              NOBITS           <span class="number">0000000000000000</span>  <span class="number">00000050</span></span><br><span class="line">       <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>  WA       <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">4</span>] .comment          PROGBITS         <span class="number">0000000000000000</span>  <span class="number">00000050</span></span><br><span class="line">       <span class="number">000000000000002</span>c  <span class="number">0000000000000001</span>  MS       <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">5</span>] .note.GNU-<span class="built_in">stack</span>   PROGBITS         <span class="number">0000000000000000</span>  <span class="number">0000007</span>c</span><br><span class="line">       <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>           <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">6</span>] .eh_frame         PROGBITS         <span class="number">0000000000000000</span>  <span class="number">00000080</span></span><br><span class="line">       <span class="number">0000000000000038</span>  <span class="number">0000000000000000</span>   A       <span class="number">0</span>     <span class="number">0</span>     <span class="number">8</span></span><br><span class="line">  [ <span class="number">7</span>] .rela.eh_frame    RELA             <span class="number">0000000000000000</span>  <span class="number">000004b</span>8</span><br><span class="line">       <span class="number">0000000000000018</span>  <span class="number">0000000000000018</span>           <span class="number">9</span>     <span class="number">6</span>     <span class="number">8</span></span><br><span class="line">  [ <span class="number">8</span>] .shstrtab         STRTAB           <span class="number">0000000000000000</span>  <span class="number">000000b</span>8</span><br><span class="line">       <span class="number">0000000000000054</span>  <span class="number">0000000000000000</span>           <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">9</span>] .symtab           SYMTAB           <span class="number">0000000000000000</span>  <span class="number">000003</span>d0</span><br><span class="line">       <span class="number">00000000000000</span>d8  <span class="number">0000000000000018</span>          <span class="number">10</span>     <span class="number">8</span>     <span class="number">8</span></span><br><span class="line">  [<span class="number">10</span>] .strtab           STRTAB           <span class="number">0000000000000000</span>  <span class="number">000004</span>a8</span><br><span class="line">       <span class="number">000000000000000</span>e  <span class="number">0000000000000000</span>           <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings), l (large)</span><br><span class="line">  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)</span><br><span class="line">  O (extra OS processing required) o (OS specific), p (processor specific)</span><br><span class="line"></span><br><span class="line">There are no section groups in <span class="keyword">this</span> file.</span><br><span class="line"></span><br><span class="line">There are no program headers in <span class="keyword">this</span> file.</span><br><span class="line"></span><br><span class="line">Relocation section '.rela.eh_frame' at offset 0x4b8 contains 1 entries:</span><br><span class="line">  Offset          Info           Type           Sym. Value    Sym. Name + Addend</span><br><span class="line"><span class="number">000000000020</span>  <span class="number">000200000002</span> R_X86_64_PC32     <span class="number">0000000000000000</span> .text + <span class="number">0</span></span><br><span class="line"></span><br><span class="line">The decoding of unwind sections <span class="keyword">for</span> machine type Advanced Micro Devices X86<span class="number">-64</span> is <span class="keyword">not</span> currently supported.</span><br><span class="line"></span><br><span class="line">Symbol table '.symtab' contains 9 entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     <span class="number">0</span>: <span class="number">0000000000000000</span>     <span class="number">0</span> NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     <span class="number">1</span>: <span class="number">0000000000000000</span>     <span class="number">0</span> FILE    LOCAL  DEFAULT  ABS hh.cpp</span><br><span class="line">     <span class="number">2</span>: <span class="number">0000000000000000</span>     <span class="number">0</span> SECTION LOCAL  DEFAULT    <span class="number">1</span> </span><br><span class="line">     <span class="number">3</span>: <span class="number">0000000000000000</span>     <span class="number">0</span> SECTION LOCAL  DEFAULT    <span class="number">2</span> </span><br><span class="line">     <span class="number">4</span>: <span class="number">0000000000000000</span>     <span class="number">0</span> SECTION LOCAL  DEFAULT    <span class="number">3</span> </span><br><span class="line">     <span class="number">5</span>: <span class="number">0000000000000000</span>     <span class="number">0</span> SECTION LOCAL  DEFAULT    <span class="number">5</span> </span><br><span class="line">     <span class="number">6</span>: <span class="number">0000000000000000</span>     <span class="number">0</span> SECTION LOCAL  DEFAULT    <span class="number">6</span> </span><br><span class="line">     <span class="number">7</span>: <span class="number">0000000000000000</span>     <span class="number">0</span> SECTION LOCAL  DEFAULT    <span class="number">4</span> </span><br><span class="line">     <span class="number">8</span>: <span class="number">0000000000000000</span>    <span class="number">16</span> FUNC    GLOBAL DEFAULT    <span class="number">1</span> _Z1mv</span><br><span class="line"></span><br><span class="line">No version information found in <span class="keyword">this</span> file.</span><br></pre></td></tr></table></figure></p>
+<p>3）如何反汇编；<br>objdump 工具，除了可以反汇编，还可以查看二进制文件等：<br>objdump -s hh.o : 查看十六进制<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">think@think-VirtualBox:~/c++$ objdump -s  hh.o</span><br><span class="line"></span><br><span class="line">hh.o:     file format elf64-x86<span class="number">-64</span></span><br><span class="line"></span><br><span class="line">Contents of section .text:</span><br><span class="line"> <span class="number">0000</span> <span class="number">554889e5</span> c745fc03 <span class="number">0000008b</span> <span class="number">45f</span>c5dc3  UH...E......E.].</span><br><span class="line">Contents of section .comment:</span><br><span class="line"> <span class="number">0000</span> <span class="number">00474343</span> <span class="number">3</span>a202855 <span class="number">62756e74</span> <span class="number">7520342</span>e  .GCC: (Ubuntu <span class="number">4.</span></span><br><span class="line"> <span class="number">0010</span> <span class="number">382e342</span>d <span class="number">32756275</span> <span class="number">6e747531</span> <span class="number">7e31342</span>e  <span class="number">8.4</span><span class="number">-2u</span>buntu1~<span class="number">14.</span></span><br><span class="line"> <span class="number">0020</span> <span class="number">30342e34</span> <span class="number">2920342</span>e <span class="number">382e3400</span>           <span class="number">04.4</span>) <span class="number">4.8</span><span class="number">.4</span>.    </span><br><span class="line">Contents of section .eh_frame:</span><br><span class="line"> <span class="number">0000</span> <span class="number">14000000</span> <span class="number">00000000</span> <span class="number">017</span>a5200 <span class="number">01781001</span>  .........zR..x..</span><br><span class="line"> <span class="number">0010</span> <span class="number">1b</span>0c0708 <span class="number">90010000</span> <span class="number">1</span>c000000 <span class="number">1</span>c000000  ................</span><br><span class="line"> <span class="number">0020</span> <span class="number">00000000</span> <span class="number">10000000</span> <span class="number">00410e10</span> <span class="number">8602430</span>d  .........A....C.</span><br><span class="line"> <span class="number">0030</span> <span class="number">064b</span>0c07 <span class="number">08000000</span>                    .K......</span><br></pre></td></tr></table></figure></p>
+<p> objdump -d hh.o: 反汇编：<br> <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> think@think-VirtualBox:~/c++$ objdump -d  hh.o</span><br><span class="line"></span><br><span class="line">hh.o:     file format elf64-x86<span class="number">-64</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line"><span class="number">0000000000000000</span> &lt;_Z1mv&gt;:</span><br><span class="line">   <span class="number">0</span>:	<span class="number">55</span>                   	push   %rbp</span><br><span class="line">   <span class="number">1</span>:	<span class="number">48</span> <span class="number">89</span> e5             	mov    %rsp,%rbp</span><br><span class="line">   <span class="number">4</span>:	c7 <span class="number">45</span> fc <span class="number">03</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> 	movl   $<span class="number">0x3</span>,<span class="number">-0x4</span>(%rbp)</span><br><span class="line">   b:	<span class="number">8b</span> <span class="number">45</span> fc             	mov    <span class="number">-0x4</span>(%rbp),%eax</span><br><span class="line">   e:	<span class="number">5</span>d                   	pop    %rbp</span><br><span class="line">   f:	c3                   	retq</span><br></pre></td></tr></table></figure></p>
+<p> objdump 查看各个段：<br> <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"> think@think-VirtualBox:~/c++$ objdump -x hh.o</span><br><span class="line"></span><br><span class="line">hh.o:     file format elf64-x86<span class="number">-64</span></span><br><span class="line">hh.o</span><br><span class="line">architecture: i386:x86<span class="number">-64</span>, flags <span class="number">0x00000011</span>:</span><br><span class="line">HAS_RELOC, HAS_SYMS</span><br><span class="line">start address <span class="number">0x0000000000000000</span></span><br><span class="line"></span><br><span class="line">Sections:</span><br><span class="line">Idx Name          Size      VMA               LMA               File off  Algn</span><br><span class="line">  <span class="number">0</span> .text         <span class="number">00000010</span>  <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>  <span class="number">00000040</span>  <span class="number">2</span>**<span class="number">0</span></span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, CODE</span><br><span class="line">  <span class="number">1</span> .data         <span class="number">00000000</span>  <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>  <span class="number">00000050</span>  <span class="number">2</span>**<span class="number">0</span></span><br><span class="line">                  CONTENTS, ALLOC, LOAD, DATA</span><br><span class="line">  <span class="number">2</span> .bss          <span class="number">00000000</span>  <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>  <span class="number">00000050</span>  <span class="number">2</span>**<span class="number">0</span></span><br><span class="line">                  ALLOC</span><br><span class="line">  <span class="number">3</span> .comment      <span class="number">0000002</span>c  <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>  <span class="number">00000050</span>  <span class="number">2</span>**<span class="number">0</span></span><br><span class="line">                  CONTENTS, READONLY</span><br><span class="line">  <span class="number">4</span> .note.GNU-<span class="built_in">stack</span> <span class="number">00000000</span>  <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>  <span class="number">0000007</span>c  <span class="number">2</span>**<span class="number">0</span></span><br><span class="line">                  CONTENTS, READONLY</span><br><span class="line">  <span class="number">5</span> .eh_frame     <span class="number">00000038</span>  <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>  <span class="number">00000080</span>  <span class="number">2</span>**<span class="number">3</span></span><br><span class="line">                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA</span><br><span class="line">SYMBOL TABLE:</span><br><span class="line"><span class="number">0000000000000000</span> l    df *ABS*	<span class="number">0000000000000000</span> hh.cpp</span><br><span class="line"><span class="number">0000000000000000</span> l    d  .text	<span class="number">0000000000000000</span> .text</span><br><span class="line"><span class="number">0000000000000000</span> l    d  .data	<span class="number">0000000000000000</span> .data</span><br><span class="line"><span class="number">0000000000000000</span> l    d  .bss	<span class="number">0000000000000000</span> .bss</span><br><span class="line"><span class="number">0000000000000000</span> l    d  .note.GNU-<span class="built_in">stack</span>	<span class="number">0000000000000000</span> .note.GNU-<span class="built_in">stack</span></span><br><span class="line"><span class="number">0000000000000000</span> l    d  .eh_frame	<span class="number">0000000000000000</span> .eh_frame</span><br><span class="line"><span class="number">0000000000000000</span> l    d  .comment	<span class="number">0000000000000000</span> .comment</span><br><span class="line"><span class="number">0000000000000000</span> g     F .text	<span class="number">0000000000000010</span> _Z1mv</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">RELOCATION RECORDS FOR [.eh_frame]:</span><br><span class="line">OFFSET           TYPE              VALUE </span><br><span class="line"><span class="number">0000000000000020</span> R_X86_64_PC32     .text</span><br></pre></td></tr></table></figure></p>
+<h5 id="makefile-make-和-cmake"><a href="#makefile-make-和-cmake" class="headerlink" title="makefile,make 和 cmake"></a>makefile,make 和 cmake</h5><p>单独一个章来记录make,makefile和cmake</p>
+<h4 id="运行时："><a href="#运行时：" class="headerlink" title="运行时："></a>运行时：</h4><h5 id="c-c-文件如何执行，动态链接如何进行；"><a href="#c-c-文件如何执行，动态链接如何进行；" class="headerlink" title="c/c++文件如何执行，动态链接如何进行；"></a>c/c++文件如何执行，动态链接如何进行；</h5><p>c/c++可执行文件如何执行呢？<br>可执行文件分为完整的非动态链接的可执行文件和完整的静态链接的可执行文件<br>1）静态链接：在./a.out的时候，会通过触发起一个execl系列函数，起一个进程，并开始执行，执行过程即会创建进程空间，内核管理，内核分时间片运行；<br>即作为一个进程来运行，而进程有自己的生命周期：就绪，运行，阻塞等等，也有各种进程上下文，当前的资源等等；<br>总的来讲： 生命周期，进程管理的私有结构，进程的动态空间：堆，栈，虚拟地址空间，各种阻塞队列等等；<br>2）动态链接：动态链接的可执行文件，需要搜索路径下有依赖的动态库，否则无法运行，在运行时会通过链接的符号等去寻找对应的动态库函数实现，加载调用运行；<br>之后的运行和静态链接基本一致；</p>
+<h5 id="gdb基础和gdb常用，手册等；"><a href="#gdb基础和gdb常用，手册等；" class="headerlink" title="gdb基础和gdb常用，手册等；"></a>gdb基础和gdb常用，手册等；</h5><p>当编译时带上-g后即带debug信息，运行时即可以进行gdb 运行；<br>gdb main<br>gdb attach 挂的是线程还是进程？<br>见gdb文章</p>
+<h4 id="c-程序执行过程调试例子，注意执行语句先后，编译器优化前后不同"><a href="#c-程序执行过程调试例子，注意执行语句先后，编译器优化前后不同" class="headerlink" title="c++程序执行过程调试例子，注意执行语句先后，编译器优化前后不同"></a>c++程序执行过程调试例子，注意执行语句先后，编译器优化前后不同</h4><h4 id="堆栈空间表现例子"><a href="#堆栈空间表现例子" class="headerlink" title="堆栈空间表现例子"></a>堆栈空间表现例子</h4><p>堆栈空间如何增长呢？<br>跟cpu系统有关，暂时不深究；要知道new/malloc是在堆上分配空间，普通定义数组，变量是在栈上分配空间；<br>struct class这种的，定义一个非指针变量，是放栈还是堆？</p>
+<h4 id="多线程相关调试例子；"><a href="#多线程相关调试例子；" class="headerlink" title="多线程相关调试例子；"></a>多线程相关调试例子；</h4><p>1）查看多线程pid: top -Hp pid<br>2) 多线程是系统层面的，多线程的实现可以是用系统的接口，比如posix的pthread,fork进程等，或者用语言的thread ,这种最后也是调用的pthread系列函数；<br>这里默认都是unix系统；<br>3）使用linux系统工具调试多线程程序；</p>
+<h4 id="linux-core-dump机制和相关工具"><a href="#linux-core-dump机制和相关工具" class="headerlink" title="linux core-dump机制和相关工具"></a>linux core-dump机制和相关工具</h4><p>1) core-dump是什么？<br>2）core-dump如何触发？</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/compilelink/" rel="tag"># compilelink</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/17/live-media-audioformat/" rel="prev" title="live_media_audioformat">
+      <i class="fa fa-chevron-left"></i> live_media_audioformat
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#关于编译链接执行，编译器和cpu相关"><span class="nav-number">1.</span> <span class="nav-text">关于编译链接执行，编译器和cpu相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#预处理，编译，链接实践和相关gnu工具"><span class="nav-number">1.1.</span> <span class="nav-text">预处理，编译，链接实践和相关gnu工具</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#c-c-的预处理，编译，静态链接，运行时动态链接的基本原理和调试工具；"><span class="nav-number">1.1.1.</span> <span class="nav-text">c/c++的预处理，编译，静态链接，运行时动态链接的基本原理和调试工具；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#c-c-的反汇编，二进制查看，可执行文件格式等；"><span class="nav-number">1.1.2.</span> <span class="nav-text">c/c++的反汇编，二进制查看，可执行文件格式等；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#makefile-make-和-cmake"><span class="nav-number">1.1.3.</span> <span class="nav-text">makefile,make 和 cmake</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行时："><span class="nav-number">1.2.</span> <span class="nav-text">运行时：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#c-c-文件如何执行，动态链接如何进行；"><span class="nav-number">1.2.1.</span> <span class="nav-text">c/c++文件如何执行，动态链接如何进行；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#gdb基础和gdb常用，手册等；"><span class="nav-number">1.2.2.</span> <span class="nav-text">gdb基础和gdb常用，手册等；</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c-程序执行过程调试例子，注意执行语句先后，编译器优化前后不同"><span class="nav-number">1.3.</span> <span class="nav-text">c++程序执行过程调试例子，注意执行语句先后，编译器优化前后不同</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆栈空间表现例子"><span class="nav-number">1.4.</span> <span class="nav-text">堆栈空间表现例子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多线程相关调试例子；"><span class="nav-number">1.5.</span> <span class="nav-text">多线程相关调试例子；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#linux-core-dump机制和相关工具"><span class="nav-number">1.6.</span> <span class="nav-text">linux core-dump机制和相关工具</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com" title="http://yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '1a3a207d1003d1106624b634c9d2f6bd',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

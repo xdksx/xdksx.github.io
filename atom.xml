@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-02-18T11:50:26.156Z</updated>
+  <updated>2021-02-21T09:29:33.553Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>cprogram_generate</title>
+    <link href="https://xdksx.github.io/2021/02/20/cprogram-generate/"/>
+    <id>https://xdksx.github.io/2021/02/20/cprogram-generate/</id>
+    <published>2021-02-20T17:27:32.000Z</published>
+    <updated>2021-02-21T09:29:33.553Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;关于编译链接执行，编译器和cpu相关&quot;&gt;&lt;a href=&quot;#关于编译链接执行，编译器和cpu相关&quot; class=&quot;headerlink&quot; title=&quot;关于编译链接执行，编译器和cpu相关&quot;&gt;&lt;/a&gt;关于编译链接执行，编译器和cpu相关&lt;/h3&gt;&lt;p&gt;目标： 学完这个部分的知识和调试方法后，一方面可以在写程序时，减少编译错误等，在遇到编译和运行时错误，可以更快的解决或者知道怎么解决，用什么工具可以&lt;br&gt;更快的解决，另一方面，在处理cpu高载，dump问题时，能知道怎么处理和更好的处理；
+    
+    </summary>
+    
+      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
+    
+    
+      <category term="compilelink" scheme="https://xdksx.github.io/tags/compilelink/"/>
+    
+  </entry>
   
   <entry>
     <title>live_media_audioformat</title>
@@ -407,26 +427,6 @@
 &lt;ul&gt;
 &lt;li&gt;指针的值本质上是内存地址，也就是说指向不同变量(int char.)，对象的指针本身的值都是地址的value)&lt;/li&gt;
 &lt;li&gt;指针的类型限定了指针的操作内存范围和取值的方式，如通过int指针取值的时候，取到４byte,通过char指针取值时取得1byte;）
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_inheritance</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-inheritance/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-inheritance/</id>
-    <published>2018-06-09T03:44:54.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-继承：&quot;&gt;&lt;a href=&quot;#c-继承：&quot; class=&quot;headerlink&quot; title=&quot;c++ 继承：&quot;&gt;&lt;/a&gt;c++ 继承：&lt;/h3&gt;&lt;h4 id=&quot;继承是什么能做什么&quot;&gt;&lt;a href=&quot;#继承是什么能做什么&quot; class=&quot;headerlink&quot; title=&quot;继承是什么能做什么&quot;&gt;&lt;/a&gt;继承是什么能做什么&lt;/h4&gt;&lt;p&gt;继承是创建复杂类的另一种方式，它展现出来俩个obj 的is-a的概念（前一种方式是加入复杂的函数和成员等has-a　概念）&lt;br&gt;继承体现的是两个对象（类）之间的联系，子类继承父类的成员和方法，然后特殊化于扩展自己的成员和方法，正如苹果和梨都是水果，它们拥有水果的一般特性，等边三角形是特殊的等腰三角形
     
     </summary>
     
