@@ -1,3 +1,4 @@
+https://xdksx.github.io/2021/02/26/procsysfs/
 https://xdksx.github.io/2021/02/20/sk-buff/
 https://xdksx.github.io/2021/02/20/cprogram-generate/
 https://xdksx.github.io/2021/02/17/live-media-audioformat/
@@ -27,4 +28,3 @@ https://xdksx.github.io/2018/06/08/cpp-static/
 https://xdksx.github.io/2018/06/08/cpp-const/
 https://xdksx.github.io/2018/06/07/leetcode-linklist3/
 https://xdksx.github.io/2018/06/03/leetcode-linklist2/
-https://xdksx.github.io/2018/06/03/leetcode-linklist1/

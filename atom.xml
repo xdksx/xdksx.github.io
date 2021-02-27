@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-02-21T09:37:35.359Z</updated>
+  <updated>2021-02-27T08:05:58.715Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>procsysfs</title>
+    <link href="https://xdksx.github.io/2021/02/26/procsysfs/"/>
+    <id>https://xdksx.github.io/2021/02/26/procsysfs/</id>
+    <published>2021-02-26T15:52:48.000Z</published>
+    <updated>2021-02-27T08:05:58.715Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;linux-用户空间与内核的接口—内核信息的输出和修改&quot;&gt;&lt;a href=&quot;#linux-用户空间与内核的接口—内核信息的输出和修改&quot; class=&quot;headerlink&quot; title=&quot;linux 用户空间与内核的接口—内核信息的输出和修改&quot;&gt;&lt;/a&gt;linux 用户空间与内核的接口—内核信息的输出和修改&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;linux用户与内核的接口有多种,配置内核的netlink,ioctl,等特殊系统调用，其他系统调用;用户空间指令:ifconfig,route,&lt;br&gt;iptable等;以及内核输出信息的procfs,sysfs和修改内核参数的sysctl接口;这里介绍最后一种;
+    
+    </summary>
+    
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
+    
+    
+      <category term="linux_procsysfs" scheme="https://xdksx.github.io/tags/linux-procsysfs/"/>
+    
+  </entry>
   
   <entry>
     <title>sk_buff</title>
@@ -401,29 +422,6 @@
     <summary type="html">
     
       &lt;h3 id=&quot;c-function语意学&quot;&gt;&lt;a href=&quot;#c-function语意学&quot; class=&quot;headerlink&quot; title=&quot;c++ function语意学&quot;&gt;&lt;/a&gt;c++ function语意学&lt;/h3&gt;&lt;p&gt;something:&lt;br&gt;恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。&lt;br&gt; 可以参考；
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_datamember_memory</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-datamember-memory/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-datamember-memory/</id>
-    <published>2018-06-09T06:46:49.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-class-datamemory&quot;&gt;&lt;a href=&quot;#c-class-datamemory&quot; class=&quot;headerlink&quot; title=&quot;c++ class  datamemory&quot;&gt;&lt;/a&gt;c++ class  datamemory&lt;/h3&gt;&lt;p&gt;详细介绍c++的成员布局，类本身的布局和在各种情况下的布局&lt;/p&gt;
-&lt;h4 id=&quot;“类”本身的大小：&quot;&gt;&lt;a href=&quot;#“类”本身的大小：&quot; class=&quot;headerlink&quot; title=&quot;“类”本身的大小：&quot;&gt;&lt;/a&gt;“类”本身的大小：&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;the simplest 引入&lt;/li&gt;
-&lt;li&gt;1.2 多少内存能表现一个class?&lt;br&gt;最小是１　  size
     
     </summary>
     
