@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-02-27T08:05:58.715Z</updated>
+  <updated>2021-03-07T12:36:51.020Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>memory_overiew</title>
+    <link href="https://xdksx.github.io/2021/03/06/memory-overiew/"/>
+    <id>https://xdksx.github.io/2021/03/06/memory-overiew/</id>
+    <published>2021-03-06T20:35:25.000Z</published>
+    <updated>2021-03-07T12:36:51.020Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;linux内存系统概述&quot;&gt;&lt;a href=&quot;#linux内存系统概述&quot; class=&quot;headerlink&quot; title=&quot;linux内存系统概述&quot;&gt;&lt;/a&gt;linux内存系统概述&lt;/h3&gt;&lt;p&gt;linux的内存系统是一个很复杂的系统，需要从几个角度去分析，里面包含多种机制，比如虚拟地址和物理地址的转换等等；本文是一个系统性的大局观来从几个方面分析内存系统的记录：
+    
+    </summary>
+    
+      <category term="overiew" scheme="https://xdksx.github.io/categories/overiew/"/>
+    
+    
+      <category term="memory" scheme="https://xdksx.github.io/tags/memory/"/>
+    
+  </entry>
   
   <entry>
     <title>procsysfs</title>
@@ -402,26 +422,6 @@
     <summary type="html">
     
       &lt;h3 id=&quot;构造和析构函数语义学&quot;&gt;&lt;a href=&quot;#构造和析构函数语义学&quot; class=&quot;headerlink&quot; title=&quot;构造和析构函数语义学&quot;&gt;&lt;/a&gt;构造和析构函数语义学&lt;/h3&gt;&lt;h4 id=&quot;1&quot;&gt;&lt;a href=&quot;#1&quot; class=&quot;headerlink&quot; title=&quot;1.&quot;&gt;&lt;/a&gt;1.&lt;/h4&gt;&lt;p&gt;即使是abstract base class也可能需要手动写constructor,de…,关键是看它有没有non satic data member
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_funcmember_memory</title>
-    <link href="https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/"/>
-    <id>https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/</id>
-    <published>2018-06-09T08:21:29.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-function语意学&quot;&gt;&lt;a href=&quot;#c-function语意学&quot; class=&quot;headerlink&quot; title=&quot;c++ function语意学&quot;&gt;&lt;/a&gt;c++ function语意学&lt;/h3&gt;&lt;p&gt;something:&lt;br&gt;恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。&lt;br&gt; 可以参考；
     
     </summary>
     

@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xdksx.github.io/2021/03/06/memory-overiew/</loc>
+    
+    <lastmod>2021-03-07T12:36:51.020Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xdksx.github.io/2021/02/26/procsysfs/</loc>
     
     <lastmod>2021-02-27T08:05:58.715Z</lastmod>
@@ -142,13 +149,6 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xdksx.github.io/2018/06/24/DS-string/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -157,6 +157,13 @@
   
   <url>
     <loc>https://xdksx.github.io/2018/05/20/android-adb/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -177,7 +184,7 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
+    <loc>https://xdksx.github.io/2018/05/25/code-efficandreadable/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -191,14 +198,14 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/08/cpp-class-memory/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/25/code-efficandreadable/</loc>
+    <loc>https://xdksx.github.io/2018/06/08/cpp-class-memory/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -212,6 +219,13 @@
   </url>
   
   <url>
+    <loc>https://xdksx.github.io/2018/06/09/cpp-conanddest-semantics/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xdksx.github.io/2018/06/08/cpp-conandde/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -219,7 +233,7 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/09/cpp-conanddest-semantics/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -240,21 +254,14 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/08/cpp-inheritance/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2018/06/08/cpp-polymorphism/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -268,7 +275,7 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/08/cpp-polymorphism/</loc>
+    <loc>https://xdksx.github.io/2018/06/08/cpp-inheritance/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -296,13 +303,6 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/24/leetcode-string/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xdksx.github.io/2018/06/07/leetcode-linklist3/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -310,7 +310,7 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/27/tcpip-ARP/</loc>
+    <loc>https://xdksx.github.io/2018/06/24/leetcode-string/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -325,6 +325,13 @@
   
   <url>
     <loc>https://xdksx.github.io/2018/06/03/tcpip-IP/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2018/05/27/tcpip-ARP/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
