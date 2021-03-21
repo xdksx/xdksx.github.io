@@ -1,3 +1,4 @@
+https://xdksx.github.io/2021/03/20/tcpip-init/
 https://xdksx.github.io/2021/03/12/filesystem/
 https://xdksx.github.io/2021/03/06/memory-overiew/
 https://xdksx.github.io/2021/02/26/procsysfs/
@@ -27,4 +28,3 @@ https://xdksx.github.io/2018/06/08/cpp-conandde/
 https://xdksx.github.io/2018/06/08/cpp-class-memory/
 https://xdksx.github.io/2018/06/08/cpp-this/
 https://xdksx.github.io/2018/06/08/cpp-static/
-https://xdksx.github.io/2018/06/08/cpp-const/

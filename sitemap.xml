@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xdksx.github.io/2021/03/20/tcpip-init/</loc>
+    
+    <lastmod>2021-03-21T14:25:36.021Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xdksx.github.io/2021/03/12/filesystem/</loc>
     
     <lastmod>2021-03-13T15:31:52.345Z</lastmod>
@@ -135,7 +142,7 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/categories/index.html</loc>
+    <loc>https://xdksx.github.io/tags/index.html</loc>
     
     <lastmod>2020-03-21T07:30:55.169Z</lastmod>
     
@@ -149,21 +156,21 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/tags/index.html</loc>
+    <loc>https://xdksx.github.io/categories/index.html</loc>
     
     <lastmod>2020-03-21T07:30:55.169Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
+    <loc>https://xdksx.github.io/2018/06/24/DS-string/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/24/DS-string/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -177,13 +184,6 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-howto-makeapk-cmd/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xdksx.github.io/2018/05/20/android-jni/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -191,7 +191,7 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-howto-makeapk-cmd/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -199,6 +199,13 @@
   
   <url>
     <loc>https://xdksx.github.io/2018/05/20/android-makefirst-app/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -240,13 +247,6 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xdksx.github.io/2018/06/08/cpp-datamember-memory/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -254,14 +254,14 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/</loc>
+    <loc>https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -282,6 +282,13 @@
   </url>
   
   <url>
+    <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xdksx.github.io/2018/06/08/cpp-static/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -290,6 +297,13 @@
   
   <url>
     <loc>https://xdksx.github.io/2018/06/08/cpp-this/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2018/06/03/leetcode-linklist1/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -317,13 +331,6 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/03/leetcode-linklist1/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xdksx.github.io/2018/05/27/tcpip-ARP/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -338,13 +345,6 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/tcpip-mtu/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xdksx.github.io/2018/06/02/tcpip-MAC/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -353,6 +353,13 @@
   
   <url>
     <loc>https://xdksx.github.io/2018/05/27/tcpip-PF-PACKET/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2018/05/20/tcpip-mtu/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     

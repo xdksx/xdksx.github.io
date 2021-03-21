@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-03-13T15:31:52.345Z</updated>
+  <updated>2021-03-21T14:25:36.021Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>tcpip_init</title>
+    <link href="https://xdksx.github.io/2021/03/20/tcpip-init/"/>
+    <id>https://xdksx.github.io/2021/03/20/tcpip-init/</id>
+    <published>2021-03-20T23:11:45.000Z</published>
+    <updated>2021-03-21T14:25:36.021Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;linux内核网络子系统的初始化介绍&quot;&gt;&lt;a href=&quot;#linux内核网络子系统的初始化介绍&quot; class=&quot;headerlink&quot; title=&quot;linux内核网络子系统的初始化介绍&quot;&gt;&lt;/a&gt;linux内核网络子系统的初始化介绍&lt;/h3&gt;&lt;p&gt;基于linux4.8,版本其实现在已经是5.12了，但是因为我装的linux源码版本是4.8，为方便调试，都在这个版本分析，差别不会很大；&lt;br&gt;以下的内核都指的这个linux4.8的内核；环境都在这个上的；
+    
+    </summary>
+    
+      <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
+    
+    
+      <category term="tcpip_init" scheme="https://xdksx.github.io/tags/tcpip-init/"/>
+    
+  </entry>
   
   <entry>
     <title>filesystem</title>
@@ -408,31 +428,6 @@
     
     
       <category term="数据结构" scheme="https://xdksx.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>tcpip_routeicmp</title>
-    <link href="https://xdksx.github.io/2018/06/10/tcpip-routeicmp/"/>
-    <id>https://xdksx.github.io/2018/06/10/tcpip-routeicmp/</id>
-    <published>2018-06-10T08:59:04.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;IP选路和ICMP协议&quot;&gt;&lt;a href=&quot;#IP选路和ICMP协议&quot; class=&quot;headerlink&quot; title=&quot;IP选路和ICMP协议&quot;&gt;&lt;/a&gt;IP选路和ICMP协议&lt;/h3&gt;&lt;h4 id=&quot;IP如何选路概述：&quot;&gt;&lt;a href=&quot;#IP如何选路概述：&quot; class=&quot;headerlink&quot; title=&quot;IP如何选路概述：&quot;&gt;&lt;/a&gt;IP如何选路概述：&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;ip选路实际上是一种选路机制，它搜索路由表并决定向哪个网络接口发送分组，区别于选路策略，后者是一组决定把哪些路由放入路由表的规则；ip执行选路机制，而路由守护程序则一般提供选路策略如rip,ospf&lt;/li&gt;
-&lt;li&gt;点对点时，直接送到  &lt;/li&gt;
-&lt;li&gt;非点对点时，经过路由器送到  &lt;/li&gt;
-&lt;li&gt;Ip层可以是配置为路由或者主机前者非则转发，后者非则丢弃&lt;/li&gt;
-&lt;li&gt;路由表项：每一项为
-    
-    </summary>
-    
-      <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
-    
-    
-      <category term="tcpip_ip" scheme="https://xdksx.github.io/tags/tcpip-ip/"/>
     
   </entry>
   
