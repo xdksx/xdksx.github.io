@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-04-04T09:59:34.147Z</updated>
+  <updated>2021-04-04T14:24:27.298Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>makefile_use</title>
+    <link href="https://xdksx.github.io/2021/04/03/makefile-use/"/>
+    <id>https://xdksx.github.io/2021/04/03/makefile-use/</id>
+    <published>2021-04-03T22:59:53.000Z</published>
+    <updated>2021-04-04T14:24:27.298Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;前言：&quot;&gt;&lt;a href=&quot;#前言：&quot; class=&quot;headerlink&quot; title=&quot;前言：&quot;&gt;&lt;/a&gt;前言：&lt;/h3&gt;&lt;p&gt;以下文档参考：&lt;br&gt;&lt;a href=&quot;https://www.gnu.org/software/make/manual/make.html#toc-Overview-of-make&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://www.gnu.org/software/make/manual/make.html#toc-Overview-of-make&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;https://seisman.github.io/how-to-write-makefile/introduction.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://seisman.github.io/how-to-write-makefile/introduction.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这个文件记录了GNU make实用程序，它自动地确定一个大型程序的哪些部分需要重新编译，并发出重新编译它们的命令&lt;br&gt;适用版本：&lt;br&gt;This is Edition 0.75, last updated 17 January 2020, of The GNU Make Manual, for GNU make version 4.3.&lt;/p&gt;
+&lt;h3 id=&quot;make的基本功能和使用简介：&quot;&gt;&lt;a href=&quot;#make的基本功能和使用简介：&quot; class=&quot;headerlink&quot; title=&quot;make的基本功能和使用简介：&quot;&gt;&lt;/a&gt;make的基本功能和使用简介：
+    
+    </summary>
+    
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
+    
+    
+      <category term="makefile" scheme="https://xdksx.github.io/tags/makefile/"/>
+    
+  </entry>
   
   <entry>
     <title>cpp_type</title>
@@ -405,30 +427,6 @@
     
     
       <category term="tcpip_ip" scheme="https://xdksx.github.io/tags/tcpip-ip/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>leetcode_string</title>
-    <link href="https://xdksx.github.io/2018/06/24/leetcode-string/"/>
-    <id>https://xdksx.github.io/2018/06/24/leetcode-string/</id>
-    <published>2018-06-24T09:48:05.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;leetcode-string&quot;&gt;&lt;a href=&quot;#leetcode-string&quot; class=&quot;headerlink&quot; title=&quot;leetcode_string&quot;&gt;&lt;/a&gt;leetcode_string&lt;/h3&gt;&lt;h4 id=&quot;传统字符串匹配：&quot;&gt;&lt;a href=&quot;#传统字符串匹配：&quot; class=&quot;headerlink&quot; title=&quot;传统字符串匹配：&quot;&gt;&lt;/a&gt;传统字符串匹配：&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;简单写写,变量命名等就先不纠结了&lt;/li&gt;
-&lt;/ul&gt;
-&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;strStr&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;char&lt;/span&gt; s[],&lt;span class=&quot;keyword&quot;&gt;char&lt;/span&gt; p[])&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(s[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]==&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;||p[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]==&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;				&lt;span class=&quot;built_in&quot;&gt;cout&lt;/span&gt;&amp;lt;&amp;lt;&lt;span class=&quot;string&quot;&gt;&quot;p or s is null&quot;&lt;/span&gt;&amp;lt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;endl&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; k=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,j=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,i=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt;(i=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,j=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;s[i]!=&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;&amp;amp;&amp;amp;s[k]!=&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		     &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(p[j]==&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;				   &lt;span class=&quot;keyword&quot;&gt;break&lt;/span&gt;;	 &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(s[k]==p[j])&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 k++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 j++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//不匹配时重新来过&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 i++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 k=i;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 j=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(p[j]==&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;				&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; i;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;				&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;-1&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;h4 id=&quot;kmp匹配算法&quot;&gt;&lt;a href=&quot;#kmp匹配算法&quot; class=&quot;headerlink&quot; title=&quot;kmp匹配算法&quot;&gt;&lt;/a&gt;kmp匹配算法&lt;/h4&gt;&lt;p&gt;kmp算法：基本过程见另一篇文章数据结构之字符串
-    
-    </summary>
-    
-      <category term="leetcode" scheme="https://xdksx.github.io/categories/leetcode/"/>
-    
-    
-      <category term="leetcode_string" scheme="https://xdksx.github.io/tags/leetcode-string/"/>
     
   </entry>
   
