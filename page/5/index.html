@@ -205,6 +205,80 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/05/25/code-efficandreadable/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/05/25/code-efficandreadable/" class="post-title-link" itemprop="url">code_efficandreadable</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-05-26 12:44:19" itemprop="dateCreated datePublished" datetime="2018-05-26T12:44:19+08:00">2018-05-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/代码整洁/" itemprop="url" rel="index"><span itemprop="name">代码整洁</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="论代码的效率和可读性的权衡"><a href="#论代码的效率和可读性的权衡" class="headerlink" title="论代码的效率和可读性的权衡"></a>论代码的效率和可读性的权衡</h2><h4 id="高效代码可读性差："><a href="#高效代码可读性差：" class="headerlink" title="高效代码可读性差："></a>高效代码可读性差：</h4><p>有一些代码，占用额外内存小，即run in place，且执行的速度快，即复杂度O()低，但是可读性差，即使注释了，修改起来也容易出错，如：<br>对链表的操作：举一个leetcode的例子：(这个例子不是很典型，能说明问题即可）<br>    reverse a linklist from m to n;<br>    1-&gt;3-&gt;4-&gt;5-&gt;null and m,n(ex:2,4);<br>    return 1-&gt;5-&gt;4-&gt;2-&gt;null;<br>   上面例子一开始可以想到，头插法，或者将范围内的那一段用新的处理过的链表替换掉，即只需要处理该片段的头和尾部，当然可能还有其他方法，这里先不考虑；<br>   于是，头插法不是很复杂，但是在这里不用额外的内存时，需要频繁的改变next指针和对pre元素做临时保存，使得代码可读性差，所以可以考虑以下方案：<br>   在替换的内存小时，可以采用后者，让代码可读性高些，方便维护和（被替代~更容易被炒鱿鱼的风险哈哈)<br>   在内存小时，采用前者，爱怎么指怎么指，看不懂不管哈哈哈</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/05/20/tcpip-mtu/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -943,76 +1017,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/05/20/test-article-picture/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/headicon2.jpg">
-      <meta itemprop="name" content="小兴">
-      <meta itemprop="description" content="始于歧路，愿归于征途">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="追光者">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/05/20/test-article-picture/" class="post-title-link" itemprop="url">test_article_picture</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-05-20 15:46:24" itemprop="dateCreated datePublished" datetime="2018-05-20T15:46:24+08:00">2018-05-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>##this is a test of picture with test again in 2019<br><img src="/2018/05/20/test-article-picture/example.jpg" title="This is an example image"><br>end</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1079,7 +1088,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-count">51</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1090,7 +1099,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

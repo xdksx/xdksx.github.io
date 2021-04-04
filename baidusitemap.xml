@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://xdksx.github.io/2021/04/03/cpp-type/</loc>
+    <lastmod>2021-04-04</lastmod>
+  </url>  <url>
+    <loc>https://xdksx.github.io/2021/02/17/live-media-video/</loc>
+    <lastmod>2021-04-04</lastmod>
+  </url>  <url>
     <loc>https://xdksx.github.io/2021/03/20/tcpip-init/</loc>
     <lastmod>2021-03-21</lastmod>
   </url>  <url>
@@ -20,9 +26,6 @@
     <lastmod>2021-02-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2021/02/17/live-media-audioformat/</loc>
-    <lastmod>2021-02-18</lastmod>
-  </url>  <url>
-    <loc>https://xdksx.github.io/2021/02/17/live-media-video/</loc>
     <lastmod>2021-02-18</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2021/02/17/live-media-audio/</loc>
@@ -61,13 +64,13 @@
     <loc>https://xdksx.github.io/2018/05/20/android-adb/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-jni/</loc>
-    <lastmod>2020-03-21</lastmod>
-  </url>  <url>
     <loc>https://xdksx.github.io/2018/05/20/android-howto-makeapk-cmd/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2018/05/20/android-makefirst-app/</loc>
+    <lastmod>2020-03-21</lastmod>
+  </url>  <url>
+    <loc>https://xdksx.github.io/2018/05/20/android-jni/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
@@ -94,6 +97,9 @@
     <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
+    <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/</loc>
+    <lastmod>2020-03-21</lastmod>
+  </url>  <url>
     <loc>https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
@@ -101,9 +107,6 @@
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2018/06/08/cpp-polymorphism/</loc>
-    <lastmod>2020-03-21</lastmod>
-  </url>  <url>
-    <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-static/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2018/06/08/cpp-static/</loc>
