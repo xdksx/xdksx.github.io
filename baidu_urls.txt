@@ -1,3 +1,5 @@
+https://xdksx.github.io/2021/04/17/interrupt/
+https://xdksx.github.io/2021/04/17/systemcall/
 https://xdksx.github.io/2021/04/03/makefile-use/
 https://xdksx.github.io/2021/04/03/cpp-type/
 https://xdksx.github.io/2021/03/20/tcpip-init/
@@ -26,5 +28,3 @@ https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/
 https://xdksx.github.io/2018/06/08/cpp-datamember-memory/
 https://xdksx.github.io/2018/06/08/cpp-polymorphism/
 https://xdksx.github.io/2018/06/08/cpp-inheritance/
-https://xdksx.github.io/2018/06/08/cpp-conandde/
-https://xdksx.github.io/2018/06/08/cpp-class-memory/

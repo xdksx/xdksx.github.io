@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-04-04T14:24:27.298Z</updated>
+  <updated>2021-04-18T07:43:55.445Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,46 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>interrupt</title>
+    <link href="https://xdksx.github.io/2021/04/17/interrupt/"/>
+    <id>https://xdksx.github.io/2021/04/17/interrupt/</id>
+    <published>2021-04-17T16:42:52.000Z</published>
+    <updated>2021-04-18T07:43:55.445Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;中断概述&quot;&gt;&lt;a href=&quot;#中断概述&quot; class=&quot;headerlink&quot; title=&quot;中断概述&quot;&gt;&lt;/a&gt;中断概述&lt;/h3&gt;&lt;p&gt;除了系统调用外，中断也是一种内核活动；系统调用不是在用户态和系统状态之间切换的唯一途径&lt;br&gt;中断的处理往往会涉及到汇编等和硬件相关的代码，但是中断处理部分随着时间的演化，已经达到了这样一种状态：高层代码和底层的硬件交互代码，已经尽可能有效而干净&lt;br&gt;地分隔开了。
+    
+    </summary>
+    
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
+    
+    
+      <category term="interrupt" scheme="https://xdksx.github.io/tags/interrupt/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>systemcall</title>
+    <link href="https://xdksx.github.io/2021/04/17/systemcall/"/>
+    <id>https://xdksx.github.io/2021/04/17/systemcall/</id>
+    <published>2021-04-17T16:41:27.000Z</published>
+    <updated>2021-04-18T07:42:29.746Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;系统调用概述&quot;&gt;&lt;a href=&quot;#系统调用概述&quot; class=&quot;headerlink&quot; title=&quot;系统调用概述&quot;&gt;&lt;/a&gt;系统调用概述&lt;/h3&gt;&lt;p&gt;内核对于用户进程来讲，是一个具备多功能的黑盒子，不仅管理设备，管理内存，管理进程等，还封装了提供进程调用的各种接口，比如打开文件，写入和读取文件等等，这些接口
+    
+    </summary>
+    
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
+    
+    
+      <category term="systemcall" scheme="https://xdksx.github.io/tags/systemcall/"/>
+    
+  </entry>
   
   <entry>
     <title>makefile_use</title>
@@ -43,7 +83,7 @@
     <link href="https://xdksx.github.io/2021/04/03/cpp-type/"/>
     <id>https://xdksx.github.io/2021/04/03/cpp-type/</id>
     <published>2021-04-03T18:32:54.000Z</published>
-    <updated>2021-04-04T09:59:34.147Z</updated>
+    <updated>2021-04-04T14:10:16.423Z</updated>
     
     <summary type="html">
     
@@ -383,50 +423,6 @@
     
       <category term="心理" scheme="https://xdksx.github.io/categories/%E5%BF%83%E7%90%86/"/>
     
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_runtime_semantis</title>
-    <link href="https://xdksx.github.io/2018/07/29/cpp-runtime-semantis/"/>
-    <id>https://xdksx.github.io/2018/07/29/cpp-runtime-semantis/</id>
-    <published>2018-07-29T09:54:07.000Z</published>
-    <updated>2020-03-21T08:20:24.432Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-执行期语意学&quot;&gt;&lt;a href=&quot;#c-执行期语意学&quot; class=&quot;headerlink&quot; title=&quot;c++ 执行期语意学&quot;&gt;&lt;/a&gt;c++ 执行期语意学&lt;/h3&gt;&lt;h4 id=&quot;执行期和编译期的理解&quot;&gt;&lt;a href=&quot;#执行期和编译期的理解&quot; class=&quot;headerlink&quot; title=&quot;执行期和编译期的理解&quot;&gt;&lt;/a&gt;执行期和编译期的理解&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;执行期：此时是对已经编译等生成的可执行文件装载到内存并调用cpu将其作为一个进程执行的过程，对c.c++来说程序的入口为main,即第一条指令是执行main函数开始的，而c++可能会加入一些额外的代码，所以实际写的第一条语句和执行的第一条语句可能有偏差；
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>tcpip_pingtraceroute</title>
-    <link href="https://xdksx.github.io/2018/06/24/tcpip-pingtraceroute/"/>
-    <id>https://xdksx.github.io/2018/06/24/tcpip-pingtraceroute/</id>
-    <published>2018-06-24T14:42:49.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;ping-and-traceroute&quot;&gt;&lt;a href=&quot;#ping-and-traceroute&quot; class=&quot;headerlink&quot; title=&quot;ping and traceroute&quot;&gt;&lt;/a&gt;ping and traceroute&lt;/h3&gt;&lt;h4 id=&quot;ping&quot;&gt;&lt;a href=&quot;#ping&quot; class=&quot;headerlink&quot; title=&quot;ping&quot;&gt;&lt;/a&gt;ping&lt;/h4&gt;&lt;p&gt;ping是ICMP中的回显报文类型：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ping 对应的icmp，type字段为0/8,code字段为0&lt;/li&gt;
-&lt;li&gt;ICMP回显请求和应答报文格式：
-    
-    </summary>
-    
-      <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
-    
-    
-      <category term="tcpip_ip" scheme="https://xdksx.github.io/tags/tcpip-ip/"/>
     
   </entry>
   
