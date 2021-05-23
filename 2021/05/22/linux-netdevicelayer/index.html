@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="目标：描述linux网络协议栈结构：1) 常规的方式：传统的单机网络结构：   一个服务器(server)上，运行一个linux系统，linux系统之上运行一个协议栈，支持相关上层应用；   服务器的下方(硬件设备)，接一个或多个网卡，代表这个系统可能支持多个ip，多个出口等；每个网卡NIC接不同的交换机(路由器),来连接到可能不同的   运营商物理网络，如下图：在这种情况下一个服务器为一个单点的">
+<meta name="keywords" content="tcpip_device">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux_netdevicelayer">
+<meta property="og:url" content="https://xdksx.github.io/2021/05/22/linux-netdevicelayer/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="目标：描述linux网络协议栈结构：1) 常规的方式：传统的单机网络结构：   一个服务器(server)上，运行一个linux系统，linux系统之上运行一个协议栈，支持相关上层应用；   服务器的下方(硬件设备)，接一个或多个网卡，代表这个系统可能支持多个ip，多个出口等；每个网卡NIC接不同的交换机(路由器),来连接到可能不同的   运营商物理网络，如下图：在这种情况下一个服务器为一个单点的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-05-23T02:30:56.288Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux_netdevicelayer">
+<meta name="twitter:description" content="目标：描述linux网络协议栈结构：1) 常规的方式：传统的单机网络结构：   一个服务器(server)上，运行一个linux系统，linux系统之上运行一个协议栈，支持相关上层应用；   服务器的下方(硬件设备)，接一个或多个网卡，代表这个系统可能支持多个ip，多个出口等；每个网卡NIC接不同的交换机(路由器),来连接到可能不同的   运营商物理网络，如下图：在这种情况下一个服务器为一个单点的">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/05/22/linux-netdevicelayer/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>linux_netdevicelayer | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/心理/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/05/22/linux-netdevicelayer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          linux_netdevicelayer
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-22 18:59:09" itemprop="dateCreated datePublished" datetime="2021-05-22T18:59:09+08:00">2021-05-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-23 10:30:56" itemprop="dateModified" datetime="2021-05-23T10:30:56+08:00">2021-05-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index"><span itemprop="name">tcpip</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="目标："><a href="#目标：" class="headerlink" title="目标："></a>目标：</h3><h4 id="描述linux网络协议栈结构："><a href="#描述linux网络协议栈结构：" class="headerlink" title="描述linux网络协议栈结构："></a>描述linux网络协议栈结构：</h4><p>1) 常规的方式：传统的单机网络结构：<br>   一个服务器(server)上，运行一个linux系统，linux系统之上运行一个协议栈，支持相关上层应用；<br>   服务器的下方(硬件设备)，接一个或多个网卡，代表这个系统可能支持多个ip，多个出口等；每个网卡NIC接不同的交换机(路由器),来连接到可能不同的<br>   运营商物理网络，如下图：在这种情况下一个服务器为一个单点的物理机；<a id="more"></a></p>
+<p>2) 虚拟机虚拟网络架构：<br>   一个服务器，其实可能会是个多核比如32核的cpu,运算能力强，也配了一个或多个网卡，可以运行多个虚拟机(操作系统)，像vmware,virtualbox,kvm,qemu<br>   等软件支持的虚拟机，可以运行多个不同操作系统的虚拟机，各个虚拟机之间相互隔离；<br>   这个虚拟机架构需要网络架构上支持，称虚拟网络架构，每个虚拟机有各自的虚拟网卡，每个虚拟机之间的通信，通过将每个虚拟网卡连接到多个虚拟交换机上(虚拟交换机也是在这个服务器上),从而分成几个隔离的虚拟网络；最后需要经过物理网络出口入口时，由虚拟交换机接出；<br>   虚拟机架构：Hypervisor: 一种模拟器，常见的实现有vmward,virtualbox,qemu,kvm,半虚拟化的virtio等等<br>   虚拟交换机架构： open vSwitch<br>   虚拟网卡： 有tap/tun的实现例子<br>   虚拟lan: VLANS, macvlan,ipvlan等<br>   硬件加速：intel虚拟化技术： VT-d  </p>
+<p>3) openstack：<br>   可以说是云计算的开源架构吧，它可以实现为一套软件，如目前的laaS(Infrastructure as a Service基础设施即服务)/Paas/SaaS<br>   基础设施资源，主要包括三个方面：计算、存储、网络。说通俗点，就是CPU，硬盘，网卡。<br>   OpenStack对资源进行管理，并且以服务的形式提供给上层应用或者用户去使用。<br>   laaS: 厂商管理网络，存储，服务器，虚拟化，即厂商提供docker或其他的类型的虚拟云主机(容器云等)，由使用者用户管理虚拟机上的操作系统，中间件，运行时环境，数据以及应用程序<br>   PaaS: 厂商管理网络，存储，服务器，虚拟化，操作系统，中间件和运行时环境，而用户只需要部署其数据和应用程序就好了；<br>   SaaS:全部都由厂商来管理；</p>
+<h4 id="这里先不讨论虚拟化的网络架构，先看传统的结构："><a href="#这里先不讨论虚拟化的网络架构，先看传统的结构：" class="headerlink" title="这里先不讨论虚拟化的网络架构，先看传统的结构："></a>这里先不讨论虚拟化的网络架构，先看传统的结构：</h4><h5 id="1-描述这一层的位置，具体含义。"><a href="#1-描述这一层的位置，具体含义。" class="headerlink" title="1 描述这一层的位置，具体含义。"></a>1 描述这一层的位置，具体含义。</h5><p>网络设备分为物理网络设备和虚拟网络设备，这里将网络设备都简化为只讨论网卡；</p>
+<ul>
+<li>对网卡而言：有它的特性：<br>带宽，速度： 即它是千兆网卡还是其他，这个可以通过指令拿到：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">sudo ethtool eth0</span><br><span class="line">Settings <span class="keyword">for</span> eth0:</span><br><span class="line">	Supported ports: [ TP ]</span><br><span class="line">	Supported link modes:   <span class="number">10b</span>aseT/Half <span class="number">10b</span>aseT/Full </span><br><span class="line">	                        <span class="number">100b</span>aseT/Half <span class="number">100b</span>aseT/Full </span><br><span class="line">	                        <span class="number">1000b</span>aseT/Full </span><br><span class="line">	Supported pause frame use: Symmetric</span><br><span class="line">	Supports <span class="keyword">auto</span>-negotiation: Yes</span><br><span class="line">	Advertised link modes:  <span class="number">10b</span>aseT/Half <span class="number">10b</span>aseT/Full </span><br><span class="line">	                        <span class="number">100b</span>aseT/Half <span class="number">100b</span>aseT/Full </span><br><span class="line">	                        <span class="number">1000b</span>aseT/Full </span><br><span class="line">	Advertised pause frame use: Symmetric</span><br><span class="line">	Advertised <span class="keyword">auto</span>-negotiation: Yes</span><br><span class="line">	Speed: <span class="number">1000</span>Mb/s  千兆网卡</span><br><span class="line">	Duplex: Full</span><br><span class="line">	Port: Twisted Pair</span><br><span class="line">	PHYAD: <span class="number">1</span></span><br><span class="line">	Transceiver: internal</span><br><span class="line">	Auto-negotiation: on</span><br><span class="line">	MDI-X: on</span><br><span class="line">	Supports Wake-on: pumbg</span><br><span class="line">	Wake-on: g</span><br><span class="line">	Current message level: <span class="number">0x00000007</span> (<span class="number">7</span>)</span><br><span class="line">			       drv probe link</span><br><span class="line">	Link detected: yes</span><br></pre></td></tr></table></figure>
+<p>其他特性： 网卡支持的工作模式，是否支持多队列等等；<br>其中多队列的特性比较重要，即意味着它支不支持RSS:</p>
+<ul>
+<li>关于RSS,RPS,RFS等：</li>
+<li>RSS：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">支持多队列的NIC的驱动程序通常提供一个内核模块参数来指定要配置的硬件队列的数量。例如，在bnx2x驱动程序中，这个参数被称为num_queues。典型的RSS配置是，如果设备支持足够的队列，那么每个CPU都有一个接收队列，或者至少每个内存域有一个接收队列，其中内存域是一组共享特定内存级别(L1、L2、NUMA节点等)的CPU。</span><br><span class="line">RSS设备的间接表(通过屏蔽散列解析队列)通常是由驱动程序在初始化时编写的。默认的映射是将队列均匀地分布在表中，但是可以在运行时使用ethtool命令(——show-rxfh-indir和——<span class="built_in">set</span>-rxfh-indir)检索和修改间接表。可以通过修改间接表来为不同的队列指定不同的相对权重。</span><br><span class="line">RSS irq 配置</span><br><span class="line">每个接收队列都有一个与之相关联的独立IRQ。当新包到达给定队列时，NIC会触发此操作通知CPU。PCIe设备的信令路径使用消息信号中断(MSI-X)，它可以将每个中断路由到特定的CPU。队列到irq的活动映射可以从/proc/interrupts中确定。默认情况下，IRQ可以在任何CPU上处理。因为数据包处理中不可忽略的一部分发生在接收中断处理中，所以在cpu之间分散接收中断是有利的。手动调整每个interru的IRQ亲和力</span><br><span class="line"></span><br><span class="line">推荐配置，即中断打散：</span><br><span class="line">当考虑延迟或接收中断处理形成瓶颈时，应该启用RSS。在cpu之间分散负载会减少队列长度。对于低延迟网络，最佳设置是分配与系统中cpu数量相同的队列(如果更低，则为网卡最大值)。最有效的高速率配置可能是接收队列数量最少的配置，其中没有由于CPU饱和而导致的接收队列溢出，因为在启用中断合并的默认模式下，中断的聚合数量(因此工作)会随着每增加一个而增加</span><br><span class="line">可以使用mpstat实用程序观察每个CPU的负载，但是请注意，在具有超线程(HT)的处理器上，每个超线程都表示为一个单独的CPU。对于中断处理，HT在最初的测试中没有显示出任何好处，因此将队列的数量限制在系统中的CPU内核的数量。</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>内核代码实现中，将支持此种特性时，用MSI-X来表示，可以看相关函数名；<br>查看网卡队列：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ethtool -l eth1</span><br><span class="line">Channel parameters <span class="keyword">for</span> eth1:</span><br><span class="line">Pre-<span class="built_in">set</span> maximums:</span><br><span class="line">RX:		<span class="number">0</span></span><br><span class="line">TX:		<span class="number">0</span></span><br><span class="line">Other:		<span class="number">1</span></span><br><span class="line">Combined:	<span class="number">32</span>  <span class="comment">//网卡支持的</span></span><br><span class="line">Current hardware settings:</span><br><span class="line">RX:		<span class="number">0</span></span><br><span class="line">TX:		<span class="number">0</span></span><br><span class="line">Other:		<span class="number">1</span></span><br><span class="line">Combined:	<span class="number">20</span> <span class="comment">//当前配置的</span></span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>RPS：<br>对于单队列网卡，可以通过RPS (receive packet steering)或RFS (receive flow steering)两种方式模拟多队列模式，但效果不如启用RSS的多队列网卡<br>接收包转向(Receive packet steering, RPS)在cpu之间平衡软中断的负载.  网卡驱动程序通过使用一个四联体(SIP、SPORT、DIP和DPORT)计算每个流的哈希ID，中断处理程序将哈希ID分配给相应的CPU，从而充分利用多核能力<br>RPS通常是通过软件来模拟多队列网卡的功能。当网卡支持多队列时，RPS无效。RPS主要用于多cpu环境中的单队列网卡。如果一个网卡支持多个队列，可以通过配置SMP IRQ亲和性直接将硬中断绑定到cpu。</p>
+</li>
+<li><p>RFS:<br>RPS只是将数据包分配到不同的cpu上。当使用不同的CPU运行应用程序和处理软中断时，这会大大降低CPU缓存的利用率。在这种情况下，RFS确保使用一个CPU来运行应用程序和处理软中断，以充分利用CPU缓存。RPS和RFS通常一起使用以获得最好的结果。它们主要用于多cpu环境中的单队列网卡。<br>即RFS和应用绑定一起，确保该cpu上收到的包，就是被该cpu上运行的应用处理的，仔细看下面两个图，前面是RPS，data3-&gt;app8了，无关联，但是后面的是RFS，data3-&gt;app3，都是3</p>
+</li>
+</ul>
+<p>接收流导向(Receive flow steering, RFS)与RPS一起，将数据包插入指定CPU的backlog队列中，并唤醒CPU执行。<br>IRQbalance适用于大多数场景。但在对网络性能要求较高的场景下，建议手动绑定中断。<br>IRQbalance在运行过程中可能会出现以下问题:a)计算值有时不合适，无法实现cpu之间的负载均衡。(b)当系统处于空闲状态，irq处于省电模式时，IRQbalance将所有中断分配到第一个CPU，使其他空闲CPU休眠，降低能耗。当负载突然上升时，可能会由于调整滞后而导致性能下降。(c)指定处理中断的CPU频繁变化，导致更多的上下文切换。(d)启用IRQbalance但不生效，即没有指定处理中断的CPU。</p>
+<p>more:<a href="https://01.org/linuxgraphics/gfx-docs/drm/networking/scaling.html" target="_blank" rel="noopener">https://01.org/linuxgraphics/gfx-docs/drm/networking/scaling.html</a></p>
+<h5 id="2-关于网络设备层：网络收发时的总体流程，以及这一层的流程；并贴上大致的函数调用接口"><a href="#2-关于网络设备层：网络收发时的总体流程，以及这一层的流程；并贴上大致的函数调用接口" class="headerlink" title="2 关于网络设备层：网络收发时的总体流程，以及这一层的流程；并贴上大致的函数调用接口"></a>2 关于网络设备层：网络收发时的总体流程，以及这一层的流程；并贴上大致的函数调用接口</h5><p>Linux内核中有一个网络设备管理层，处于网络设备驱动和协议栈之间，负责衔接它们之间的数据交互。驱动不需要了解协议栈的细节，协议栈也不需要了解设备驱动的细节。<br>对于一个网络设备来说，就像一个管道（pipe）一样，有两端，从其中任意一端收到的数据将从另一端发送出去。<br>比如一个物理网卡eth0，它的两端分别是内核协议栈（通过内核网络设备管理模块间接的通信）和外面的物理网络，从物理网络收到的数据，会转发给内核协议栈，而应用程序从协议栈发过来的数据将会通过物理网络发送出去。</p>
+<ul>
+<li><p>网络设备层收包流程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">                   +-----+</span><br><span class="line">                   |     |                            Memroy</span><br><span class="line">+--------+   <span class="number">1</span>     |     |  <span class="number">2</span>  DMA     +--------+--------+--------+--------+</span><br><span class="line">| Packet |--------&gt;| NIC |------------&gt;| Packet | Packet | Packet | ...... |</span><br><span class="line">+--------+         |     |             +--------+--------+--------+--------+</span><br><span class="line">                   |     |&lt;--------+</span><br><span class="line">                   +-----+         |</span><br><span class="line">                      |            +---------------+</span><br><span class="line">                      |                            |</span><br><span class="line">                    <span class="number">3</span> | Raise IRQ                  | Disable IRQ</span><br><span class="line">                      |                          <span class="number">5</span> |</span><br><span class="line">                      |                            |</span><br><span class="line">                      ↓                            |</span><br><span class="line">                   +-----+                   +------------+</span><br><span class="line">                   |     |  Run IRQ handler  |            |</span><br><span class="line">                   | CPU |------------------&gt;| NIC Driver |</span><br><span class="line">                   |     |       <span class="number">4</span>           |            |</span><br><span class="line">                   +-----+                   +------------+</span><br><span class="line">                                                   |</span><br><span class="line">                                                <span class="number">6</span>  | Raise soft IRQ</span><br><span class="line">                                                   |</span><br><span class="line">                                                   ↓</span><br><span class="line"><span class="comment">//来源：https://segmentfault.com/a/1190000008836467</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>具体步骤<br>0) 网卡初始化和启动：在开机时module_init初始化部分，然后在pci或其他总线发现设备时，调用probe进一步真正初始化；在类似ifconfig up的指令启动网卡后，<br>会调用到网卡的xxx_open函数，进行如中断注册，使能等操作；这个时候，设备就可以开始工作了；  </p>
+</li>
+</ul>
+<p>1) 数据包从外面的网络进入物理网卡。这个时候网卡芯片自身的逻辑(固件),会判断如果目的mac地址不是该网卡的，且该网卡没有开启混杂模式，该包会被网卡丢弃，这里发生在网卡固件逻辑上，没在驱动做处理。先代网卡分以太网卡，和wifi网卡，又根据接口不同，有pci接口的，和usb接口的，比如常见的usbwifi网卡；<br>   以太网的物理头和wifi物理头(802.11头)，不一样，或者说支持的协议不同，根源是物理环境不同；wifi的环境是空气；  </p>
+<p>2) 网卡将数据包通过DMA的方式写入到指定的内存地址，该地址由网卡驱动分配并初始化。注： 老的网卡可能不支持DMA，不过新的网卡一般都支持。<br>3) 网卡通过硬件中断（IRQ）通知CPU，告诉它有数据来了<br>4）CPU根据中断表，调用已经注册的中断函数，这个中断函数会调到驱动程序（NIC Driver）中相应的函数<br>5) 对NAPI模式： 驱动先禁用网卡的中断，表示驱动程序已经知道内存中有数据了，告诉网卡下次再收到数据包直接写内存就可以了，不要再通知CPU了，这样可以提高效率，避免CPU不停的被中断。<br>6) 对非NAPI的模式，驱动是每次中断处理接收数据，然后写到内存的；这里NAPI的N是new的意思；<br>7) 启动软中断。这步结束后，硬件中断处理函数就结束返回了。由于硬中断处理程序执行的过程中不能被中断，所以如果它执行时间过长，会导致CPU没法响应其它硬件的中断，于是内核引入软中断，这样可以将硬中断处理函数中耗时的部分移到软中断处理函数里面来慢慢处理。  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">                                            +-----+</span><br><span class="line">                                    <span class="number">17</span>      |     |</span><br><span class="line">                               +-----------&gt;| NIC |</span><br><span class="line">                               |            |     |</span><br><span class="line">                               |Enable IRQ  +-----+</span><br><span class="line">                               |</span><br><span class="line">                               |</span><br><span class="line">                         +------------+                                      Memroy</span><br><span class="line">                         |            |        Read           +--------+--------+--------+--------+</span><br><span class="line">        +---------------&gt;| NIC Driver |&lt;--------------------- | Packet | Packet | Packet | ...... |</span><br><span class="line">        |                |            |          <span class="number">9</span>            +--------+--------+--------+--------+</span><br><span class="line">        |                +------------+</span><br><span class="line">        |                      |    |        skb</span><br><span class="line">   Poll | <span class="number">8</span>      Raise softIRQ | <span class="number">6</span>  +-----------------+</span><br><span class="line">        |                      |             <span class="number">10</span>       |</span><br><span class="line">        |                      ↓                      ↓</span><br><span class="line">+---------------+  Call  +-----------+        +------------------+        +--------------------+  <span class="number">12</span>  +---------------------+</span><br><span class="line">| net_rx_action |&lt;-------| ksoftirqd |        | napi_gro_receive |-------&gt;| enqueue_to_backlog |-----&gt;| CPU input_pkt_queue |</span><br><span class="line">+---------------+   <span class="number">7</span>    +-----------+        +------------------+   <span class="number">11</span>   +--------------------+      +---------------------+</span><br><span class="line">                                                      |                                                      | <span class="number">13</span></span><br><span class="line">                                                   <span class="number">14</span> |        + - - - - - - - - - - - - - - - - - - - - - - +</span><br><span class="line">                                                      ↓        ↓</span><br><span class="line">                                           +--------------------------+    <span class="number">15</span>      +------------------------+</span><br><span class="line">                                           | __netif_receive_skb_core |-----------&gt;| packet taps(AF_PACKET) |</span><br><span class="line">                                           +--------------------------+            +------------------------+</span><br><span class="line">                                                      |</span><br><span class="line">                                                      | <span class="number">16</span></span><br><span class="line">                                                      ↓</span><br><span class="line">                                             +-----------------+</span><br><span class="line">                                             | protocol layers |</span><br><span class="line">                                             +-----------------+</span><br></pre></td></tr></table></figure>
+<p>8) 内核中的ksoftirqd进程专门负责软中断的处理，当它收到软中断后，就会调用相应软中断所对应的处理函数，对于上面第7步中是网卡驱动模块抛出的软中断，ksoftirqd会调用网络模块的net_rx_action函数,这个函数是在初始化时，注册到指定的网络接收软中断上的；<br>9) net_rx_action调用网卡驱动里的poll函数来一个一个的处理数据包<br>10) 在poll函数中，驱动会一个接一个的读取网卡写到内存中的数据包，内存中数据包的格式只有驱动知道<br>11) 驱动程序将内存中的数据包转换成内核网络模块能识别的skb格式，然后调用napi_gro_receive函数<br>12) napi_gro_receive会处理GRO相关的内容，也就是将可以合并的数据包进行合并，这样就只需要调用一次协议栈。然后判断是否开启了RPS，如果开启了，将会调用enqueue_to_backlog<br>13) 在enqueue_to_backlog函数中，会将数据包放入CPU的softnet_data结构体的input_pkt_queue中，然后返回，如果input_pkt_queue满了的话，该数据包将会被丢弃，queue的大小可以通过net.core.netdev_max_backlog来配置<br>14) CPU会接着在自己的软中断上下文中处理自己input_pkt_queue里的网络数据（调用<strong>netif_receive_skb_core）<br>15） 如果没开启RPS，napi_gro_receive会直接调用</strong>netif_receive_skb_core<br>16)  看是不是有AF_PACKET类型的socket（也就是我们常说的原始套接字），如果有的话，拷贝一份数据给它。tcpdump抓包就是抓的这里的包。<br>17) 调用协议栈相应的函数，将数据包交给协议栈处理。<br>18) 待内存中的所有数据包被处理完成后（即poll函数执行完成），启用网卡的硬中断，这样下次网卡再收到数据的时候就会通知CPU<br>接着传递给协议栈；  </p>
+<ul>
+<li>NAPI和非NAPI的区别：以下两篇写得不错，我就不重复写了；<br><a href="http://www.hyuuhit.com/2018/07/25/receive-packet/" target="_blank" rel="noopener">http://www.hyuuhit.com/2018/07/25/receive-packet/</a><br><a href="http://cxd2014.github.io/2017/10/15/linux-napi/" target="_blank" rel="noopener">http://cxd2014.github.io/2017/10/15/linux-napi/</a></li>
+</ul>
+<h5 id="网络设备层发包流程："><a href="#网络设备层发包流程：" class="headerlink" title="网络设备层发包流程："></a>网络设备层发包流程：</h5><p>网络数据包通过协议栈后，经过邻居子系统，接着都会调用dev_queue_xmit 进入网络设备层进行发包；<br>期间经过流量控制系统tc,再到发包软中断等，最后在合适的时机，通过设备对应的驱动的发送函数发送出去；<br>整体流程如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">                        |</span><br><span class="line">                        |</span><br><span class="line">                        ↓</span><br><span class="line">                 +----------------+</span><br><span class="line">+----------------| dev_queue_xmit |</span><br><span class="line">|                +----------------+</span><br><span class="line">|                       |</span><br><span class="line">|                       |</span><br><span class="line">|                       ↓</span><br><span class="line">|              +-----------------+</span><br><span class="line">|              | Traffic Control |</span><br><span class="line">|              +-----------------+</span><br><span class="line">| loopback              |</span><br><span class="line">|   <span class="keyword">or</span>                  +--------------------------------------------------------------+</span><br><span class="line">| IP tunnels            ↓                                                              |</span><br><span class="line">|                       ↓                                                              |</span><br><span class="line">|            +---------------------+  Failed   +----------------------+         +---------------+</span><br><span class="line">+-----------&gt;| dev_hard_start_xmit |----------&gt;| raise NET_TX_SOFTIRQ |- - - - &gt;| net_tx_action |</span><br><span class="line">             +---------------------+           +----------------------+         +---------------+</span><br><span class="line">                        |</span><br><span class="line">                        +----------------------------------+</span><br><span class="line">                        |                                  |</span><br><span class="line">                        ↓                                  ↓</span><br><span class="line">                +----------------+              +------------------------+</span><br><span class="line">                | ndo_start_xmit |              | packet taps(AF_PACKET) |</span><br><span class="line">                +----------------+              +------------------------+</span><br></pre></td></tr></table></figure>
+<p>explanation:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">dev_queue_xmit： netdevice子系统的入口函数，在该函数中，会先获取设备对应的qdisc，如果没有的话（如loopback或者IP tunnels），就直接调用dev_hard_start_xmit，否则数据包将经过Traffic Control模块进行处理</span><br><span class="line">Traffic Control： 这里主要是进行一些过滤和优先级处理，在这里，如果队列满了的话，数据包会被丢掉，详情请参考文档，这步完成后也会走到dev_hard_start_xmit</span><br><span class="line"></span><br><span class="line">dev_hard_start_xmit： 该函数中，首先是拷贝一份skb给“packet taps”，tcpdump就是从这里得到数据的，然后调用ndo_start_xmit。如果dev_hard_start_xmit返回错误的话（大部分情况可能是NETDEV_TX_BUSY），调用它的函数会把skb放到一个地方，然后抛出软中断NET_TX_SOFTIRQ，交给软中断处理程序net_tx_action稍后重试（如果是loopback或者IP tunnels的话，失败后不会有重试的逻辑）</span><br><span class="line"></span><br><span class="line">ndo_start_xmit： 这是一个函数指针，会指向具体驱动发送数据的函数</span><br></pre></td></tr></table></figure></p>
+<h5 id="ethernet网卡，e1000-igb-i350为例子解释"><a href="#ethernet网卡，e1000-igb-i350为例子解释" class="headerlink" title="ethernet网卡，e1000,igb i350为例子解释"></a>ethernet网卡，e1000,igb i350为例子解释</h5><p>以简单的只有单队列的千兆网卡e1000为例：e1000是<br>e1000_main.c</p>
+<ul>
+<li><p>pci_scan-&gt;probe: 网卡初始化：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">e1000_probe:</span><br><span class="line">    结构： </span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net_device</span> *<span class="title">netdev</span>;</span> <span class="comment">//每个网络设备都有</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">e1000_adapter</span> *<span class="title">adapter</span>;</span><span class="comment">//网卡适配器结构，每个网卡有自己的adapter结构，包括napi结构，是否为多队列结构，tx,rx相关属性等；</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">e1000_hw</span> *<span class="title">hw</span>;</span><span class="comment">//表示一些硬件属性</span></span><br><span class="line">    流程：主要是初始化以上三个结构</span><br><span class="line">    <span class="comment">/*e1000_probe initializes an adapter identified by a pci_dev structure.</span></span><br><span class="line"><span class="comment"> * The OS initialization, configuring of the adapter private structure,</span></span><br><span class="line"><span class="comment"> * and a hardware reset occur.*/</span></span><br><span class="line">    	netif_napi_add(netdev, &amp;adapter-&gt;napi, e1000_clean, <span class="number">64</span>); --初始化poll函数，为e1000_clean</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动网卡：ifconfig up/call open func </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 启动设备，分配相关结构，向操作系统注册中断，看门狗启动，协议栈被通知接口已ready</span></span><br><span class="line"><span class="comment">The open entry point is called when a network interface is made</span></span><br><span class="line"><span class="comment">* active by the system (IFF_UP).  At this point all resources needed</span></span><br><span class="line"><span class="comment">* for transmit and receive operations are allocated, the interrupt</span></span><br><span class="line"><span class="comment">* handler is registered with the OS, the watchdog task is started,</span></span><br><span class="line"><span class="comment">* and the stack is notified that the interface is ready.</span></span><br><span class="line"><span class="comment">**/</span>/</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>函数不长，可以看看：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">e1000_open</span><span class="params">(struct net_device *netdev)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">e1000_adapter</span> *<span class="title">adapter</span> = <span class="title">netdev_priv</span>(<span class="title">netdev</span>);</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">e1000_hw</span> *<span class="title">hw</span> = &amp;<span class="title">adapter</span>-&gt;<span class="title">hw</span>;</span></span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* disallow open during test */</span></span><br><span class="line">	<span class="keyword">if</span> (test_bit(__E1000_TESTING, &amp;adapter-&gt;flags))</span><br><span class="line">		<span class="keyword">return</span> -EBUSY;</span><br><span class="line"></span><br><span class="line">	netif_carrier_off(netdev);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* allocate transmit descriptors */</span></span><br><span class="line">	err = e1000_setup_all_tx_resources(adapter);</span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		<span class="keyword">goto</span> err_setup_tx;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* allocate receive descriptors */</span></span><br><span class="line">	err = e1000_setup_all_rx_resources(adapter);</span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		<span class="keyword">goto</span> err_setup_rx;</span><br><span class="line"></span><br><span class="line">	e1000_power_up_phy(adapter);</span><br><span class="line"></span><br><span class="line">	adapter-&gt;mng_vlan_id = E1000_MNG_VLAN_NONE;</span><br><span class="line">	<span class="keyword">if</span> ((hw-&gt;mng_cookie.status &amp;</span><br><span class="line">			  E1000_MNG_DHCP_COOKIE_STATUS_VLAN_SUPPORT)) &#123;</span><br><span class="line">		e1000_update_mng_vlan(adapter);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* before we allocate an interrupt, we must be ready to handle it.</span></span><br><span class="line"><span class="comment">	 * Setting DEBUG_SHIRQ in the kernel makes it fire an interrupt</span></span><br><span class="line"><span class="comment">	 * as soon as we call pci_request_irq, so we have to setup our</span></span><br><span class="line"><span class="comment">	 * clean_rx handler before we do so.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	e1000_configure(adapter);</span><br><span class="line"></span><br><span class="line">	err = e1000_request_irq(adapter);</span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		<span class="keyword">goto</span> err_req_irq;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* From here on the code is the same as e1000_up() */</span></span><br><span class="line">	clear_bit(__E1000_DOWN, &amp;adapter-&gt;flags);</span><br><span class="line"></span><br><span class="line">	napi_enable(&amp;adapter-&gt;napi);</span><br><span class="line"></span><br><span class="line">	e1000_irq_enable(adapter);</span><br><span class="line"></span><br><span class="line">	netif_start_queue(netdev);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* fire a link status change interrupt to start the watchdog */</span></span><br><span class="line">	ew32(ICS, E1000_ICS_LSC);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> E1000_SUCCESS;</span><br><span class="line"></span><br><span class="line">err_req_irq:</span><br><span class="line">	e1000_power_down_phy(adapter);</span><br><span class="line">	e1000_free_all_rx_resources(adapter);</span><br><span class="line">err_setup_rx:</span><br><span class="line">	e1000_free_all_tx_resources(adapter);</span><br><span class="line">err_setup_tx:</span><br><span class="line">	e1000_reset(adapter);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//从这里可以看到中断处理程序：e1000_intr</span></span><br><span class="line">	<span class="keyword">irq_handler_t</span> handler = e1000_intr;</span><br><span class="line">	<span class="keyword">int</span> irq_flags = IRQF_SHARED;</span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line"></span><br><span class="line">	err = request_irq(adapter-&gt;pdev-&gt;irq, handler, irq_flags, netdev-&gt;name,</span><br><span class="line">			  netdev);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>接收数据包的中断处理：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">__napi_schedule(&amp;adapter-&gt;napi); <span class="comment">//这里是napi的，直接进入调度---&gt;__raise_softirq_irqoff(NET_RX_SOFTIRQ);</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">net_rx_action</span><span class="params">(struct softirq_action *h)</span></span></span><br><span class="line">--&gt;budget -= napi_poll(n, &amp;repoll);从设备拉数据</span><br><span class="line">  ---&gt;work = n-&gt;poll(n, weight);从设备拉数据</span><br><span class="line">    --&gt;从上面可以看到poll为e1000_clean</span><br><span class="line">	 --&gt;napi_complete_done   ---dev.c: 通用设备无关函数</span><br><span class="line">	  --&gt;napi_gro_flush==&gt;napi_gro_complete--&gt; 处理gro</span><br><span class="line">	   --&gt;netif_receive_skb_internal --如果打开了RPS,放到对应的cpu队列：enqueue_to_backlog</span><br><span class="line">	     --&gt;__netif_receive_skb --传递到协议栈</span><br></pre></td></tr></table></figure>
+<ul>
+<li>发送：<br>先看看定义的可供上层调用的函数接口：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">net_device_ops</span> <span class="title">e1000_netdev_ops</span> = &#123;</span></span><br><span class="line">	.ndo_open		= e1000_open,</span><br><span class="line">	.ndo_stop		= e1000_close,</span><br><span class="line">	.ndo_start_xmit		= e1000_xmit_frame,</span><br><span class="line">	.ndo_get_stats		= e1000_get_stats,</span><br><span class="line">	.ndo_set_rx_mode	= e1000_set_rx_mode,<span class="comment">//设置接收模式，混杂模式或其他</span></span><br><span class="line">	.ndo_set_mac_address	= e1000_set_mac,<span class="comment">//设置mac地址</span></span><br><span class="line">	.ndo_tx_timeout		= e1000_tx_timeout,</span><br><span class="line">	.ndo_change_mtu		= e1000_change_mtu,</span><br><span class="line">	.ndo_do_ioctl		= e1000_ioctl,</span><br><span class="line">	.ndo_validate_addr	= eth_validate_addr,</span><br><span class="line">	.ndo_vlan_rx_add_vid	= e1000_vlan_rx_add_vid,</span><br><span class="line">	.ndo_vlan_rx_kill_vid	= e1000_vlan_rx_kill_vid,</span><br><span class="line">#ifdef CONFIG_NET_POLL_CONTROLLER</span><br><span class="line">	.ndo_poll_controller	= e1000_netpoll,</span><br><span class="line">#endif</span><br><span class="line">	.ndo_fix_features	= e1000_fix_features,</span><br><span class="line">	.ndo_set_features	= e1000_set_features,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>可以看到发送函数：e1000_xmit_frame<br>具体代码流程涉及较多设备相关的函数，暂不分析；</p>
+<h6 id="wifi网卡-RTL8180解释"><a href="#wifi网卡-RTL8180解释" class="headerlink" title="wifi网卡 RTL8180解释"></a>wifi网卡 RTL8180解释</h6><p>wifi比较特殊，它有比较复杂的扫描和连接四次握手的流程，这块流程不属于数据包的处理，而是控制包的处理，linux内核将它交给了另一套流程，而上层应用用<br>wpa_supplicant来处理；</p>
+<p>1) rtl8187 网卡驱动，是一个usb设备的；<br>它的一些相关函数定义在 drivers/…rtl8187/dev.c下<br>看下它支持的操作函数ops<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">ieee80211_ops</span> <span class="title">rtl8187_ops</span> = &#123;</span></span><br><span class="line">	.tx			= rtl8187_tx,</span><br><span class="line">	.start			= rtl8187_start,</span><br><span class="line">	.stop			= rtl8187_stop,</span><br><span class="line">	.add_interface		= rtl8187_add_interface,</span><br><span class="line">	.remove_interface	= rtl8187_remove_interface,</span><br><span class="line">	.config			= rtl8187_config,</span><br><span class="line">	.bss_info_changed	= rtl8187_bss_info_changed,</span><br><span class="line">	.prepare_multicast	= rtl8187_prepare_multicast,</span><br><span class="line">	.configure_filter	= rtl8187_configure_filter,</span><br><span class="line">	.conf_tx		= rtl8187_conf_tx,</span><br><span class="line">	.rfkill_poll		= rtl8187_rfkill_poll,</span><br><span class="line">	.get_tsf		= rtl8187_get_tsf,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>start函数初始化了usb驱动需要的东西，并设置了接收数据的回调函数，可以理解为类似接收中断处理函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">rtl8187_start</span><br><span class="line">    rtl8187_init_urbs(dev);</span><br><span class="line">        <span class="keyword">while</span> (skb_queue_len(&amp;priv-&gt;rx_queue) &lt; <span class="number">32</span>) &#123;</span><br><span class="line">		skb = __dev_alloc_skb(RTL8187_MAX_RX, GFP_KERNEL);</span><br><span class="line">		<span class="keyword">if</span> (!skb) &#123;</span><br><span class="line">			ret = -ENOMEM;</span><br><span class="line">			<span class="keyword">goto</span> err;</span><br><span class="line">		&#125;</span><br><span class="line">		entry = usb_alloc_urb(<span class="number">0</span>, GFP_KERNEL);</span><br><span class="line">		<span class="keyword">if</span> (!entry) &#123;</span><br><span class="line">			ret = -ENOMEM;</span><br><span class="line">			<span class="keyword">goto</span> err;</span><br><span class="line">		&#125;</span><br><span class="line">		usb_fill_bulk_urb(entry, priv-&gt;udev,</span><br><span class="line">				  usb_rcvbulkpipe(priv-&gt;udev,</span><br><span class="line">				  priv-&gt;is_rtl8187b ? <span class="number">3</span> : <span class="number">1</span>),</span><br><span class="line">				  skb_tail_pointer(skb),</span><br><span class="line">				  RTL8187_MAX_RX, rtl8187_rx_cb, skb);<span class="comment">//接收的回调，这里接收到从usb输入的数据，可能是网络数据</span></span><br><span class="line">		info = (struct rtl8187_rx_info *)skb-&gt;cb;</span><br><span class="line">		info-&gt;urb = entry;</span><br><span class="line">		info-&gt;dev = dev;</span><br><span class="line">		skb_queue_tail(&amp;priv-&gt;rx_queue, skb);</span><br><span class="line">		usb_anchor_urb(entry, &amp;priv-&gt;anchored);</span><br><span class="line">		ret = usb_submit_urb(entry, GFP_KERNEL);<span class="comment">//提交后，usb设备核心在数据到达后，会调用回调函数，rx_cb</span></span><br><span class="line">		usb_put_urb(entry);</span><br><span class="line">		<span class="keyword">if</span> (ret) &#123;</span><br><span class="line">			skb_unlink(skb, &amp;priv-&gt;rx_queue);</span><br><span class="line">			usb_unanchor_urb(entry);</span><br><span class="line">			<span class="keyword">goto</span> err;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">接收数据：</span><br><span class="line"></span><br><span class="line">rtl8187_rx_cb 收到包后：</span><br><span class="line">          skb = dev_alloc_skb(RTL8187_MAX_RX);<span class="comment">//分配skb</span></span><br><span class="line">          ieee80211_rx_irqsafe(dev, skb);</span><br><span class="line">          tasklet_schedule(&amp;local-&gt;tasklet);</span><br><span class="line">这里用的是tasklet来处理下半部：</span><br><span class="line">而这个是在ieee80211层处理的，在初始化这个模块时：</span><br><span class="line"><span class="function">struct ieee80211_hw *<span class="title">ieee80211_alloc_hw_nm</span><span class="params">(<span class="keyword">size_t</span> priv_data_len,</span></span></span><br><span class="line"><span class="function"><span class="params">    初始化：赋值软中断中半部</span></span></span><br><span class="line"><span class="function"><span class="params">tasklet_init(&amp;local-&gt;tx_pending_tasklet, ieee80211_tx_pending,</span></span></span><br><span class="line">		     (unsigned long)local);</span><br><span class="line"></span><br><span class="line">	tasklet_init(&amp;local-&gt;tasklet,</span><br><span class="line">		     ieee80211_tasklet_handler,</span><br><span class="line">		     (<span class="keyword">unsigned</span> <span class="keyword">long</span>) local);<span class="comment">//初始化了tasklet的handler，这样在usb接收到数据后能进入tasklet任务</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ieee80211_rx_irqsafe</span><span class="params">(struct ieee80211_hw *hw, struct sk_buff *skb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">ieee80211_local</span> *<span class="title">local</span> = <span class="title">hw_to_local</span>(<span class="title">hw</span>);</span></span><br><span class="line"></span><br><span class="line">	BUILD_BUG_ON(<span class="keyword">sizeof</span>(struct ieee80211_rx_status) &gt; <span class="keyword">sizeof</span>(skb-&gt;cb));</span><br><span class="line"></span><br><span class="line">	skb-&gt;pkt_type = IEEE80211_RX_MSG;</span><br><span class="line">	skb_queue_tail(&amp;local-&gt;skb_queue, skb);</span><br><span class="line">	tasklet_schedule(&amp;local-&gt;tasklet);<span class="comment">//这里会进入</span></span><br><span class="line">&#125;</span><br><span class="line">--&gt; 进入到这个处理的handler:</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ieee80211_tasklet_handler</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">ieee80211_local</span> *<span class="title">local</span> = (<span class="title">struct</span> <span class="title">ieee80211_local</span> *) <span class="title">data</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span> *<span class="title">skb</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> ((skb = skb_dequeue(&amp;local-&gt;skb_queue)) ||</span><br><span class="line">	       (skb = skb_dequeue(&amp;local-&gt;skb_queue_unreliable))) &#123;</span><br><span class="line">		<span class="keyword">switch</span> (skb-&gt;pkt_type) &#123;</span><br><span class="line">		<span class="keyword">case</span> IEEE80211_RX_MSG:</span><br><span class="line">			<span class="comment">/* Clear skb-&gt;pkt_type in order to not confuse kernel</span></span><br><span class="line"><span class="comment">			 * netstack. */</span></span><br><span class="line">			skb-&gt;pkt_type = <span class="number">0</span>;</span><br><span class="line">			ieee80211_rx(&amp;local-&gt;hw, skb);</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">case</span> IEEE80211_TX_STATUS_MSG:</span><br><span class="line">			skb-&gt;pkt_type = <span class="number">0</span>;</span><br><span class="line">			ieee80211_tx_status(&amp;local-&gt;hw, skb);</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			WARN(<span class="number">1</span>, <span class="string">"mac80211: Packet is of unknown type %d\n"</span>,</span><br><span class="line">			     skb-&gt;pkt_type);</span><br><span class="line">			dev_kfree_skb(skb);</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">调用流程：</span><br><span class="line">ieee80211_tasklet_handler</span><br><span class="line">    ieee80211_rx</span><br><span class="line">调用流程： </span><br><span class="line">ieee80211_rx</span><br><span class="line">ieee80211_rx_napi</span><br><span class="line">__ieee80211_rx_handle_packet</span><br><span class="line">ieee80211_prepare_and_rx_handle</span><br><span class="line">ieee80211_invoke_rx_handlers</span><br><span class="line">ieee80211_rx_handlers</span><br><span class="line">ieee80211_rx_handlers_result</span><br><span class="line">ieee80211_rx_cooked_monitor--&gt;netif_receive_skb(skb);</span><br></pre></td></tr></table></figure>
+<h5 id="rtl8180-pci接口的wifi网卡"><a href="#rtl8180-pci接口的wifi网卡" class="headerlink" title="rtl8180,pci接口的wifi网卡"></a>rtl8180,pci接口的wifi网卡</h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">8180</span>有中断处理：也一样；</span><br><span class="line"><span class="function"><span class="keyword">static</span> irqreturn_t <span class="title">rtl8180_interrupt</span><span class="params">(<span class="keyword">int</span> irq, <span class="keyword">void</span> *dev_id)</span></span></span><br><span class="line"><span class="function"><span class="title">ieee80211_rx_irqsafe</span><span class="params">(dev, skb)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>ref:<br>参考资料：<br><a href="http://landley.net/kdocs/Documentation/DocBook/xhtml-nochunks/80211.html" target="_blank" rel="noopener">http://landley.net/kdocs/Documentation/DocBook/xhtml-nochunks/80211.html</a><br><a href="https://zhuanlan.zhihu.com/p/68425080" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/68425080</a><br><a href="https://www.zhihu.com/question/31878199" target="_blank" rel="noopener">https://www.zhihu.com/question/31878199</a><br><a href="https://zhuanlan.zhihu.com/p/100616192" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/100616192</a></p>
+<h4 id="虚拟网卡-tun例子"><a href="#虚拟网卡-tun例子" class="headerlink" title="虚拟网卡 tun例子"></a>虚拟网卡 tun例子</h4><p>ref:<br><a href="https://segmentfault.com/a/1190000009249039" target="_blank" rel="noopener">https://segmentfault.com/a/1190000009249039</a><br>实现：<a href="http://vtun.sourceforge.net/" target="_blank" rel="noopener">http://vtun.sourceforge.net/</a><br>ifb也是一个虚拟网卡<br>和tun一样，ifb也是在数据包来自的地方和去往的地方做文章。对于tun而言，数据包在xmit中发往字符设备，而从字符设备写下来的数据包则在tun网卡上模拟一个rx操作，对于ifb而言，情况和这类似。<br>       ifb驱动太简单，以至于很短的话就可以将其说清，然后上一幅全景图，最后留下一点如何使用它的技巧，本文就完了。<br>       ifb驱动模拟一块虚拟网卡，它可以被看作是一个只有TC过滤功能的虚拟网卡，说它只有过滤功能，是因为它并不改变数据包的方向，即对于往外发的数据包被重定向到ifb之后，经过ifb的TC过滤之后，依然是通过重定向之前的网卡发出去，对于一个网卡接收的数据包，被重定向到ifb之后，经过ifb的TC过滤之后，依然被重定向之前的网卡继续进行接收处理，不管是从一块网卡发送数据包还是从一块网卡接收数据包，重定向到ifb之后，都要经过一个经由ifb虚拟网卡的dev_queue_xmit操作。</p>
+<h3 id="如何调试linux收发内核问题；"><a href="#如何调试linux收发内核问题；" class="headerlink" title="如何调试linux收发内核问题；"></a>如何调试linux收发内核问题；</h3><p>连通性：<br>step:<br>1) 检查外部网络是否ok,比如其他机器是否正常等，本机物理网卡是否ok: 物理接口的连接，led灯,网线是否连接正常，wifi是否已完成扫描连接；<br>2) 检查基本的配置，ip,mac地址，网关等配置，这些影响数据的基本输入<br>3) 通过ping，上网工具如浏览器等，来判断整体网络连通情况，至此网络连通性检查基本完成，若不行，检查路由表，dns解析情况，尝试用纯ip进行访问；<br>4) 如果3)的检查不行，则尝试抓包，这个时候数据不经过协议栈，可以排除协议栈的影响，而考虑驱动，物理网络的影响；可以从相关设备驱动层的配置和特性如gro等考虑；  </p>
+<p>收：以igb为例：在通过基本常规上层手段排除不出来问题时，可以从以下方面入手：<br>step: 介绍数据从设备-&gt;用户的基本流程等，并提供排查的基本手段；<br>1) 检查驱动程序是否已加载，初始化，start/open: 通过检查ifconfig，ethtool dev的状态，最极端的就是查日志；<br>2）检查硬件中断，软件中断是否运行正常，硬件中断查看cat /proc/interputs 软中断： /proc/softirqs<br>3) 查看ksoftirqd守护进程是否运行正常，每个cpu上都会运行一个，用来进行软中断poll数据；<br>4) 检查网卡多队列是否支持，若不支持，尽量提供RPS，RFS特性的启动；避免cpu高载导致网络收包延迟或丢包；尽量让收包处理分散在多个cpu上；<br>查看各网络接口的收发包情况：  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/net/dev</span><br><span class="line">Inter-|   Receive                                                |  Transmit</span><br><span class="line"> face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed</span><br><span class="line">  eth0: <span class="number">110346752214</span> <span class="number">597737500</span>    <span class="number">0</span>    <span class="number">2</span>    <span class="number">0</span>     <span class="number">0</span>          <span class="number">0</span>  <span class="number">20963860</span> <span class="number">990024805984</span> <span class="number">6066582604</span>    <span class="number">0</span>    <span class="number">0</span>    <span class="number">0</span>     <span class="number">0</span>       <span class="number">0</span>          <span class="number">0</span></span><br><span class="line">    lo: <span class="number">428349463836</span> <span class="number">1579868535</span>    <span class="number">0</span>    <span class="number">0</span>    <span class="number">0</span>     <span class="number">0</span>          <span class="number">0</span>         <span class="number">0</span> <span class="number">428349463836</span> <span class="number">1579868535</span>    <span class="number">0</span>    <span class="number">0</span>    <span class="number">0</span>     <span class="number">0</span>       <span class="number">0</span>          <span class="number">0</span></span><br><span class="line">查看网卡设备驱动和多队列配置等：</span><br><span class="line">ethtool -l eth0</span><br><span class="line">ethtool eth0</span><br><span class="line">ethtool -i eth0</span><br><span class="line">以及调整 具体man ethtool</span><br><span class="line">ethtool是设备驱动程序向上提供的接口，一般会有个单独的文件来实现，如e1000就有e1000_ethtool.c</span><br><span class="line">查硬中断是否为多队列多中断号：</span><br><span class="line">cat /proc/interrupts</span><br><span class="line">            CPU0       CPU1       CPU2       CPU3</span><br><span class="line">   <span class="number">0</span>:         <span class="number">46</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> IR-IO-APIC-edge      timer</span><br><span class="line">   <span class="number">1</span>:          <span class="number">3</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> IR-IO-APIC-edge      i8042</span><br><span class="line">  <span class="number">30</span>: <span class="number">3361234770</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> IR-IO-APIC-fasteoi   aacraid</span><br><span class="line">  <span class="number">64</span>:          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> DMAR_MSI-edge      dmar0</span><br><span class="line">  <span class="number">65</span>:          <span class="number">1</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> IR-PCI-MSI-edge      eth0</span><br><span class="line">  <span class="number">66</span>:  <span class="number">863649703</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> IR-PCI-MSI-edge      eth0-TxRx<span class="number">-0</span></span><br><span class="line">  <span class="number">67</span>:  <span class="number">986285573</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> IR-PCI-MSI-edge      eth0-TxRx<span class="number">-1</span></span><br><span class="line">  <span class="number">68</span>:         <span class="number">45</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> IR-PCI-MSI-edge      eth0-TxRx<span class="number">-2</span></span><br><span class="line">  <span class="number">69</span>:        <span class="number">394</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span> IR-PCI-MSI-edge      eth0-TxRx<span class="number">-3</span></span><br><span class="line">查软中断收包情况：</span><br><span class="line">cat /proc/softirqs</span><br><span class="line">                    CPU0       CPU1       CPU2       CPU3</span><br><span class="line">          HI:          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span>          <span class="number">0</span></span><br><span class="line">       TIMER: <span class="number">2831512516</span> <span class="number">1337085411</span> <span class="number">1103326083</span> <span class="number">1423923272</span></span><br><span class="line">      NET_TX:   <span class="number">15774435</span>     <span class="number">779806</span>     <span class="number">733217</span>     <span class="number">749512</span></span><br><span class="line">      NET_RX: <span class="number">1671622615</span> <span class="number">1257853535</span> <span class="number">2088429526</span> <span class="number">2674732223</span></span><br><span class="line">       BLOCK: <span class="number">1800253852</span>    <span class="number">1466177</span>    <span class="number">1791366</span>     <span class="number">634534</span></span><br><span class="line">设置cpu亲和性：</span><br><span class="line">eg:  sudo bash -c 'echo 1 &gt; /proc/irq/8/smp_affinity'</span><br><span class="line">设置包到net_rx_action时的budget值，会影响一次从设备中poll包的最大值</span><br><span class="line">sudo sysctl -w net.core.netdev_budget=<span class="number">600</span></span><br><span class="line">检查和调整GRO</span><br><span class="line">ethtool -k eth0 | grep generic-receive-offload</span><br><span class="line">generic-receive-offload: on</span><br><span class="line"></span><br><span class="line">开启和关闭RPS/RFS/..</span><br></pre></td></tr></table></figure>
+<p>5) 包到达每个cpu的情况：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> /proc/net/softnet_stat:</span><br><span class="line"><span class="number">6</span>dcad223 <span class="number">00000000</span> <span class="number">00000001</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span><br></pre></td></tr></table></figure></p>
+<p>参数解释</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">Each line of /proc/net/softnet_stat corresponds to a <span class="class"><span class="keyword">struct</span> <span class="title">softnet_data</span> <span class="title">structure</span>, <span class="title">of</span> <span class="title">which</span> <span class="title">there</span> <span class="title">is</span> 1 <span class="title">per</span> <span class="title">CPU</span>.</span></span><br><span class="line"><span class="class"><span class="title">The</span> <span class="title">values</span> <span class="title">are</span> <span class="title">separated</span> <span class="title">by</span> <span class="title">a</span> <span class="title">single</span> <span class="title">space</span> <span class="title">and</span> <span class="title">are</span> <span class="title">displayed</span> <span class="title">in</span> <span class="title">hexadecimal</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">The</span> <span class="title">first</span> <span class="title">value</span>, <span class="title">sd</span>-&gt;<span class="title">processed</span>, <span class="title">is</span> <span class="title">the</span> <span class="title">number</span> <span class="title">of</span> <span class="title">network</span> <span class="title">frames</span> <span class="title">processed</span>. <span class="title">This</span> <span class="title">can</span> <span class="title">be</span> <span class="title">more</span> <span class="title">than</span> <span class="title">the</span> <span class="title">total</span> <span class="title">number</span> <span class="title">of</span> <span class="title">network</span> <span class="title">frames</span> <span class="title">received</span> <span class="title">if</span> <span class="title">you</span> <span class="title">are</span> <span class="title">using</span> <span class="title">ethernet</span> <span class="title">bonding</span>. <span class="title">There</span> <span class="title">are</span> <span class="title">cases</span> <span class="title">where</span> <span class="title">the</span> <span class="title">ethernet</span> <span class="title">bonding</span> <span class="title">driver</span> <span class="title">will</span> <span class="title">trigger</span> <span class="title">network</span> <span class="title">data</span> <span class="title">to</span> <span class="title">be</span> <span class="title">re</span>-<span class="title">processed</span>, <span class="title">which</span> <span class="title">would</span> <span class="title">increment</span> <span class="title">the</span> <span class="title">sd</span>-&gt;<span class="title">processed</span> <span class="title">count</span> <span class="title">more</span> <span class="title">than</span> <span class="title">once</span> <span class="title">for</span> <span class="title">the</span> <span class="title">same</span> <span class="title">packet</span>.</span></span><br><span class="line"><span class="class">第一列，是<span class="title">sd</span>-&gt;<span class="title">processed</span>,即处理的网络帧数；</span></span><br><span class="line"><span class="class"> __<span class="title">netif_receive_skb_core</span></span></span><br><span class="line"><span class="class">    __<span class="title">this_cpu_inc</span>(<span class="title">softnet_data</span>.<span class="title">processed</span>);</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">The second value, sd-&gt;dropped, is the number of network frames dropped because there was no room on the processing <span class="built_in">queue</span>. More on <span class="keyword">this</span> later.</span><br><span class="line"> enqueue_to_backlog(</span><br><span class="line">	  sd-&gt;dropped++;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">The third value, sd-&gt;time_squeeze, is (as we saw) the number of times the net_rx_action loop terminated because the budget was consumed <span class="keyword">or</span> the time limit was reached, but more work could have been. Increasing the budget as explained earlier can help reduce <span class="keyword">this</span>.</span><br><span class="line">The next <span class="number">5</span> values are always <span class="number">0.</span></span><br><span class="line">即在netif_rx_action过程中，异常中断的次数：</span><br><span class="line">		<span class="comment">/* If softirq window is exhausted then punt.</span></span><br><span class="line"><span class="comment">		 * Allow this to run for 2 jiffies since which will allow</span></span><br><span class="line"><span class="comment">		 * an average latency of 1.5/HZ.</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">if</span> (unlikely(budget &lt;= <span class="number">0</span> ||</span><br><span class="line">			     time_after_eq(jiffies, time_limit))) &#123;</span><br><span class="line">			sd-&gt;time_squeeze++;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">The ninth value, sd-&gt;cpu_collision, is a count of the number of times a collision occurred when trying to obtain a device lock when transmitting packets. This article is about receive, so <span class="keyword">this</span> statistic will <span class="keyword">not</span> be seen below.</span><br><span class="line">发送的时候，cpu异常？ 这个目前都设置为<span class="number">0</span> 了，在最新的版本；</span><br><span class="line"></span><br><span class="line">The tenth value, sd-&gt;received_rps, is a count of the number of times <span class="keyword">this</span> CPU has been woken up to process packets via an Inter-processor Interrupt</span><br><span class="line">通过rps方式，即软中断打散的次数：</span><br><span class="line"><span class="comment">/* Called from hardirq (IPI) context */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> rps_trigger_softirq(<span class="keyword">void</span> *data)</span><br><span class="line">&#123;</span><br><span class="line">	struct softnet_data *sd = data;</span><br><span class="line"></span><br><span class="line">	____napi_schedule(sd, &amp;sd-&gt;backlog);</span><br><span class="line">	sd-&gt;received_rps++;</span><br><span class="line">&#125;</span><br><span class="line">The last value, flow_limit_count, is a count of the number of times the flow limit has been reached. Flow limiting is an optional Receive Packet Steering feature that will be examined shortly.超过flow最大限制的次数</span><br></pre></td></tr></table></figure>
+<p>6) 数据包到达协议栈，会通过路由子系统，netfilter框架(防火墙)，或者用户自己开发的防火墙模块，包可能在这里被丢掉，需要检查；<br><figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat /<span class="keyword">proc</span>/net/snmp</span><br><span class="line">Ip:<span class="title"> Forwarding</span> DefaultTTL<span class="title"> InReceives</span> InHdrErrors<span class="title"> InAddrErrors</span> ForwDatagrams<span class="title"> InUnknownProtos</span> InDiscards<span class="title"> InDelivers</span> OutRequests<span class="title"> OutDiscards</span> OutNoRoutes<span class="title"> ReasmTimeout</span> ReasmReqds<span class="title"> ReasmOKs</span> ReasmFails<span class="title"> FragOKs</span> FragFails<span class="title"> FragCreates</span></span><br><span class="line"><span class="title">Ip:</span> 1 64 25922988125 0 0 15771700 0 0 25898327616 22789396404 12987882 51 1 10129840 2196520 1 0 0 0</span><br><span class="line">统计了几个协议层的数据情况</span><br></pre></td></tr></table></figure></p>
+<p>7) 包顺利进入到ip层；<br>ref:<br><a href="https://blog.packagecloud.io/eng/2016/06/22/monitoring-tuning-linux-networking-stack-receiving-data/" target="_blank" rel="noopener">https://blog.packagecloud.io/eng/2016/06/22/monitoring-tuning-linux-networking-stack-receiving-data/</a><br>收-图：<br><a href="https://blog.packagecloud.io/eng/2016/10/11/monitoring-tuning-linux-networking-stack-receiving-data-illustrated/" target="_blank" rel="noopener">https://blog.packagecloud.io/eng/2016/10/11/monitoring-tuning-linux-networking-stack-receiving-data-illustrated/</a><br>发<br><a href="https://blog.packagecloud.io/eng/2017/02/06/monitoring-tuning-linux-networking-stack-sending-data/" target="_blank" rel="noopener">https://blog.packagecloud.io/eng/2017/02/06/monitoring-tuning-linux-networking-stack-sending-data/</a></p>
+<h3 id="关于TSO-GSO-GRO等"><a href="#关于TSO-GSO-GRO等" class="headerlink" title="关于TSO ,GSO ,GRO等"></a>关于TSO ,GSO ,GRO等</h3><p>需要网卡支持<br>TSO(TCP Segmentation Offload)，是利用网卡对TCP数据包分片，减轻CPU负荷的一种技术，也有人叫 LSO (Large segment offload) ，TSO是针对TCP的，UFO是针对UDP的。如果硬件支持 TSO功能，同时也需要硬件支持的TCP校验计算和分散/聚集 (Scatter Gather) 功能。如果网卡支持TSO/GSO，可以把最多64K大小的TCP payload直接往下传给协议栈，此时IP层也不会进行segmentation，网卡会生成TCP/IP包头和帧头，这样可以offload很多协议栈上的内存操作，节省CPU资源，当然如果都是小包，那么功能基本就没啥用了。</p>
+<p>GSO(Generic Segmentation Offload)，GSO是TSO的增强 ，GSO不只针对TCP，对任意协议。比TSO更通用，推迟数据分片直至发送到网卡驱动之前，此时会检查网卡是否支持分片功能（如TSO、UFO）,如果支持直接发送到网卡，如果不支持就进行分片后再发往网卡。</p>
+<p>LRO(Large Receive Offload)，通过将接收到的多个TCP数据聚合成一个大的数据包，然后传递给网络协议栈处理，以减少上层协议栈处理 开销，提高系统接收TCP数据包的能力。</p>
+<p>GRO(Generic Receive Offload)，跟LRO类似，克服了LRO的一些缺点，更通用。后续的驱动都使用GRO的接口，而不是LRO。<br>在系统中可以通过ethtool命令来进行查看，如下：</p>
+<p>＃ethtool -k eth0</p>
+<p>generic-segmentation-offload: on</p>
+<p>generic-receive-offload: on</p>
+<p>TSO、UFO、GSO是对应网络发送， LRO、GRO是在接收方向上</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tcpip-device/" rel="tag"># tcpip_device</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/22/linux-neighbor/" rel="prev" title="linux_neighbor">
+      <i class="fa fa-chevron-left"></i> linux_neighbor
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#目标："><span class="nav-number">1.</span> <span class="nav-text">目标：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#描述linux网络协议栈结构："><span class="nav-number">1.1.</span> <span class="nav-text">描述linux网络协议栈结构：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#这里先不讨论虚拟化的网络架构，先看传统的结构："><span class="nav-number">1.2.</span> <span class="nav-text">这里先不讨论虚拟化的网络架构，先看传统的结构：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-描述这一层的位置，具体含义。"><span class="nav-number">1.2.1.</span> <span class="nav-text">1 描述这一层的位置，具体含义。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-关于网络设备层：网络收发时的总体流程，以及这一层的流程；并贴上大致的函数调用接口"><span class="nav-number">1.2.2.</span> <span class="nav-text">2 关于网络设备层：网络收发时的总体流程，以及这一层的流程；并贴上大致的函数调用接口</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#网络设备层发包流程："><span class="nav-number">1.2.3.</span> <span class="nav-text">网络设备层发包流程：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ethernet网卡，e1000-igb-i350为例子解释"><span class="nav-number">1.2.4.</span> <span class="nav-text">ethernet网卡，e1000,igb i350为例子解释</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#wifi网卡-RTL8180解释"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">wifi网卡 RTL8180解释</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#rtl8180-pci接口的wifi网卡"><span class="nav-number">1.2.5.</span> <span class="nav-text">rtl8180,pci接口的wifi网卡</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#虚拟网卡-tun例子"><span class="nav-number">1.3.</span> <span class="nav-text">虚拟网卡 tun例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何调试linux收发内核问题；"><span class="nav-number">2.</span> <span class="nav-text">如何调试linux收发内核问题；</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于TSO-GSO-GRO等"><span class="nav-number">3.</span> <span class="nav-text">关于TSO ,GSO ,GRO等</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com" title="http://yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '4cc67608d9260a0479f73675fb94aacc',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

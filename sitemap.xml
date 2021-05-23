@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xdksx.github.io/2021/05/22/linux-netdevicelayer/</loc>
+    
+    <lastmod>2021-05-23T02:30:56.288Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2021/05/22/linux-neighbor/</loc>
+    
+    <lastmod>2021-05-23T01:49:23.940Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xdksx.github.io/2021/02/17/live-media-audio/</loc>
     
     <lastmod>2021-05-23T00:29:27.970Z</lastmod>
@@ -170,14 +184,14 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/categories/index.html</loc>
+    <loc>https://xdksx.github.io/tags/index.html</loc>
     
     <lastmod>2020-03-21T07:30:55.169Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/tags/index.html</loc>
+    <loc>https://xdksx.github.io/categories/index.html</loc>
     
     <lastmod>2020-03-21T07:30:55.169Z</lastmod>
     
@@ -198,14 +212,7 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-jni/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-adb/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -219,7 +226,14 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-adb/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-jni/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -359,13 +373,6 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/27/tcpip-ARP/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xdksx.github.io/2018/06/03/tcpip-IP/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -373,14 +380,14 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/06/02/tcpip-MAC/</loc>
+    <loc>https://xdksx.github.io/2018/05/27/tcpip-ARP/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/27/tcpip-PF-PACKET/</loc>
+    <loc>https://xdksx.github.io/2018/06/02/tcpip-MAC/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -401,7 +408,7 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/test-article-picture/</loc>
+    <loc>https://xdksx.github.io/2018/05/27/tcpip-PF-PACKET/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -409,6 +416,13 @@
   
   <url>
     <loc>https://xdksx.github.io/2018/06/10/tcpip-routeicmp/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2018/05/20/test-article-picture/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     

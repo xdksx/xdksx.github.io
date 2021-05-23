@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-04-18T07:43:55.445Z</updated>
+  <updated>2021-05-23T02:30:56.288Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,46 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>linux_netdevicelayer</title>
+    <link href="https://xdksx.github.io/2021/05/22/linux-netdevicelayer/"/>
+    <id>https://xdksx.github.io/2021/05/22/linux-netdevicelayer/</id>
+    <published>2021-05-22T10:59:09.000Z</published>
+    <updated>2021-05-23T02:30:56.288Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;目标：&quot;&gt;&lt;a href=&quot;#目标：&quot; class=&quot;headerlink&quot; title=&quot;目标：&quot;&gt;&lt;/a&gt;目标：&lt;/h3&gt;&lt;h4 id=&quot;描述linux网络协议栈结构：&quot;&gt;&lt;a href=&quot;#描述linux网络协议栈结构：&quot; class=&quot;headerlink&quot; title=&quot;描述linux网络协议栈结构：&quot;&gt;&lt;/a&gt;描述linux网络协议栈结构：&lt;/h4&gt;&lt;p&gt;1) 常规的方式：传统的单机网络结构：&lt;br&gt;   一个服务器(server)上，运行一个linux系统，linux系统之上运行一个协议栈，支持相关上层应用；&lt;br&gt;   服务器的下方(硬件设备)，接一个或多个网卡，代表这个系统可能支持多个ip，多个出口等；每个网卡NIC接不同的交换机(路由器),来连接到可能不同的&lt;br&gt;   运营商物理网络，如下图：在这种情况下一个服务器为一个单点的物理机；
+    
+    </summary>
+    
+      <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
+    
+    
+      <category term="tcpip_device" scheme="https://xdksx.github.io/tags/tcpip-device/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux_neighbor</title>
+    <link href="https://xdksx.github.io/2021/05/22/linux-neighbor/"/>
+    <id>https://xdksx.github.io/2021/05/22/linux-neighbor/</id>
+    <published>2021-05-22T10:42:26.000Z</published>
+    <updated>2021-05-23T01:49:23.940Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;linux下邻居子系统的实现：&quot;&gt;&lt;a href=&quot;#linux下邻居子系统的实现：&quot; class=&quot;headerlink&quot; title=&quot;linux下邻居子系统的实现：&quot;&gt;&lt;/a&gt;linux下邻居子系统的实现：&lt;/h4&gt;&lt;h5 id=&quot;什么是邻居子系统：&quot;&gt;&lt;a href=&quot;#什么是邻居子系统：&quot; class=&quot;headerlink&quot; title=&quot;什么是邻居子系统：&quot;&gt;&lt;/a&gt;什么是邻居子系统：&lt;/h5&gt;&lt;p&gt;在linux下，是一个用来管理网络中，二层的数据正确发送的系统，维护着二层地址相关结构，以及和三层地址映射等结构，&lt;br&gt;并提供更新，查询等缓存和接口；形成一个系统；供在发送数据时查询并正确发送到指定的机器上；&lt;br&gt;
+    
+    </summary>
+    
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
+    
+    
+      <category term="neighbor" scheme="https://xdksx.github.io/tags/neighbor/"/>
+    
+  </entry>
   
   <entry>
     <title>interrupt</title>
@@ -384,45 +424,6 @@
     
     
       <category term="cpp_template" scheme="https://xdksx.github.io/tags/cpp-template/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>gdb基础</title>
-    <link href="https://xdksx.github.io/2020/07/11/gdb%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/"/>
-    <id>https://xdksx.github.io/2020/07/11/gdb基本使用/</id>
-    <published>2020-07-11T09:48:05.000Z</published>
-    <updated>2020-07-11T07:45:16.137Z</updated>
-    
-    <summary type="html">
-    
-      &lt;p&gt;1、总体&lt;br&gt;GDB可以做四种主要的事情（以及支持这些事情的其他事情）来帮助您捕获行为中的错误：&lt;br&gt;
-    
-    </summary>
-    
-      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
-    
-    
-      <category term="gdb" scheme="https://xdksx.github.io/tags/gdb/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>我理解的心理模型</title>
-    <link href="https://xdksx.github.io/2020/04/03/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84%E5%BF%83%E7%90%86%E6%A8%A1%E5%9E%8B/"/>
-    <id>https://xdksx.github.io/2020/04/03/我理解的心理模型/</id>
-    <published>2020-04-03T21:44:04.000Z</published>
-    <updated>2020-06-07T05:08:02.035Z</updated>
-    
-    <summary type="html">
-    
-      &lt;p&gt;以下内容均为本人构想理解提出，如有雷同纯属巧合，仅为本人粗略观点，不期赞同；&lt;/p&gt;
-&lt;h3 id=&quot;一、模型概念&quot;&gt;&lt;a href=&quot;#一、模型概念&quot; class=&quot;headerlink&quot; title=&quot;一、模型概念&quot;&gt;&lt;/a&gt;一、模型概念&lt;/h3&gt;&lt;h4 id=&quot;1）模型的广义解释&quot;&gt;&lt;a href=&quot;#1）模型的广义解释&quot; class=&quot;headerlink&quot; title=&quot;1）模型的广义解释&quot;&gt;&lt;/a&gt;1）模型的广义解释&lt;/h4&gt;&lt;p&gt;模型用于抽象化一类事物的特点和规律，甚至是发展周期；模型常见有数学模型，物理模型，工业模型等等；
-    
-    </summary>
-    
-      <category term="心理" scheme="https://xdksx.github.io/categories/%E5%BF%83%E7%90%86/"/>
-    
     
   </entry>
   
