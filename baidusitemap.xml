@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://xdksx.github.io/2021/05/22/c-keyword/</loc>
+    <lastmod>2021-05-23</lastmod>
+  </url>  <url>
+    <loc>https://xdksx.github.io/2021/05/22/c-valuetype/</loc>
+    <lastmod>2021-05-23</lastmod>
+  </url>  <url>
     <loc>https://xdksx.github.io/2021/05/22/tcpip-tc/</loc>
     <lastmod>2021-05-23</lastmod>
   </url>  <url>
@@ -76,10 +82,10 @@
     <loc>https://xdksx.github.io/2018/06/24/DS-string/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-adb/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-adb/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2018/05/20/android-howto-makeapk-cmd/</loc>
@@ -88,10 +94,10 @@
     <loc>https://xdksx.github.io/2018/05/20/android-jni/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-makefirst-app/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-makefirst-app/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2018/05/25/code-efficandreadable/</loc>
@@ -103,13 +109,13 @@
     <loc>https://xdksx.github.io/2018/06/08/cpp-conandde/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
+    <loc>https://xdksx.github.io/2018/06/08/cpp-const/</loc>
+    <lastmod>2020-03-21</lastmod>
+  </url>  <url>
     <loc>https://xdksx.github.io/2018/06/09/cpp-conanddest-semantics/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/</loc>
-    <lastmod>2020-03-21</lastmod>
-  </url>  <url>
-    <loc>https://xdksx.github.io/2018/06/08/cpp-const/</loc>
     <lastmod>2020-03-21</lastmod>
   </url>  <url>
     <loc>https://xdksx.github.io/2018/06/08/cpp-datamember-memory/</loc>

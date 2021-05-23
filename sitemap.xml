@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xdksx.github.io/2021/05/22/c-keyword/</loc>
+    
+    <lastmod>2021-05-23T09:36:11.349Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xdksx.github.io/2021/05/22/c-valuetype/</loc>
+    
+    <lastmod>2021-05-23T08:36:06.849Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xdksx.github.io/2021/05/22/tcpip-tc/</loc>
     
     <lastmod>2021-05-23T02:38:45.644Z</lastmod>
@@ -219,14 +233,14 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-adb/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-adb/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-AndroidManifest/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -247,14 +261,14 @@
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-makefirst-app/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xdksx.github.io/2018/05/20/android-will-write/</loc>
+    <loc>https://xdksx.github.io/2018/05/20/android-makefirst-app/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     
@@ -282,6 +296,13 @@
   </url>
   
   <url>
+    <loc>https://xdksx.github.io/2018/06/08/cpp-const/</loc>
+    
+    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xdksx.github.io/2018/06/09/cpp-conanddest-semantics/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
@@ -290,13 +311,6 @@
   
   <url>
     <loc>https://xdksx.github.io/2018/05/20/cpp-debug-layout-dynamic/</loc>
-    
-    <lastmod>2020-03-21T07:30:55.165Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xdksx.github.io/2018/06/08/cpp-const/</loc>
     
     <lastmod>2020-03-21T07:30:55.165Z</lastmod>
     

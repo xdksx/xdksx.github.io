@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-05-23T02:38:45.644Z</updated>
+  <updated>2021-05-23T09:36:11.349Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,46 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>c++_keyword</title>
+    <link href="https://xdksx.github.io/2021/05/22/c-keyword/"/>
+    <id>https://xdksx.github.io/2021/05/22/c-keyword/</id>
+    <published>2021-05-22T18:21:43.000Z</published>
+    <updated>2021-05-23T09:36:11.349Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;c-中的关键字和基本解释&quot;&gt;&lt;a href=&quot;#c-中的关键字和基本解释&quot; class=&quot;headerlink&quot; title=&quot;c++中的关键字和基本解释&quot;&gt;&lt;/a&gt;c++中的关键字和基本解释&lt;/h3&gt;&lt;h5 id=&quot;alignas&quot;&gt;&lt;a href=&quot;#alignas&quot; class=&quot;headerlink&quot; title=&quot;alignas:&quot;&gt;&lt;/a&gt;alignas:
+    
+    </summary>
+    
+      <category term="c++" scheme="https://xdksx.github.io/categories/c/"/>
+    
+    
+      <category term="c++keyword" scheme="https://xdksx.github.io/tags/c-keyword/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>c++_valuetype</title>
+    <link href="https://xdksx.github.io/2021/05/22/c-valuetype/"/>
+    <id>https://xdksx.github.io/2021/05/22/c-valuetype/</id>
+    <published>2021-05-22T17:35:24.000Z</published>
+    <updated>2021-05-23T08:36:06.849Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;彻底理解c-中的五种值，临时对象，移动语意，引用指针，const等的概念和关联&quot;&gt;&lt;a href=&quot;#彻底理解c-中的五种值，临时对象，移动语意，引用指针，const等的概念和关联&quot; class=&quot;headerlink&quot; title=&quot;彻底理解c++中的五种值，临时对象，移动语意，引用指针，const等的概念和关联&quot;&gt;&lt;/a&gt;彻底理解c++中的五种值，临时对象，移动语意，引用指针，const等的概念和关联&lt;/h3&gt;&lt;h4 id=&quot;c-的引用和指针&quot;&gt;&lt;a href=&quot;#c-的引用和指针&quot; class=&quot;headerlink&quot; title=&quot;c++的引用和指针&quot;&gt;&lt;/a&gt;c++的引用和指针&lt;/h4&gt;&lt;h5 id=&quot;引用：&quot;&gt;&lt;a href=&quot;#引用：&quot; class=&quot;headerlink&quot; title=&quot;引用：&quot;&gt;&lt;/a&gt;引用：&lt;/h5&gt;&lt;p&gt;引用，是变量或对象的别名，这么解释其实还是有点抽象的；&lt;br&gt;如果是指针，则好理解，是对象的虚拟内存地址；所以在赋值拷贝等容易有实体理解；而引用，在这些常见下，又是什么样的实际操作？&lt;br&gt;考虑如下例子：
+    
+    </summary>
+    
+      <category term="c++" scheme="https://xdksx.github.io/categories/c/"/>
+    
+    
+      <category term="c++_valuetype" scheme="https://xdksx.github.io/tags/c-valuetype/"/>
+    
+  </entry>
   
   <entry>
     <title>tcpip_tc</title>
@@ -384,46 +424,6 @@
     
     
       <category term="Funds_and_stocks" scheme="https://xdksx.github.io/tags/Funds-and-stocks/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_template_class</title>
-    <link href="https://xdksx.github.io/2021/01/09/cpp-template-class/"/>
-    <id>https://xdksx.github.io/2021/01/09/cpp-template-class/</id>
-    <published>2021-01-09T17:07:05.000Z</published>
-    <updated>2021-01-10T09:09:29.814Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;类模板的基本概念&quot;&gt;&lt;a href=&quot;#类模板的基本概念&quot; class=&quot;headerlink&quot; title=&quot;类模板的基本概念&quot;&gt;&lt;/a&gt;类模板的基本概念&lt;/h3&gt;&lt;h3 id=&quot;类模板的引入：&quot;&gt;&lt;a href=&quot;#类模板的引入：&quot; class=&quot;headerlink&quot; title=&quot;类模板的引入：&quot;&gt;&lt;/a&gt;类模板的引入：
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_template" scheme="https://xdksx.github.io/tags/cpp-template/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_template_func</title>
-    <link href="https://xdksx.github.io/2021/01/09/cpp-template-func/"/>
-    <id>https://xdksx.github.io/2021/01/09/cpp-template-func/</id>
-    <published>2021-01-09T16:50:01.000Z</published>
-    <updated>2021-01-10T08:50:57.573Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;概述：&quot;&gt;&lt;a href=&quot;#概述：&quot; class=&quot;headerlink&quot; title=&quot;概述：&quot;&gt;&lt;/a&gt;概述：&lt;/h3&gt;&lt;p&gt;为什么需要函数模板：类型限制了函数的通用性，参数换一种类型，即得重新再定义一个处理流程相同的函数；
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_template" scheme="https://xdksx.github.io/tags/cpp-template/"/>
     
   </entry>
   

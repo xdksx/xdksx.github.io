@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="c++中的关键字和基本解释alignas:">
+<meta name="keywords" content="c++keyword">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++_keyword">
+<meta property="og:url" content="https://xdksx.github.io/2021/05/22/c-keyword/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="c++中的关键字和基本解释alignas:">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-05-23T09:36:11.349Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++_keyword">
+<meta name="twitter:description" content="c++中的关键字和基本解释alignas:">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/05/22/c-keyword/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>c++_keyword | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/心理/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/05/22/c-keyword/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          c++_keyword
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-23 02:21:43 / 修改时间：17:36:11" itemprop="dateCreated datePublished" datetime="2021-05-23T02:21:43+08:00">2021-05-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c/" itemprop="url" rel="index"><span itemprop="name">c++</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="c-中的关键字和基本解释"><a href="#c-中的关键字和基本解释" class="headerlink" title="c++中的关键字和基本解释"></a>c++中的关键字和基本解释</h3><h5 id="alignas"><a href="#alignas" class="headerlink" title="alignas:"></a>alignas:<a id="more"></a></h5><ul>
+<li>语法：<br>alignas( expression ) 即expression是值为合法正数常量的表达式，可以是0或者其他1，2,4这种2的n次方值<br>alignas( type-id )    即类型，比如alignas(int)，等价于alignas(alignof(type))<br>alignas( pack … ) 等价于应用于同一声明的多个alignas说明符，一个用于 parameter pack的每个成员，形参包可以是type parameter pack，也可以是non-type parameter pack  </li>
+<li>解释：<br>用于对齐：<br>1) class/struct/union或enum类型的声明或定义中的字节对齐<br>2) 类数据成员中的非位域类型的字节对齐<br>3) 变量的声明的对齐，除了函数参数和exception 中catch中的参数；<br>由这种声明声明的对象或类型的对齐要求将等于声明中使用的所有alignas说明符中最严格的(最大的)非零表达式，但它不会削弱类型的自然对齐，即最小是该类型的字节数对齐：<br>如果声明上最严格(最大)的对齐比没有任何对齐说明符时的对齐要弱(也就是说，弱于它的自然对齐或弱于同一对象或类型的另一个声明上的对齐)，则程序是非法的:<br>eg: 不允许   </li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">alignas(<span class="number">1</span>) <span class="keyword">int</span> a; <span class="comment">//error</span></span><br><span class="line"><span class="function">struct <span class="title">alignas</span><span class="params">(<span class="number">8</span>)</span> S </span>&#123;&#125;;</span><br><span class="line"><span class="function">struct <span class="title">alignas</span><span class="params">(<span class="number">1</span>)</span> U </span>&#123; S s; &#125;; <span class="comment">// error: alignment of U would have been 8 without alignas(1)</span></span><br><span class="line">无效值不能用于对齐：如alignas(<span class="number">3</span>);,若是<span class="number">0</span> ，则被忽略</span><br><span class="line">Note: c++<span class="number">11</span>才有的关键字：</span><br><span class="line">As of the ISO C11 standard, the C language has the _Alignas keyword <span class="keyword">and</span> defines alignas as a preprocessor macro expanding to the keyword in the header &lt;stdalign.h&gt;, but in C++ <span class="keyword">this</span> is a keyword, <span class="keyword">and</span> the headers &lt;stdalign.h&gt; <span class="keyword">and</span> &lt;cstdalign&gt; (until C++<span class="number">20</span>) <span class="keyword">do</span> <span class="keyword">not</span> define such macro. They <span class="keyword">do</span>, however, define the macro constant __alignas_is_defined.</span><br><span class="line">例子：</span><br><span class="line"><span class="comment">// every object of type struct_float will be aligned to alignof(float) boundary</span></span><br><span class="line"><span class="comment">// (usually 4)</span></span><br><span class="line"><span class="function">struct <span class="title">alignas</span><span class="params">(<span class="keyword">float</span>)</span> struct_float </span>&#123;</span><br><span class="line">    <span class="comment">// your definition here</span></span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// every object of type sse_t will be aligned to 256-byte boundary</span></span><br><span class="line"><span class="function">struct <span class="title">alignas</span><span class="params">(<span class="number">256</span>)</span> sse_t</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">float</span> sse_data[<span class="number">4</span>];</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// the array "cacheline" will be aligned to 128-byte boundary</span></span><br><span class="line">alignas(<span class="number">128</span>) <span class="keyword">char</span> cacheline[<span class="number">128</span>];</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">sse_t</span> x, y, z;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">default_aligned</span> &#123;</span> <span class="keyword">float</span> data[<span class="number">4</span>]; &#125; a, b, c;</span><br><span class="line"> </span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"alignof(struct_float) = "</span> &lt;&lt; <span class="keyword">alignof</span>(struct_float) &lt;&lt; <span class="string">'\n'</span></span><br><span class="line">              &lt;&lt; <span class="string">"alignof(sse_t) = "</span> &lt;&lt; <span class="keyword">alignof</span>(<span class="keyword">sse_t</span>) &lt;&lt; <span class="string">'\n'</span></span><br><span class="line">              &lt;&lt; <span class="string">"alignof(alignas(128) char[128]) = "</span> </span><br><span class="line">                  &lt;&lt; <span class="keyword">alignof</span>(alignas(<span class="number">128</span>) <span class="keyword">char</span>[<span class="number">128</span>]) &lt;&lt; <span class="string">"\n\n"</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::showbase</span><br><span class="line">              &lt;&lt; <span class="string">"&amp;x: "</span> &lt;&lt; &amp;x &lt;&lt; <span class="string">'\n'</span></span><br><span class="line">              &lt;&lt; <span class="string">"&amp;y: "</span> &lt;&lt; &amp;y &lt;&lt; <span class="string">'\n'</span></span><br><span class="line">              &lt;&lt; <span class="string">"&amp;z: "</span> &lt;&lt; &amp;z &lt;&lt; <span class="string">'\n'</span></span><br><span class="line">              &lt;&lt; <span class="string">"&amp;a: "</span> &lt;&lt; &amp;a &lt;&lt; <span class="string">'\n'</span></span><br><span class="line">              &lt;&lt; <span class="string">"&amp;b: "</span> &lt;&lt; &amp;b &lt;&lt; <span class="string">'\n'</span></span><br><span class="line">              &lt;&lt; <span class="string">"&amp;c: "</span> &lt;&lt; &amp;c &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">alignof</span>(struct_float) = <span class="number">4</span></span><br><span class="line"><span class="keyword">alignof</span>(<span class="keyword">sse_t</span>) = <span class="number">256</span></span><br><span class="line"><span class="keyword">alignof</span>(alignas(<span class="number">128</span>) <span class="keyword">char</span>[<span class="number">128</span>]) = <span class="number">128</span></span><br><span class="line"> </span><br><span class="line">&amp;x: <span class="number">0x7fffd901bb00</span></span><br><span class="line">&amp;y: <span class="number">0x7fffd901bc00</span></span><br><span class="line">&amp;z: <span class="number">0x7fffd901bd00</span></span><br><span class="line">&amp;a: <span class="number">0x7fffd901bad0</span></span><br><span class="line">&amp;b: <span class="number">0x7fffd901bae0</span></span><br><span class="line">&amp;c: <span class="number">0x7fffd901baf0</span></span><br></pre></td></tr></table></figure>
+<h5 id="关于字节对齐的解释："><a href="#关于字节对齐的解释：" class="headerlink" title="关于字节对齐的解释："></a>关于字节对齐的解释：</h5><p>对齐是指，访问的变量是按照指定的对齐(或类型本身大小)来寻址的，则比如int ，则按4的整数倍地址寻址，所以分给int这个变量的地址需要可以被4B整除；<br>放在struct中，体现为该成员的地址是可以被4整除，所以前面至少是4B，若前面是char 则填充3个字节；由此，还需要考虑到struct数组或单纯int数组的情况，前后之间需要对齐：<br>两个典型例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">B</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a[<span class="number">9</span>];</span><br><span class="line">    alignas(<span class="number">16</span>) <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">char</span> c;</span><br><span class="line">&#125;</span><br><span class="line">考虑最大的<span class="number">16</span>，则a这里要填充<span class="number">7</span>才能保证访问b的地址是<span class="number">16</span>字节对齐的，按道理加完就是<span class="number">33</span>，但是如果是数组，下个<span class="class"><span class="keyword">struct</span>结构就不是16对齐的，或者说<span class="title">struct</span>基地址本身也要是16对齐的，所以</span></span><br><span class="line"><span class="class">应该是48；  </span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">C</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">     <span class="keyword">long</span> <span class="keyword">double</span> a; <span class="number">16B</span></span><br><span class="line">     alignas(<span class="number">32</span>) <span class="keyword">int</span> b;</span><br><span class="line">     <span class="keyword">int</span> *c;</span><br><span class="line">     <span class="keyword">int</span> d;</span><br><span class="line">&#125;</span><br><span class="line">这里考虑最大<span class="number">32</span>，则a要填充<span class="number">16</span>-&gt; <span class="number">32</span>+<span class="number">4</span> ,到c是<span class="number">8</span>字节对齐，所以又需要填充为<span class="number">8</span>的整数倍，为<span class="number">32</span>+<span class="number">4</span>+<span class="number">4</span>，接着最后的d，不用填充，而考虑到数组的情况，下个<span class="class"><span class="keyword">struct</span>也要对齐32，</span></span><br><span class="line"><span class="class">因为32+4+4+8+4 =52 ，52+32不是32整除的，所以需要填充到64，所以其大小为64  </span></span><br><span class="line"><span class="class"><span class="title">eg2</span>:</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">short</span> c;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">A1</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">short</span> c;</span><br><span class="line">    <span class="keyword">short</span> d;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">A3</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">   alignas(<span class="number">16</span>) <span class="keyword">short</span> c;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span>  <span class="title">A4</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">double</span> a;</span><br><span class="line">    alignas(<span class="number">32</span>) <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">int</span> *c;</span><br><span class="line">    <span class="keyword">int</span> d;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">struct <span class="title">alignas</span><span class="params">(<span class="number">64</span>)</span> A5</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">double</span> a;</span><br><span class="line">    alignas(<span class="number">32</span>) <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">int</span> *c;</span><br><span class="line">    <span class="keyword">int</span> d;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">" A:"</span>  &lt;&lt; <span class="keyword">sizeof</span>(struct A) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">" A1:"</span>  &lt;&lt; <span class="keyword">sizeof</span>(struct A1) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">" A3:"</span>  &lt;&lt; <span class="keyword">sizeof</span>(struct A3) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    A3 a3;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt; <span class="string">"a3: "</span> &lt;&lt; &amp;a3 &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    A4 a4;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt; <span class="string">"a4:"</span> &lt;&lt; <span class="keyword">sizeof</span>(a4) &lt;&lt; <span class="string">"addr:"</span> &lt;&lt; &amp;a4 &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    A5 a5;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt; <span class="string">"a5:"</span> &lt;&lt; <span class="keyword">sizeof</span>(a5) &lt;&lt; <span class="string">"addr:"</span> &lt;&lt; &amp;a5 &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> A:<span class="number">12</span></span><br><span class="line"> A1:<span class="number">12</span></span><br><span class="line"> A3:<span class="number">32</span></span><br><span class="line">a3: <span class="number">0x7ffccf181a60</span></span><br><span class="line">a4:<span class="number">64</span>addr:<span class="number">0x7ffccf181ac0</span></span><br><span class="line">a5:<span class="number">64</span>addr:<span class="number">0x7ffccf181a80</span></span><br></pre></td></tr></table></figure>
+<h5 id="alinof-用来判断对齐数的："><a href="#alinof-用来判断对齐数的：" class="headerlink" title="alinof: 用来判断对齐数的："></a>alinof: 用来判断对齐数的：</h5><p>alignof( type-id )：Returns a value of type std::size_t.<br>如果类型是引用类型，操作符返回被引用类型的对齐;如果类型是数组类型，则返回元素类型的对齐要求<br>eg:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Foo</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span>   i;</span><br><span class="line">    <span class="keyword">float</span> f;</span><br><span class="line">    <span class="keyword">char</span>  c;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// Note: `alignas(alignof(long double))` below can be simplified to simply </span></span><br><span class="line"><span class="comment">// `alignas(long double)` if desired.</span></span><br><span class="line">struct alignas(alignof(long double)) Foo2 &#123;</span><br><span class="line">    <span class="comment">// put your definition here</span></span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Empty</span> &#123;</span>&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function">struct <span class="title">alignas</span><span class="params">(<span class="number">64</span>)</span> Empty64 </span>&#123;&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Alignment of"</span>  <span class="string">"\n"</span></span><br><span class="line">        <span class="string">"- char             : "</span> &lt;&lt; <span class="keyword">alignof</span>(<span class="keyword">char</span>)    &lt;&lt; <span class="string">"\n"</span></span><br><span class="line">        <span class="string">"- pointer          : "</span> &lt;&lt; <span class="keyword">alignof</span>(<span class="keyword">int</span>*)    &lt;&lt; <span class="string">"\n"</span></span><br><span class="line">        <span class="string">"- class Foo        : "</span> &lt;&lt; <span class="keyword">alignof</span>(Foo)     &lt;&lt; <span class="string">"\n"</span></span><br><span class="line">        <span class="string">"- class Foo2       : "</span> &lt;&lt; <span class="keyword">alignof</span>(Foo2)    &lt;&lt; <span class="string">"\n"</span></span><br><span class="line">        <span class="string">"- empty class      : "</span> &lt;&lt; <span class="keyword">alignof</span>(Empty)   &lt;&lt; <span class="string">"\n"</span></span><br><span class="line">        <span class="string">"- alignas(64) Empty: "</span> &lt;&lt; <span class="keyword">alignof</span>(Empty64) &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">&#125;</span><br><span class="line">Possible output:</span><br><span class="line"></span><br><span class="line">Alignment of</span><br><span class="line">- <span class="keyword">char</span>             : <span class="number">1</span></span><br><span class="line">- pointer          : <span class="number">8</span></span><br><span class="line">- <span class="class"><span class="keyword">class</span> <span class="title">Foo</span>        :</span> <span class="number">4</span></span><br><span class="line">- <span class="class"><span class="keyword">class</span> <span class="title">Foo2</span>       :</span> <span class="number">16</span></span><br><span class="line">- empty <span class="class"><span class="keyword">class</span>      :</span> <span class="number">1</span></span><br><span class="line">- alignas(<span class="number">64</span>) Empty: <span class="number">64</span></span><br></pre></td></tr></table></figure></p>
+<p>一个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"> <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">" more :"</span>&lt;&lt; <span class="keyword">alignof</span>( <span class="keyword">char</span>[<span class="number">150</span>]) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;<span class="comment">//1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">" more :"</span>&lt;&lt; <span class="keyword">alignof</span>(alignas(<span class="number">256</span>) <span class="keyword">char</span>[<span class="number">150</span>]) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;<span class="comment">//1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">" more :"</span>&lt;&lt; <span class="keyword">alignof</span>(alignas(<span class="number">256</span>) <span class="keyword">char</span>[<span class="number">128</span>]) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;<span class="comment">//1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">" more :"</span>&lt;&lt; <span class="keyword">alignof</span>(alignas(<span class="number">128</span>) <span class="keyword">char</span>[<span class="number">150</span>]) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;<span class="comment">//1</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">" more :"</span>&lt;&lt; <span class="keyword">alignof</span>(alignas(<span class="number">128</span>) <span class="keyword">char</span>[<span class="number">128</span>]) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;<span class="comment">//1</span></span><br><span class="line"><span class="keyword">and</span></span><br><span class="line">和&amp;&amp;一样的效果：</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> n;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(n &gt; <span class="number">0</span> <span class="keyword">and</span> n &lt; <span class="number">5</span>)</span><br><span class="line">   &#123;</span><br><span class="line">       <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"n is small and positive\n"</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line">and_eq：和&amp;=一样的效果，亦或的意思：</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;<span class="built_in">bitset</span>&gt;</span><br><span class="line"><span class="keyword">int</span> main()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">bitset</span>&lt;<span class="number">4</span>&gt; mask(<span class="string">"1100"</span>);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">bitset</span>&lt;4&gt; val(<span class="string">"0111"</span>);</span><br><span class="line">    val and_eq mask;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; val &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">&#125;</span><br><span class="line">out:<span class="number">0100</span></span><br></pre></td></tr></table></figure>
+<h5 id="asm"><a href="#asm" class="headerlink" title="asm"></a>asm</h5><p>asm声明提供了在c++程序中嵌入汇编语言源代码的能力。该声明是有条件支持的，并且定义了实现，这意味着它可能不存在，即使是由实现提供，它也没有固定的含义。<br>语法：asm ( string_literal ) ;<br>string_literal通常是一个用汇编语言编写的短程序，每当执行此声明时就执行该程序。不同的c++编译器对于asm声明有不同的规则，对于与周围c++代码的交互有不同的约定。<br>与其他块声明一样，这个声明可以出现在块(函数体或另一个复合语句)中，也可以出现在块的外部<br>例如以下在linux x86_64下运行的：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> <span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// the definition of func is written in assembly language</span></span><br><span class="line"><span class="comment">// raw string literal could be very useful</span></span><br><span class="line"><span class="keyword">asm</span>(<span class="string">R"(</span></span><br><span class="line"><span class="string">.globl func</span></span><br><span class="line"><span class="string">    .type func, @function</span></span><br><span class="line"><span class="string">    func:</span></span><br><span class="line"><span class="string">    .cfi_startproc</span></span><br><span class="line"><span class="string">    movl $7, %eax</span></span><br><span class="line"><span class="string">    ret</span></span><br><span class="line"><span class="string">    .cfi_endproc</span></span><br><span class="line"><span class="string">)"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = func();</span><br><span class="line">    <span class="comment">// extended inline assembly</span></span><br><span class="line">    <span class="keyword">asm</span> (<span class="string">"leal (%0,%0,4),%0"</span></span><br><span class="line">         : <span class="string">"=r"</span> (n)</span><br><span class="line">         : <span class="string">"0"</span> (n));</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"7*5 = "</span> &lt;&lt; n &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>; <span class="comment">// flush is intentional</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">// standard inline assembly</span></span><br><span class="line">    <span class="keyword">asm</span> (<span class="string">"movq $60, %rax\n\t"</span> <span class="comment">// the exit syscall number on Linux</span></span><br><span class="line">         <span class="string">"movq $2,  %rdi\n\t"</span> <span class="comment">// this program returns 2</span></span><br><span class="line">         <span class="string">"syscall"</span>);</span><br><span class="line">&#125;</span><br><span class="line">out:<span class="number">7</span>*<span class="number">5</span> = <span class="number">35</span></span><br></pre></td></tr></table></figure></p>
+<h5 id="atomic系列"><a href="#atomic系列" class="headerlink" title="atomic系列"></a>atomic系列</h5><h5 id="auto-编译期间的类型推导；"><a href="#auto-编译期间的类型推导；" class="headerlink" title="auto:编译期间的类型推导；"></a>auto:编译期间的类型推导；</h5><h5 id="bitand-按位与：位操作，和-amp-一样："><a href="#bitand-按位与：位操作，和-amp-一样：" class="headerlink" title="bitand:按位与：位操作，和&amp;一样："></a>bitand:按位与：位操作，和&amp;一样：</h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;bitset&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> bin = <span class="built_in">std</span>::<span class="built_in">bitset</span>&lt;<span class="number">8</span>&gt;;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show</span><span class="params">(bin z, <span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">if</span> (n == <span class="number">0</span>) <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"┌────────────┬──────────┐\n"</span>;</span><br><span class="line"><span class="keyword">if</span> (n &lt;= <span class="number">2</span>) <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"│ "</span> &lt;&lt;s&lt;&lt; <span class="string">" │ "</span> &lt;&lt;z&lt;&lt;<span class="string">" │\n"</span>;</span><br><span class="line"><span class="keyword">if</span> (n == <span class="number">2</span>) <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"└────────────┴──────────┘\n"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">bin x&#123; <span class="string">"01011010"</span> &#125;; show(x, <span class="string">"x "</span>, <span class="number">0</span>);</span><br><span class="line">bin y&#123; <span class="string">"00111100"</span> &#125;; show(y, <span class="string">"y "</span>, <span class="number">1</span>);</span><br><span class="line">bin z = x bitand y; show(z, <span class="string">"x bitand y"</span>, <span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line">┌────────────┬──────────┐</span><br><span class="line">│ x │ <span class="number">01011010</span> │</span><br><span class="line">│ y │ <span class="number">00111100</span> │</span><br><span class="line">│ x bitand y │ <span class="number">00011000</span> │</span><br><span class="line">└────────────┴──────────┘</span><br><span class="line"></span><br><span class="line">bitor: 和|等效：</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;bitset&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">using</span> bin = <span class="built_in">std</span>::<span class="built_in">bitset</span>&lt;<span class="number">8</span>&gt;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show</span><span class="params">(bin z, <span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">if</span> (n == <span class="number">0</span>) <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"┌───────────┬──────────┐\n"</span>;</span><br><span class="line"><span class="keyword">if</span> (n &lt;= <span class="number">2</span>) <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"│ "</span> &lt;&lt;s&lt;&lt; <span class="string">" │ "</span> &lt;&lt;z&lt;&lt;<span class="string">" │\n"</span>;</span><br><span class="line"><span class="keyword">if</span> (n == <span class="number">2</span>) <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"└───────────┴──────────┘\n"</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">bin x&#123; <span class="string">"01011010"</span> &#125;; show(x, <span class="string">"x "</span>, <span class="number">0</span>);</span><br><span class="line">bin y&#123; <span class="string">"00111100"</span> &#125;; show(y, <span class="string">"y "</span>, <span class="number">1</span>);</span><br><span class="line">bin z = x bitor y; show(z, <span class="string">"x bitor y"</span>, <span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line">┌───────────┬──────────┐</span><br><span class="line">│ x │ <span class="number">01011010</span> │</span><br><span class="line">│ y │ <span class="number">00111100</span> │</span><br><span class="line">│ x bitor y │ <span class="number">01111110</span> │</span><br><span class="line">└───────────┴──────────┘</span><br></pre></td></tr></table></figure>
+<h5 id="bool-布尔类型；"><a href="#bool-布尔类型；" class="headerlink" title="bool: 布尔类型；"></a>bool: 布尔类型；</h5><h5 id="break-用在switch-for等封闭复合语句中"><a href="#break-用在switch-for等封闭复合语句中" class="headerlink" title="break:用在switch,for等封闭复合语句中"></a>break:用在switch,for等封闭复合语句中</h5><p>在此语句之后，控制权被转移到紧接在外围循环或开关之后的语句。与任何块退出一样，在封闭复合语句或循环/开关条件中声明的所有自动存储对象都将在封闭循环后的第一行执行之前销毁，按构造顺序相反。</p>
+<h5 id="case-在swtich中使用"><a href="#case-在swtich中使用" class="headerlink" title="case: 在swtich中使用"></a>case: 在swtich中使用</h5><h5 id="catch-在try-catch语句块中，在语句中一并解释；"><a href="#catch-在try-catch语句块中，在语句中一并解释；" class="headerlink" title="catch: 在try-catch语句块中，在语句中一并解释；"></a>catch: 在try-catch语句块中，在语句中一并解释；</h5><h5 id="char-char8-t-char16-t-char32-t-class-是类型标识符"><a href="#char-char8-t-char16-t-char32-t-class-是类型标识符" class="headerlink" title="char,char8_t,char16_t,char32_t,class,是类型标识符"></a>char,char8_t,char16_t,char32_t,class,是类型标识符</h5><h5 id="compl-和-一样的效果，是按位取反"><a href="#compl-和-一样的效果，是按位取反" class="headerlink" title="compl: 和~一样的效果，是按位取反"></a>compl: 和~一样的效果，是按位取反</h5><h5 id="concepts：c-20新特性，TD—和模板类型萃取合并解释"><a href="#concepts：c-20新特性，TD—和模板类型萃取合并解释" class="headerlink" title="concepts：c++20新特性，TD—和模板类型萃取合并解释"></a>concepts：c++20新特性，TD—和模板类型萃取合并解释</h5><h5 id="const和cv"><a href="#const和cv" class="headerlink" title="const和cv"></a>const和cv</h5><h5 id="consteval（since-c-20）-constexpr-constinit"><a href="#consteval（since-c-20）-constexpr-constinit" class="headerlink" title="consteval（since c++20）/constexpr/constinit"></a>consteval（since c++20）/constexpr/constinit</h5><h5 id="const-cast-在具有不同cv限定符的类型之间转换"><a href="#const-cast-在具有不同cv限定符的类型之间转换" class="headerlink" title="const_cast:在具有不同cv限定符的类型之间转换"></a>const_cast:在具有不同cv限定符的类型之间转换</h5><p>const_cast &lt; new_type &gt; ( expression )<br>Returns a value of type new_type.<br>解释： 只有以下转换可以用const_cast实现，通常，only const_cast may be used to cast away (remove) constness or volatility.<br>1 同一个类型的两个可能是多级指针可以相互转换，而不管每个级别上的cv限定符是什么。<br>2 任何类型T的左值都可以转换为相同类型T的左值或右值引用，或多或少符合cv要求。同样，类类型的prvalue或任何类型的xvalue都可以转换为符合cv要求的右值引用。引用const_cast的结果指向原对象if表达式为glvalue，以及实体化临时表达式(自c++ 17起)。<br>3 同样的规则适用于可能指向数据成员的多级指针，也适用于可能指向已知和未知绑定的数组的多级指针(指向cv限定元素的数组本身被认为是cv限定的)(从c++ 17开始)<br>4 空指针值可以转换为new_type的空指针值<br>对于所有的cast表达式，结果可以是：<br>1） 如果new_type是左值引用类型或函数类型的右值引用，则为左值;<br>2）如果new_type是对象类型的右值引用，则为xvalue<br>3）一个prvalue ，对其他情况<br>note:指向函数和成员函数的指针不受const_cast约束<br>const_cast使实际引用const对象的非const类型的引用或指针，或者实际引用volatile对象的非volatile类型的引用或指针成为可能。通过非const访问路径修改const对象和通过非volatile glvalue引用volatile对象会导致未定义的行为 </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">type</span> &#123;</span></span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line">type(): i(<span class="number">3</span>) &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> v)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line"><span class="comment">// this-&gt;i = v; // compile error: this is a pointer to const</span></span><br><span class="line"><span class="keyword">const_cast</span>&lt;type*&gt;(<span class="keyword">this</span>)-&gt;i = v; <span class="comment">// OK as long as the type object isn't const</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">int</span> i = <span class="number">3</span>; <span class="comment">// i is not declared const</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span>&amp; rci = i; </span><br><span class="line"><span class="keyword">const_cast</span>&lt;<span class="keyword">int</span>&amp;&gt;(rci) = <span class="number">4</span>; <span class="comment">// OK: modifies i</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"i = "</span> &lt;&lt; i &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">type t; <span class="comment">// if this was const type t, then t.f(4) would be undefined behavior</span></span><br><span class="line">t.f(<span class="number">4</span>);</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"type::i = "</span> &lt;&lt; t.i &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> j = <span class="number">3</span>; <span class="comment">// j is declared const</span></span><br><span class="line">[[maybe_unused]]</span><br><span class="line"><span class="keyword">int</span>* pj = <span class="keyword">const_cast</span>&lt;<span class="keyword">int</span>*&gt;(&amp;j);</span><br><span class="line"><span class="comment">// *pj = 4; // undefined behavior</span></span><br><span class="line">[[maybe_unused]]</span><br><span class="line"><span class="keyword">void</span> (type::* pmf)(<span class="keyword">int</span>) <span class="keyword">const</span> = &amp;type::f; <span class="comment">// pointer to member function</span></span><br><span class="line"><span class="comment">// const_cast&lt;void(type::*)(int)&gt;(pmf); // compile error: const_cast does</span></span><br><span class="line"><span class="comment">// not work on function pointers</span></span><br><span class="line">&#125;</span><br><span class="line">Output:</span><br><span class="line">i = <span class="number">4</span></span><br><span class="line">type::i = <span class="number">4</span></span><br></pre></td></tr></table></figure>
+<h5 id="continue"><a href="#continue" class="headerlink" title="continue"></a>continue</h5><h4 id="以下三个是关于协程的，单独记录"><a href="#以下三个是关于协程的，单独记录" class="headerlink" title="以下三个是关于协程的，单独记录"></a>以下三个是关于协程的，单独记录</h4><h5 id="co-await-since-c-20"><a href="#co-await-since-c-20" class="headerlink" title="co_await(since c++20)"></a>co_await(since c++20)</h5><h5 id="co-return-since-c-20"><a href="#co-return-since-c-20" class="headerlink" title="co_return(since c++20)"></a>co_return(since c++20)</h5><h5 id="co-yield-since-c-20"><a href="#co-yield-since-c-20" class="headerlink" title="co_yield(since c++20)"></a>co_yield(since c++20)</h5><h4 id="继续"><a href="#继续" class="headerlink" title="继续"></a>继续</h4><h5 id="decltype-编译时类型推导，基本用法见下面例子："><a href="#decltype-编译时类型推导，基本用法见下面例子：" class="headerlink" title="decltype:编译时类型推导，基本用法见下面例子："></a>decltype:编译时类型推导，基本用法见下面例子：</h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">4</span>;</span><br><span class="line">   <span class="keyword">int</span> arr[<span class="number">5</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">   <span class="keyword">int</span> *ptr = arr;</span><br><span class="line">   <span class="class"><span class="keyword">struct</span> <span class="title">S</span>&#123;</span> <span class="keyword">double</span> d; &#125;s ;</span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">Overloaded</span><span class="params">(<span class="keyword">int</span>)</span></span>;</span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">Overloaded</span><span class="params">(<span class="keyword">char</span>)</span></span>;<span class="comment">//重载的函数</span></span><br><span class="line">   <span class="function"><span class="keyword">int</span> &amp;&amp; <span class="title">RvalRef</span><span class="params">()</span></span>;</span><br><span class="line">   <span class="function"><span class="keyword">const</span> <span class="keyword">bool</span> <span class="title">Func</span><span class="params">(<span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//规则一：推导为其类型</span></span><br><span class="line">   <span class="keyword">decltype</span> (arr) var1; <span class="comment">//int 标记符表达式</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span> (ptr) var2;<span class="comment">//int *  标记符表达式</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span>(s.d) var3;<span class="comment">//doubel 成员访问表达式</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">//decltype(Overloaded) var4;//重载函数。编译错误。</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">//规则二：将亡值。推导为类型的右值引用。</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span> (RvalRef()) var5 = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//规则三：左值，推导为类型的引用。</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span> ((i))var6 = i;     <span class="comment">//int&amp;</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span> (<span class="literal">true</span> ? i : i) var7 = i; <span class="comment">//int&amp;  条件表达式返回左值。</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span> (++i) var8 = i; <span class="comment">//int&amp;  ++i返回i的左值。</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span>(arr[<span class="number">5</span>]) var9 = i;<span class="comment">//int&amp;. []操作返回左值</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span>(*ptr)var10 = i;<span class="comment">//int&amp; *操作返回左值</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span>(<span class="string">"hello"</span>)var11 = <span class="string">"hello"</span>; <span class="comment">//const char(&amp;)[9]  字符串字面常量为左值，且为const左值。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   <span class="comment">//规则四：以上都不是，则推导为本类型</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span>(<span class="number">1</span>) var12;<span class="comment">//const int</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span>(Func(<span class="number">1</span>)) var13=<span class="literal">true</span>;<span class="comment">//const bool</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">decltype</span>(i++) var14 = i;<span class="comment">//int i++返回右值</span></span><br></pre></td></tr></table></figure>
+<h5 id="default，delete用于虚基类的函数声明，c-11"><a href="#default，delete用于虚基类的函数声明，c-11" class="headerlink" title="default，delete用于虚基类的函数声明，c++11"></a>default，delete用于虚基类的函数声明，c++11</h5><h5 id="do-while"><a href="#do-while" class="headerlink" title="do(-while),"></a>do(-while),</h5><h5 id="double类型"><a href="#double类型" class="headerlink" title="double类型"></a>double类型</h5><h5 id="动态类型转换：dynamic-cast-见类型，泛型总结"><a href="#动态类型转换：dynamic-cast-见类型，泛型总结" class="headerlink" title="动态类型转换：dynamic_cast 见类型，泛型总结"></a>动态类型转换：dynamic_cast 见类型，泛型总结</h5><h5 id="else-enum"><a href="#else-enum" class="headerlink" title="else,enum,"></a>else,enum,</h5><h5 id="explicit-在C-中，explicit关键字用来修饰类的构造函数，被修饰的构造函数的类，不能发生相应的隐式类型转换，只能以显示的方式进行类型转换。"><a href="#explicit-在C-中，explicit关键字用来修饰类的构造函数，被修饰的构造函数的类，不能发生相应的隐式类型转换，只能以显示的方式进行类型转换。" class="headerlink" title="explicit:在C++中，explicit关键字用来修饰类的构造函数，被修饰的构造函数的类，不能发生相应的隐式类型转换，只能以显示的方式进行类型转换。"></a>explicit:在C++中，explicit关键字用来修饰类的构造函数，被修饰的构造函数的类，不能发生相应的隐式类型转换，只能以显示的方式进行类型转换。</h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    A(<span class="keyword">int</span>) &#123; &#125;      <span class="comment">// 转换构造函数</span></span><br><span class="line">    A(<span class="keyword">int</span>, <span class="keyword">int</span>) &#123; &#125; <span class="comment">// 转换构造函数 (C++11)</span></span><br><span class="line">    <span class="function"><span class="keyword">operator</span> <span class="title">bool</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> <span class="literal">true</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">B</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">explicit</span> <span class="title">B</span><span class="params">(<span class="keyword">int</span>)</span> </span>&#123; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">explicit</span> <span class="title">B</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span> </span>&#123; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">explicit</span> <span class="keyword">operator</span> <span class="title">bool</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> <span class="literal">true</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    A a1 = <span class="number">1</span>;      <span class="comment">// OK：复制初始化选择 A::A(int)</span></span><br><span class="line">    <span class="function">A <span class="title">a2</span><span class="params">(<span class="number">2</span>)</span></span>;       <span class="comment">// OK：直接初始化选择 A::A(int)</span></span><br><span class="line">    A a3 &#123;<span class="number">4</span>, <span class="number">5</span>&#125;;   <span class="comment">// OK：直接列表初始化选择 A::A(int, int)</span></span><br><span class="line">    A a4 = &#123;<span class="number">4</span>, <span class="number">5</span>&#125;; <span class="comment">// OK：复制列表初始化选择 A::A(int, int)</span></span><br><span class="line">    A a5 = (A)<span class="number">1</span>;   <span class="comment">// OK：显式转型进行 static_cast</span></span><br><span class="line">    <span class="keyword">if</span> (a1) ;      <span class="comment">// OK：A::operator bool()</span></span><br><span class="line">    <span class="keyword">bool</span> na1 = a1; <span class="comment">// OK：复制初始化选择 A::operator bool()</span></span><br><span class="line">    <span class="keyword">bool</span> na2 = <span class="keyword">static_cast</span>&lt;<span class="keyword">bool</span>&gt;(a1); <span class="comment">// OK：static_cast 进行直接初始化</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">//  B b1 = 1;      // 错误：复制初始化不考虑 B::B(int)</span></span><br><span class="line">    <span class="function">B <span class="title">b2</span><span class="params">(<span class="number">2</span>)</span></span>;       <span class="comment">// OK：直接初始化选择 B::B(int)</span></span><br><span class="line">    B b3 &#123;<span class="number">4</span>, <span class="number">5</span>&#125;;   <span class="comment">// OK：直接列表初始化选择 B::B(int, int)</span></span><br><span class="line"><span class="comment">//  B b4 = &#123;4, 5&#125;; // 错误：复制列表初始化不考虑 B::B(int,int)</span></span><br><span class="line">    B b5 = (B)<span class="number">1</span>;   <span class="comment">// OK：显式转型进行 static_cast</span></span><br><span class="line">    <span class="keyword">if</span> (b2) ;      <span class="comment">// OK：B::operator bool()</span></span><br><span class="line"><span class="comment">//  bool nb1 = b2; // 错误：复制初始化不考虑 B::operator bool()</span></span><br><span class="line">    <span class="keyword">bool</span> nb2 = <span class="keyword">static_cast</span>&lt;<span class="keyword">bool</span>&gt;(b2); <span class="comment">// OK：static_cast 进行直接初始化</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="export-用于标注一个模板定义被导出，并允许在其他翻译单元中声明，但不定义同一模板，c-11前可用，c-11起，不使用，但保留该关键字；"><a href="#export-用于标注一个模板定义被导出，并允许在其他翻译单元中声明，但不定义同一模板，c-11前可用，c-11起，不使用，但保留该关键字；" class="headerlink" title="export:用于标注一个模板定义被导出，并允许在其他翻译单元中声明，但不定义同一模板，c++11前可用，c++11起，不使用，但保留该关键字；"></a>export:用于标注一个模板定义被导出，并允许在其他翻译单元中声明，但不定义同一模板，c++11前可用，c++11起，不使用，但保留该关键字；</h5><p>通常情况下，你会在.h文件中声明函数和类，而将它们的定义放置在一个单独的.cpp文件中。但是在使用模板时，这种习惯性做法将变得不再有用，因为当实例化一个模板时，编译器必须看到模板确切的定义，而不仅仅是它的声明。 因此，最好的办法就是将模板的声明和定义都放置在同一个.h文件中。这就是为什么所有的STL头文件都包含模板定义的原因。<br>另外一个方法就是使用关键字“export”！你可以在.h文件中，声明模板类和模板函数；在.cpp文件中，使用关键字export来定义具体的模板类对象和模板函数；然后在其他用户代码文件中，包含声明头文件后，就可以使用该这些对象和函数了。例如：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// output.h - 声明头文件  </span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt; <span class="title">void</span> <span class="title">output</span> (<span class="title">const</span> <span class="title">T</span>&amp; <span class="title">t</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// out.cpp - 定义代码文件   </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;****&gt;   </span></span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">void</span> <span class="title">output</span> (<span class="title">const</span> <span class="title">T</span>&amp; <span class="title">t</span>) &#123;</span><span class="built_in">std</span>::<span class="built_in">cerr</span> &lt;&lt; t;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//main.cpp:用户代码文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"output.h"</span>   void main() <span class="comment">// 使用output()   &#123;   output(4);  </span></span></span><br><span class="line">output(<span class="string">"Hello"</span>);   &#125;</span><br><span class="line">大多数编译器不支持，如vs,gcc,不去使用</span><br></pre></td></tr></table></figure></p>
+<h5 id="extern-false-float-for-friend-goto-if-inline-int"><a href="#extern-false-float-for-friend-goto-if-inline-int" class="headerlink" title="extern,false,float,for,friend,goto,if,inline,int"></a>extern,false,float,for,friend,goto,if,inline,int</h5><p>已知略</p>
+<h5 id="long"><a href="#long" class="headerlink" title="long"></a>long</h5><p>已知略</p>
+<h5 id="mutable"><a href="#mutable" class="headerlink" title="mutable:"></a>mutable:</h5><p>在C++中，mutable也是为了突破const的限制而设置的，被mutable修饰的变量将永远处于可变的状态。</p>
+<p>mutable的作用有两点：<br>（1）保持常量对象中大部分数据成员仍然是“只读”的情况下，实现对个别数据成员的修改；<br>（2）使类的const函数可以修改对象的mutable数据成员。</p>
+<p>使用mutable的注意事项：<br>（1）mutable只能作用于类的非静态和非常量数据成员。<br>（2）在一个类中，应尽量或者不用mutable，大量使用mutable表示程序设计存在缺陷。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//mutable int test;//编译出错</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="built_in">string</span> name;</span><br><span class="line">	<span class="keyword">mutable</span> <span class="keyword">int</span> getNum;</span><br><span class="line">	<span class="comment">//mutable const int test;    //编译出错</span></span><br><span class="line">	<span class="comment">//mutable static int static1;//编译出错</span></span><br><span class="line">	</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	Student(<span class="keyword">char</span>* name)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">this</span>-&gt;name=name;</span><br><span class="line">		getNum=<span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="built_in">string</span> <span class="title">getName</span><span class="params">()</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		++getNum;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">pintTimes</span><span class="params">()</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="built_in">cout</span>&lt;&lt;getNum&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">const</span> Student <span class="title">s</span><span class="params">(<span class="string">"张三"</span>)</span></span>;</span><br><span class="line">	<span class="built_in">cout</span>&lt;&lt;s.getName().c_str()&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	s.pintTimes();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="namespace-new"><a href="#namespace-new" class="headerlink" title="namespace,new"></a>namespace,new</h5><p>已知略</p>
+<h5 id="noexcept-用于声明函数等是否有异常抛出，以及检测函数等是否有异常抛出；异常处理部分会涵盖"><a href="#noexcept-用于声明函数等是否有异常抛出，以及检测函数等是否有异常抛出；异常处理部分会涵盖" class="headerlink" title="noexcept: 用于声明函数等是否有异常抛出，以及检测函数等是否有异常抛出；异常处理部分会涵盖"></a>noexcept: 用于声明函数等是否有异常抛出，以及检测函数等是否有异常抛出；异常处理部分会涵盖</h5><h5 id="not"><a href="#not" class="headerlink" title="not"></a>not</h5><p>已知略</p>
+<h5 id="not-eq"><a href="#not-eq" class="headerlink" title="not_eq"></a>not_eq</h5><p>已知略</p>
+<h5 id="nullptr"><a href="#nullptr" class="headerlink" title="nullptr"></a>nullptr</h5><p>已知略</p>
+<h5 id="operator"><a href="#operator" class="headerlink" title="operator"></a>operator</h5><p>已知略</p>
+<h5 id="or-or-eq"><a href="#or-or-eq" class="headerlink" title="or or_eq"></a>or or_eq</h5><p>已知略</p>
+<h5 id="private-protected-public"><a href="#private-protected-public" class="headerlink" title="private,protected,public;"></a>private,protected,public;</h5><p>已知略</p>
+<h5 id="reflexpr-和反射相关，c-20"><a href="#reflexpr-和反射相关，c-20" class="headerlink" title="reflexpr: 和反射相关，c++20"></a>reflexpr: 和反射相关，c++20</h5><h5 id="register：存储有关，c-17后弃用"><a href="#register：存储有关，c-17后弃用" class="headerlink" title="register：存储有关，c++17后弃用"></a>register：存储有关，c++17后弃用</h5><h5 id="reinterpret-cast：-类型转换，可以在任何指针类型转换，但是风险大，不安全，使用频率低，具体在泛型相关内容统一解释；"><a href="#reinterpret-cast：-类型转换，可以在任何指针类型转换，但是风险大，不安全，使用频率低，具体在泛型相关内容统一解释；" class="headerlink" title="reinterpret_cast： 类型转换，可以在任何指针类型转换，但是风险大，不安全，使用频率低，具体在泛型相关内容统一解释；"></a>reinterpret_cast： 类型转换，可以在任何指针类型转换，但是风险大，不安全，使用频率低，具体在泛型相关内容统一解释；</h5><h5 id="requires-c-20后，在模板的泛型中使用"><a href="#requires-c-20后，在模板的泛型中使用" class="headerlink" title="requires:c++20后，在模板的泛型中使用"></a>requires:c++20后，在模板的泛型中使用</h5><h5 id="return-short-signed-sizeof-static"><a href="#return-short-signed-sizeof-static" class="headerlink" title="return,short,signed,sizeof,static"></a>return,short,signed,sizeof,static</h5><h5 id="static-assert-c-11-编译期间的断言检查"><a href="#static-assert-c-11-编译期间的断言检查" class="headerlink" title="static_assert(c++11);编译期间的断言检查"></a>static_assert(c++11);编译期间的断言检查</h5><h5 id="static-cast-类型转换，泛型中统一"><a href="#static-cast-类型转换，泛型中统一" class="headerlink" title="static_cast 类型转换，泛型中统一"></a>static_cast 类型转换，泛型中统一</h5><h5 id="struct-switch"><a href="#struct-switch" class="headerlink" title="struct, switch"></a>struct, switch</h5><p>已知略</p>
+<h5 id="synchronized-规划中"><a href="#synchronized-规划中" class="headerlink" title="synchronized 规划中"></a>synchronized 规划中</h5><h5 id="template"><a href="#template" class="headerlink" title="template"></a>template</h5><h5 id="this"><a href="#this" class="headerlink" title="this"></a>this</h5><h5 id="thread-local-存储连接中统一解释：线程存储"><a href="#thread-local-存储连接中统一解释：线程存储" class="headerlink" title="thread_local: 存储连接中统一解释：线程存储"></a>thread_local: 存储连接中统一解释：线程存储</h5><h5 id="throw-异常捕获相关"><a href="#throw-异常捕获相关" class="headerlink" title="throw:异常捕获相关"></a>throw:异常捕获相关</h5><h5 id="true"><a href="#true" class="headerlink" title="true"></a>true</h5><h5 id="try"><a href="#try" class="headerlink" title="try"></a>try</h5><h5 id="typedef"><a href="#typedef" class="headerlink" title="typedef"></a>typedef</h5><h5 id="typeid-用于在运行时确定表达式的类型"><a href="#typeid-用于在运行时确定表达式的类型" class="headerlink" title="typeid:用于在运行时确定表达式的类型"></a>typeid:用于在运行时确定表达式的类型</h5><h5 id="typename"><a href="#typename" class="headerlink" title="typename"></a>typename</h5><h5 id="union-unsigned-using-virtual"><a href="#union-unsigned-using-virtual" class="headerlink" title="union,unsigned,using,virtual"></a>union,unsigned,using,virtual</h5><h5 id="volatile-cv限定中的v"><a href="#volatile-cv限定中的v" class="headerlink" title="volatile:  cv限定中的v"></a>volatile:  cv限定中的v</h5><h5 id="void"><a href="#void" class="headerlink" title="void"></a>void</h5><h5 id="wchar-t-while"><a href="#wchar-t-while" class="headerlink" title="wchar_t,while"></a>wchar_t,while</h5><h5 id="xor-xor-eq"><a href="#xor-xor-eq" class="headerlink" title="xor,xor_eq"></a>xor,xor_eq</h5>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c-keyword/" rel="tag"># c++keyword</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/22/c-valuetype/" rel="prev" title="c++_valuetype">
+      <i class="fa fa-chevron-left"></i> c++_valuetype
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c-中的关键字和基本解释"><span class="nav-number">1.</span> <span class="nav-text">c++中的关键字和基本解释</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#alignas"><span class="nav-number">1.0.1.</span> <span class="nav-text">alignas:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关于字节对齐的解释："><span class="nav-number">1.0.2.</span> <span class="nav-text">关于字节对齐的解释：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#alinof-用来判断对齐数的："><span class="nav-number">1.0.3.</span> <span class="nav-text">alinof: 用来判断对齐数的：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#asm"><span class="nav-number">1.0.4.</span> <span class="nav-text">asm</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#atomic系列"><span class="nav-number">1.0.5.</span> <span class="nav-text">atomic系列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#auto-编译期间的类型推导；"><span class="nav-number">1.0.6.</span> <span class="nav-text">auto:编译期间的类型推导；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#bitand-按位与：位操作，和-amp-一样："><span class="nav-number">1.0.7.</span> <span class="nav-text">bitand:按位与：位操作，和&amp;一样：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#bool-布尔类型；"><span class="nav-number">1.0.8.</span> <span class="nav-text">bool: 布尔类型；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#break-用在switch-for等封闭复合语句中"><span class="nav-number">1.0.9.</span> <span class="nav-text">break:用在switch,for等封闭复合语句中</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#case-在swtich中使用"><span class="nav-number">1.0.10.</span> <span class="nav-text">case: 在swtich中使用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#catch-在try-catch语句块中，在语句中一并解释；"><span class="nav-number">1.0.11.</span> <span class="nav-text">catch: 在try-catch语句块中，在语句中一并解释；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#char-char8-t-char16-t-char32-t-class-是类型标识符"><span class="nav-number">1.0.12.</span> <span class="nav-text">char,char8_t,char16_t,char32_t,class,是类型标识符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#compl-和-一样的效果，是按位取反"><span class="nav-number">1.0.13.</span> <span class="nav-text">compl: 和~一样的效果，是按位取反</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#concepts：c-20新特性，TD—和模板类型萃取合并解释"><span class="nav-number">1.0.14.</span> <span class="nav-text">concepts：c++20新特性，TD—和模板类型萃取合并解释</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#const和cv"><span class="nav-number">1.0.15.</span> <span class="nav-text">const和cv</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#consteval（since-c-20）-constexpr-constinit"><span class="nav-number">1.0.16.</span> <span class="nav-text">consteval（since c++20）/constexpr/constinit</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#const-cast-在具有不同cv限定符的类型之间转换"><span class="nav-number">1.0.17.</span> <span class="nav-text">const_cast:在具有不同cv限定符的类型之间转换</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#continue"><span class="nav-number">1.0.18.</span> <span class="nav-text">continue</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#以下三个是关于协程的，单独记录"><span class="nav-number">1.1.</span> <span class="nav-text">以下三个是关于协程的，单独记录</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#co-await-since-c-20"><span class="nav-number">1.1.1.</span> <span class="nav-text">co_await(since c++20)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#co-return-since-c-20"><span class="nav-number">1.1.2.</span> <span class="nav-text">co_return(since c++20)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#co-yield-since-c-20"><span class="nav-number">1.1.3.</span> <span class="nav-text">co_yield(since c++20)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继续"><span class="nav-number">1.2.</span> <span class="nav-text">继续</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#decltype-编译时类型推导，基本用法见下面例子："><span class="nav-number">1.2.1.</span> <span class="nav-text">decltype:编译时类型推导，基本用法见下面例子：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#default，delete用于虚基类的函数声明，c-11"><span class="nav-number">1.2.2.</span> <span class="nav-text">default，delete用于虚基类的函数声明，c++11</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#do-while"><span class="nav-number">1.2.3.</span> <span class="nav-text">do(-while),</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#double类型"><span class="nav-number">1.2.4.</span> <span class="nav-text">double类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#动态类型转换：dynamic-cast-见类型，泛型总结"><span class="nav-number">1.2.5.</span> <span class="nav-text">动态类型转换：dynamic_cast 见类型，泛型总结</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#else-enum"><span class="nav-number">1.2.6.</span> <span class="nav-text">else,enum,</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#explicit-在C-中，explicit关键字用来修饰类的构造函数，被修饰的构造函数的类，不能发生相应的隐式类型转换，只能以显示的方式进行类型转换。"><span class="nav-number">1.2.7.</span> <span class="nav-text">explicit:在C++中，explicit关键字用来修饰类的构造函数，被修饰的构造函数的类，不能发生相应的隐式类型转换，只能以显示的方式进行类型转换。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#export-用于标注一个模板定义被导出，并允许在其他翻译单元中声明，但不定义同一模板，c-11前可用，c-11起，不使用，但保留该关键字；"><span class="nav-number">1.2.8.</span> <span class="nav-text">export:用于标注一个模板定义被导出，并允许在其他翻译单元中声明，但不定义同一模板，c++11前可用，c++11起，不使用，但保留该关键字；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#extern-false-float-for-friend-goto-if-inline-int"><span class="nav-number">1.2.9.</span> <span class="nav-text">extern,false,float,for,friend,goto,if,inline,int</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#long"><span class="nav-number">1.2.10.</span> <span class="nav-text">long</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#mutable"><span class="nav-number">1.2.11.</span> <span class="nav-text">mutable:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#namespace-new"><span class="nav-number">1.2.12.</span> <span class="nav-text">namespace,new</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#noexcept-用于声明函数等是否有异常抛出，以及检测函数等是否有异常抛出；异常处理部分会涵盖"><span class="nav-number">1.2.13.</span> <span class="nav-text">noexcept: 用于声明函数等是否有异常抛出，以及检测函数等是否有异常抛出；异常处理部分会涵盖</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#not"><span class="nav-number">1.2.14.</span> <span class="nav-text">not</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#not-eq"><span class="nav-number">1.2.15.</span> <span class="nav-text">not_eq</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#nullptr"><span class="nav-number">1.2.16.</span> <span class="nav-text">nullptr</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#operator"><span class="nav-number">1.2.17.</span> <span class="nav-text">operator</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#or-or-eq"><span class="nav-number">1.2.18.</span> <span class="nav-text">or or_eq</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#private-protected-public"><span class="nav-number">1.2.19.</span> <span class="nav-text">private,protected,public;</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#reflexpr-和反射相关，c-20"><span class="nav-number">1.2.20.</span> <span class="nav-text">reflexpr: 和反射相关，c++20</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#register：存储有关，c-17后弃用"><span class="nav-number">1.2.21.</span> <span class="nav-text">register：存储有关，c++17后弃用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#reinterpret-cast：-类型转换，可以在任何指针类型转换，但是风险大，不安全，使用频率低，具体在泛型相关内容统一解释；"><span class="nav-number">1.2.22.</span> <span class="nav-text">reinterpret_cast： 类型转换，可以在任何指针类型转换，但是风险大，不安全，使用频率低，具体在泛型相关内容统一解释；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#requires-c-20后，在模板的泛型中使用"><span class="nav-number">1.2.23.</span> <span class="nav-text">requires:c++20后，在模板的泛型中使用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#return-short-signed-sizeof-static"><span class="nav-number">1.2.24.</span> <span class="nav-text">return,short,signed,sizeof,static</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#static-assert-c-11-编译期间的断言检查"><span class="nav-number">1.2.25.</span> <span class="nav-text">static_assert(c++11);编译期间的断言检查</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#static-cast-类型转换，泛型中统一"><span class="nav-number">1.2.26.</span> <span class="nav-text">static_cast 类型转换，泛型中统一</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#struct-switch"><span class="nav-number">1.2.27.</span> <span class="nav-text">struct, switch</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#synchronized-规划中"><span class="nav-number">1.2.28.</span> <span class="nav-text">synchronized 规划中</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#template"><span class="nav-number">1.2.29.</span> <span class="nav-text">template</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#this"><span class="nav-number">1.2.30.</span> <span class="nav-text">this</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#thread-local-存储连接中统一解释：线程存储"><span class="nav-number">1.2.31.</span> <span class="nav-text">thread_local: 存储连接中统一解释：线程存储</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#throw-异常捕获相关"><span class="nav-number">1.2.32.</span> <span class="nav-text">throw:异常捕获相关</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#true"><span class="nav-number">1.2.33.</span> <span class="nav-text">true</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#try"><span class="nav-number">1.2.34.</span> <span class="nav-text">try</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#typedef"><span class="nav-number">1.2.35.</span> <span class="nav-text">typedef</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#typeid-用于在运行时确定表达式的类型"><span class="nav-number">1.2.36.</span> <span class="nav-text">typeid:用于在运行时确定表达式的类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#typename"><span class="nav-number">1.2.37.</span> <span class="nav-text">typename</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#union-unsigned-using-virtual"><span class="nav-number">1.2.38.</span> <span class="nav-text">union,unsigned,using,virtual</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#volatile-cv限定中的v"><span class="nav-number">1.2.39.</span> <span class="nav-text">volatile:  cv限定中的v</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#void"><span class="nav-number">1.2.40.</span> <span class="nav-text">void</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#wchar-t-while"><span class="nav-number">1.2.41.</span> <span class="nav-text">wchar_t,while</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#xor-xor-eq"><span class="nav-number">1.2.42.</span> <span class="nav-text">xor,xor_eq</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com" title="http://yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'c6ff7201dba495cd0305e498496af302',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
