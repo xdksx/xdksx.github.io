@@ -1,3 +1,4 @@
+https://xdksx.github.io/2021/05/22/tcpip-tc/
 https://xdksx.github.io/2021/05/22/linux-netdevicelayer/
 https://xdksx.github.io/2021/05/22/linux-neighbor/
 https://xdksx.github.io/2021/04/17/interrupt/
@@ -27,4 +28,3 @@ https://xdksx.github.io/2018/06/24/DS-string/
 https://xdksx.github.io/2018/06/10/tcpip-routeicmp/
 https://xdksx.github.io/2018/06/09/cpp-conanddest-semantics/
 https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/
-https://xdksx.github.io/2018/06/08/cpp-datamember-memory/

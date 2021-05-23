@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2021-05-23T02:30:56.288Z</updated>
+  <updated>2021-05-23T02:38:45.644Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>tcpip_tc</title>
+    <link href="https://xdksx.github.io/2021/05/22/tcpip-tc/"/>
+    <id>https://xdksx.github.io/2021/05/22/tcpip-tc/</id>
+    <published>2021-05-22T11:35:21.000Z</published>
+    <updated>2021-05-23T02:38:45.644Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;流量控制概述&quot;&gt;&lt;a href=&quot;#流量控制概述&quot; class=&quot;headerlink&quot; title=&quot;流量控制概述&quot;&gt;&lt;/a&gt;流量控制概述&lt;/h3&gt;&lt;p&gt;linux下通过tc traffic control 框架及系列实现和工具来实现对出口，甚至入口流量的控制，所谓的控制，就是进行包延迟传输，&lt;br&gt;丢包，包损坏，带宽限制，针对某个ip规则进行限制等等，来达到模拟网络异常状况，包优先级传输，或者更多功能；
+    
+    </summary>
+    
+      <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
+    
+    
+      <category term="tcpip_tc" scheme="https://xdksx.github.io/tags/tcpip-tc/"/>
+    
+  </entry>
   
   <entry>
     <title>linux_netdevicelayer</title>
@@ -397,26 +417,6 @@
     <summary type="html">
     
       &lt;h3 id=&quot;概述：&quot;&gt;&lt;a href=&quot;#概述：&quot; class=&quot;headerlink&quot; title=&quot;概述：&quot;&gt;&lt;/a&gt;概述：&lt;/h3&gt;&lt;p&gt;为什么需要函数模板：类型限制了函数的通用性，参数换一种类型，即得重新再定义一个处理流程相同的函数；
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_template" scheme="https://xdksx.github.io/tags/cpp-template/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_template_deepin</title>
-    <link href="https://xdksx.github.io/2021/01/09/cpp-template-deepin/"/>
-    <id>https://xdksx.github.io/2021/01/09/cpp-template-deepin/</id>
-    <published>2021-01-09T16:23:38.000Z</published>
-    <updated>2021-01-10T08:32:42.466Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;模板是什么，为什么要引入模板：&quot;&gt;&lt;a href=&quot;#模板是什么，为什么要引入模板：&quot; class=&quot;headerlink&quot; title=&quot;模板是什么，为什么要引入模板：&quot;&gt;&lt;/a&gt;模板是什么，为什么要引入模板：&lt;/h3&gt;&lt;p&gt;模板是用来生成代码的，通过模板可以定义一组类型的共同行为；&lt;br&gt;为什么要引入模板：&lt;br&gt;继承和组合是实现重用代码的方法，而容器也是，为了实现能承载不同类型的容器，java等其他语言用所有类都继承于根类型等方式，
     
     </summary>
     
