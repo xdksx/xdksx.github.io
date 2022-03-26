@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="关于skbskb是网络协议栈中对包的底层操作结构，它需要满足以下特性：1) 能方便的处理可变长缓存，因为发送和接收的数据长时不固定的2）能容易实现头尾部增加和移除数据，因为这些缓存区需要在不同网络层次间进行传递3）添加和移除数据能尽量避免数据的复制">
+<meta name="keywords" content="tcpip_code">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sk_buff">
+<meta property="og:url" content="https://xdksx.github.io/2021/02/20/sk-buff/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="关于skbskb是网络协议栈中对包的底层操作结构，它需要满足以下特性：1) 能方便的处理可变长缓存，因为发送和接收的数据长时不固定的2）能容易实现头尾部增加和移除数据，因为这些缓存区需要在不同网络层次间进行传递3）添加和移除数据能尽量避免数据的复制">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-02-21T09:37:35.359Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="sk_buff">
+<meta name="twitter:description" content="关于skbskb是网络协议栈中对包的底层操作结构，它需要满足以下特性：1) 能方便的处理可变长缓存，因为发送和接收的数据长时不固定的2）能容易实现头尾部增加和移除数据，因为这些缓存区需要在不同网络层次间进行传递3）添加和移除数据能尽量避免数据的复制">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/02/20/sk-buff/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>sk_buff | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/心理/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/20/sk-buff/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          sk_buff
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-21 01:33:29 / 修改时间：17:37:35" itemprop="dateCreated datePublished" datetime="2021-02-21T01:33:29+08:00">2021-02-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index"><span itemprop="name">tcpip</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="关于skb"><a href="#关于skb" class="headerlink" title="关于skb"></a>关于skb</h3><p>skb是网络协议栈中对包的底层操作结构，它需要满足以下特性：<br>1) 能方便的处理可变长缓存，因为发送和接收的数据长时不固定的<br>2）能容易实现头尾部增加和移除数据，因为这些缓存区需要在不同网络层次间进行传递<br>3）添加和移除数据能尽量避免数据的复制<a id="more"></a><br>sk_buffer定义：<br>include/linux/skbuff.h<br>net/core/skbuff.c<br>在下载的linux源码中能找到(下来看的或者是ubuntu中下来编译内核的)</p>
+<p>ref:&lt;linux内核源码剖析–TCP/IP实现&gt;</p>
+<h3 id="sk-buff的结构"><a href="#sk-buff的结构" class="headerlink" title="sk_buff的结构"></a>sk_buff的结构</h3><h4 id="大体结构："><a href="#大体结构：" class="headerlink" title="大体结构："></a>大体结构：</h4><p>分类：<br>1) 与skb组织相关的成员变量<br>2) 通用成员变量<br>3) 标志性变量<br>4) 与特性相关的成员变量<br>   这些与特性相关的成员，往往用#ifdef来限制，若要使用他们，需要系统定义这些宏，而这个需要在编译内核时开启，比如：<br>   编译时选中 Networking-&gt;Networking options-&gt;QoS and/or fair queueing-&gt;action，选中包分类器的功能，对应宏：<br>   CONFIG_NET_CLS_ACT<br>   注意的是：若某个内核模块包含了使用未定义的宏限制的变量，则无法被内核使用；</p>
+<p>skb被哪些网络层次处理？<br>二层的mac或者其他链路层协议，三层的ip协议，四层的tcp和udp协议，某些成员会在层次间传递的时候发生改变，如四层向三层传递时会加一个ip头，<br>三层向二层传递时会加一个mac头等，反之则删除，而传递时只增加头部可以提高效率；这个需要复杂的指针操作，内核提供了一个函数： skb_reserve();<br>起到在向下传递skb前，在数据缓存区头部预留空间的作用；</p>
+<h4 id="skb相关的两个链表"><a href="#skb相关的两个链表" class="headerlink" title="skb相关的两个链表"></a>skb相关的两个链表</h4><p>在正式看skb的结构之前，先看看组织skb的两个链表，来看skb的全局：<br>在数据被传递进来时，触发中断，中断处理程序会将数据传递进内核，接着一步步拷贝到skb；skb由链表组织：<br>在sk_buff中有两个成员结构：<br>struct sk_buff <em>next;<br>struct sk_buff </em>prev;<br>以此构成skb_buff双向链表；<br>为了能使每个skb都能被整个链表的头部快速找到，在第一个skb结点前加了一个辅助的sk_buff_head结构的头结点，就像链表头一样，作为<br>链表的头结点，可以由此遍历skb链表；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sk_buff_head</span> &#123;</span></span><br><span class="line">	<span class="comment">/* These two members must be first. */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span>	*<span class="title">next</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span>	*<span class="title">prev</span>;</span></span><br><span class="line"></span><br><span class="line">	__u32		qlen;</span><br><span class="line">	<span class="keyword">spinlock_t</span>	lock;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>结构组织：<br><-> sk_buff_head <-> skb1 <-> skb2 …<-> 链接到sk_buff_head形成环形双向链表</-></-></-></-></p>
+<h4 id="skb结构："><a href="#skb结构：" class="headerlink" title="skb结构："></a>skb结构：</h4><p>skb结构可以被大致分为 描述符(skb本身) 和数据缓冲区 (head等成员指针指向的数据)<br>以下是内核4.4.0中的include/linux/定义的sk_buff结构：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment"> *	struct sk_buff - socket buffer</span></span><br><span class="line"><span class="comment"> *	@next: Next buffer in list </span></span><br><span class="line"><span class="comment"> *	@prev: Previous buffer in list</span></span><br><span class="line"><span class="comment"> *	@tstamp: Time we arrived/left 接收或发送时间戳，在网络设备收到一个数据包后，由netif_receive_skb()或netif_rx()调用net_timestamp()设置</span></span><br><span class="line"><span class="comment"> *	@rbnode: RB tree node, alternative to next/prev for netem/tcp</span></span><br><span class="line"><span class="comment"> *	@sk: Socket we are owned by //skb的宿主，当源ip和目的ip都不是本机时，为NULL,否则在数据发送接收时通过这个结构传递给到上层和应有程序挂钩；</span></span><br><span class="line"><span class="comment"> *	@dev: Device we arrived on/are leaving by 从网卡接收数据时，需要分配skb接收缓存队列，这个时候分配成功，就会设置这个结构为对应网卡，发送类似，复杂些；</span></span><br><span class="line"><span class="comment"> *	@cb: Control buffer. Free for use by every layer. Put private vars here</span></span><br><span class="line"><span class="comment"> *	@_skb_refdst: destination entry (with norefcount bit) 目的路由缓存；</span></span><br><span class="line"><span class="comment"> *	@sp: the security path, used for xfrm ipsec协议用来跟踪传输信息</span></span><br><span class="line"><span class="comment"> *	@len: Length of actual data  skb实际数据部分长度，包括线性缓存区中数据长度和(data-&gt;)和SG类型的聚合分散io的数据和FRAGLIST类型的聚合分散io数据，以及传递时增加或减去的协议首部；</span></span><br><span class="line"><span class="comment"> *	@data_len: Data length SG类型的聚合分散io的数据和FRAGLIST类型的聚合分散io数据长</span></span><br><span class="line"><span class="comment"> *	@mac_len: Length of link layer header</span></span><br><span class="line"><span class="comment"> *	@hdr_len: writable header length of cloned skb</span></span><br><span class="line"><span class="comment"> *	@csum: Checksum (must include start/offset pair)</span></span><br><span class="line"><span class="comment"> *	@csum_start: Offset from skb-&gt;head where checksumming should start</span></span><br><span class="line"><span class="comment"> *	@csum_offset: Offset from csum_start where checksum should be stored</span></span><br><span class="line"><span class="comment"> *	@priority: Packet queueing priority 发送或转发数据包的Qos类别，若包本地生成，则套接口层会设置该字段；</span></span><br><span class="line"><span class="comment"> *	@ignore_df: allow local fragmentation 允许本地分片</span></span><br><span class="line"><span class="comment"> *	@cloned: Head may be cloned (check refcnt to be sure) 标记所属的skb是否已克隆</span></span><br><span class="line"><span class="comment"> *	@ip_summed: Driver fed us an IP checksum  用于标记传输层校验和的状态：CHECKSUM_NONE/CHECKSUM_PARTIAL/..</span></span><br><span class="line"><span class="comment"> *	@nohdr: Payload reference only, must not modify header payload是否被单独引用，不存在协议首部。若被单独引用，则不能修改首部，也不能由data访问首部</span></span><br><span class="line"><span class="comment"> *	@nfctinfo: Relationship of this skb to the connection </span></span><br><span class="line"><span class="comment"> *	@pkt_type: Packet class 帧类型：PACKET_HOST/PACKET_BROADCAST/PACKET_MULTICAST/PACKET_OTHERHOST/...</span></span><br><span class="line"><span class="comment"> *	@fclone: skbuff clone status 当前克隆状态：SKB_FCLONE_UNAVAILABLE/SKB_FCLONE_ORIG/SKB_FCLONE_CLONE:</span></span><br><span class="line"><span class="comment"> *	@ipvs_property: skbuff is owned by ipvs</span></span><br><span class="line"><span class="comment"> *	@peeked: this packet has been seen already, so stats have been</span></span><br><span class="line"><span class="comment"> *		done for it, don't do them again</span></span><br><span class="line"><span class="comment"> *	@nf_trace: netfilter packet trace flag </span></span><br><span class="line"><span class="comment"> *	@protocol: Packet protocol from driver，重要的字段，即链路层承载的三层协议类型，如ip ipv6 arp,在if_ether.h中有定义，这个用来确定收包时传给哪个协议处理函数，因此必须提前初始化；</span></span><br><span class="line"><span class="comment"> *	@destructor: Destruct function  析构函数</span></span><br><span class="line"><span class="comment"> *	@nfct: Associated connection, if any</span></span><br><span class="line"><span class="comment"> *	@nf_bridge: Saved data about a bridged frame - see br_netfilter.c</span></span><br><span class="line"><span class="comment"> *	@skb_iif: ifindex of device we arrived on</span></span><br><span class="line"><span class="comment"> *	@tc_index: Traffic control index  输入流量控制</span></span><br><span class="line"><span class="comment"> *	@tc_verd: traffic control verdict  输入流量控制</span></span><br><span class="line"><span class="comment"> *	@hash: the packet hash</span></span><br><span class="line"><span class="comment"> *	@queue_mapping: Queue mapping for multiqueue devices</span></span><br><span class="line"><span class="comment"> *	@xmit_more: More SKBs are pending for this queue</span></span><br><span class="line"><span class="comment"> *	@pfmemalloc: skbuff was allocated from PFMEMALLOC reserves</span></span><br><span class="line"><span class="comment"> *	@ndisc_nodetype: router type (from link layer)</span></span><br><span class="line"><span class="comment"> *	@ooo_okay: allow the mapping of a socket to a queue to be changed</span></span><br><span class="line"><span class="comment"> *	@l4_hash: indicate hash is a canonical 4-tuple hash over transport</span></span><br><span class="line"><span class="comment"> *		ports.</span></span><br><span class="line"><span class="comment"> *	@sw_hash: indicates hash was computed in software stack</span></span><br><span class="line"><span class="comment"> *	@wifi_acked_valid: wifi_acked was set</span></span><br><span class="line"><span class="comment"> *	@wifi_acked: whether frame was acked on wifi or not</span></span><br><span class="line"><span class="comment"> *	@no_fcs:  Request NIC to treat last 4 bytes as Ethernet FCS</span></span><br><span class="line"><span class="comment"> *	@dst_pending_confirm: need to confirm neighbour</span></span><br><span class="line"><span class="comment">  *	@napi_id: id of the NAPI struct this skb came from</span></span><br><span class="line"><span class="comment"> *	@secmark: security marking</span></span><br><span class="line"><span class="comment"> *	@offload_fwd_mark: fwding offload mark</span></span><br><span class="line"><span class="comment"> *	@mark: Generic packet mark</span></span><br><span class="line"><span class="comment"> *	@vlan_proto: vlan encapsulation protocol</span></span><br><span class="line"><span class="comment"> *	@vlan_tci: vlan tag control information</span></span><br><span class="line"><span class="comment"> *	@inner_protocol: Protocol (encapsulation)</span></span><br><span class="line"><span class="comment"> *	@inner_transport_header: Inner transport layer header (encapsulation) 传输层首部</span></span><br><span class="line"><span class="comment"> *	@inner_network_header: Network layer header (encapsulation) 网络层首部</span></span><br><span class="line"><span class="comment"> *	@inner_mac_header: Link layer header (encapsulation) 链路层首部，这几个首部，在层与层传输中，data会发生指向的改变；</span></span><br><span class="line"><span class="comment"> *	@transport_header: Transport layer header</span></span><br><span class="line"><span class="comment"> *	@network_header: Network layer header</span></span><br><span class="line"><span class="comment"> *	@mac_header: Link layer header </span></span><br><span class="line"><span class="comment"> *	@tail: Tail pointer</span></span><br><span class="line"><span class="comment"> *	@end: End pointer</span></span><br><span class="line"><span class="comment"> *	@head: Head of buffer</span></span><br><span class="line"><span class="comment"> *	@data: Data head pointer</span></span><br><span class="line"><span class="comment"> *	@truesize: Buffer size  整个缓存区长度 len+sizeof(sk_buff)</span></span><br><span class="line"><span class="comment"> *	@users: User count - see &#123;datagram,tcp&#125;.c 引用计数，为0时才释放此结构，否则只是单纯的递增递减，skb_get(),kfree_skb()等操作函数；</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span> &#123;</span></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">			<span class="comment">/* These two members must be first. */</span></span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span>		*<span class="title">next</span>;</span></span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span>		*<span class="title">prev</span>;</span></span><br><span class="line"></span><br><span class="line">			<span class="keyword">union</span> &#123;</span><br><span class="line">				<span class="keyword">ktime_t</span>		tstamp;</span><br><span class="line">				<span class="class"><span class="keyword">struct</span> <span class="title">skb_mstamp</span> <span class="title">skb_mstamp</span>;</span></span><br><span class="line">			&#125;;</span><br><span class="line">		&#125;;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">rb_node</span>		<span class="title">rbnode</span>;</span> <span class="comment">/* used in netem, ip4 defrag, and tcp stack */</span></span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">sock</span>		*<span class="title">sk</span>;</span> </span><br><span class="line">		<span class="keyword">int</span>			ip_defrag_offset;</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net_device</span>	*<span class="title">dev</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * This is the control buffer. It is free to use for every</span></span><br><span class="line"><span class="comment">	 * layer. Please put your private variables there. If you</span></span><br><span class="line"><span class="comment">	 * want to keep them across layers you have to do a skb_clone()</span></span><br><span class="line"><span class="comment">	 * first. This is owned by whoever has the skb queued ATM.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">char</span>			cb[<span class="number">48</span>] __aligned(<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		_skb_refdst;</span><br><span class="line">	<span class="keyword">void</span>			(*destructor)(struct sk_buff *skb);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_XFRM</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span>	<span class="title">sec_path</span>	*<span class="title">sp</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nf_conntrack</span>	*<span class="title">nfct</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> IS_ENABLED(CONFIG_BRIDGE_NETFILTER)</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nf_bridge_info</span>	*<span class="title">nf_bridge</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>		len,</span><br><span class="line">				data_len;</span><br><span class="line">	__u16			mac_len,</span><br><span class="line">				hdr_len;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Following fields are _not_ copied in __copy_skb_header()</span></span><br><span class="line"><span class="comment">	 * Note that queue_mapping is here mostly to fill a hole.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	kmemcheck_bitfield_begin(flags1);</span><br><span class="line">	__u16			queue_mapping;</span><br><span class="line">	__u8			cloned:<span class="number">1</span>,</span><br><span class="line">				nohdr:<span class="number">1</span>,</span><br><span class="line">				fclone:<span class="number">2</span>,</span><br><span class="line">				peeked:<span class="number">1</span>,</span><br><span class="line">				head_frag:<span class="number">1</span>,</span><br><span class="line">				xmit_more:<span class="number">1</span>,</span><br><span class="line">				pfmemalloc:<span class="number">1</span>;</span><br><span class="line">	kmemcheck_bitfield_end(flags1);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* fields enclosed in headers_start/headers_end are copied</span></span><br><span class="line"><span class="comment">	 * using a single memcpy() in __copy_skb_header()</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="comment">/* private: */</span></span><br><span class="line">	__u32			headers_start[<span class="number">0</span>];</span><br><span class="line">	<span class="comment">/* public: */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* if you move pkt_type around you also must adapt those constants */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __BIG_ENDIAN_BITFIELD</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PKT_TYPE_MAX	(7 &lt;&lt; 5)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PKT_TYPE_MAX	7</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PKT_TYPE_OFFSET()	offsetof(struct sk_buff, __pkt_type_offset)</span></span><br><span class="line"></span><br><span class="line">	__u8			__pkt_type_offset[<span class="number">0</span>];</span><br><span class="line">	__u8			pkt_type:<span class="number">3</span>;</span><br><span class="line">	__u8			ignore_df:<span class="number">1</span>;</span><br><span class="line">	__u8			nfctinfo:<span class="number">3</span>;</span><br><span class="line">	__u8			nf_trace:<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	__u8			ip_summed:<span class="number">2</span>;</span><br><span class="line">	__u8			ooo_okay:<span class="number">1</span>;</span><br><span class="line">	__u8			l4_hash:<span class="number">1</span>;</span><br><span class="line">	__u8			sw_hash:<span class="number">1</span>;</span><br><span class="line">	__u8			wifi_acked_valid:<span class="number">1</span>;</span><br><span class="line">	__u8			wifi_acked:<span class="number">1</span>;</span><br><span class="line">	__u8			no_fcs:<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Indicates the inner headers are valid in the skbuff. */</span></span><br><span class="line">	__u8			encapsulation:<span class="number">1</span>;</span><br><span class="line">	__u8			encap_hdr_csum:<span class="number">1</span>;</span><br><span class="line">	__u8			csum_valid:<span class="number">1</span>;</span><br><span class="line">	__u8			csum_complete_sw:<span class="number">1</span>;</span><br><span class="line">	__u8			csum_level:<span class="number">2</span>;</span><br><span class="line">	__u8			csum_bad:<span class="number">1</span>;</span><br><span class="line">	__u8			dst_pending_confirm:<span class="number">1</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_IPV6_NDISC_NODETYPE</span></span><br><span class="line">	__u8			ndisc_nodetype:<span class="number">2</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	__u8			ipvs_property:<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	__u8			inner_protocol_type:<span class="number">1</span>;</span><br><span class="line">	__u8			remcsum_offload:<span class="number">1</span>;</span><br><span class="line">	<span class="comment">/* 3 or 5 bit hole */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_NET_SCHED</span></span><br><span class="line">	__u16			tc_index;	<span class="comment">/* traffic control index */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_NET_CLS_ACT</span></span><br><span class="line">	__u16			tc_verd;	<span class="comment">/* traffic control verdict */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		__wsum		csum;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">			__u16	csum_start;</span><br><span class="line">			__u16	csum_offset;</span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;;</span><br><span class="line">	__u32			priority;</span><br><span class="line">	<span class="keyword">int</span>			skb_iif;</span><br><span class="line">	__u32			hash;</span><br><span class="line">	__be16			vlan_proto;</span><br><span class="line">	__u16			vlan_tci;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(CONFIG_NET_RX_BUSY_POLL) || defined(CONFIG_XPS)</span></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="keyword">unsigned</span> <span class="keyword">int</span>	napi_id;</span><br><span class="line">		<span class="keyword">unsigned</span> <span class="keyword">int</span>	sender_cpu;</span><br><span class="line">	&#125;;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_NETWORK_SECMARK</span></span><br><span class="line">		__u32		secmark;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_NET_SWITCHDEV</span></span><br><span class="line">		__u32		offload_fwd_mark;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		__u32		mark;</span><br><span class="line">		__u32		reserved_tailroom;</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		__be16		inner_protocol;</span><br><span class="line">		__u8		inner_ipproto;</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	__u16			inner_transport_header;</span><br><span class="line">	__u16			inner_network_header;</span><br><span class="line">	__u16			inner_mac_header;</span><br><span class="line"></span><br><span class="line">	__be16			protocol;</span><br><span class="line">	__u16			transport_header;</span><br><span class="line">	__u16			network_header;</span><br><span class="line">	__u16			mac_header;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* private: */</span></span><br><span class="line">	__u32			headers_end[<span class="number">0</span>];</span><br><span class="line">	<span class="comment">/* public: */</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* These elements must be at the end, see alloc_skb() for details.  */</span></span><br><span class="line">	<span class="keyword">sk_buff_data_t</span>		tail;</span><br><span class="line">	<span class="keyword">sk_buff_data_t</span>		end;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span>		*head,</span><br><span class="line">				*data;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>		truesize;</span><br><span class="line">	<span class="keyword">atomic_t</span>		users;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>一张图片来表示skb的线性缓存区：发送和接收时会动态变化；<br>struct sk_buff<br>…<br>head —&gt;headroom起点<br>data —&gt;data起点<br>tail —&gt;tailroom起点<br>end  —&gt;skb_shared_info起点<br>|headroom|data|tailroom|skb_shared_info|</p>
+<h3 id="skb-shared-info结构"><a href="#skb-shared-info结构" class="headerlink" title="skb_shared_info结构"></a>skb_shared_info结构</h3><h4 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* This data is invariant across clones and lives at</span></span><br><span class="line"><span class="comment"> * the end of the header data, ie. at skb-&gt;end.</span></span><br><span class="line"><span class="comment"> */</span> <span class="comment">//即end指针指向的</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">skb_shared_info</span> &#123;</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span>	nr_frags;</span><br><span class="line">	__u8		tx_flags;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span>	gso_size;</span><br><span class="line">	<span class="comment">/* Warning: this field is not always filled in (UFO)! */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span>	gso_segs;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span>  gso_type;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span>	*<span class="title">frag_list</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">skb_shared_hwtstamps</span> <span class="title">hwtstamps</span>;</span></span><br><span class="line">	u32		tskey;</span><br><span class="line">	__be32          ip6_frag_id;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Warning : all fields before dataref are cleared in __alloc_skb()</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">atomic_t</span>	dataref;<span class="comment">//引用计数器：当一个数据缓存区被多个skb描述符引用时，就会设置相应的计数，如克隆一个skb</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Intermediate layers must ensure that destructor_arg</span></span><br><span class="line"><span class="comment">	 * remains valid until skb destructor */</span></span><br><span class="line">	<span class="keyword">void</span> *		destructor_arg;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* must be last field, see pskb_expand_head() */</span></span><br><span class="line">	<span class="keyword">skb_frag_t</span>	frags[MAX_SKB_FRAGS];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="通过网络接口在两个本地文件间传输数据下，如何避免四次拷贝"><a href="#通过网络接口在两个本地文件间传输数据下，如何避免四次拷贝" class="headerlink" title="通过网络接口在两个本地文件间传输数据下，如何避免四次拷贝"></a>通过网络接口在两个本地文件间传输数据下，如何避免四次拷贝</h4><p>在数据发送到接收时，往往send/write -&gt;recv/read 这期间会涉及四次拷贝：<br>发送app用户进程空间缓存–&gt;内核态缓存-（DMA复制)-&gt;硬件驱动 —-发送—-接收方硬件网络模块-(DMA复制)-&gt;内核态缓存–&gt;用户空间缓存；<br>如果是本地文件–网络接口—本地文件，这种也是四次拷贝，就有点耗费时间了；（或者是收到数据原封不动传输出去,这个貌似还没实现）<br>调用方式改变：从read/write====&gt;open/sendfile<br>实际路径改变：接收硬件网络模块(DMA复制)–&gt;内核态缓存—&gt; 发送硬件驱动</p>
+<h4 id="什么是聚合分散io数据以及skb-shared-info中对它支持的结构；"><a href="#什么是聚合分散io数据以及skb-shared-info中对它支持的结构；" class="headerlink" title="什么是聚合分散io数据以及skb_shared_info中对它支持的结构；"></a>什么是聚合分散io数据以及skb_shared_info中对它支持的结构；</h4><p>这里的聚合分散IO相关数据成员：<br>struct sk_buff *frag_list; //FRAGLIST类型的IP分片相关结构<br>unsigned short nr_frags; //聚合分散IO分片数量<br>skb_frag_t frags[MAX_SKB_FRAGS];//聚合分散IO page相关结构指针；<br>先理解下网络发送接收和组合分片相关的流程：<br>发送：用户数据–&gt;四层tcp/udp–&gt;IP:此时包需要一层层传递组合各层头，需要进行比较多的拷贝，此时是组合；在内核传递发送报文给hard_start_xmit()之前，需要判断网络是否<br>支持NETIF_F_SG,否则只能线性化处理，是则检查nr_frags的值，确定片段数，之后进行分片聚合；<br>接受：IP分片–IP分片重组–&gt;udp/tcp–&gt;用户；<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* To allow 64K frame to be packed as single skb without frag_list we</span></span><br><span class="line"><span class="comment"> * require 64K/PAGE_SIZE pages plus 1 additional page to allow for</span></span><br><span class="line"><span class="comment"> * buffers which do not start on a page boundary.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Since GRO uses frags we allocate at least 16 regardless of page</span></span><br><span class="line"><span class="comment"> * size.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> (65536/PAGE_SIZE + 1) &lt; 16</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_SKB_FRAGS 16UL</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_SKB_FRAGS (65536/PAGE_SIZE + 1)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="comment">//所有最多支持64K个分片</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">skb_frag_struct</span> <span class="title">skb_frag_t</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">skb_frag_struct</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *<span class="title">p</span>;</span></span><br><span class="line">	&#125; page;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> (BITS_PER_LONG &gt; 32) || (PAGE_SIZE &gt;= 65536)</span></span><br><span class="line">	__u32 page_offset;</span><br><span class="line">	__u32 size;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">	__u16 page_offset;</span><br><span class="line">	__u16 size;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>frag_list的使用：<br>1) 在接受分片组后链接多个分片，组成一个完整的IP数据报；<br>2) UDP数据输出时，将待分片的SKB链接到一个SKB中，然后在输出时快速分片；<br>3) 用于存放FRAGLIST类型的聚合分散IO数据包；</li>
+<li>nr_frag SG类型的聚合分散IO的使用：<br>1) 在输出时需要判断nr_frag=0? 且frag_list==NULL，则没有分片，若nr_frag不为0且frag_list为NULL,则是聚合分散IO;<br>nr_frag表示数量，内容由frags数组指出：eg:<br>nr_frag =2; frags[0].page=p1, frags[0].page_offset=0,size=S1; frags[1].page=p1,frags[1].page_offset=S1,size=S2;<br>2) 不同的skb实例中的page指向相同的内存，即共享分片结构（共享内存),这个需要两方都不去修改它；</li>
+<li>FRAGLIST类型的聚合分散IO<br>frag_lsit直接指向了一个skb结构的实例；</li>
+</ul>
+<h4 id="关于GSO-GRO-TSO-TRO的基本概念；"><a href="#关于GSO-GRO-TSO-TRO的基本概念；" class="headerlink" title="关于GSO/GRO/TSO/TRO的基本概念；"></a>关于GSO/GRO/TSO/TRO的基本概念；</h4><h4 id="如何访问skb-shared-info结构："><a href="#如何访问skb-shared-info结构：" class="headerlink" title="如何访问skb_shared_info结构："></a>如何访问skb_shared_info结构：</h4><p>可以借助skb_info宏来访问此结构： 它其实就是简单的返回sk_buff结构的end指针的类型转换结果；</p>
+<p>#define skb_shinfo(SKB) ((struct skb_shared_info*) ((SKB)-&gt;end))<br>eg: skb_shinfo(skb)-&gt;dataref++;</p>
+<h3 id="skb的相关管理函数："><a href="#skb的相关管理函数：" class="headerlink" title="skb的相关管理函数："></a>skb的相关管理函数：</h3><p>内核提供了很多小函数来操作skb变量和链表等，这些函数都有两个版本：do_something和__do_something(),前者是在调用后者的情况下加上<br>锁和检查等；一般使用用前者的；这些函数定义在skbuff.h和skbuff.c中，我们称为skb的管理操作函数；<br>以下介绍每个类型的函数，并给出一些简单的例子，可以是demo或者是内核中的相关调用；</p>
+<h4 id="SKB的缓存池介绍"><a href="#SKB的缓存池介绍" class="headerlink" title="SKB的缓存池介绍"></a>SKB的缓存池介绍</h4><p>在网络模块中，用告诉缓存来为skb分配空间，在初始化skb_init()中，创建了两个用来分配skb的高速缓存：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> __<span class="function">init <span class="title">skb_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	skbuff_head_cache = kmem_cache_create(<span class="string">"skbuff_head_cache"</span>,</span><br><span class="line">					      <span class="keyword">sizeof</span>(struct sk_buff),</span><br><span class="line">					      <span class="number">0</span>,</span><br><span class="line">					      SLAB_HWCACHE_ALIGN|SLAB_PANIC,</span><br><span class="line">					      <span class="literal">NULL</span>);</span><br><span class="line">	skbuff_fclone_cache = kmem_cache_create(<span class="string">"skbuff_fclone_cache"</span>,</span><br><span class="line">						<span class="keyword">sizeof</span>(struct sk_buff_fclones),</span><br><span class="line">						<span class="number">0</span>,</span><br><span class="line">						SLAB_HWCACHE_ALIGN|SLAB_PANIC,</span><br><span class="line">						<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/* Layout of fast clones : [skb1][skb2][fclone_ref] */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sk_buff_fclones</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span>	<span class="title">skb1</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span>	<span class="title">skb2</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">atomic_t</span>	fclone_ref;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>一般情况下用第一个，当在分配skb的时候知道可能被克隆，则用第二个，因为第二个中会同时分配一个后备的skb，在克隆的时候直接用后备的skb就可以，不用重新分配；<br>可以看到第二个的单位内存区域是2*size+atomic_t,后者是用来做引用计数的；引用计数取0,1,2分别代表两个都没有被引用，1表示引用了其中一个，2表示两个都被引用；</p>
+<h4 id="如何分配SKB"><a href="#如何分配SKB" class="headerlink" title="如何分配SKB"></a>如何分配SKB</h4><p>1) alloc_skb()<br>skb的数据缓存区和skb本身描述符是两个不同的实体，所以在分配一个skb时，实际上需要分配两块内存：<br>一个是skb描述符，一个是数据缓存区；在4.8的内核版本可以看到：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> struct sk_buff *<span class="title">alloc_skb</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> size,</span></span></span><br><span class="line"><span class="function"><span class="params">					<span class="keyword">gfp_t</span> priority)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> __alloc_skb(size, priority, <span class="number">0</span>, NUMA_NO_NODE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>函数传入一个size和priority,返回一个sk_buff指针；<br>而__alloc_skb()则有四个参数：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *	__alloc_skb	-	allocate a network buffer</span></span><br><span class="line"><span class="comment"> *	@size: size to allocate 分配的长度</span></span><br><span class="line"><span class="comment"> *	@gfp_mask: allocation mask  分配内存的方式</span></span><br><span class="line"><span class="comment"> *	@flags: If SKB_ALLOC_FCLONE is set, allocate from fclone cache</span></span><br><span class="line"><span class="comment"> *		instead of head cache and allocate a cloned (child) skb.</span></span><br><span class="line"><span class="comment"> *		If SKB_ALLOC_RX is set, __GFP_MEMALLOC will be used for</span></span><br><span class="line"><span class="comment"> *		allocations in case the data is required for writeback </span></span><br><span class="line"><span class="comment">        预测是否会克隆，以此判断是从哪个告诉缓存中分配</span></span><br><span class="line"><span class="comment">        若 SKB_ALLOC_RX is set。。。</span></span><br><span class="line"><span class="comment"> *	@node: numa node to allocate memory on 当支持NUMA时，用于确定从哪个内存区中分配SKB</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *	Allocate a new &amp;sk_buff. The returned buffer has no headroom and a</span></span><br><span class="line"><span class="comment"> *	tail room of at least size bytes. The object has a reference count</span></span><br><span class="line"><span class="comment"> *	of one. The return is the buffer. On a failure the return is %NULL.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *	Buffers may only be allocated from interrupts using a @gfp_mask of</span></span><br><span class="line"><span class="comment"> *	%GFP_ATOMIC.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span> *__<span class="title">alloc_skb</span>(<span class="title">unsigned</span> <span class="title">int</span> <span class="title">size</span>, <span class="title">gfp_t</span> <span class="title">gfp_mask</span>,</span></span><br><span class="line"><span class="class">			    <span class="title">int</span> <span class="title">flags</span>, <span class="title">int</span> <span class="title">node</span>)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache</span> *<span class="title">cache</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">skb_shared_info</span> *<span class="title">shinfo</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span> *<span class="title">skb</span>;</span></span><br><span class="line">	u8 *data;</span><br><span class="line">	<span class="keyword">bool</span> pfmemalloc;</span><br><span class="line"></span><br><span class="line">	cache = (flags &amp; SKB_ALLOC_FCLONE)</span><br><span class="line">		? skbuff_fclone_cache : skbuff_head_cache;<span class="comment">//判断是用哪种高速缓存，上面已解释</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (sk_memalloc_socks() &amp;&amp; (flags &amp; SKB_ALLOC_RX))<span class="comment">//判断是否可以用紧急的缓存</span></span><br><span class="line">		gfp_mask |= __GFP_MEMALLOC;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Get the HEAD */</span></span><br><span class="line">	skb = kmem_cache_alloc_node(cache, gfp_mask &amp; ~__GFP_DMA, node);<span class="comment">//从选定的告诉缓存中分配一个SKB描述符,一般在slab分配</span></span><br><span class="line">	<span class="keyword">if</span> (!skb)</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	prefetchw(skb);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* We do our best to align skb_shared_info on a separate cache</span></span><br><span class="line"><span class="comment">	 * line. It usually works because kmalloc(X &gt; SMP_CACHE_BYTES) gives</span></span><br><span class="line"><span class="comment">	 * aligned memory blocks, unless SLUB/SLAB debug is enabled.</span></span><br><span class="line"><span class="comment">	 * Both skb-&gt;head and skb_shared_info are cache line aligned.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	size = SKB_DATA_ALIGN(size);<span class="comment">//给size先做下对齐</span></span><br><span class="line">	size += SKB_DATA_ALIGN(<span class="keyword">sizeof</span>(struct skb_shared_info));<span class="comment">//加上缓存区尾部的skb_shared_info结构后</span></span><br><span class="line">	data = kmalloc_reserve(size, gfp_mask, node, &amp;pfmemalloc);<span class="comment">//分配数据缓存区</span></span><br><span class="line">	<span class="keyword">if</span> (!data)</span><br><span class="line">		<span class="keyword">goto</span> nodata;</span><br><span class="line">	<span class="comment">/* kmalloc(size) might give us more room than requested.</span></span><br><span class="line"><span class="comment">	 * Put skb_shared_info exactly at the end of allocated zone,</span></span><br><span class="line"><span class="comment">	 * to allow max possible filling before reallocation.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	size = SKB_WITH_OVERHEAD(ksize(data));</span><br><span class="line">	prefetchw(data + size);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Only clear those fields we need to clear, not those that we will</span></span><br><span class="line"><span class="comment">	 * actually initialise below. Hence, don't put any more fields after</span></span><br><span class="line"><span class="comment">	 * the tail pointer in struct sk_buff!</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">     <span class="comment">//初始化</span></span><br><span class="line">	<span class="built_in">memset</span>(skb, <span class="number">0</span>, offsetof(struct sk_buff, tail));</span><br><span class="line">	<span class="comment">/* Account for allocated memory : skb + skb-&gt;head */</span></span><br><span class="line">	skb-&gt;truesize = SKB_TRUESIZE(size);</span><br><span class="line">	skb-&gt;pfmemalloc = pfmemalloc;</span><br><span class="line">	atomic_set(&amp;skb-&gt;users, <span class="number">1</span>);</span><br><span class="line">	skb-&gt;head = data;</span><br><span class="line">	skb-&gt;data = data;</span><br><span class="line">	skb_reset_tail_pointer(skb);</span><br><span class="line">	skb-&gt;end = skb-&gt;tail + size;</span><br><span class="line">	skb-&gt;mac_header = (typeof(skb-&gt;mac_header))~<span class="number">0U</span>;</span><br><span class="line">	skb-&gt;transport_header = (typeof(skb-&gt;transport_header))~<span class="number">0U</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* make sure we initialize shinfo sequentially */</span></span><br><span class="line">	shinfo = skb_shinfo(skb);</span><br><span class="line">	<span class="built_in">memset</span>(shinfo, <span class="number">0</span>, offsetof(struct skb_shared_info, dataref));</span><br><span class="line">	atomic_set(&amp;shinfo-&gt;dataref, <span class="number">1</span>);</span><br><span class="line">	kmemcheck_annotate_variable(shinfo-&gt;destructor_arg);</span><br><span class="line">    <span class="comment">//置克隆相关位</span></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; SKB_ALLOC_FCLONE) &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff_fclones</span> *<span class="title">fclones</span>;</span></span><br><span class="line"></span><br><span class="line">		fclones = container_of(skb, struct sk_buff_fclones, skb1);</span><br><span class="line"></span><br><span class="line">		kmemcheck_annotate_bitfield(&amp;fclones-&gt;skb2, flags1);</span><br><span class="line">		skb-&gt;fclone = SKB_FCLONE_ORIG;</span><br><span class="line">		atomic_set(&amp;fclones-&gt;fclone_ref, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">		fclones-&gt;skb2.fclone = SKB_FCLONE_CLONE;</span><br><span class="line">		fclones-&gt;skb2.pfmemalloc = pfmemalloc;</span><br><span class="line">	&#125;</span><br><span class="line">out:</span><br><span class="line">	<span class="keyword">return</span> skb;</span><br><span class="line">nodata:</span><br><span class="line">	kmem_cache_free(cache, skb);</span><br><span class="line">	skb = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">goto</span> out;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(__alloc_skb);</span><br></pre></td></tr></table></figure></p>
+<p>注意：<strong>alloc_skb通常不被直接调用，而是封装调用，被封装在</strong>netdev_alloc_skb(),alloc_skb(),alloc_skb_fclone()等；<br>dev_alloc_skb()也是一个缓存区分配函数，也是返回sk_buff*,通常在设备驱动中断上下文中，是一个alloc_skb()的封装函数，因为在中断处理函数中被调用，所以要求<br>原子操作(GFP_ATOMIC),4.8版本已经变了，封装的是别的函数，但是类似；</p>
+<h4 id="如何释放SKB"><a href="#如何释放SKB" class="headerlink" title="如何释放SKB"></a>如何释放SKB</h4><p>dev_kfree_skb()和kfree_skb()都可以用来释放skb，把它返回给高速缓存；dev_kfree_skb()只是简单的封装kfree_skb();<br>调用时只是简单的递减skb-&gt;users的值，直到减完为0才真的释放内存；<br>具体见skbuff.h/skbuff.c</p>
+<h4 id="数据预留和对齐"><a href="#数据预留和对齐" class="headerlink" title="数据预留和对齐"></a>数据预留和对齐</h4><p>主要是通过skb_reserve(),skb_put,skb_push,skb_pull,等函数，对数据缓存区相关指针进行更新来做预留空间的操作；<br>具体怎么移动，要看是接收方向还是发送方向：<br>1) skb_reserve()<br>skb_reserve()通常用来在数据缓存区头部预留一定的空间，比如插入协议首部或者在某个边界上对齐，而预留操作主要是移动data和tail指针；<br>注意只能用于空的skb，所以通常在分配后就会调用该函数；此时tail和data一同指向数据区的起始位置；<br>例如：某个以太网设备驱动接收函数在分配skb后，在向skb缓存区填充数据前，会通过skb_reserve(skb,2)来预留两个字节，因为以太网首部是14B,加了后正好16B对齐；此时是data指针往下移动两个字节；<br>当数据从上往下传递时，则每层将skb-&gt;data指针往上移动，然后复制本层首部，更新len;<br>2) skb_push()<br>在数据缓存区前头增加一块数据。也是只移动data和tail指针，和reserve类似<br>3) skb_put()<br>修改指向末尾的tail指针，使之向下移动len字节，然后更新len<br>4) skb_pull()<br>data指针向下移动；从而在数据区首部忽略len字节长度，用于收到包后往上传递忽略首部；</p>
+<h4 id="克隆和复制SKB"><a href="#克隆和复制SKB" class="headerlink" title="克隆和复制SKB"></a>克隆和复制SKB</h4><p>1) skb_clone() 用来克隆skb，克隆时只复制skb描述符，而对数据缓存区则，引用计数+1；<br>2) pskb_copy() 当一个函数不仅要修改skb描述符，还要修改数据缓存区的时候，就需要同时复制数据缓存区；如果要修改的数据在head-end之间，就可以用这个函数，<br>不然若还要修改聚合分散IO中的数据，则用skb_copy()做完全的拷贝；</p>
+<h4 id="SKB链表的管理函数"><a href="#SKB链表的管理函数" class="headerlink" title="SKB链表的管理函数"></a>SKB链表的管理函数</h4><p>在skb链表操作中，为了防止被中断，则必须先获得自旋锁；然后才能访问队列中的元素；<br>skb_queue_head_init() :初始化skb链表头结点，创建一个空的skb链表；<br>skb_queue_head()/skb_queue_tail(),加入队列头/尾部，<br>skb_dequeue和skb_dequeue_tail，从首部和尾部取下一个skb;<br>skb_queue_purge() ,清空skb链表；<br>skb_queue_walk() 循环遍历skb链表中每个元素的宏；</p>
+<h4 id="添加和删除尾部数据"><a href="#添加和删除尾部数据" class="headerlink" title="添加和删除尾部数据"></a>添加和删除尾部数据</h4><p>注意这里指的尾部数据，是data指向数据的结尾，而tail指向的是结尾的空间部分，一般是空的；<br>skb_add_data() tail指针下移，data尾部增加用户空间传递的数据，len加加；<br>skb_trim()和上面相反；<br>pskb_trim() 也处理到聚合分散iO;</p>
+<h4 id="拆分数据"><a href="#拆分数据" class="headerlink" title="拆分数据"></a>拆分数据</h4><p>就是把一个skb拆成两个skb:<br>skb_split();分两种情况，一种是拆分的len小于线性缓存区长(即不包含聚合分散IO的)，另一种是大于，即分拆点在聚合分散IO中的某个位置；</p>
+<h4 id="重新分配SKB的线性数据区；"><a href="#重新分配SKB的线性数据区；" class="headerlink" title="重新分配SKB的线性数据区；"></a>重新分配SKB的线性数据区；</h4><p>pskb_expand_head(),可以理解为realloc,就是扩展空间，将原数据复制过去；</p>
+<h4 id="其他函数；"><a href="#其他函数；" class="headerlink" title="其他函数；"></a>其他函数；</h4><p>pskb_may_pull: 检测skb中的数据是否有指定长度<br>skb_queue_empty:检测skb队列是否为空<br>skb_realloc_headroom: 根据指定的skb得到一个新的skb,并确保新的skb存在指定的headroom空间；<br>skb_get() :引用并返回一个skb;<br>skb_shared() :检测指定的skb是否被多次引用；<br>skb_share_check():检测并返回skb,当被检测的skb被引用多次时，则克隆此skb,并返回克隆得到的skb;<br>skb_unshare():检测并返回skb,当被检查的skb被克隆时，则复制此skb,并返回复制得到的skb;<br>skb_orphan(): 使得此skb不属于任何传输控制块；<br>skb_cow(): 确保skb存在指定的head空间，若不足，则会重新分配<br>skb_pagelen(): 获得skb中线性数据区和SG类型聚合分散io分片中的数据的长度；</p>
+<h4 id="关于虚拟设备和物理设备："><a href="#关于虚拟设备和物理设备：" class="headerlink" title="关于虚拟设备和物理设备："></a>关于虚拟设备和物理设备：</h4><p>linux支持多种形式的虚拟网络设备，并通过一个虚拟网络设备驱动管理。当这个虚拟设备被使用时，dev指针指向该虚拟设备的net_device结构。<br>在输出时，虚拟设备驱动会在一组设备中选择其中的某个合适的设备，并将dev指针修改为指向这个设备的net_device结构；<br>在输入时，当原始网络设备收到报文后，根据某种算法选择某个合适的虚拟网络设备，并将dev指针修改为指向这个虚拟设备的net_device结构。<br>因此，在某些情况下，指向传输设备的指针会在包处理过程中改变；</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tcpip-code/" rel="tag"># tcpip_code</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/20/cprogram-generate/" rel="prev" title="cprogram_generate">
+      <i class="fa fa-chevron-left"></i> cprogram_generate
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/26/procsysfs/" rel="next" title="procsysfs">
+      procsysfs <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#关于skb"><span class="nav-number">1.</span> <span class="nav-text">关于skb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sk-buff的结构"><span class="nav-number">2.</span> <span class="nav-text">sk_buff的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#大体结构："><span class="nav-number">2.1.</span> <span class="nav-text">大体结构：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#skb相关的两个链表"><span class="nav-number">2.2.</span> <span class="nav-text">skb相关的两个链表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#skb结构："><span class="nav-number">2.3.</span> <span class="nav-text">skb结构：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#skb-shared-info结构"><span class="nav-number">3.</span> <span class="nav-text">skb_shared_info结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本结构"><span class="nav-number">3.1.</span> <span class="nav-text">基本结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过网络接口在两个本地文件间传输数据下，如何避免四次拷贝"><span class="nav-number">3.2.</span> <span class="nav-text">通过网络接口在两个本地文件间传输数据下，如何避免四次拷贝</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是聚合分散io数据以及skb-shared-info中对它支持的结构；"><span class="nav-number">3.3.</span> <span class="nav-text">什么是聚合分散io数据以及skb_shared_info中对它支持的结构；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于GSO-GRO-TSO-TRO的基本概念；"><span class="nav-number">3.4.</span> <span class="nav-text">关于GSO/GRO/TSO/TRO的基本概念；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何访问skb-shared-info结构："><span class="nav-number">3.5.</span> <span class="nav-text">如何访问skb_shared_info结构：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#skb的相关管理函数："><span class="nav-number">4.</span> <span class="nav-text">skb的相关管理函数：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SKB的缓存池介绍"><span class="nav-number">4.1.</span> <span class="nav-text">SKB的缓存池介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何分配SKB"><span class="nav-number">4.2.</span> <span class="nav-text">如何分配SKB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何释放SKB"><span class="nav-number">4.3.</span> <span class="nav-text">如何释放SKB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据预留和对齐"><span class="nav-number">4.4.</span> <span class="nav-text">数据预留和对齐</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#克隆和复制SKB"><span class="nav-number">4.5.</span> <span class="nav-text">克隆和复制SKB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SKB链表的管理函数"><span class="nav-number">4.6.</span> <span class="nav-text">SKB链表的管理函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加和删除尾部数据"><span class="nav-number">4.7.</span> <span class="nav-text">添加和删除尾部数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拆分数据"><span class="nav-number">4.8.</span> <span class="nav-text">拆分数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重新分配SKB的线性数据区；"><span class="nav-number">4.9.</span> <span class="nav-text">重新分配SKB的线性数据区；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他函数；"><span class="nav-number">4.10.</span> <span class="nav-text">其他函数；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于虚拟设备和物理设备："><span class="nav-number">4.11.</span> <span class="nav-text">关于虚拟设备和物理设备：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com" title="http://yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'c0fa4332ac16020342a93d18394e23a5',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

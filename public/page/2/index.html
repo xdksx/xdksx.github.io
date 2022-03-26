@@ -205,7 +205,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/08/cpp-polymorphism/">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/03/20/tcpip-init/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/headicon2.jpg">
@@ -219,7 +219,161 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2018/06/08/cpp-polymorphism/" class="post-title-link" itemprop="url">cpp_polymorphism</a>
+            <a href="/2021/03/20/tcpip-init/" class="post-title-link" itemprop="url">tcpip_init</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-21 07:11:45 / 修改时间：22:25:36" itemprop="dateCreated datePublished" datetime="2021-03-21T07:11:45+08:00">2021-03-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index"><span itemprop="name">tcpip</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="linux内核网络子系统的初始化介绍"><a href="#linux内核网络子系统的初始化介绍" class="headerlink" title="linux内核网络子系统的初始化介绍"></a>linux内核网络子系统的初始化介绍</h3><p>基于linux4.8,版本其实现在已经是5.12了，但是因为我装的linux源码版本是4.8，为方便调试，都在这个版本分析，差别不会很大；<br>以下的内核都指的这个linux4.8的内核；环境都在这个上的；
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/20/tcpip-init/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/03/12/filesystem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/12/filesystem/" class="post-title-link" itemprop="url">filesystem</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-13 07:31:21 / 修改时间：23:31:52" itemprop="dateCreated datePublished" datetime="2021-03-13T07:31:21+08:00">2021-03-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="文件系统："><a href="#文件系统：" class="headerlink" title="文件系统："></a>文件系统：</h2><h3 id="关于信息记载和存储的历史，现状和未来展望"><a href="#关于信息记载和存储的历史，现状和未来展望" class="headerlink" title="关于信息记载和存储的历史，现状和未来展望"></a>关于信息记载和存储的历史，现状和未来展望</h3><ul>
+<li>本能信息存储：在原始时期，信息被基因记载，并向下传递，个体发生基因突变后，存活下来的个体，能将突变的基因信息保存下来，传递下来，从而进化；</li>
+<li>口口相传：人类发明语言或者是类似的东西，然后将经验和信息一代代传递下来，通过人本身作为记录和存储；</li>
+<li>文字的出现：直到文字和记载载体出现，比如帛书，纸等，文字以语句，文章，数字等被记录成竹简或书本，保存下来；</li>
+<li>磁带记录：磁带的出现，提高了信息记载的便利性；
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/12/filesystem/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/03/06/memory-overiew/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/06/memory-overiew/" class="post-title-link" itemprop="url">memory_overiew</a>
         </h1>
 
         <div class="post-meta">
@@ -229,14 +383,252 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-06-09 14:06:57" itemprop="dateCreated datePublished" datetime="2018-06-09T14:06:57+08:00">2018-06-09</time>
+              <time title="创建时间：2021-03-07 04:35:25" itemprop="dateCreated datePublished" datetime="2021-03-07T04:35:25+08:00">2021-03-07</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
+                <time title="修改时间：2021-03-13 23:30:08" itemprop="dateModified" datetime="2021-03-13T23:30:08+08:00">2021-03-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="linux内存系统概述"><a href="#linux内存系统概述" class="headerlink" title="linux内存系统概述"></a>linux内存系统概述</h3><p>linux的内存系统是一个很复杂的系统，需要从几个角度去分析，里面包含多种机制，比如虚拟地址和物理地址的转换等等；本文是一个系统性的大局观来从几个方面分析内存系统的记录：
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/06/memory-overiew/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/26/procsysfs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/26/procsysfs/" class="post-title-link" itemprop="url">procsysfs</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-26 23:52:48" itemprop="dateCreated datePublished" datetime="2021-02-26T23:52:48+08:00">2021-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-27 16:05:58" itemprop="dateModified" datetime="2021-02-27T16:05:58+08:00">2021-02-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="linux-用户空间与内核的接口—内核信息的输出和修改"><a href="#linux-用户空间与内核的接口—内核信息的输出和修改" class="headerlink" title="linux 用户空间与内核的接口—内核信息的输出和修改"></a>linux 用户空间与内核的接口—内核信息的输出和修改</h3><ul>
+<li><p>linux用户与内核的接口有多种,配置内核的netlink,ioctl,等特殊系统调用，其他系统调用;用户空间指令:ifconfig,route,<br>iptable等;以及内核输出信息的procfs,sysfs和修改内核参数的sysctl接口;这里介绍最后一种;
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/02/26/procsysfs/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/20/sk-buff/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/20/sk-buff/" class="post-title-link" itemprop="url">sk_buff</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-21 01:33:29 / 修改时间：17:37:35" itemprop="dateCreated datePublished" datetime="2021-02-21T01:33:29+08:00">2021-02-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index"><span itemprop="name">tcpip</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="关于skb"><a href="#关于skb" class="headerlink" title="关于skb"></a>关于skb</h3><p>skb是网络协议栈中对包的底层操作结构，它需要满足以下特性：<br>1) 能方便的处理可变长缓存，因为发送和接收的数据长时不固定的<br>2）能容易实现头尾部增加和移除数据，因为这些缓存区需要在不同网络层次间进行传递<br>3）添加和移除数据能尽量避免数据的复制
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/02/20/sk-buff/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/20/cprogram-generate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/20/cprogram-generate/" class="post-title-link" itemprop="url">cprogram_generate</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-21 01:27:32" itemprop="dateCreated datePublished" datetime="2021-02-21T01:27:32+08:00">2021-02-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-24 22:25:46" itemprop="dateModified" datetime="2021-04-24T22:25:46+08:00">2021-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -259,13 +651,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="多态："><a href="#多态：" class="headerlink" title="多态："></a>多态：</h3><h4 id="为什么需要多态？"><a href="#为什么需要多态？" class="headerlink" title="为什么需要多态？"></a>为什么需要多态？</h4><p>引入几个点：<br>　　继承的机制中，基类的指针和引用能指向派生类，（派生类对象中的基类成员是在内存前面的，即指向派生类对象的指针指向的是第一个基类的第一个成员）  </p>
-<ul>
-<li>指针的值本质上是内存地址，也就是说指向不同变量(int char.)，对象的指针本身的值都是地址的value)</li>
-<li>指针的类型限定了指针的操作内存范围和取值的方式，如通过int指针取值的时候，取到４byte,通过char指针取值时取得1byte;）
+          <h3 id="关于编译链接执行，编译器和cpu相关"><a href="#关于编译链接执行，编译器和cpu相关" class="headerlink" title="关于编译链接执行，编译器和cpu相关"></a>关于编译链接执行，编译器和cpu相关</h3><p>目标： 学完这个部分的知识和调试方法后，一方面可以在写程序时，减少编译错误等，在遇到编译和运行时错误，可以更快的解决或者知道怎么解决，用什么工具可以<br>更快的解决，另一方面，在处理cpu高载，dump问题时，能知道怎么处理和更好的处理；
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/06/08/cpp-polymorphism/#more" rel="contents">
+              <a class="btn" href="/2021/02/20/cprogram-generate/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -289,7 +678,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/08/cpp-inheritance/">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/17/live-media-audioformat/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/headicon2.jpg">
@@ -303,7 +692,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2018/06/08/cpp-inheritance/" class="post-title-link" itemprop="url">cpp_inheritance</a>
+            <a href="/2021/02/17/live-media-audioformat/" class="post-title-link" itemprop="url">live_media_audioformat</a>
         </h1>
 
         <div class="post-meta">
@@ -312,23 +701,17 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2018-06-09 11:44:54" itemprop="dateCreated datePublished" datetime="2018-06-09T11:44:54+08:00">2018-06-09</time>
+              <time title="创建时间：2021-02-18 03:49:29 / 修改时间：19:50:26" itemprop="dateCreated datePublished" datetime="2021-02-18T03:49:29+08:00">2021-02-18</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                  <a href="/categories/audio/" itemprop="url" rel="index"><span itemprop="name">audio</span></a>
                 </span>
             </span>
 
@@ -343,10 +726,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="c-继承："><a href="#c-继承：" class="headerlink" title="c++ 继承："></a>c++ 继承：</h3><h4 id="继承是什么能做什么"><a href="#继承是什么能做什么" class="headerlink" title="继承是什么能做什么"></a>继承是什么能做什么</h4><p>继承是创建复杂类的另一种方式，它展现出来俩个obj 的is-a的概念（前一种方式是加入复杂的函数和成员等has-a　概念）<br>继承体现的是两个对象（类）之间的联系，子类继承父类的成员和方法，然后特殊化于扩展自己的成员和方法，正如苹果和梨都是水果，它们拥有水果的一般特性，等边三角形是特殊的等腰三角形
+          <h3 id="音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念"><a href="#音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念" class="headerlink" title="音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念"></a>音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念</h3><ul>
+<li>原始音频： 采集后得到的是音频的裸数据：在采集时需要指定采样率，量化位数(一般采样也会有几种协议，比如常见的PCM，里面会自带量化位数指定)，channle数，以及必要的大小端数据等
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/06/08/cpp-inheritance/#more" rel="contents">
+              <a class="btn" href="/2021/02/17/live-media-audioformat/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -370,7 +754,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/08/cpp-conandde/">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/17/live-media-video/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/headicon2.jpg">
@@ -384,7 +768,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2018/06/08/cpp-conandde/" class="post-title-link" itemprop="url">cpp_conandde</a>
+            <a href="/2021/02/17/live-media-video/" class="post-title-link" itemprop="url">live_media_video</a>
         </h1>
 
         <div class="post-meta">
@@ -394,14 +778,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-06-09 11:03:35" itemprop="dateCreated datePublished" datetime="2018-06-09T11:03:35+08:00">2018-06-09</time>
+              <time title="创建时间：2021-02-18 02:44:49" itemprop="dateCreated datePublished" datetime="2021-02-18T02:44:49+08:00">2021-02-18</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
+                <time title="修改时间：2021-04-04 17:39:00" itemprop="dateModified" datetime="2021-04-04T17:39:00+08:00">2021-04-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -409,7 +793,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                  <a href="/categories/video/" itemprop="url" rel="index"><span itemprop="name">video</span></a>
                 </span>
             </span>
 
@@ -424,10 +808,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="c-class-constructor-and-destructor"><a href="#c-class-constructor-and-destructor" class="headerlink" title="c++ class constructor and destructor"></a>c++ class constructor and destructor</h2><h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><h4 id="构造函数表现"><a href="#构造函数表现" class="headerlink" title="构造函数表现"></a>构造函数表现</h4><h5 id="构造函数的作用："><a href="#构造函数的作用：" class="headerlink" title="构造函数的作用："></a>构造函数的作用：</h5><p>构造函数主要是用来初始化对象的－－－一般是成员，函数不用<br>–所以它需要在构建对象时就执行
+          <h3 id="图像科技发展史："><a href="#图像科技发展史：" class="headerlink" title="图像科技发展史："></a>图像科技发展史：</h3><h4 id="图像的本质："><a href="#图像的本质：" class="headerlink" title="图像的本质："></a>图像的本质：</h4><p>图像的本质可以说是反射光的集合，不同的物质分子组成等不同，那么光照射到物质上，有部分频率的光被吸收，剩下的反射出来，就形成不同的
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/06/08/cpp-conandde/#more" rel="contents">
+              <a class="btn" href="/2021/02/17/live-media-video/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -451,7 +835,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/08/cpp-class-memory/">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/17/live-media-audio/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/headicon2.jpg">
@@ -465,7 +849,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2018/06/08/cpp-class-memory/" class="post-title-link" itemprop="url">cpp_class_memory</a>
+            <a href="/2021/02/17/live-media-audio/" class="post-title-link" itemprop="url">live_media_audio</a>
         </h1>
 
         <div class="post-meta">
@@ -475,14 +859,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-06-09 10:44:41" itemprop="dateCreated datePublished" datetime="2018-06-09T10:44:41+08:00">2018-06-09</time>
+              <time title="创建时间：2021-02-18 02:28:34" itemprop="dateCreated datePublished" datetime="2021-02-18T02:28:34+08:00">2021-02-18</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
+                <time title="修改时间：2021-05-23 08:29:27" itemprop="dateModified" datetime="2021-05-23T08:29:27+08:00">2021-05-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -490,7 +874,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                  <a href="/categories/audio/" itemprop="url" rel="index"><span itemprop="name">audio</span></a>
                 </span>
             </span>
 
@@ -505,10 +889,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="c-类内存布局："><a href="#c-类内存布局：" class="headerlink" title="c++类内存布局："></a>c++类内存布局：</h3><h4 id="静态"><a href="#静态" class="headerlink" title="静态"></a>静态</h4><p>下编译后的“内存布局”，此时还未分配内存，不能算是内存，只能说是文件布局
+          <h3 id="音频科技发展史："><a href="#音频科技发展史：" class="headerlink" title="音频科技发展史："></a>音频科技发展史：</h3><h4 id="声音的本质："><a href="#声音的本质：" class="headerlink" title="声音的本质："></a>声音的本质：</h4><p>声音的本质是一种振动，可以说是一种一维的物理信号；可以通过敲击，让物体振动产生，并且可以使空气产生振动，从而传播，不过会能量衰减，导致只能传播一定的距离，原始振动<br>能量越大，传输的距离就越大；
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/06/08/cpp-class-memory/#more" rel="contents">
+              <a class="btn" href="/2021/02/17/live-media-audio/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -532,7 +916,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/08/cpp-this/">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/17/live-media-overiew/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/headicon2.jpg">
@@ -546,7 +930,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2018/06/08/cpp-this/" class="post-title-link" itemprop="url">cpp_this</a>
+            <a href="/2021/02/17/live-media-overiew/" class="post-title-link" itemprop="url">live_media_overiew</a>
         </h1>
 
         <div class="post-meta">
@@ -555,23 +939,17 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2018-06-09 10:13:46" itemprop="dateCreated datePublished" datetime="2018-06-09T10:13:46+08:00">2018-06-09</time>
+              <time title="创建时间：2021-02-18 02:09:48 / 修改时间：18:26:57" itemprop="dateCreated datePublished" datetime="2021-02-18T02:09:48+08:00">2021-02-18</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                  <a href="/categories/live-media/" itemprop="url" rel="index"><span itemprop="name">live_media</span></a>
                 </span>
             </span>
 
@@ -586,421 +964,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="c-关键字之this"><a href="#c-关键字之this" class="headerlink" title="c++关键字之this"></a>c++关键字之this</h3><h4 id="this指针是什么"><a href="#this指针是什么" class="headerlink" title="this指针是什么"></a>this指针是什么</h4><p>this是一个指向当前正在使用的对象的指针，它是一个指针；<br>成员函数通过它来使用对象的值，通过它知道要对哪个对象的成员操作<br>如：
+          <h3 id="音视频基础知识：理论-实践"><a href="#音视频基础知识：理论-实践" class="headerlink" title="音视频基础知识：理论+实践"></a>音视频基础知识：理论+实践</h3><h4 id="音频的基本原理和组成"><a href="#音频的基本原理和组成" class="headerlink" title="音频的基本原理和组成"></a>音频的基本原理和组成</h4><ul>
+<li>音频的表示和基本参数： Hz, 音量，pcm等以及基本编码；</li>
+<li>音频查看的相关工具；
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/06/08/cpp-this/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/08/cpp-static/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/headicon2.jpg">
-      <meta itemprop="name" content="小兴">
-      <meta itemprop="description" content="始于歧路，愿归于征途">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="追光者">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/08/cpp-static/" class="post-title-link" itemprop="url">cpp_static</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-06-08 22:44:43" itemprop="dateCreated datePublished" datetime="2018-06-08T22:44:43+08:00">2018-06-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="c-关键词之static"><a href="#c-关键词之static" class="headerlink" title="c++关键词之static"></a>c++关键词之static</h3><h5 id="something-share"><a href="#something-share" class="headerlink" title="something share:"></a>something share:</h5><p>其实，一开始学习c++的时候，并没有想去了解它的语法原理。虽然学c的时候，附带学了汇编，也学到了内存段，和学编译原理的时候顺带了解了它的相关词法语法处理。　　<br>现在开始从原因，历史，内存，汇编等角度去看cpp，觉得清晰了一些。虽然没有去学习g++或者其他编译器
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/08/cpp-static/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/08/cpp-const/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/headicon2.jpg">
-      <meta itemprop="name" content="小兴">
-      <meta itemprop="description" content="始于歧路，愿归于征途">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="追光者">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/08/cpp-const/" class="post-title-link" itemprop="url">cpp_const</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-06-08 22:07:46" itemprop="dateCreated datePublished" datetime="2018-06-08T22:07:46+08:00">2018-06-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="c-关键词之const"><a href="#c-关键词之const" class="headerlink" title="c++关键词之const"></a>c++关键词之const</h3><h4 id="const介绍，用法，原理，注意点等"><a href="#const介绍，用法，原理，注意点等" class="headerlink" title="const介绍，用法，原理，注意点等"></a>const介绍，用法，原理，注意点等</h4><h5 id="const-介绍："><a href="#const-介绍：" class="headerlink" title="const 介绍："></a>const 介绍：</h5><p>const是用于标示不可修改的变量，对象或函数的。<br>在其前面添加const就无法在之后做修改  </p>
-<h5 id="用法"><a href="#用法" class="headerlink" title="用法 "></a>用法
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/08/cpp-const/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/07/leetcode-linklist3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/headicon2.jpg">
-      <meta itemprop="name" content="小兴">
-      <meta itemprop="description" content="始于歧路，愿归于征途">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="追光者">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/07/leetcode-linklist3/" class="post-title-link" itemprop="url">leetcode_linklist3</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-06-07 23:33:03" itemprop="dateCreated datePublished" datetime="2018-06-07T23:33:03+08:00">2018-06-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="leetcode-linklist3"><a href="#leetcode-linklist3" class="headerlink" title="leetcode_linklist3"></a>leetcode_linklist3</h3><p>continue..</p>
-<h4 id="反转链表"><a href="#反转链表" class="headerlink" title="反转链表"></a>反转链表</h4><p>Given a linked list, rotate the list to the right by k places, where k is non-negative.<br>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/07/leetcode-linklist3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/03/leetcode-linklist2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/headicon2.jpg">
-      <meta itemprop="name" content="小兴">
-      <meta itemprop="description" content="始于歧路，愿归于征途">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="追光者">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/03/leetcode-linklist2/" class="post-title-link" itemprop="url">leetcode_linklist2</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-06-03 21:40:41" itemprop="dateCreated datePublished" datetime="2018-06-03T21:40:41+08:00">2018-06-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="leetcode——单链表2"><a href="#leetcode——单链表2" class="headerlink" title="leetcode——单链表2"></a>leetcode——单链表2</h3><h4 id="partition-list"><a href="#partition-list" class="headerlink" title="partition list"></a>partition list</h4><p>这个是快速排序中一个很重要的步骤，即比该数大于等于的放其前小的放后。在链表中，基本思路:扫描链表，比给定数字小的不处理，比给定数字大的取下并插入到末尾
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/03/leetcode-linklist2/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/03/leetcode-linklist1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/headicon2.jpg">
-      <meta itemprop="name" content="小兴">
-      <meta itemprop="description" content="始于歧路，愿归于征途">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="追光者">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/03/leetcode-linklist1/" class="post-title-link" itemprop="url">leetcode_linklist1</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-06-03 21:37:57" itemprop="dateCreated datePublished" datetime="2018-06-03T21:37:57+08:00">2018-06-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 15:30:55" itemprop="dateModified" datetime="2020-03-21T15:30:55+08:00">2020-03-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="leetcode——单链表"><a href="#leetcode——单链表" class="headerlink" title="leetcode——单链表"></a>leetcode——单链表</h3><h4 id="两数相加："><a href="#两数相加：" class="headerlink" title="两数相加："></a>两数相加：</h4><ul>
-<li>这道题是经一年多没刷题目之后，重新开始的第一道题，本来想着只是本地刷刷，后面开始就到leetcode提交了，毕竟写的程序还是得经过检验</li>
-<li>所以这道题就纯粹的解答，未经检验，只是本地跑通，并且加上了自己的一些看法，比如对该题目该思路可能可以应用在哪些地方，这样算法才有了真正的意义，个人十分不赞同一些在公司呆久了的人说数据结构算法没什么用的人2333</li>
-<li>废话不多说：  好久没写，第一道就别吐槽了，慢慢来</li>
-<li>题目描述：
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/03/leetcode-linklist1/#more" rel="contents">
+              <a class="btn" href="/2021/02/17/live-media-overiew/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1024,7 +993,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1091,18 +1060,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1149,7 +1118,7 @@
 <div class="copyright">
   
   &copy; 2019 – 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

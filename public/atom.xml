@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xdksx.github.io/"/>
-  <updated>2020-07-11T07:45:16.137Z</updated>
+  <updated>2022-03-13T07:19:52.844Z</updated>
   <id>https://xdksx.github.io/</id>
   
   <author>
@@ -17,426 +17,419 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>gdb基础</title>
-    <link href="https://xdksx.github.io/2020/07/11/gdb%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/"/>
-    <id>https://xdksx.github.io/2020/07/11/gdb基本使用/</id>
-    <published>2020-07-11T09:48:05.000Z</published>
-    <updated>2020-07-11T07:45:16.137Z</updated>
+    <title>quic</title>
+    <link href="https://xdksx.github.io/2022/03/12/quic/"/>
+    <id>https://xdksx.github.io/2022/03/12/quic/</id>
+    <published>2022-03-12T15:02:48.000Z</published>
+    <updated>2022-03-13T07:19:52.844Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;1、总体&lt;br&gt;GDB可以做四种主要的事情（以及支持这些事情的其他事情）来帮助您捕获行为中的错误：&lt;br&gt;
+      
+      
+        
+        
+          &lt;p&gt;Internet Engineering Task Force (IETF)                   J. Iyengar, Ed.&lt;br&gt;Request for Comments: 9000                                  
+        
+      
+    
+    </summary>
+    
+      <category term="protocol" scheme="https://xdksx.github.io/categories/protocol/"/>
+    
+    
+      <category term="live" scheme="https://xdksx.github.io/tags/live/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>c++_keyword</title>
+    <link href="https://xdksx.github.io/2021/05/22/c-keyword/"/>
+    <id>https://xdksx.github.io/2021/05/22/c-keyword/</id>
+    <published>2021-05-22T18:21:43.000Z</published>
+    <updated>2021-05-23T09:36:11.349Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;c-中的关键字和基本解释&quot;&gt;&lt;a href=&quot;#c-中的关键字和基本解释&quot; class=&quot;headerlink&quot; title=&quot;c++中的关键字和基本解释&quot;&gt;&lt;/a&gt;c++中的关键字和基本解释&lt;/h3&gt;&lt;h5 id=&quot;alignas&quot;&gt;&lt;a href=&quot;#alignas&quot; class=&quot;headerlink&quot; title=&quot;alignas:&quot;&gt;&lt;/a&gt;alignas:
+    
+    </summary>
+    
+      <category term="c++" scheme="https://xdksx.github.io/categories/c/"/>
+    
+    
+      <category term="c++keyword" scheme="https://xdksx.github.io/tags/c-keyword/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>c++_valuetype</title>
+    <link href="https://xdksx.github.io/2021/05/22/c-valuetype/"/>
+    <id>https://xdksx.github.io/2021/05/22/c-valuetype/</id>
+    <published>2021-05-22T17:35:24.000Z</published>
+    <updated>2021-05-23T08:36:06.849Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;彻底理解c-中的五种值，临时对象，移动语意，引用指针，const等的概念和关联&quot;&gt;&lt;a href=&quot;#彻底理解c-中的五种值，临时对象，移动语意，引用指针，const等的概念和关联&quot; class=&quot;headerlink&quot; title=&quot;彻底理解c++中的五种值，临时对象，移动语意，引用指针，const等的概念和关联&quot;&gt;&lt;/a&gt;彻底理解c++中的五种值，临时对象，移动语意，引用指针，const等的概念和关联&lt;/h3&gt;&lt;h4 id=&quot;c-的引用和指针&quot;&gt;&lt;a href=&quot;#c-的引用和指针&quot; class=&quot;headerlink&quot; title=&quot;c++的引用和指针&quot;&gt;&lt;/a&gt;c++的引用和指针&lt;/h4&gt;&lt;h5 id=&quot;引用：&quot;&gt;&lt;a href=&quot;#引用：&quot; class=&quot;headerlink&quot; title=&quot;引用：&quot;&gt;&lt;/a&gt;引用：&lt;/h5&gt;&lt;p&gt;引用，是变量或对象的别名，这么解释其实还是有点抽象的；&lt;br&gt;如果是指针，则好理解，是对象的虚拟内存地址；所以在赋值拷贝等容易有实体理解；而引用，在这些常见下，又是什么样的实际操作？&lt;br&gt;考虑如下例子：
+    
+    </summary>
+    
+      <category term="c++" scheme="https://xdksx.github.io/categories/c/"/>
+    
+    
+      <category term="c++_valuetype" scheme="https://xdksx.github.io/tags/c-valuetype/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>tcpip_tc</title>
+    <link href="https://xdksx.github.io/2021/05/22/tcpip-tc/"/>
+    <id>https://xdksx.github.io/2021/05/22/tcpip-tc/</id>
+    <published>2021-05-22T11:35:21.000Z</published>
+    <updated>2021-05-23T02:38:45.644Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;流量控制概述&quot;&gt;&lt;a href=&quot;#流量控制概述&quot; class=&quot;headerlink&quot; title=&quot;流量控制概述&quot;&gt;&lt;/a&gt;流量控制概述&lt;/h3&gt;&lt;p&gt;linux下通过tc traffic control 框架及系列实现和工具来实现对出口，甚至入口流量的控制，所谓的控制，就是进行包延迟传输，&lt;br&gt;丢包，包损坏，带宽限制，针对某个ip规则进行限制等等，来达到模拟网络异常状况，包优先级传输，或者更多功能；
+    
+    </summary>
+    
+      <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
+    
+    
+      <category term="tcpip_tc" scheme="https://xdksx.github.io/tags/tcpip-tc/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux_netdevicelayer</title>
+    <link href="https://xdksx.github.io/2021/05/22/linux-netdevicelayer/"/>
+    <id>https://xdksx.github.io/2021/05/22/linux-netdevicelayer/</id>
+    <published>2021-05-22T10:59:09.000Z</published>
+    <updated>2021-05-23T02:30:56.288Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;目标：&quot;&gt;&lt;a href=&quot;#目标：&quot; class=&quot;headerlink&quot; title=&quot;目标：&quot;&gt;&lt;/a&gt;目标：&lt;/h3&gt;&lt;h4 id=&quot;描述linux网络协议栈结构：&quot;&gt;&lt;a href=&quot;#描述linux网络协议栈结构：&quot; class=&quot;headerlink&quot; title=&quot;描述linux网络协议栈结构：&quot;&gt;&lt;/a&gt;描述linux网络协议栈结构：&lt;/h4&gt;&lt;p&gt;1) 常规的方式：传统的单机网络结构：&lt;br&gt;   一个服务器(server)上，运行一个linux系统，linux系统之上运行一个协议栈，支持相关上层应用；&lt;br&gt;   服务器的下方(硬件设备)，接一个或多个网卡，代表这个系统可能支持多个ip，多个出口等；每个网卡NIC接不同的交换机(路由器),来连接到可能不同的&lt;br&gt;   运营商物理网络，如下图：在这种情况下一个服务器为一个单点的物理机；
+    
+    </summary>
+    
+      <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
+    
+    
+      <category term="tcpip_device" scheme="https://xdksx.github.io/tags/tcpip-device/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux_neighbor</title>
+    <link href="https://xdksx.github.io/2021/05/22/linux-neighbor/"/>
+    <id>https://xdksx.github.io/2021/05/22/linux-neighbor/</id>
+    <published>2021-05-22T10:42:26.000Z</published>
+    <updated>2021-05-23T01:49:23.940Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;linux下邻居子系统的实现：&quot;&gt;&lt;a href=&quot;#linux下邻居子系统的实现：&quot; class=&quot;headerlink&quot; title=&quot;linux下邻居子系统的实现：&quot;&gt;&lt;/a&gt;linux下邻居子系统的实现：&lt;/h4&gt;&lt;h5 id=&quot;什么是邻居子系统：&quot;&gt;&lt;a href=&quot;#什么是邻居子系统：&quot; class=&quot;headerlink&quot; title=&quot;什么是邻居子系统：&quot;&gt;&lt;/a&gt;什么是邻居子系统：&lt;/h5&gt;&lt;p&gt;在linux下，是一个用来管理网络中，二层的数据正确发送的系统，维护着二层地址相关结构，以及和三层地址映射等结构，&lt;br&gt;并提供更新，查询等缓存和接口；形成一个系统；供在发送数据时查询并正确发送到指定的机器上；&lt;br&gt;
     
     </summary>
     
       <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
     
     
-      <category term="gdb" scheme="https://xdksx.github.io/tags/gdb/"/>
+      <category term="neighbor" scheme="https://xdksx.github.io/tags/neighbor/"/>
     
   </entry>
   
   <entry>
-    <title>我理解的心理模型</title>
-    <link href="https://xdksx.github.io/2020/04/03/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84%E5%BF%83%E7%90%86%E6%A8%A1%E5%9E%8B/"/>
-    <id>https://xdksx.github.io/2020/04/03/我理解的心理模型/</id>
-    <published>2020-04-03T21:44:04.000Z</published>
-    <updated>2020-06-07T05:08:02.035Z</updated>
+    <title>interrupt</title>
+    <link href="https://xdksx.github.io/2021/04/17/interrupt/"/>
+    <id>https://xdksx.github.io/2021/04/17/interrupt/</id>
+    <published>2021-04-17T16:42:52.000Z</published>
+    <updated>2021-04-18T07:43:55.445Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;以下内容均为本人构想理解提出，如有雷同纯属巧合，仅为本人粗略观点，不期赞同；&lt;/p&gt;
-&lt;h3 id=&quot;一、模型概念&quot;&gt;&lt;a href=&quot;#一、模型概念&quot; class=&quot;headerlink&quot; title=&quot;一、模型概念&quot;&gt;&lt;/a&gt;一、模型概念&lt;/h3&gt;&lt;h4 id=&quot;1）模型的广义解释&quot;&gt;&lt;a href=&quot;#1）模型的广义解释&quot; class=&quot;headerlink&quot; title=&quot;1）模型的广义解释&quot;&gt;&lt;/a&gt;1）模型的广义解释&lt;/h4&gt;&lt;p&gt;模型用于抽象化一类事物的特点和规律，甚至是发展周期；模型常见有数学模型，物理模型，工业模型等等；
+      &lt;h3 id=&quot;中断概述&quot;&gt;&lt;a href=&quot;#中断概述&quot; class=&quot;headerlink&quot; title=&quot;中断概述&quot;&gt;&lt;/a&gt;中断概述&lt;/h3&gt;&lt;p&gt;除了系统调用外，中断也是一种内核活动；系统调用不是在用户态和系统状态之间切换的唯一途径&lt;br&gt;中断的处理往往会涉及到汇编等和硬件相关的代码，但是中断处理部分随着时间的演化，已经达到了这样一种状态：高层代码和底层的硬件交互代码，已经尽可能有效而干净&lt;br&gt;地分隔开了。
     
     </summary>
     
-      <category term="心理" scheme="https://xdksx.github.io/categories/%E5%BF%83%E7%90%86/"/>
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
     
+    
+      <category term="interrupt" scheme="https://xdksx.github.io/tags/interrupt/"/>
     
   </entry>
   
   <entry>
-    <title>cpp_runtime_semantis</title>
-    <link href="https://xdksx.github.io/2018/07/29/cpp-runtime-semantis/"/>
-    <id>https://xdksx.github.io/2018/07/29/cpp-runtime-semantis/</id>
-    <published>2018-07-29T09:54:07.000Z</published>
-    <updated>2020-03-21T08:20:24.432Z</updated>
+    <title>systemcall</title>
+    <link href="https://xdksx.github.io/2021/04/17/systemcall/"/>
+    <id>https://xdksx.github.io/2021/04/17/systemcall/</id>
+    <published>2021-04-17T16:41:27.000Z</published>
+    <updated>2021-04-18T07:42:29.746Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;c-执行期语意学&quot;&gt;&lt;a href=&quot;#c-执行期语意学&quot; class=&quot;headerlink&quot; title=&quot;c++ 执行期语意学&quot;&gt;&lt;/a&gt;c++ 执行期语意学&lt;/h3&gt;&lt;h4 id=&quot;执行期和编译期的理解&quot;&gt;&lt;a href=&quot;#执行期和编译期的理解&quot; class=&quot;headerlink&quot; title=&quot;执行期和编译期的理解&quot;&gt;&lt;/a&gt;执行期和编译期的理解&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;执行期：此时是对已经编译等生成的可执行文件装载到内存并调用cpu将其作为一个进程执行的过程，对c.c++来说程序的入口为main,即第一条指令是执行main函数开始的，而c++可能会加入一些额外的代码，所以实际写的第一条语句和执行的第一条语句可能有偏差；
+      &lt;h3 id=&quot;系统调用概述&quot;&gt;&lt;a href=&quot;#系统调用概述&quot; class=&quot;headerlink&quot; title=&quot;系统调用概述&quot;&gt;&lt;/a&gt;系统调用概述&lt;/h3&gt;&lt;p&gt;内核对于用户进程来讲，是一个具备多功能的黑盒子，不仅管理设备，管理内存，管理进程等，还封装了提供进程调用的各种接口，比如打开文件，写入和读取文件等等，这些接口
+    
+    </summary>
+    
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
+    
+    
+      <category term="systemcall" scheme="https://xdksx.github.io/tags/systemcall/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>makefile_use</title>
+    <link href="https://xdksx.github.io/2021/04/03/makefile-use/"/>
+    <id>https://xdksx.github.io/2021/04/03/makefile-use/</id>
+    <published>2021-04-03T22:59:53.000Z</published>
+    <updated>2021-04-04T14:24:27.298Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;前言：&quot;&gt;&lt;a href=&quot;#前言：&quot; class=&quot;headerlink&quot; title=&quot;前言：&quot;&gt;&lt;/a&gt;前言：&lt;/h3&gt;&lt;p&gt;以下文档参考：&lt;br&gt;&lt;a href=&quot;https://www.gnu.org/software/make/manual/make.html#toc-Overview-of-make&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://www.gnu.org/software/make/manual/make.html#toc-Overview-of-make&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;https://seisman.github.io/how-to-write-makefile/introduction.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://seisman.github.io/how-to-write-makefile/introduction.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这个文件记录了GNU make实用程序，它自动地确定一个大型程序的哪些部分需要重新编译，并发出重新编译它们的命令&lt;br&gt;适用版本：&lt;br&gt;This is Edition 0.75, last updated 17 January 2020, of The GNU Make Manual, for GNU make version 4.3.&lt;/p&gt;
+&lt;h3 id=&quot;make的基本功能和使用简介：&quot;&gt;&lt;a href=&quot;#make的基本功能和使用简介：&quot; class=&quot;headerlink&quot; title=&quot;make的基本功能和使用简介：&quot;&gt;&lt;/a&gt;make的基本功能和使用简介：
+    
+    </summary>
+    
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
+    
+    
+      <category term="makefile" scheme="https://xdksx.github.io/tags/makefile/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>cpp_type</title>
+    <link href="https://xdksx.github.io/2021/04/03/cpp-type/"/>
+    <id>https://xdksx.github.io/2021/04/03/cpp-type/</id>
+    <published>2021-04-03T18:32:54.000Z</published>
+    <updated>2021-04-04T14:10:16.423Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;c++数据类型：&lt;/p&gt;
+&lt;h3 id=&quot;数据类型概览&quot;&gt;&lt;a href=&quot;#数据类型概览&quot; class=&quot;headerlink&quot; title=&quot;数据类型概览&quot;&gt;&lt;/a&gt;数据类型概览&lt;/h3&gt;&lt;p&gt;1) 类型无处不在，注意表达式也有类型，一些语句本身也是某个类型的值，以下这些都有类型属性&lt;br&gt;    对象的类型和基本类型&lt;br&gt;    引用的类型&lt;br&gt;    函数的类型(返回值类型)&lt;br&gt;    函数模板特化&lt;br&gt;    表达式的值类型
     
     </summary>
     
       <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
     
     
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
+      <category term="cpp_type" scheme="https://xdksx.github.io/tags/cpp-type/"/>
     
   </entry>
   
   <entry>
-    <title>tcpip_pingtraceroute</title>
-    <link href="https://xdksx.github.io/2018/06/24/tcpip-pingtraceroute/"/>
-    <id>https://xdksx.github.io/2018/06/24/tcpip-pingtraceroute/</id>
-    <published>2018-06-24T14:42:49.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>tcpip_init</title>
+    <link href="https://xdksx.github.io/2021/03/20/tcpip-init/"/>
+    <id>https://xdksx.github.io/2021/03/20/tcpip-init/</id>
+    <published>2021-03-20T23:11:45.000Z</published>
+    <updated>2021-03-21T14:25:36.021Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;ping-and-traceroute&quot;&gt;&lt;a href=&quot;#ping-and-traceroute&quot; class=&quot;headerlink&quot; title=&quot;ping and traceroute&quot;&gt;&lt;/a&gt;ping and traceroute&lt;/h3&gt;&lt;h4 id=&quot;ping&quot;&gt;&lt;a href=&quot;#ping&quot; class=&quot;headerlink&quot; title=&quot;ping&quot;&gt;&lt;/a&gt;ping&lt;/h4&gt;&lt;p&gt;ping是ICMP中的回显报文类型：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ping 对应的icmp，type字段为0/8,code字段为0&lt;/li&gt;
-&lt;li&gt;ICMP回显请求和应答报文格式：
+      &lt;h3 id=&quot;linux内核网络子系统的初始化介绍&quot;&gt;&lt;a href=&quot;#linux内核网络子系统的初始化介绍&quot; class=&quot;headerlink&quot; title=&quot;linux内核网络子系统的初始化介绍&quot;&gt;&lt;/a&gt;linux内核网络子系统的初始化介绍&lt;/h3&gt;&lt;p&gt;基于linux4.8,版本其实现在已经是5.12了，但是因为我装的linux源码版本是4.8，为方便调试，都在这个版本分析，差别不会很大；&lt;br&gt;以下的内核都指的这个linux4.8的内核；环境都在这个上的；
     
     </summary>
     
       <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
     
     
-      <category term="tcpip_ip" scheme="https://xdksx.github.io/tags/tcpip-ip/"/>
+      <category term="tcpip_init" scheme="https://xdksx.github.io/tags/tcpip-init/"/>
     
   </entry>
   
   <entry>
-    <title>leetcode_string</title>
-    <link href="https://xdksx.github.io/2018/06/24/leetcode-string/"/>
-    <id>https://xdksx.github.io/2018/06/24/leetcode-string/</id>
-    <published>2018-06-24T09:48:05.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>filesystem</title>
+    <link href="https://xdksx.github.io/2021/03/12/filesystem/"/>
+    <id>https://xdksx.github.io/2021/03/12/filesystem/</id>
+    <published>2021-03-12T23:31:21.000Z</published>
+    <updated>2021-03-13T15:31:52.345Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;leetcode-string&quot;&gt;&lt;a href=&quot;#leetcode-string&quot; class=&quot;headerlink&quot; title=&quot;leetcode_string&quot;&gt;&lt;/a&gt;leetcode_string&lt;/h3&gt;&lt;h4 id=&quot;传统字符串匹配：&quot;&gt;&lt;a href=&quot;#传统字符串匹配：&quot; class=&quot;headerlink&quot; title=&quot;传统字符串匹配：&quot;&gt;&lt;/a&gt;传统字符串匹配：&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;简单写写,变量命名等就先不纠结了&lt;/li&gt;
-&lt;/ul&gt;
-&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;strStr&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;char&lt;/span&gt; s[],&lt;span class=&quot;keyword&quot;&gt;char&lt;/span&gt; p[])&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(s[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]==&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;||p[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]==&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;				&lt;span class=&quot;built_in&quot;&gt;cout&lt;/span&gt;&amp;lt;&amp;lt;&lt;span class=&quot;string&quot;&gt;&quot;p or s is null&quot;&lt;/span&gt;&amp;lt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;endl&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; k=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,j=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,i=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt;(i=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,j=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;s[i]!=&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;&amp;amp;&amp;amp;s[k]!=&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		     &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(p[j]==&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;				   &lt;span class=&quot;keyword&quot;&gt;break&lt;/span&gt;;	 &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(s[k]==p[j])&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 k++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 j++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//不匹配时重新来过&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 i++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 k=i;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;					 j=&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;			 &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(p[j]==&lt;span class=&quot;string&quot;&gt;&#39;\0&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;				&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; i;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;				&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;-1&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;h4 id=&quot;kmp匹配算法&quot;&gt;&lt;a href=&quot;#kmp匹配算法&quot; class=&quot;headerlink&quot; title=&quot;kmp匹配算法&quot;&gt;&lt;/a&gt;kmp匹配算法&lt;/h4&gt;&lt;p&gt;kmp算法：基本过程见另一篇文章数据结构之字符串
+      &lt;h2 id=&quot;文件系统：&quot;&gt;&lt;a href=&quot;#文件系统：&quot; class=&quot;headerlink&quot; title=&quot;文件系统：&quot;&gt;&lt;/a&gt;文件系统：&lt;/h2&gt;&lt;h3 id=&quot;关于信息记载和存储的历史，现状和未来展望&quot;&gt;&lt;a href=&quot;#关于信息记载和存储的历史，现状和未来展望&quot; class=&quot;headerlink&quot; title=&quot;关于信息记载和存储的历史，现状和未来展望&quot;&gt;&lt;/a&gt;关于信息记载和存储的历史，现状和未来展望&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;本能信息存储：在原始时期，信息被基因记载，并向下传递，个体发生基因突变后，存活下来的个体，能将突变的基因信息保存下来，传递下来，从而进化；&lt;/li&gt;
+&lt;li&gt;口口相传：人类发明语言或者是类似的东西，然后将经验和信息一代代传递下来，通过人本身作为记录和存储；&lt;/li&gt;
+&lt;li&gt;文字的出现：直到文字和记载载体出现，比如帛书，纸等，文字以语句，文章，数字等被记录成竹简或书本，保存下来；&lt;/li&gt;
+&lt;li&gt;磁带记录：磁带的出现，提高了信息记载的便利性；
     
     </summary>
     
-      <category term="leetcode" scheme="https://xdksx.github.io/categories/leetcode/"/>
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
     
     
-      <category term="leetcode_string" scheme="https://xdksx.github.io/tags/leetcode-string/"/>
+      <category term="filesystem" scheme="https://xdksx.github.io/tags/filesystem/"/>
     
   </entry>
   
   <entry>
-    <title>DS_string</title>
-    <link href="https://xdksx.github.io/2018/06/24/DS-string/"/>
-    <id>https://xdksx.github.io/2018/06/24/DS-string/</id>
-    <published>2018-06-24T08:01:32.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>memory_overiew</title>
+    <link href="https://xdksx.github.io/2021/03/06/memory-overiew/"/>
+    <id>https://xdksx.github.io/2021/03/06/memory-overiew/</id>
+    <published>2021-03-06T20:35:25.000Z</published>
+    <updated>2021-03-13T15:30:08.328Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;数据结构之串&quot;&gt;&lt;a href=&quot;#数据结构之串&quot; class=&quot;headerlink&quot; title=&quot;数据结构之串&quot;&gt;&lt;/a&gt;数据结构之串&lt;/h3&gt;&lt;p&gt;欢迎来到简单而又复杂的串世界,博主许久没有去研究串，还停留在以前学习和使用串的水平，再来一波学习和归纳，发现串的基本用法其实简单，也好理解，但是衍生出来的和应用相关，而且复杂，下面道来；
+      &lt;h3 id=&quot;linux内存系统概述&quot;&gt;&lt;a href=&quot;#linux内存系统概述&quot; class=&quot;headerlink&quot; title=&quot;linux内存系统概述&quot;&gt;&lt;/a&gt;linux内存系统概述&lt;/h3&gt;&lt;p&gt;linux的内存系统是一个很复杂的系统，需要从几个角度去分析，里面包含多种机制，比如虚拟地址和物理地址的转换等等；本文是一个系统性的大局观来从几个方面分析内存系统的记录：
     
     </summary>
     
-      <category term="数据结构和算法" scheme="https://xdksx.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/"/>
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
     
     
-      <category term="数据结构" scheme="https://xdksx.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+      <category term="memory" scheme="https://xdksx.github.io/tags/memory/"/>
     
   </entry>
   
   <entry>
-    <title>tcpip_routeicmp</title>
-    <link href="https://xdksx.github.io/2018/06/10/tcpip-routeicmp/"/>
-    <id>https://xdksx.github.io/2018/06/10/tcpip-routeicmp/</id>
-    <published>2018-06-10T08:59:04.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>procsysfs</title>
+    <link href="https://xdksx.github.io/2021/02/26/procsysfs/"/>
+    <id>https://xdksx.github.io/2021/02/26/procsysfs/</id>
+    <published>2021-02-26T15:52:48.000Z</published>
+    <updated>2021-02-27T08:05:58.715Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;IP选路和ICMP协议&quot;&gt;&lt;a href=&quot;#IP选路和ICMP协议&quot; class=&quot;headerlink&quot; title=&quot;IP选路和ICMP协议&quot;&gt;&lt;/a&gt;IP选路和ICMP协议&lt;/h3&gt;&lt;h4 id=&quot;IP如何选路概述：&quot;&gt;&lt;a href=&quot;#IP如何选路概述：&quot; class=&quot;headerlink&quot; title=&quot;IP如何选路概述：&quot;&gt;&lt;/a&gt;IP如何选路概述：&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;ip选路实际上是一种选路机制，它搜索路由表并决定向哪个网络接口发送分组，区别于选路策略，后者是一组决定把哪些路由放入路由表的规则；ip执行选路机制，而路由守护程序则一般提供选路策略如rip,ospf&lt;/li&gt;
-&lt;li&gt;点对点时，直接送到  &lt;/li&gt;
-&lt;li&gt;非点对点时，经过路由器送到  &lt;/li&gt;
-&lt;li&gt;Ip层可以是配置为路由或者主机前者非则转发，后者非则丢弃&lt;/li&gt;
-&lt;li&gt;路由表项：每一项为
+      &lt;h3 id=&quot;linux-用户空间与内核的接口—内核信息的输出和修改&quot;&gt;&lt;a href=&quot;#linux-用户空间与内核的接口—内核信息的输出和修改&quot; class=&quot;headerlink&quot; title=&quot;linux 用户空间与内核的接口—内核信息的输出和修改&quot;&gt;&lt;/a&gt;linux 用户空间与内核的接口—内核信息的输出和修改&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;linux用户与内核的接口有多种,配置内核的netlink,ioctl,等特殊系统调用，其他系统调用;用户空间指令:ifconfig,route,&lt;br&gt;iptable等;以及内核输出信息的procfs,sysfs和修改内核参数的sysctl接口;这里介绍最后一种;
+    
+    </summary>
+    
+      <category term="linux" scheme="https://xdksx.github.io/categories/linux/"/>
+    
+    
+      <category term="linux_procsysfs" scheme="https://xdksx.github.io/tags/linux-procsysfs/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>sk_buff</title>
+    <link href="https://xdksx.github.io/2021/02/20/sk-buff/"/>
+    <id>https://xdksx.github.io/2021/02/20/sk-buff/</id>
+    <published>2021-02-20T17:33:29.000Z</published>
+    <updated>2021-02-21T09:37:35.359Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;关于skb&quot;&gt;&lt;a href=&quot;#关于skb&quot; class=&quot;headerlink&quot; title=&quot;关于skb&quot;&gt;&lt;/a&gt;关于skb&lt;/h3&gt;&lt;p&gt;skb是网络协议栈中对包的底层操作结构，它需要满足以下特性：&lt;br&gt;1) 能方便的处理可变长缓存，因为发送和接收的数据长时不固定的&lt;br&gt;2）能容易实现头尾部增加和移除数据，因为这些缓存区需要在不同网络层次间进行传递&lt;br&gt;3）添加和移除数据能尽量避免数据的复制
     
     </summary>
     
       <category term="tcpip" scheme="https://xdksx.github.io/categories/tcpip/"/>
     
     
-      <category term="tcpip_ip" scheme="https://xdksx.github.io/tags/tcpip-ip/"/>
+      <category term="tcpip_code" scheme="https://xdksx.github.io/tags/tcpip-code/"/>
     
   </entry>
   
   <entry>
-    <title>cpp_conanddest_semantics</title>
-    <link href="https://xdksx.github.io/2018/06/09/cpp-conanddest-semantics/"/>
-    <id>https://xdksx.github.io/2018/06/09/cpp-conanddest-semantics/</id>
-    <published>2018-06-09T14:03:32.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>cprogram_generate</title>
+    <link href="https://xdksx.github.io/2021/02/20/cprogram-generate/"/>
+    <id>https://xdksx.github.io/2021/02/20/cprogram-generate/</id>
+    <published>2021-02-20T17:27:32.000Z</published>
+    <updated>2021-04-24T14:25:46.255Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;构造和析构函数语义学&quot;&gt;&lt;a href=&quot;#构造和析构函数语义学&quot; class=&quot;headerlink&quot; title=&quot;构造和析构函数语义学&quot;&gt;&lt;/a&gt;构造和析构函数语义学&lt;/h3&gt;&lt;h4 id=&quot;1&quot;&gt;&lt;a href=&quot;#1&quot; class=&quot;headerlink&quot; title=&quot;1.&quot;&gt;&lt;/a&gt;1.&lt;/h4&gt;&lt;p&gt;即使是abstract base class也可能需要手动写constructor,de…,关键是看它有没有non satic data member
+      &lt;h3 id=&quot;关于编译链接执行，编译器和cpu相关&quot;&gt;&lt;a href=&quot;#关于编译链接执行，编译器和cpu相关&quot; class=&quot;headerlink&quot; title=&quot;关于编译链接执行，编译器和cpu相关&quot;&gt;&lt;/a&gt;关于编译链接执行，编译器和cpu相关&lt;/h3&gt;&lt;p&gt;目标： 学完这个部分的知识和调试方法后，一方面可以在写程序时，减少编译错误等，在遇到编译和运行时错误，可以更快的解决或者知道怎么解决，用什么工具可以&lt;br&gt;更快的解决，另一方面，在处理cpu高载，dump问题时，能知道怎么处理和更好的处理；
     
     </summary>
     
       <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
     
     
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
+      <category term="compilelink" scheme="https://xdksx.github.io/tags/compilelink/"/>
     
   </entry>
   
   <entry>
-    <title>cpp_funcmember_memory</title>
-    <link href="https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/"/>
-    <id>https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/</id>
-    <published>2018-06-09T08:21:29.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>live_media_audioformat</title>
+    <link href="https://xdksx.github.io/2021/02/17/live-media-audioformat/"/>
+    <id>https://xdksx.github.io/2021/02/17/live-media-audioformat/</id>
+    <published>2021-02-17T19:49:29.000Z</published>
+    <updated>2021-02-18T11:50:26.156Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;c-function语意学&quot;&gt;&lt;a href=&quot;#c-function语意学&quot; class=&quot;headerlink&quot; title=&quot;c++ function语意学&quot;&gt;&lt;/a&gt;c++ function语意学&lt;/h3&gt;&lt;p&gt;something:&lt;br&gt;恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。&lt;br&gt; 可以参考；
+      &lt;h3 id=&quot;音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念&quot;&gt;&lt;a href=&quot;#音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念&quot; class=&quot;headerlink&quot; title=&quot;音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念&quot;&gt;&lt;/a&gt;音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;原始音频： 采集后得到的是音频的裸数据：在采集时需要指定采样率，量化位数(一般采样也会有几种协议，比如常见的PCM，里面会自带量化位数指定)，channle数，以及必要的大小端数据等
     
     </summary>
     
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
+      <category term="audio" scheme="https://xdksx.github.io/categories/audio/"/>
     
     
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
+      <category term="audio" scheme="https://xdksx.github.io/tags/audio/"/>
     
   </entry>
   
   <entry>
-    <title>cpp_datamember_memory</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-datamember-memory/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-datamember-memory/</id>
-    <published>2018-06-09T06:46:49.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>live_media_video</title>
+    <link href="https://xdksx.github.io/2021/02/17/live-media-video/"/>
+    <id>https://xdksx.github.io/2021/02/17/live-media-video/</id>
+    <published>2021-02-17T18:44:49.000Z</published>
+    <updated>2021-04-04T09:39:00.212Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;c-class-datamemory&quot;&gt;&lt;a href=&quot;#c-class-datamemory&quot; class=&quot;headerlink&quot; title=&quot;c++ class  datamemory&quot;&gt;&lt;/a&gt;c++ class  datamemory&lt;/h3&gt;&lt;p&gt;详细介绍c++的成员布局，类本身的布局和在各种情况下的布局&lt;/p&gt;
-&lt;h4 id=&quot;“类”本身的大小：&quot;&gt;&lt;a href=&quot;#“类”本身的大小：&quot; class=&quot;headerlink&quot; title=&quot;“类”本身的大小：&quot;&gt;&lt;/a&gt;“类”本身的大小：&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;the simplest 引入&lt;/li&gt;
-&lt;li&gt;1.2 多少内存能表现一个class?&lt;br&gt;最小是１　  size
+      &lt;h3 id=&quot;图像科技发展史：&quot;&gt;&lt;a href=&quot;#图像科技发展史：&quot; class=&quot;headerlink&quot; title=&quot;图像科技发展史：&quot;&gt;&lt;/a&gt;图像科技发展史：&lt;/h3&gt;&lt;h4 id=&quot;图像的本质：&quot;&gt;&lt;a href=&quot;#图像的本质：&quot; class=&quot;headerlink&quot; title=&quot;图像的本质：&quot;&gt;&lt;/a&gt;图像的本质：&lt;/h4&gt;&lt;p&gt;图像的本质可以说是反射光的集合，不同的物质分子组成等不同，那么光照射到物质上，有部分频率的光被吸收，剩下的反射出来，就形成不同的
     
     </summary>
     
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
+      <category term="video" scheme="https://xdksx.github.io/categories/video/"/>
     
     
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
+      <category term="video" scheme="https://xdksx.github.io/tags/video/"/>
     
   </entry>
   
   <entry>
-    <title>cpp_polymorphism</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-polymorphism/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-polymorphism/</id>
-    <published>2018-06-09T06:06:57.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>live_media_audio</title>
+    <link href="https://xdksx.github.io/2021/02/17/live-media-audio/"/>
+    <id>https://xdksx.github.io/2021/02/17/live-media-audio/</id>
+    <published>2021-02-17T18:28:34.000Z</published>
+    <updated>2021-05-23T00:29:27.970Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;多态：&quot;&gt;&lt;a href=&quot;#多态：&quot; class=&quot;headerlink&quot; title=&quot;多态：&quot;&gt;&lt;/a&gt;多态：&lt;/h3&gt;&lt;h4 id=&quot;为什么需要多态？&quot;&gt;&lt;a href=&quot;#为什么需要多态？&quot; class=&quot;headerlink&quot; title=&quot;为什么需要多态？&quot;&gt;&lt;/a&gt;为什么需要多态？&lt;/h4&gt;&lt;p&gt;引入几个点：&lt;br&gt;　　继承的机制中，基类的指针和引用能指向派生类，（派生类对象中的基类成员是在内存前面的，即指向派生类对象的指针指向的是第一个基类的第一个成员）  &lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;指针的值本质上是内存地址，也就是说指向不同变量(int char.)，对象的指针本身的值都是地址的value)&lt;/li&gt;
-&lt;li&gt;指针的类型限定了指针的操作内存范围和取值的方式，如通过int指针取值的时候，取到４byte,通过char指针取值时取得1byte;）
+      &lt;h3 id=&quot;音频科技发展史：&quot;&gt;&lt;a href=&quot;#音频科技发展史：&quot; class=&quot;headerlink&quot; title=&quot;音频科技发展史：&quot;&gt;&lt;/a&gt;音频科技发展史：&lt;/h3&gt;&lt;h4 id=&quot;声音的本质：&quot;&gt;&lt;a href=&quot;#声音的本质：&quot; class=&quot;headerlink&quot; title=&quot;声音的本质：&quot;&gt;&lt;/a&gt;声音的本质：&lt;/h4&gt;&lt;p&gt;声音的本质是一种振动，可以说是一种一维的物理信号；可以通过敲击，让物体振动产生，并且可以使空气产生振动，从而传播，不过会能量衰减，导致只能传播一定的距离，原始振动&lt;br&gt;能量越大，传输的距离就越大；
     
     </summary>
     
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
+      <category term="audio" scheme="https://xdksx.github.io/categories/audio/"/>
     
     
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
+      <category term="audio" scheme="https://xdksx.github.io/tags/audio/"/>
     
   </entry>
   
   <entry>
-    <title>cpp_inheritance</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-inheritance/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-inheritance/</id>
-    <published>2018-06-09T03:44:54.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
+    <title>live_media_overiew</title>
+    <link href="https://xdksx.github.io/2021/02/17/live-media-overiew/"/>
+    <id>https://xdksx.github.io/2021/02/17/live-media-overiew/</id>
+    <published>2021-02-17T18:09:48.000Z</published>
+    <updated>2021-02-18T10:26:57.876Z</updated>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;c-继承：&quot;&gt;&lt;a href=&quot;#c-继承：&quot; class=&quot;headerlink&quot; title=&quot;c++ 继承：&quot;&gt;&lt;/a&gt;c++ 继承：&lt;/h3&gt;&lt;h4 id=&quot;继承是什么能做什么&quot;&gt;&lt;a href=&quot;#继承是什么能做什么&quot; class=&quot;headerlink&quot; title=&quot;继承是什么能做什么&quot;&gt;&lt;/a&gt;继承是什么能做什么&lt;/h4&gt;&lt;p&gt;继承是创建复杂类的另一种方式，它展现出来俩个obj 的is-a的概念（前一种方式是加入复杂的函数和成员等has-a　概念）&lt;br&gt;继承体现的是两个对象（类）之间的联系，子类继承父类的成员和方法，然后特殊化于扩展自己的成员和方法，正如苹果和梨都是水果，它们拥有水果的一般特性，等边三角形是特殊的等腰三角形
+      &lt;h3 id=&quot;音视频基础知识：理论-实践&quot;&gt;&lt;a href=&quot;#音视频基础知识：理论-实践&quot; class=&quot;headerlink&quot; title=&quot;音视频基础知识：理论+实践&quot;&gt;&lt;/a&gt;音视频基础知识：理论+实践&lt;/h3&gt;&lt;h4 id=&quot;音频的基本原理和组成&quot;&gt;&lt;a href=&quot;#音频的基本原理和组成&quot; class=&quot;headerlink&quot; title=&quot;音频的基本原理和组成&quot;&gt;&lt;/a&gt;音频的基本原理和组成&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;音频的表示和基本参数： Hz, 音量，pcm等以及基本编码；&lt;/li&gt;
+&lt;li&gt;音频查看的相关工具；
     
     </summary>
     
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
+      <category term="live_media" scheme="https://xdksx.github.io/categories/live-media/"/>
     
     
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_conandde</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-conandde/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-conandde/</id>
-    <published>2018-06-09T03:03:35.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;c-class-constructor-and-destructor&quot;&gt;&lt;a href=&quot;#c-class-constructor-and-destructor&quot; class=&quot;headerlink&quot; title=&quot;c++ class constructor and destructor&quot;&gt;&lt;/a&gt;c++ class constructor and destructor&lt;/h2&gt;&lt;h3 id=&quot;构造函数&quot;&gt;&lt;a href=&quot;#构造函数&quot; class=&quot;headerlink&quot; title=&quot;构造函数&quot;&gt;&lt;/a&gt;构造函数&lt;/h3&gt;&lt;h4 id=&quot;构造函数表现&quot;&gt;&lt;a href=&quot;#构造函数表现&quot; class=&quot;headerlink&quot; title=&quot;构造函数表现&quot;&gt;&lt;/a&gt;构造函数表现&lt;/h4&gt;&lt;h5 id=&quot;构造函数的作用：&quot;&gt;&lt;a href=&quot;#构造函数的作用：&quot; class=&quot;headerlink&quot; title=&quot;构造函数的作用：&quot;&gt;&lt;/a&gt;构造函数的作用：&lt;/h5&gt;&lt;p&gt;构造函数主要是用来初始化对象的－－－一般是成员，函数不用&lt;br&gt;–所以它需要在构建对象时就执行
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_class" scheme="https://xdksx.github.io/tags/cpp-class/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_class_memory</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-class-memory/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-class-memory/</id>
-    <published>2018-06-09T02:44:41.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-类内存布局：&quot;&gt;&lt;a href=&quot;#c-类内存布局：&quot; class=&quot;headerlink&quot; title=&quot;c++类内存布局：&quot;&gt;&lt;/a&gt;c++类内存布局：&lt;/h3&gt;&lt;h4 id=&quot;静态&quot;&gt;&lt;a href=&quot;#静态&quot; class=&quot;headerlink&quot; title=&quot;静态&quot;&gt;&lt;/a&gt;静态&lt;/h4&gt;&lt;p&gt;下编译后的“内存布局”，此时还未分配内存，不能算是内存，只能说是文件布局
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_memory" scheme="https://xdksx.github.io/tags/cpp-memory/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_this</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-this/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-this/</id>
-    <published>2018-06-09T02:13:46.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-关键字之this&quot;&gt;&lt;a href=&quot;#c-关键字之this&quot; class=&quot;headerlink&quot; title=&quot;c++关键字之this&quot;&gt;&lt;/a&gt;c++关键字之this&lt;/h3&gt;&lt;h4 id=&quot;this指针是什么&quot;&gt;&lt;a href=&quot;#this指针是什么&quot; class=&quot;headerlink&quot; title=&quot;this指针是什么&quot;&gt;&lt;/a&gt;this指针是什么&lt;/h4&gt;&lt;p&gt;this是一个指向当前正在使用的对象的指针，它是一个指针；&lt;br&gt;成员函数通过它来使用对象的值，通过它知道要对哪个对象的成员操作&lt;br&gt;如：
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_keyword" scheme="https://xdksx.github.io/tags/cpp-keyword/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_static</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-static/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-static/</id>
-    <published>2018-06-08T14:44:43.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-关键词之static&quot;&gt;&lt;a href=&quot;#c-关键词之static&quot; class=&quot;headerlink&quot; title=&quot;c++关键词之static&quot;&gt;&lt;/a&gt;c++关键词之static&lt;/h3&gt;&lt;h5 id=&quot;something-share&quot;&gt;&lt;a href=&quot;#something-share&quot; class=&quot;headerlink&quot; title=&quot;something share:&quot;&gt;&lt;/a&gt;something share:&lt;/h5&gt;&lt;p&gt;其实，一开始学习c++的时候，并没有想去了解它的语法原理。虽然学c的时候，附带学了汇编，也学到了内存段，和学编译原理的时候顺带了解了它的相关词法语法处理。　　&lt;br&gt;现在开始从原因，历史，内存，汇编等角度去看cpp，觉得清晰了一些。虽然没有去学习g++或者其他编译器
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_keyword" scheme="https://xdksx.github.io/tags/cpp-keyword/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>cpp_const</title>
-    <link href="https://xdksx.github.io/2018/06/08/cpp-const/"/>
-    <id>https://xdksx.github.io/2018/06/08/cpp-const/</id>
-    <published>2018-06-08T14:07:46.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;c-关键词之const&quot;&gt;&lt;a href=&quot;#c-关键词之const&quot; class=&quot;headerlink&quot; title=&quot;c++关键词之const&quot;&gt;&lt;/a&gt;c++关键词之const&lt;/h3&gt;&lt;h4 id=&quot;const介绍，用法，原理，注意点等&quot;&gt;&lt;a href=&quot;#const介绍，用法，原理，注意点等&quot; class=&quot;headerlink&quot; title=&quot;const介绍，用法，原理，注意点等&quot;&gt;&lt;/a&gt;const介绍，用法，原理，注意点等&lt;/h4&gt;&lt;h5 id=&quot;const-介绍：&quot;&gt;&lt;a href=&quot;#const-介绍：&quot; class=&quot;headerlink&quot; title=&quot;const 介绍：&quot;&gt;&lt;/a&gt;const 介绍：&lt;/h5&gt;&lt;p&gt;const是用于标示不可修改的变量，对象或函数的。&lt;br&gt;在其前面添加const就无法在之后做修改  &lt;/p&gt;
-&lt;h5 id=&quot;用法&quot;&gt;&lt;a href=&quot;#用法&quot; class=&quot;headerlink&quot; title=&quot;用法 &quot;&gt;&lt;/a&gt;用法
-    
-    </summary>
-    
-      <category term="c&amp;cpp" scheme="https://xdksx.github.io/categories/c-cpp/"/>
-    
-    
-      <category term="cpp_keyword" scheme="https://xdksx.github.io/tags/cpp-keyword/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>leetcode_linklist3</title>
-    <link href="https://xdksx.github.io/2018/06/07/leetcode-linklist3/"/>
-    <id>https://xdksx.github.io/2018/06/07/leetcode-linklist3/</id>
-    <published>2018-06-07T15:33:03.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;leetcode-linklist3&quot;&gt;&lt;a href=&quot;#leetcode-linklist3&quot; class=&quot;headerlink&quot; title=&quot;leetcode_linklist3&quot;&gt;&lt;/a&gt;leetcode_linklist3&lt;/h3&gt;&lt;p&gt;continue..&lt;/p&gt;
-&lt;h4 id=&quot;反转链表&quot;&gt;&lt;a href=&quot;#反转链表&quot; class=&quot;headerlink&quot; title=&quot;反转链表&quot;&gt;&lt;/a&gt;反转链表&lt;/h4&gt;&lt;p&gt;Given a linked list, rotate the list to the right by k places, where k is non-negative.&lt;br&gt;
-    
-    </summary>
-    
-      <category term="leetcode" scheme="https://xdksx.github.io/categories/leetcode/"/>
-    
-    
-      <category term="leetcode_linklist" scheme="https://xdksx.github.io/tags/leetcode-linklist/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>leetcode_linklist2</title>
-    <link href="https://xdksx.github.io/2018/06/03/leetcode-linklist2/"/>
-    <id>https://xdksx.github.io/2018/06/03/leetcode-linklist2/</id>
-    <published>2018-06-03T13:40:41.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;leetcode——单链表2&quot;&gt;&lt;a href=&quot;#leetcode——单链表2&quot; class=&quot;headerlink&quot; title=&quot;leetcode——单链表2&quot;&gt;&lt;/a&gt;leetcode——单链表2&lt;/h3&gt;&lt;h4 id=&quot;partition-list&quot;&gt;&lt;a href=&quot;#partition-list&quot; class=&quot;headerlink&quot; title=&quot;partition list&quot;&gt;&lt;/a&gt;partition list&lt;/h4&gt;&lt;p&gt;这个是快速排序中一个很重要的步骤，即比该数大于等于的放其前小的放后。在链表中，基本思路:扫描链表，比给定数字小的不处理，比给定数字大的取下并插入到末尾
-    
-    </summary>
-    
-      <category term="leetcode" scheme="https://xdksx.github.io/categories/leetcode/"/>
-    
-    
-      <category term="leetcode_linklist" scheme="https://xdksx.github.io/tags/leetcode-linklist/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>leetcode_linklist1</title>
-    <link href="https://xdksx.github.io/2018/06/03/leetcode-linklist1/"/>
-    <id>https://xdksx.github.io/2018/06/03/leetcode-linklist1/</id>
-    <published>2018-06-03T13:37:57.000Z</published>
-    <updated>2020-03-21T07:30:55.165Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;leetcode——单链表&quot;&gt;&lt;a href=&quot;#leetcode——单链表&quot; class=&quot;headerlink&quot; title=&quot;leetcode——单链表&quot;&gt;&lt;/a&gt;leetcode——单链表&lt;/h3&gt;&lt;h4 id=&quot;两数相加：&quot;&gt;&lt;a href=&quot;#两数相加：&quot; class=&quot;headerlink&quot; title=&quot;两数相加：&quot;&gt;&lt;/a&gt;两数相加：&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;这道题是经一年多没刷题目之后，重新开始的第一道题，本来想着只是本地刷刷，后面开始就到leetcode提交了，毕竟写的程序还是得经过检验&lt;/li&gt;
-&lt;li&gt;所以这道题就纯粹的解答，未经检验，只是本地跑通，并且加上了自己的一些看法，比如对该题目该思路可能可以应用在哪些地方，这样算法才有了真正的意义，个人十分不赞同一些在公司呆久了的人说数据结构算法没什么用的人2333&lt;/li&gt;
-&lt;li&gt;废话不多说：  好久没写，第一道就别吐槽了，慢慢来&lt;/li&gt;
-&lt;li&gt;题目描述：
-    
-    </summary>
-    
-      <category term="leetcode" scheme="https://xdksx.github.io/categories/leetcode/"/>
-    
-    
-      <category term="leetcode_linklist" scheme="https://xdksx.github.io/tags/leetcode-linklist/"/>
+      <category term="overiew" scheme="https://xdksx.github.io/tags/overiew/"/>
     
   </entry>
   

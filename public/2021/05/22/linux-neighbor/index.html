@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="linux下邻居子系统的实现：什么是邻居子系统：在linux下，是一个用来管理网络中，二层的数据正确发送的系统，维护着二层地址相关结构，以及和三层地址映射等结构，并提供更新，查询等缓存和接口；形成一个系统；供在发送数据时查询并正确发送到指定的机器上；">
+<meta name="keywords" content="neighbor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux_neighbor">
+<meta property="og:url" content="https://xdksx.github.io/2021/05/22/linux-neighbor/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="linux下邻居子系统的实现：什么是邻居子系统：在linux下，是一个用来管理网络中，二层的数据正确发送的系统，维护着二层地址相关结构，以及和三层地址映射等结构，并提供更新，查询等缓存和接口；形成一个系统；供在发送数据时查询并正确发送到指定的机器上；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-05-23T01:49:23.940Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux_neighbor">
+<meta name="twitter:description" content="linux下邻居子系统的实现：什么是邻居子系统：在linux下，是一个用来管理网络中，二层的数据正确发送的系统，维护着二层地址相关结构，以及和三层地址映射等结构，并提供更新，查询等缓存和接口；形成一个系统；供在发送数据时查询并正确发送到指定的机器上；">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/05/22/linux-neighbor/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>linux_neighbor | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/心理/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/05/22/linux-neighbor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          linux_neighbor
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-22 18:42:26" itemprop="dateCreated datePublished" datetime="2021-05-22T18:42:26+08:00">2021-05-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-23 09:49:23" itemprop="dateModified" datetime="2021-05-23T09:49:23+08:00">2021-05-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="linux下邻居子系统的实现："><a href="#linux下邻居子系统的实现：" class="headerlink" title="linux下邻居子系统的实现："></a>linux下邻居子系统的实现：</h4><h5 id="什么是邻居子系统："><a href="#什么是邻居子系统：" class="headerlink" title="什么是邻居子系统："></a>什么是邻居子系统：</h5><p>在linux下，是一个用来管理网络中，二层的数据正确发送的系统，维护着二层地址相关结构，以及和三层地址映射等结构，<br>并提供更新，查询等缓存和接口；形成一个系统；供在发送数据时查询并正确发送到指定的机器上；<br><a id="more"></a></p>
+<h5 id="邻居子系统的系统参数分类和总结："><a href="#邻居子系统的系统参数分类和总结：" class="headerlink" title="邻居子系统的系统参数分类和总结："></a>邻居子系统的系统参数分类和总结：</h5><ul>
+<li><p>参数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">base_reachable_time_ms: 邻居项有效期初始值，这个值会被来自更高协议正反馈延长；</span><br><span class="line">delay_first_probe_time: 邻居项过期后发送第一个探测之前的延迟时间，默认<span class="number">5</span>s</span><br><span class="line">gc_stale_time: 确定多久检测一次邻居项过期，默认<span class="number">60</span>s</span><br><span class="line">gc_interval:垃圾回收处理邻居项的时间间隔，默认<span class="number">30</span>s</span><br><span class="line"></span><br><span class="line">echo <span class="number">30</span> &gt; /proc/sys/net/ipv4/neigh/<span class="keyword">default</span>/gc_stale_time</span><br><span class="line">echo <span class="number">175</span> &gt; /proc/sys/net/ipv4/route/gc_timeout</span><br><span class="line">echo <span class="number">20000</span> &gt; /proc/sys/net/ipv4/neigh/<span class="keyword">default</span>/base_reachable_time_ms</span><br><span class="line">echo <span class="number">30</span> &gt; /proc/sys/net/ipv4/route/gc_interval</span><br><span class="line"></span><br><span class="line">pherricoxide@midigaurd:~$ ip -s neighbor <span class="built_in">list</span></span><br><span class="line"><span class="number">192.168</span><span class="number">.42</span><span class="number">.1</span> dev eth0 lladdr <span class="number">00</span>:<span class="number">25</span>:<span class="number">90</span>:<span class="number">7</span>d:<span class="number">7</span>e:cd ref <span class="number">2</span> used <span class="number">184</span>/<span class="number">184</span>/<span class="number">139</span> probes <span class="number">4</span> STALE</span><br><span class="line"><span class="number">192.168</span><span class="number">.10</span><span class="number">.2</span> dev eth0 lladdr <span class="number">00</span>:<span class="number">1</span>c:<span class="number">23</span>:cf:<span class="number">0b</span>:<span class="number">6</span>a ref <span class="number">3</span> used <span class="number">33</span>/<span class="number">28</span>/<span class="number">0</span> probes <span class="number">1</span> REACHABLE</span><br><span class="line"><span class="number">192.168</span><span class="number">.10</span><span class="number">.1</span> dev eth0 lladdr <span class="number">00</span>:<span class="number">17</span>:c5:d8:<span class="number">90</span>:a4 ref <span class="number">219</span> used <span class="number">275</span>/<span class="number">4</span>/<span class="number">121</span> probes <span class="number">1</span> REACHABLE</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>参数定义和使用的位置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">---- base_reachable_time_ms Matches (8 in 4 files) ----</span><br><span class="line">ndisc_ifinfo_sysctl_change in ndisc.c (net\ipv6) : 		 (<span class="built_in">strcmp</span>(ctl-&gt;procname, <span class="string">"base_reachable_time_ms"</span>) == <span class="number">0</span>))</span><br><span class="line">neigh_proc_base_reachable_time in neighbour.c (net\core) : 	<span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">strcmp</span>(ctl-&gt;procname, <span class="string">"base_reachable_time_ms"</span>) == <span class="number">0</span>)</span><br><span class="line">neighbour.c (net\core) line <span class="number">3076</span> : 		NEIGH_SYSCTL_MS_JIFFIES_REUSED_ENTRY(BASE_REACHABLE_TIME_MS, BASE_REACHABLE_TIME, <span class="string">"base_reachable_time_ms"</span>),</span><br><span class="line">neigh_sysctl_register in neighbour.c (net\core) : 		t-&gt;neigh_vars[NEIGH_VAR_BASE_REACHABLE_TIME_MS].proc_handler = handler;</span><br><span class="line">neigh_sysctl_register in neighbour.c (net\core) : 		t-&gt;neigh_vars[NEIGH_VAR_BASE_REACHABLE_TIME_MS].proc_handler =</span><br><span class="line">neighbour.h (include\net) line <span class="number">59</span> : 	NEIGH_VAR_BASE_REACHABLE_TIME_MS, <span class="comment">/* same data as NEIGH_VAR_BASE_REACHABLE_TIME */</span></span><br><span class="line">sysctl_binary.c (kernel) line <span class="number">285</span> : 	&#123; CTL_INT,	NET_NEIGH_REACHABLE_TIME_MS,	<span class="string">"base_reachable_time_ms"</span> &#125;,</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数据结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">neigh_table</span> *<span class="title">neigh_tables</span>[<span class="title">NEIGH_NR_TABLES</span>] __<span class="title">read_mostly</span>;</span></span><br><span class="line">neigh_table_init(<span class="keyword">int</span> index, struct neigh_table *tbl)</span><br><span class="line">neigh_tables[index] = tbl;</span><br><span class="line"></span><br><span class="line">一个邻居协议，对应一个neigh_table表实例：多个邻居协议实例，放在上面的数组中，</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">neigh_table</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span>			family;<span class="comment">//邻居协议所属的地址簇，如ARP为ipv4 ,AF_INET</span></span><br><span class="line">	<span class="keyword">int</span>			entry_size;<span class="comment">//邻居表中有多个邻居项，这个是邻居项结构的大小，对arp_tbl来说，初始化为sizeof(neighbour+4);</span></span><br><span class="line">                                                        <span class="comment">//因为在ARP中neighbour结构的最后一个成员primary_key，实际指向一个ipv4地址，4为ipv4地址长度；</span></span><br><span class="line">	<span class="keyword">int</span>			key_len;<span class="comment">//哈希函数用的key长度，key一般是三层协议地址，所以一般是4</span></span><br><span class="line">	__be16			protocol;</span><br><span class="line">	__u32			(*hash)(<span class="keyword">const</span> <span class="keyword">void</span> *pkey,  <span class="comment">//哈希函数，用来计算哈希值，arp为arp_hash()</span></span><br><span class="line">					<span class="keyword">const</span> struct net_device *dev,</span><br><span class="line">					__u32 *hash_rnd);</span><br><span class="line">	<span class="keyword">bool</span>			(*key_eq)(<span class="keyword">const</span> struct neighbour *, <span class="keyword">const</span> <span class="keyword">void</span> *pkey);</span><br><span class="line">	<span class="keyword">int</span>			(*constructor)(struct neighbour *);<span class="comment">//邻居项初始化函数，用于初始化一个新的neighbour结构中的相关字段，arp</span></span><br><span class="line">                                                                                <span class="comment">//为arp_constructor</span></span><br><span class="line">	<span class="keyword">int</span>			(*pconstructor)(struct pneigh_entry *);</span><br><span class="line">	<span class="keyword">void</span>			(*pdestructor)(struct pneigh_entry *); <span class="comment">//创建和释放一个代理项时被调用，ipv4没用，ipv6用了</span></span><br><span class="line">	<span class="keyword">void</span>			(*proxy_redo)(struct sk_buff *skb);<span class="comment">//用来处理neigh_table-&gt;proxy_queue缓存队列中的代理arp报文</span></span><br><span class="line">	<span class="keyword">char</span>			*id;<span class="comment">// 用来分配neighbour实例的缓冲池名字符串，arp为arp_cache</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neigh_parms</span>	<span class="title">parms</span>;</span>   <span class="comment">//存储一些和协议相关的可调节参数，如重传超时时间，proxy_queue队列长</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">parms_list</span>;</span></span><br><span class="line">	<span class="keyword">int</span>			gc_interval;<span class="comment">//垃圾回收时钟gc_timer的到期间隔时间，即到期时触发一次垃圾回收，初始值是30s</span></span><br><span class="line">	<span class="keyword">int</span>			gc_thresh1;</span><br><span class="line">	<span class="keyword">int</span>			gc_thresh2;</span><br><span class="line">	<span class="keyword">int</span>			gc_thresh3; <span class="comment">//这三个阈值对应内存对邻居项作垃圾回收处理的不同级别，若缓存邻居项数少于gc_thresh1,则不执行删除，超过gc_thresh2则在新建邻居项时若超过5s为刷新，则立即刷新，并做强制回收处理，超过gc_thresh3则，新建邻居项时，立即刷新并强制垃圾回收</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		last_flush;<span class="comment">//记录最近一次调用neigh_forced_gc强制刷新邻居表的时间；用于判断是否回收</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">delayed_work</span>	<span class="title">gc_work</span>;</span><span class="comment">//垃圾回收的相关结构，包括垃圾回收定时器</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timer_list</span> 	<span class="title">proxy_timer</span>;</span> <span class="comment">//处理proxy_queue队列的定时器，当proxy_queue为空，则第一个arp报文加入队列时，会启动这个定时器；在neigh_table_init中初始化，处理在neigh_proxy_process中处理；</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff_head</span>	<span class="title">proxy_queue</span>;</span><span class="comment">//对于接收到需要进行代理的arp报文，需要先缓存到这个队列，在定时器处理函数中再处理它；</span></span><br><span class="line">	<span class="keyword">atomic_t</span>		entries; <span class="comment">//整个邻居表中邻居项的数目</span></span><br><span class="line">	<span class="keyword">rwlock_t</span>		lock; <span class="comment">//用于控制邻居表的读写锁 如look_up只需要读，而neigh_periodic_timer需要写</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		last_rand; <span class="comment">//用于记录neigh_params结构中的reachable_time成员最近一次被更新的时间</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neigh_statistics</span>	__<span class="title">percpu</span> *<span class="title">stats</span>;</span> <span class="comment">//各类统计数据</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neigh_hash_table</span> __<span class="title">rcu</span> *<span class="title">nht</span>;</span> <span class="comment">// 见下</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pneigh_entry</span>	**<span class="title">phash_buckets</span>;</span><span class="comment">//见下</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">enum</span> &#123;</span><br><span class="line">	NEIGH_ARP_TABLE = <span class="number">0</span>,</span><br><span class="line">	NEIGH_ND_TABLE = <span class="number">1</span>,</span><br><span class="line">	NEIGH_DN_TABLE = <span class="number">2</span>,</span><br><span class="line">	NEIGH_NR_TABLES,</span><br><span class="line">	NEIGH_LINK_TABLE = NEIGH_NR_TABLES <span class="comment">/* Pseudo table for neigh_xmit */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *	neighbour table manipulation</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> NEIGH_NUM_HASH_RND	4</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">neigh_hash_table</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neighbour</span> __<span class="title">rcu</span>	**<span class="title">hash_buckets</span>;</span> <span class="comment">//用于存储邻居项的散列表，改散列表在分配邻居项时，若邻居项数量超过散列表容量，可以动态扩容</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>		hash_shift;</span><br><span class="line">	__u32			hash_rnd[NEIGH_NUM_HASH_RND];<span class="comment">//随机数，用来在hash_buckets散列表扩容时计算关键字，以避免受到arp攻击</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span>		<span class="title">rcu</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pneigh_entry</span> &#123;</span> <span class="comment">//存储arp代理三层协议地址的散列表，在neigh_table_init_no_netlink中完成初始化</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pneigh_entry</span>	*<span class="title">next</span>;</span></span><br><span class="line">	<span class="keyword">possible_net_t</span>		net;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net_device</span>	*<span class="title">dev</span>;</span></span><br><span class="line">	u8			flags;</span><br><span class="line">	u8			key[<span class="number">0</span>];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">邻居表中一个邻居项的表示的结构体：</span><br><span class="line">邻居项存储了邻居相关信息，包括状态，二层，三层协议地址，提供给三层协议的函数指针，定时器和缓存的二层首部等；注意一个邻居不代表一个主机，而是一个三层协议地址，因为对于配置了多接口的主机，一个主机将对应多个三层地址;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">neighbour</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neighbour</span> __<span class="title">rcu</span>	*<span class="title">next</span>;</span> <span class="comment">//通过next串起来邻居表的所有邻居项</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neigh_table</span>	*<span class="title">tbl</span>;</span><span class="comment">//指向所属的邻居表的指针</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neigh_parms</span>	*<span class="title">parms</span>;</span> <span class="comment">//用于调节邻居协议的参数，在创建邻居项的neigh_create中会调用alloc分配，其中会进行初始化，接着调constructor进行设置</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		confirmed;<span class="comment">//记录最近一次确认该邻居可达性的时间，用来描述邻居可达性；接收到回复时更新；传输层通过neigh_confirm来更新，而邻居子系统则通过neigh_update来更新</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		updated;<span class="comment">//记录最近一次被neigh_update更新的时间；和confirm不同；他们针对不同的特性</span></span><br><span class="line">	<span class="keyword">rwlock_t</span>		lock; <span class="comment">//用来控制访问邻居项的读写锁</span></span><br><span class="line">	<span class="keyword">atomic_t</span>		refcnt;<span class="comment">//引用计数</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sk_buff_head</span>	<span class="title">arp_queue</span>;</span><span class="comment">//当邻居项状态处于无效时，用来缓存要发送的报文。若处于INCOMPLETE时，发送第一个要更新的；。。。</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>		arp_queue_len_bytes;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timer_list</span>	<span class="title">timer</span>;</span><span class="comment">//管理多种超时情况的定时器</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		used;<span class="comment">//最近一次被使用时间，不同状态下被不同函数更新，如neigh_event_send()和gc_timer</span></span><br><span class="line">	<span class="keyword">atomic_t</span>		probes; <span class="comment">//尝试发送请求报文而未能得到应答的次数；在定时器中被检测，当达到阈值时 ，进入NUD_FAILED状态</span></span><br><span class="line">	__u8			flags; <span class="comment">//记录一些标志和特性</span></span><br><span class="line">	__u8			nud_state; <span class="comment">//邻居项状态</span></span><br><span class="line">	__u8			type; <span class="comment">//邻居地址的类型：对arp: RTN_UNICAST，RIN_LOCAL等</span></span><br><span class="line">	__u8			dead;<span class="comment">//生存标志，为1则表示正被删除</span></span><br><span class="line">	<span class="keyword">seqlock_t</span>		ha_lock;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span>		ha[ALIGN(MAX_ADDR_LEN, <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">long</span>))]; <span class="comment">//与存储在primary_key中的三层地址对应的二进制二层硬件地址；6B,其他链路可能更长，以太网是6B</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">hh_cache</span>		<span class="title">hh</span>;</span><span class="comment">//缓存的二层协议首部hh_cache</span></span><br><span class="line">	<span class="keyword">int</span>			(*output)(struct neighbour *, struct sk_buff *);<span class="comment">//输出函数，用来将报文输出到该邻居；在邻居项生命周期中，由于其状态不断变化，所以该函数指针会指向不同的输出函数，如可达时调用neigh_connect()将output置为 neigh_ops--&gt;connected_output</span></span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">neigh_ops</span>	*<span class="title">ops</span>;</span><span class="comment">//指向邻居项函数指针实例</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span>		<span class="title">rcu</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net_device</span>	*<span class="title">dev</span>;</span>  <span class="comment">//通过此网络设备可访问到该邻居；对每个邻居而言，只有一个</span></span><br><span class="line">	u8			primary_key[<span class="number">0</span>];<span class="comment">//存储哈希函数使用的三层协议地址；</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">neigh_ops</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span>			family;</span><br><span class="line">	<span class="keyword">void</span>			(*solicit)(struct neighbour *, struct sk_buff *);<span class="comment">//发送请求报文函数，在发送第一个报文时，需要新的邻居项，发送的报文会被缓存到arp_queue中，然后调用solicit()发送请求报文</span></span><br><span class="line">	<span class="keyword">void</span>			(*error_report)(struct neighbour *, struct sk_buff *);<span class="comment">//当邻居项缓存着未发送的数据报文时，而该邻居项又不可达，被调用来向三层报告错误的函数，如arp_error_report(),最后会向报文发送方发送一个主机不可达的icmp差错报文</span></span><br><span class="line">	<span class="keyword">int</span>			(*output)(struct neighbour *, struct sk_buff *);<span class="comment">//最通用的output函数，可用于所有情况；实现了完整的输出过程，此函数消耗资源。注意不要将neigh_ops-&gt;output和neighbour-&gt;output混淆</span></span><br><span class="line">	<span class="keyword">int</span>			(*connected_output)(struct neighbour *, struct sk_buff *);<span class="comment">//邻居可达时，即状态为NUD_CONNECTED时；只是简单的加二层头，所以比上面的output快</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">neigh_parms</span> &#123;</span><span class="comment">//邻居协议参数配置块，用来存储可调节的邻居协议参数，如重传超时时间，proxy_queueu长度等；</span></span><br><span class="line">	<span class="keyword">possible_net_t</span> net;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net_device</span> *<span class="title">dev</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">list</span>;</span></span><br><span class="line">	<span class="keyword">int</span>	(*neigh_setup)(struct neighbour *);<span class="comment">//提供给老式接口设备的初始化和销毁接口，注意区分net_device中的setup成员函数</span></span><br><span class="line">	<span class="keyword">void</span>	(*neigh_cleanup)(struct neighbour *);</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neigh_table</span> *<span class="title">tbl</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">void</span>	*sysctl_table;<span class="comment">//邻居表的sysctl表 ，arp_init中初始化，这样用户可以通过proc来读写</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> dead;</span><br><span class="line">	<span class="keyword">atomic_t</span> refcnt;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span> <span class="title">rcu_head</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span>	reachable_time;</span><br><span class="line">	<span class="keyword">int</span>	data[NEIGH_VAR_DATA_MAX];</span><br><span class="line">	DECLARE_BITMAP(data_state, NEIGH_VAR_DATA_MAX);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pneigh_entry</span> &#123;</span><span class="comment">//用来保存允许代理的条件，只有和结构中的接收设备以及目标地址相匹配才能代理，保存在phash_buckets散列表中，称为代理项，可以通过ip neigh add proxy命令添加；</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pneigh_entry</span>	*<span class="title">next</span>;</span></span><br><span class="line">	<span class="keyword">possible_net_t</span>		net;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net_device</span>	*<span class="title">dev</span>;</span><span class="comment">//通过该设备接收到的arp请求报文才能代理</span></span><br><span class="line">	u8			flags;</span><br><span class="line">	u8			key[<span class="number">0</span>];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//统计数据：一个该结构实例对应一个网络设备上的一种邻居协议</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">neigh_statistics</span> &#123;</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> allocs;		<span class="comment">/* number of allocated neighs */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> destroys;		<span class="comment">/* number of destroyed neighs */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> hash_grows;	<span class="comment">/* number of hash resizes */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> res_failed;	<span class="comment">/* number of failed resolutions */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> lookups;		<span class="comment">/* number of lookups */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> hits;		<span class="comment">/* number of hits (among lookups) */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> rcv_probes_mcast;	<span class="comment">/* number of received mcast ipv6 */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> rcv_probes_ucast; <span class="comment">/* number of received ucast ipv6 */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> periodic_gc_runs;	<span class="comment">/* number of periodic GC runs */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> forced_gc_runs;	<span class="comment">/* number of forced GC runs */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> unres_discards;	<span class="comment">/* number of unresolved drops */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> table_fulls;      <span class="comment">/* times even gc couldn't help */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">hh_cache定义在netdevice.h中，是用来缓存二层首部的，这样可以复制而不是逐个设置，加快输出报文</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hh_cache</span> &#123;</span></span><br><span class="line">	u16		hh_len;</span><br><span class="line">	u16		__pad;</span><br><span class="line">	<span class="keyword">seqlock_t</span>	hh_lock;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* cached hardware header; allow for machine alignment needs.        */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> HH_DATA_MOD	16</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> HH_DATA_OFF(__len) \</span></span><br><span class="line">	(HH_DATA_MOD - (((__len - <span class="number">1</span>) &amp; (HH_DATA_MOD - <span class="number">1</span>)) + <span class="number">1</span>))</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> HH_DATA_ALIGN(__len) \</span></span><br><span class="line">	(((__len)+(HH_DATA_MOD<span class="number">-1</span>))&amp;~(HH_DATA_MOD - <span class="number">1</span>))</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>	hh_data[HH_DATA_ALIGN(LL_MAX_HEADER) / <span class="keyword">sizeof</span>(<span class="keyword">long</span>)];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>邻居表的初始化：</p>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">neigh_table_init</span><span class="params">(<span class="keyword">int</span> index, struct neigh_table *tbl)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> now = jiffies;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> phsize;</span><br><span class="line">           <span class="comment">//就是将表中的字段复制到项中</span></span><br><span class="line">	INIT_LIST_HEAD(&amp;tbl-&gt;parms_list);</span><br><span class="line">	list_add(&amp;tbl-&gt;parms.<span class="built_in">list</span>, &amp;tbl-&gt;parms_list);</span><br><span class="line">	write_pnet(&amp;tbl-&gt;parms.net, &amp;init_net);</span><br><span class="line">	atomic_set(&amp;tbl-&gt;parms.refcnt, <span class="number">1</span>);</span><br><span class="line">	tbl-&gt;parms.reachable_time =</span><br><span class="line">			  neigh_rand_reach_time(NEIGH_VAR(&amp;tbl-&gt;parms, BASE_REACHABLE_TIME));</span><br><span class="line"></span><br><span class="line">	tbl-&gt;stats = alloc_percpu(struct neigh_statistics);</span><br><span class="line">	<span class="keyword">if</span> (!tbl-&gt;stats)</span><br><span class="line">		panic(<span class="string">"cannot create neighbour cache statistics"</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_PROC_FS</span></span><br><span class="line">	<span class="keyword">if</span> (!proc_create_data(tbl-&gt;id, <span class="number">0</span>, init_net.proc_net_stat,</span><br><span class="line">			      &amp;neigh_stat_seq_fops, tbl))</span><br><span class="line">		panic(<span class="string">"cannot create neighbour proc dir entry"</span>);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	RCU_INIT_POINTER(tbl-&gt;nht, neigh_hash_alloc(<span class="number">3</span>));</span><br><span class="line"></span><br><span class="line">	phsize = (PNEIGH_HASHMASK + <span class="number">1</span>) * <span class="keyword">sizeof</span>(struct pneigh_entry *);</span><br><span class="line">	tbl-&gt;phash_buckets = kzalloc(phsize, GFP_KERNEL);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!tbl-&gt;nht || !tbl-&gt;phash_buckets)</span><br><span class="line">		panic(<span class="string">"cannot allocate neighbour cache hashes"</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!tbl-&gt;entry_size)</span><br><span class="line">		tbl-&gt;entry_size = ALIGN(offsetof(struct neighbour, primary_key) +</span><br><span class="line">					tbl-&gt;key_len, NEIGH_PRIV_ALIGN);</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		WARN_ON(tbl-&gt;entry_size % NEIGH_PRIV_ALIGN);</span><br><span class="line">           <span class="comment">//建立定时器，并初始化定时器，包括两个定时器，老化(垃圾回收)定时器和proxy代理定时器</span></span><br><span class="line">	rwlock_init(&amp;tbl-&gt;lock);</span><br><span class="line">	INIT_DEFERRABLE_WORK(&amp;tbl-&gt;gc_work, neigh_periodic_work);<span class="comment">//老化定时器对应的处理函数是neigh_periodic_work</span></span><br><span class="line">	queue_delayed_work(system_power_efficient_wq, &amp;tbl-&gt;gc_work,</span><br><span class="line">			tbl-&gt;parms.reachable_time);</span><br><span class="line">	setup_timer(&amp;tbl-&gt;proxy_timer, neigh_proxy_process, (<span class="keyword">unsigned</span> <span class="keyword">long</span>)tbl);<span class="comment">//proxy_timer对应的处理函数是neigh_proxy_process</span></span><br><span class="line">	skb_queue_head_init_class(&amp;tbl-&gt;proxy_queue,</span><br><span class="line">			&amp;neigh_table_proxy_queue_class);</span><br><span class="line"></span><br><span class="line">	tbl-&gt;last_flush = now;</span><br><span class="line">	tbl-&gt;last_rand	= now + tbl-&gt;parms.reachable_time * <span class="number">20</span>;</span><br><span class="line">           <span class="comment">//放到全局数组中</span></span><br><span class="line">	neigh_tables[index] = tbl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>邻居表的老化定时器和对应的状态机：<br>邻居表项有一个对于管理和维护邻居表来说很重要的成员： nud_state; 表示邻居项当前的状态；7种；<br>邻居表老化定时器定时扫描所有邻居表项，然后进行如下的状态迁移和处理<br>图+各个状态解释</li>
+</ul>
+<ul>
+<li>邻居项的创建： 分配和创建初始化；<br>neigh_create: neigh_alloc</li>
+</ul>
+<ul>
+<li><p>邻居表项扩容：<br>static struct neigh_hash_table <em>neigh_hash_grow(struct neigh_table </em>tbl,</p>
+<pre><code>unsigned long new_shift)
+</code></pre></li>
+<li><p>邻居表的各种操作：<br>邻居项的查找： neigh_look_up 查找频繁，添加和删除等都需要先查找<br>邻居项的更新： neigh_update: 更新内容：硬件地址和状态，并根据状态更新输出函数<br>垃圾回收：<br>同步回收： 在创建新的邻居项时，达到条件触发；<br>异步回收： 定时检测并看是否触发回收<br>外部事件的通知和处理：当网络设备NETDEV_UNREGISTER事件发生时，若邻居协议模块对此感兴趣，会调用此接口：neigh_ifdown;<br>如arp: arp_ifdown-&gt;neigh_ifdown; 另外还有neigh_changeaddr  </p>
+</li>
+<li><p>每个邻居项的定时函数：<br>邻居项的状态中，有些属于定时状态； 每个邻居项都有一个定时器，在创建邻居项时被初始化</p>
+</li>
+<li><p>关于代理项：phash_buckets<br>查找： pneigh_lookup  删除 pneigh_delete<br>延时处理代理的请求报文：pneigh_enqueue</p>
+</li>
+<li><p>关于输出函数：<br>丢弃： neigh_blackhole();<br>慢速发送：neigh_resolve_output<br>快速发送： dst_output后–&gt; neigh_hh_output / neigh_connected_output</p>
+</li>
+<li><p>关于邻居代理，arp代理：<br>arp代理：<br>对一个二层协议，在一个局域网内，则使用二层地址寻找，当不在此局域网了，则通过路由器网关转发出去；<br>但是可能在一个局域网内有多个子网，通过路由器或交换机转发，但是主机不知道，所以这个时候依然用相同的方式去发送arp请求，当处于不同子网的两个主机arp时，<br>则此时需要依赖路由器打开arp代理转发功能，若开启，则会在收到arp请求时，返回自己的mac地址，这样相当于转发功能，会收到数据，转发给对方主机，然后从对方主机收到后又进行转发；</p>
+</li>
+</ul>
+<p>注意到整个流程：<br>   arp会缓存数据包，然后等到arp邻居项可用了，再把数据包发出去；</p>
+<ul>
+<li>arp外部事件通知：<br> 当一个设备的ip地址发生变化，arp模块通过注册到通知链中arp_netdev_notifier收到通知，调用arp_netdev_event来处理NETDEV_CHANGEADDR事件；删除释放与禁用网络设备相关的邻居项；等</li>
+</ul>
+<ul>
+<li>路由表项与邻居项的绑定：<br>  在路由模块中，每当添加一条输出路由或是单播转发路由时，会尝试将 该路由与该路由目的地址相对应的邻居项绑定；<br>arp_bind_neighbour 实现了路由表项与邻居绑定的功能；在绑定过程中，若对应的邻居项不存在，则新建一个邻居项后绑定；之后 再输出报文时就可以通过路由缓存找到<br>输出函数了；</li>
+</ul>
+<h4 id="内核中的arp实现："><a href="#内核中的arp实现：" class="headerlink" title="内核中的arp实现："></a>内核中的arp实现：</h4><ul>
+<li><p>arp收包：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *	Receive an arp request from the device layer.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">arp_rcv</span><span class="params">(struct sk_buff *skb, struct net_device *dev,</span></span></span><br><span class="line"><span class="function"><span class="params">		   struct packet_type *pt, struct net_device *orig_dev)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">arphdr</span> *<span class="title">arp</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* do not tweak dropwatch on an ARP we will ignore */</span></span><br><span class="line">	<span class="keyword">if</span> (dev-&gt;flags &amp; IFF_NOARP ||</span><br><span class="line">	    skb-&gt;pkt_type == PACKET_OTHERHOST ||</span><br><span class="line">	    skb-&gt;pkt_type == PACKET_LOOPBACK)</span><br><span class="line">		<span class="keyword">goto</span> consumeskb;</span><br><span class="line"></span><br><span class="line">	skb = skb_share_check(skb, GFP_ATOMIC);<span class="comment">//检测并返回skb,当被检测的skb被引用多次时，则克隆此skb,并返回克隆得到的skb;</span></span><br><span class="line">	<span class="keyword">if</span> (!skb)</span><br><span class="line">		<span class="keyword">goto</span> out_of_mem;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* ARP header, plus 2 device addresses, plus 2 IP addresses.  */</span></span><br><span class="line">	<span class="keyword">if</span> (!pskb_may_pull(skb, arp_hdr_len(dev)))<span class="comment">// 在skb中加4个地址？</span></span><br><span class="line">		<span class="keyword">goto</span> freeskb;</span><br><span class="line">           /这个函数的解释： pskb_may_pull(..)</span><br><span class="line">             <span class="comment">/* Moves tail of skb head forward, copying data from fragmented part,</span></span><br><span class="line"><span class="comment"> * when it is necessary.</span></span><br><span class="line"><span class="comment"> * 1. It may fail due to malloc failure.</span></span><br><span class="line"><span class="comment"> * 2. It may change skb pointers.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * It is pretty complicated. Luckily, it is called only in exceptional cases.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">       /</span><br><span class="line"></span><br><span class="line">	arp = arp_hdr(skb);  <span class="comment">//从skb中拿arp头，然后下面做检测</span></span><br><span class="line">	<span class="keyword">if</span> (arp-&gt;ar_hln != dev-&gt;addr_len || arp-&gt;ar_pln != <span class="number">4</span>)</span><br><span class="line">		<span class="keyword">goto</span> freeskb;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">memset</span>(NEIGH_CB(skb), <span class="number">0</span>, <span class="keyword">sizeof</span>(struct neighbour_cb));<span class="comment">//把skb中的cb字段清空，见下的解释 control buffer</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> NF_HOOK(NFPROTO_ARP, NF_ARP_IN,</span><br><span class="line">		       dev_net(dev), <span class="literal">NULL</span>, skb, dev, <span class="literal">NULL</span>,</span><br><span class="line">		       arp_process); <span class="comment">//通过netfilter 处理后再转到arp_process</span></span><br><span class="line"></span><br><span class="line">consumeskb:</span><br><span class="line">	consume_skb(skb);</span><br><span class="line">	<span class="keyword">return</span> NET_RX_SUCCESS;</span><br><span class="line">freeskb:</span><br><span class="line">	kfree_skb(skb);</span><br><span class="line">out_of_mem:</span><br><span class="line">	<span class="keyword">return</span> NET_RX_DROP;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">The control buffer is an e­junkyard that can be used as a scratch pad during processing by a given</span><br><span class="line">layer of the protocol.   Its main use is by the IP layer to compile header options.</span><br><span class="line"> <span class="number">265</span> <span class="comment">/*</span></span><br><span class="line"><span class="comment"> 266 * This is the control buffer. It is free to use for every</span></span><br><span class="line"><span class="comment"> 267 * layer. Please put your private variables there. If you</span></span><br><span class="line"><span class="comment"> 268 * want to keep them across layers you have to skb_clone()</span></span><br><span class="line"><span class="comment"> 269 * first. This is owned by whoever has the skb queued ATM.</span></span><br><span class="line"><span class="comment"> 270 */</span></span><br><span class="line"> <span class="number">271</span> <span class="keyword">char</span> cb[<span class="number">48</span>];</span><br><span class="line"> <span class="number">272</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//接下来进入到arp_process，主要做arp包的头的校验及：</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *	Process an arp request.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">arp_process</span><span class="params">(struct net *net, struct sock *sk, struct sk_buff *skb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net_device</span> *<span class="title">dev</span> = <span class="title">skb</span>-&gt;<span class="title">dev</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">in_device</span> *<span class="title">in_dev</span> = __<span class="title">in_dev_get_rcu</span>(<span class="title">dev</span>);</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">arphdr</span> *<span class="title">arp</span>;</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span> *arp_ptr;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rtable</span> *<span class="title">rt</span>;</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span> *sha;</span><br><span class="line">	__be32 sip, tip;</span><br><span class="line">	u16 dev_type = dev-&gt;type;</span><br><span class="line">	<span class="keyword">int</span> addr_type;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">neighbour</span> *<span class="title">n</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">dst_entry</span> *<span class="title">reply_dst</span> = <span class="title">NULL</span>;</span></span><br><span class="line">	<span class="keyword">bool</span> is_garp = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* arp_rcv below verifies the ARP header and verifies the device</span></span><br><span class="line"><span class="comment">	 * is ARP'able.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!in_dev)</span><br><span class="line">		<span class="keyword">goto</span> out_free_skb;</span><br><span class="line">           <span class="comment">//拿到arp的头</span></span><br><span class="line">	arp = arp_hdr(skb);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> (dev_type) &#123;</span><br><span class="line">	<span class="keyword">default</span>:    <span class="comment">//三层一样的，所以先做检测三层协议格式是不是ip,以及二层的和dev的是不是一样</span></span><br><span class="line">		<span class="keyword">if</span> (arp-&gt;ar_pro != htons(ETH_P_IP) ||</span><br><span class="line">		    htons(dev_type) != arp-&gt;ar_hrd)</span><br><span class="line">			<span class="keyword">goto</span> out_free_skb;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">            <span class="comment">//检查二层的格式</span></span><br><span class="line">	<span class="keyword">case</span> ARPHRD_ETHER:</span><br><span class="line">	<span class="keyword">case</span> ARPHRD_FDDI:</span><br><span class="line">	<span class="keyword">case</span> ARPHRD_IEEE802:</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		 * ETHERNET, and Fibre Channel (which are IEEE 802</span></span><br><span class="line"><span class="comment">		 * devices, according to RFC 2625) devices will accept ARP</span></span><br><span class="line"><span class="comment">		 * hardware types of either 1 (Ethernet) or 6 (IEEE 802.2).</span></span><br><span class="line"><span class="comment">		 * This is the case also of FDDI, where the RFC 1390 says that</span></span><br><span class="line"><span class="comment">		 * FDDI devices should accept ARP hardware of (1) Ethernet,</span></span><br><span class="line"><span class="comment">		 * however, to be more robust, we'll accept both 1 (Ethernet)</span></span><br><span class="line"><span class="comment">		 * or 6 (IEEE 802.2)</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">if</span> ((arp-&gt;ar_hrd != htons(ARPHRD_ETHER) &amp;&amp;</span><br><span class="line">		     arp-&gt;ar_hrd != htons(ARPHRD_IEEE802)) ||</span><br><span class="line">		    arp-&gt;ar_pro != htons(ETH_P_IP))</span><br><span class="line">			<span class="keyword">goto</span> out_free_skb;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> ARPHRD_AX25:</span><br><span class="line">		<span class="keyword">if</span> (arp-&gt;ar_pro != htons(AX25_P_IP) ||</span><br><span class="line">		    arp-&gt;ar_hrd != htons(ARPHRD_AX25))</span><br><span class="line">			<span class="keyword">goto</span> out_free_skb;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> ARPHRD_NETROM:</span><br><span class="line">		<span class="keyword">if</span> (arp-&gt;ar_pro != htons(AX25_P_IP) ||</span><br><span class="line">		    arp-&gt;ar_hrd != htons(ARPHRD_NETROM))</span><br><span class="line">			<span class="keyword">goto</span> out_free_skb;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Understand only these message types */</span></span><br><span class="line">            <span class="comment">//这里只会处理arp请求和回复</span></span><br><span class="line">	<span class="keyword">if</span> (arp-&gt;ar_op != htons(ARPOP_REPLY) &amp;&amp;</span><br><span class="line">	    arp-&gt;ar_op != htons(ARPOP_REQUEST))</span><br><span class="line">		<span class="keyword">goto</span> out_free_skb;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *	Extract fields</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">	arp_ptr = (<span class="keyword">unsigned</span> <span class="keyword">char</span> *)(arp + <span class="number">1</span>);</span><br><span class="line">	sha	= arp_ptr;</span><br><span class="line">	arp_ptr += dev-&gt;addr_len;</span><br><span class="line">	<span class="built_in">memcpy</span>(&amp;sip, arp_ptr, <span class="number">4</span>);</span><br><span class="line">	arp_ptr += <span class="number">4</span>;</span><br><span class="line">	<span class="keyword">switch</span> (dev_type) &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> IS_ENABLED(CONFIG_FIREWIRE_NET)</span></span><br><span class="line">	<span class="keyword">case</span> ARPHRD_IEEE1394:</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		arp_ptr += dev-&gt;addr_len;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">memcpy</span>(&amp;tip, arp_ptr, <span class="number">4</span>);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *	Check for bad requests for 127.x.x.x and requests for multicast</span></span><br><span class="line"><span class="comment"> *	addresses.  If this is one such, delete it.</span></span><br><span class="line"><span class="comment"> */</span>         <span class="comment">//对本地环回的不需要处理？</span></span><br><span class="line">	<span class="keyword">if</span> (ipv4_is_multicast(tip) ||</span><br><span class="line">	    (!IN_DEV_ROUTE_LOCALNET(in_dev) &amp;&amp; ipv4_is_loopback(tip)))</span><br><span class="line">		<span class="keyword">goto</span> out_free_skb;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment">  *	For some 802.11 wireless deployments (and possibly other networks),</span></span><br><span class="line"><span class="comment">  *	there will be an ARP proxy and gratuitous ARP frames are attacks</span></span><br><span class="line"><span class="comment">  *	and thus should not be accepted.</span></span><br><span class="line"><span class="comment">  */</span>        <span class="comment">//对80211无线网络，可能是arp攻击，所以也不接受</span></span><br><span class="line">	<span class="keyword">if</span> (sip == tip &amp;&amp; IN_DEV_ORCONF(in_dev, DROP_GRATUITOUS_ARP))</span><br><span class="line">		<span class="keyword">goto</span> out_free_skb;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *     Special case: We must set Frame Relay source Q.922 address</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">	<span class="keyword">if</span> (dev_type == ARPHRD_DLCI)</span><br><span class="line">		sha = dev-&gt;broadcast;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *  Process entry.  The idea here is we want to send a reply if it is a</span></span><br><span class="line"><span class="comment"> *  request for us or if it is a request for someone else that we hold</span></span><br><span class="line"><span class="comment"> *  a proxy for.  We want to add an entry to our cache if it is a reply</span></span><br><span class="line"><span class="comment"> *  to us or if it is a request for our address.</span></span><br><span class="line"><span class="comment"> *  (The assumption for this last is that if someone is requesting our</span></span><br><span class="line"><span class="comment"> *  address, they are probably intending to talk to us, so it saves time</span></span><br><span class="line"><span class="comment"> *  if we cache their address.  Their address is also probably not in</span></span><br><span class="line"><span class="comment"> *  our cache, since ours is not in their cache.)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  Putting this another way, we only care about replies if they are to</span></span><br><span class="line"><span class="comment"> *  us, in which case we add them to the cache.  For requests, we care</span></span><br><span class="line"><span class="comment"> *  about those for us and those for our proxies.  We reply to both,</span></span><br><span class="line"><span class="comment"> *  and in the case of requests for us we add the requester to the arp</span></span><br><span class="line"><span class="comment"> *  cache.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">           <span class="comment">//对arp请求的处理</span></span><br><span class="line">	<span class="keyword">if</span> (arp-&gt;ar_op == htons(ARPOP_REQUEST) &amp;&amp; skb_metadata_dst(skb))</span><br><span class="line">		reply_dst = (struct dst_entry *)</span><br><span class="line">			    iptunnel_metadata_reply(skb_metadata_dst(skb),</span><br><span class="line">						    GFP_ATOMIC);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Special case: IPv4 duplicate address detection packet (RFC2131) */</span></span><br><span class="line">	<span class="keyword">if</span> (sip == <span class="number">0</span>) &#123;<span class="comment">//请求报文的源ip为0，则该arp报文是用来检测ipv4地址冲突的 rfc2131,因此在确定请求报文的目标ip地址为本地ip后，以该ip地址为源地址及目标地址发送arp应答报文</span></span><br><span class="line">		<span class="keyword">if</span> (arp-&gt;ar_op == htons(ARPOP_REQUEST) &amp;&amp;</span><br><span class="line">		    inet_addr_type_dev_table(net, dev, tip) == RTN_LOCAL &amp;&amp;</span><br><span class="line">		    !arp_ignore(in_dev, sip, tip))</span><br><span class="line">			arp_send_dst(ARPOP_REPLY, ETH_P_ARP, sip, dev, tip,</span><br><span class="line">				     sha, dev-&gt;dev_addr, sha, reply_dst);</span><br><span class="line">		<span class="keyword">goto</span> out_consume_skb;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (arp-&gt;ar_op == htons(ARPOP_REQUEST) &amp;&amp; <span class="comment">//若为arp请求报文且能找到目的ip地址tip对应的路由</span></span><br><span class="line">	    ip_route_input_noref(skb, tip, sip, <span class="number">0</span>, dev) == <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">		rt = skb_rtable(skb);</span><br><span class="line">		addr_type = rt-&gt;rt_type;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (addr_type == RTN_LOCAL) &#123;<span class="comment">//若是本地接收的</span></span><br><span class="line">			<span class="keyword">int</span> dont_send;</span><br><span class="line"></span><br><span class="line">			dont_send = arp_ignore(in_dev, sip, tip);</span><br><span class="line">			<span class="keyword">if</span> (!dont_send &amp;&amp; IN_DEV_ARPFILTER(in_dev))</span><br><span class="line">				dont_send = arp_filter(sip, tip, dev);<span class="comment">//过滤</span></span><br><span class="line">			<span class="keyword">if</span> (!dont_send) &#123;</span><br><span class="line">				n = neigh_event_ns(&amp;arp_tbl, sha, &amp;sip, dev);<span class="comment">//调用来更新邻居项</span></span><br><span class="line">				<span class="keyword">if</span> (n) &#123;</span><br><span class="line">					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,<span class="comment">//发送arp应答报文</span></span><br><span class="line">						     sip, dev, tip, sha,</span><br><span class="line">						     dev-&gt;dev_addr, sha,</span><br><span class="line">						     reply_dst);</span><br><span class="line">					neigh_release(n);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">goto</span> out_consume_skb;</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (IN_DEV_FORWARD(in_dev)) &#123;<span class="comment">//若不是发送给本地的，看看是否要做代理缓存</span></span><br><span class="line">			<span class="keyword">if</span> (addr_type == RTN_UNICAST  &amp;&amp;</span><br><span class="line">			    (arp_fwd_proxy(in_dev, dev, rt) ||</span><br><span class="line">			     arp_fwd_pvlan(in_dev, dev, rt, sip, tip) ||</span><br><span class="line">			     (rt-&gt;dst.dev != dev &amp;&amp;</span><br><span class="line">			      pneigh_lookup(&amp;arp_tbl, net, &amp;tip, dev, <span class="number">0</span>)))) &#123;</span><br><span class="line">				n = neigh_event_ns(&amp;arp_tbl, sha, &amp;sip, dev);</span><br><span class="line">				<span class="keyword">if</span> (n)</span><br><span class="line">					neigh_release(n);</span><br><span class="line"></span><br><span class="line">				<span class="keyword">if</span> (NEIGH_CB(skb)-&gt;flags &amp; LOCALLY_ENQUEUED ||</span><br><span class="line">				    skb-&gt;pkt_type == PACKET_HOST ||</span><br><span class="line">				    NEIGH_VAR(in_dev-&gt;arp_parms, PROXY_DELAY) == <span class="number">0</span>) &#123;</span><br><span class="line">					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,</span><br><span class="line">						     sip, dev, tip, sha,</span><br><span class="line">						     dev-&gt;dev_addr, sha,</span><br><span class="line">						     reply_dst);</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					pneigh_enqueue(&amp;arp_tbl,</span><br><span class="line">						       in_dev-&gt;arp_parms, skb);</span><br><span class="line">					<span class="keyword">goto</span> out_free_dst;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">goto</span> out_consume_skb;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Update our ARP tables */</span></span><br><span class="line">            <span class="comment">//下面做更新arp表的操作</span></span><br><span class="line">	n = __neigh_lookup(&amp;arp_tbl, &amp;sip, dev, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (IN_DEV_ARP_ACCEPT(in_dev)) &#123;</span><br><span class="line">		<span class="keyword">unsigned</span> <span class="keyword">int</span> addr_type = inet_addr_type_dev_table(net, dev, sip);</span><br><span class="line"></span><br><span class="line">		<span class="comment">/* Unsolicited ARP is not accepted by default.</span></span><br><span class="line"><span class="comment">		   It is possible, that this option should be enabled for some</span></span><br><span class="line"><span class="comment">		   devices (strip is candidate)</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		is_garp = arp-&gt;ar_op == htons(ARPOP_REQUEST) &amp;&amp; tip == sip &amp;&amp;</span><br><span class="line">			  addr_type == RTN_UNICAST;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (!n &amp;&amp;</span><br><span class="line">		    ((arp-&gt;ar_op == htons(ARPOP_REPLY)  &amp;&amp;</span><br><span class="line">				addr_type == RTN_UNICAST) || is_garp))</span><br><span class="line">			n = __neigh_lookup(&amp;arp_tbl, &amp;sip, dev, <span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (n) &#123;</span><br><span class="line">		<span class="keyword">int</span> state = NUD_REACHABLE;</span><br><span class="line">		<span class="keyword">int</span> override;</span><br><span class="line"></span><br><span class="line">		<span class="comment">/* If several different ARP replies follows back-to-back,</span></span><br><span class="line"><span class="comment">		   use the FIRST one. It is possible, if several proxy</span></span><br><span class="line"><span class="comment">		   agents are active. Taking the first reply prevents</span></span><br><span class="line"><span class="comment">		   arp trashing and chooses the fastest router.</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		override = time_after(jiffies,</span><br><span class="line">				      n-&gt;updated +</span><br><span class="line">				      NEIGH_VAR(n-&gt;parms, LOCKTIME)) ||</span><br><span class="line">			   is_garp;</span><br><span class="line"></span><br><span class="line">		<span class="comment">/* Broadcast replies and request packets</span></span><br><span class="line"><span class="comment">		   do not assert neighbour reachability.</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">if</span> (arp-&gt;ar_op != htons(ARPOP_REPLY) ||</span><br><span class="line">		    skb-&gt;pkt_type != PACKET_HOST)</span><br><span class="line">			state = NUD_STALE;</span><br><span class="line">		neigh_update(n, sha, state,</span><br><span class="line">			     override ? NEIGH_UPDATE_F_OVERRIDE : <span class="number">0</span>);</span><br><span class="line">		neigh_release(n);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">out_consume_skb:</span><br><span class="line">	consume_skb(skb);</span><br><span class="line"></span><br><span class="line">out_free_dst:</span><br><span class="line">	dst_release(reply_dst);</span><br><span class="line">	<span class="keyword">return</span> NET_RX_SUCCESS;</span><br><span class="line"></span><br><span class="line">out_free_skb:</span><br><span class="line">	kfree_skb(skb);</span><br><span class="line">	<span class="keyword">return</span> NET_RX_DROP;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>arp发送时和发送接口：<br>1) 一些发送接口；注意是发送arp请求的，不是数据包</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">arp_send</span><span class="params">(<span class="keyword">int</span> type, <span class="keyword">int</span> ptype, __be32 dest_ip,</span></span></span><br><span class="line"><span class="function"><span class="params">	      struct net_device *dev, __be32 src_ip,</span></span></span><br><span class="line"><span class="function"><span class="params">	      <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *dest_hw, <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *src_hw,</span></span></span><br><span class="line"><span class="function"><span class="params">	      <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *target_hw)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	arp_send_dst(type, ptype, dest_ip, dev, src_ip, dest_hw, src_hw,  --有三个接口会调用它：arp_send/arp_solicit/arp_process</span><br><span class="line">		     target_hw, <span class="literal">NULL</span>); ---会调用arp_create创建+arp_xmit发送</span><br><span class="line">&#125;</span><br><span class="line">创建arp报文：</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *	Create an arp packet. If dest_hw is not set, we create a broadcast</span></span><br><span class="line"><span class="comment"> *	message.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">struct sk_buff *<span class="title">arp_create</span><span class="params">(<span class="keyword">int</span> type, <span class="keyword">int</span> ptype, __be32 dest_ip,</span></span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>2）三层发送数据包时：<br>三层发送需要时会把数据包缓存起来，arp邻居项状态达到connected时发送；</p>
+<ul>
+<li>arp老化定时器：结合图</li>
+<li><p>邻居表老化定时器<br>neigh_periodic_work</p>
+</li>
+<li><p>邻居项定时器：<br>neigh_timer_handler</p>
+</li>
+<li><p>代理项定时器<br>neigh_proxy_process</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/neighbor/" rel="tag"># neighbor</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/17/interrupt/" rel="prev" title="interrupt">
+      <i class="fa fa-chevron-left"></i> interrupt
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/22/linux-netdevicelayer/" rel="next" title="linux_netdevicelayer">
+      linux_netdevicelayer <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#linux下邻居子系统的实现："><span class="nav-number">1.</span> <span class="nav-text">linux下邻居子系统的实现：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#什么是邻居子系统："><span class="nav-number">1.1.</span> <span class="nav-text">什么是邻居子系统：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#邻居子系统的系统参数分类和总结："><span class="nav-number">1.2.</span> <span class="nav-text">邻居子系统的系统参数分类和总结：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内核中的arp实现："><span class="nav-number">2.</span> <span class="nav-text">内核中的arp实现：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https://github.com/xdksx/" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https://www.facebook.com/572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com" title="http://yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '97c19ef637ade16ff21372415b00b786',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
