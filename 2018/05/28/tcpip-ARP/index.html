@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="ARP 协议ARP协议的作用 ARP是一种地址解析协议，ARP的存在是为了能在端到端通信时的寻找到端地址；ARP由设备的ip地址获取到设备的mac硬件地址，从而能跟该设备通信； 在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：端设备手机pc等–&gt;(交换机)路由器—&gt;下一个路由器—&gt;下一个终端设备">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tcpip_ARP">
+<meta property="og:url" content="https://xdksx.github.io/2018/05/28/tcpip-ARP/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="ARP 协议ARP协议的作用 ARP是一种地址解析协议，ARP的存在是为了能在端到端通信时的寻找到端地址；ARP由设备的ip地址获取到设备的mac硬件地址，从而能跟该设备通信； 在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：端设备手机pc等–&gt;(交换机)路由器—&gt;下一个路由器—&gt;下一个终端设备">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-27T16:19:57.000Z">
+<meta property="article:modified_time" content="2022-03-26T09:04:05.930Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="tcpip_mac">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2018/05/28/tcpip-ARP/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>tcpip_ARP | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/05/28/tcpip-ARP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          tcpip_ARP
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-05-28 00:19:57" itemprop="dateCreated datePublished" datetime="2018-05-28T00:19:57+08:00">2018-05-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-26 17:04:05" itemprop="dateModified" datetime="2022-03-26T17:04:05+08:00">2022-03-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index"><span itemprop="name">tcpip</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="ARP-协议"><a href="#ARP-协议" class="headerlink" title="ARP 协议"></a>ARP 协议</h3><h4 id="ARP协议的作用"><a href="#ARP协议的作用" class="headerlink" title="ARP协议的作用"></a>ARP协议的作用</h4><ul>
+<li>ARP是一种地址解析协议，ARP的存在是为了能在端到端通信时的寻找到端地址；ARP由设备的ip地址获取到设备的mac硬件地址，从而能跟该设备通信；</li>
+<li>在网络层，有ip地址和路由作为寻路的导向，即通过封装源地址和目的地址，以及路由，一个ip包在不考虑mac层的时候大概是这样传输的：<br>端设备手机pc等–&gt;(交换机)路由器—&gt;下一个路由器—&gt;下一个终端设备  <span id="more"></span><br>端设备默认路由到网关–&gt;网关收到包后，将源地址改为网关的外网地址—&gt;下一个路由–&gt;….-&gt;设备地址为目的地址时，接收而不转发</li>
+<li>考虑一个问题：在上述的网络上发送时，如pc发给路由器时，只知道它的ip地址，怎么发给它：<br>即端到端的发送：是借助设备唯一的mac地址来发送的<br>在有线网中。利用了交换机的端口和mac地址关系，转发<br>在wifi中，能接收到所有的包，但是会在驱动中将mac目的地址非本地的包丢弃，除非开启了混杂监听模式</li>
+<li>但是路由器怎么知道设备如手机的mac地址呢？<br>通过arp协议来获取，arp是依赖mac和ip的”映射”</li>
+<li>tcpip卷1中4.2举了一个完整的例子，可以去看<h4 id="ARP协议的交互过程"><a href="#ARP协议的交互过程" class="headerlink" title="ARP协议的交互过程"></a>ARP协议的交互过程</h4></li>
+<li>基本的交互方式：<br>例如ping网关：<br>station  —ARP request—-&gt;   AP  ARP请求，广播帧<br>station  &lt;—ARP response —  AP  ARP应答 ,单播帧<br>通过上述的方式，station得到了AP的mac地址，之后将AP的MAC地址存在缓存中，在下次数据包等包的时候就可以将该mac地址填在mac头中，即知道了AP的地址后，包就可以顺利的被AP接收了</li>
+<li>AP(路由器)也会主动的向station发送arp request，当它不知道station的mac地址（或缓存过期），例如，AP收到一个外网的包，要转发给对应192.168.0.4的staton,但是没有他的mac地址，或者过期了或者其他情况，则向该station发出arp请求。从而得打station的mac地址</li>
+<li>什么时候会触发arp请求？<br>1.在ping的时候<br>2.在发送tcp，ip包的时候<br>3.在缓存过期时主动发出，这个由arp状态机中实现<h4 id="ARP代理和免费ARP"><a href="#ARP代理和免费ARP" class="headerlink" title="ARP代理和免费ARP"></a>ARP代理和免费ARP</h4></li>
+<li>当我们通过ping百度，或者想访问百度的时候，怎么在mac头中填写目的mac地址呢？即怎么找到百度?（另一个网络)</li>
+<li>是通过在mac头目的mac地址填写网关的mac地址实现的，借助w网关的来帮我们寻找，这个叫做ARP代理,其实欺骗了主机</li>
+<li>tcpip卷对此有较详细解说4.6</li>
+<li>免费ARP是用于检测是否周围有使用相同的ip地址的设备，即通过ping自己，寻找有自己的ip的主机<h4 id="ARP协议的包封装格式和抓包分析"><a href="#ARP协议的包封装格式和抓包分析" class="headerlink" title="ARP协议的包封装格式和抓包分析"></a>ARP协议的包封装格式和抓包分析</h4></li>
+<li>分组格式：  ()为字节数<br>mac头：以太网目的地址(6) mac源地址(6) 帧类型(2)(0x0806)<br>28byte arp帧：硬件类型(2)|协议类型(2)|硬件地址长度(1)|协议地址长度(1)|op(请求或应答或rarp 2)|发送端mac地址(6)|发送端ip(4)|接收端mac地址(6)|接收端ip(4)  </li>
+<li>请求广播帧：目的mac地址为全1，电缆上所有的以太网接口都要接收广播帧,硬件类型为1表示以太网地址，协议类型为要映射的协议地址类型0x0800,表示为ip地址，op（arp请求为1，答应为2，rarp请求为3，rarp答应为4）</li>
+<li>arp填充：以太网帧最小值为60，mac头14，所以&#x3D;46，要填充：46-28&#x3D;18个字节</li>
+<li>arp抓包，可以用wireshark,Omnipeek - Savvius,tcpdump,或者自己写一个程序来抓～<br> tcpdump : sudo tcpdump -vv arp   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> tcpdump: listening on wlp2s0, link-type <span class="title function_">EN10MB</span> <span class="params">(Ethernet)</span>, capture size 262144 bytes</span><br><span class="line">21:51:21.134575 ARP, <span class="title function_">Ethernet</span> <span class="params">(len <span class="number">6</span>)</span>, <span class="title function_">IPv4</span> <span class="params">(len <span class="number">4</span>)</span>, Request who-has 192.168.0.101 tell 192.168.0.1, length 28 <span class="comment">//ap ask me</span></span><br><span class="line">21:51:21.135404 ARP, <span class="title function_">Ethernet</span> <span class="params">(len <span class="number">6</span>)</span>, <span class="title function_">IPv4</span> <span class="params">(len <span class="number">4</span>)</span>, Request who-has 192.168.0.110 tell 192.168.0.1, length 28</span><br><span class="line">21:51:21.135413 ARP, <span class="title function_">Ethernet</span> <span class="params">(len <span class="number">6</span>)</span>, <span class="title function_">IPv4</span> <span class="params">(len <span class="number">4</span>)</span>, Reply 192.168.0.110 is-at 48:5a:b6:6e:c9:5<span class="title function_">f</span> <span class="params">(oui Unknown)</span>, length 28<span class="comment">// i reply ap</span></span><br><span class="line">21:51:32.081916 ARP, <span class="title function_">Ethernet</span> <span class="params">(len <span class="number">6</span>)</span>, <span class="title function_">IPv4</span> <span class="params">(len <span class="number">4</span>)</span>, Request who-has 192.168.0.106 tell 192.168.0.1, length 28 <span class="comment">//ask other</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">22</span>:<span class="number">01</span>:<span class="number">27.149947</span> ARP, Ethernet (len <span class="number">6</span>), IPv4 (len <span class="number">4</span>), Request who-has <span class="number">192.168</span><span class="number">.0</span><span class="number">.107</span> tell <span class="number">192.168</span><span class="number">.0</span><span class="number">.1</span>, length <span class="number">28</span></span><br><span class="line">	<span class="number">0x0000</span>:  <span class="number">0001</span> <span class="number">0800</span> <span class="number">0604</span> <span class="number">0001</span> <span class="number">206b</span> e70f <span class="number">1b</span>42 c0a8  .........k...B..</span><br><span class="line">	<span class="number">0x0010</span>:  <span class="number">0001</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">0000</span> c0a8 <span class="number">006b</span>            ...........k</span><br><span class="line">    </span><br><span class="line">    <span class="number">22</span>:<span class="number">04</span>:<span class="number">17.114593</span> ARP, Ethernet (len <span class="number">6</span>), IPv4 (len <span class="number">4</span>), Reply <span class="number">192.168</span><span class="number">.0</span><span class="number">.110</span> is-at <span class="number">48</span>:<span class="number">5</span>a:b6:<span class="number">6</span>e:c9:<span class="number">5f</span> (oui Unknown), length <span class="number">28</span></span><br><span class="line">	<span class="number">0x0000</span>:  <span class="number">0001</span> <span class="number">0800</span> <span class="number">0604</span> <span class="number">0002</span> <span class="number">485</span>a b66e c95f c0a8  ........HZ.n._..</span><br><span class="line">	<span class="number">0x0010</span>:  <span class="number">006</span>e <span class="number">206b</span> e70f <span class="number">1b</span>42 c0a8 <span class="number">0001</span>            .n.k...B....</span><br></pre></td></tr></table></figure>
+
+<h4 id="ARP协议的常用命令和调试分析"><a href="#ARP协议的常用命令和调试分析" class="headerlink" title="ARP协议的常用命令和调试分析"></a>ARP协议的常用命令和调试分析</h4><ul>
+<li>查看ARP缓存：即现在保存的arp映射表:  <figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">arp -<span class="keyword">a</span></span><br><span class="line">? (<span class="number">192.168</span><span class="number">.0</span><span class="number">.101</span>) <span class="keyword">at</span> <span class="number">4</span>c:<span class="number">32</span>:<span class="number">75</span>:<span class="number">3</span><span class="keyword">a</span>:<span class="number">09</span>:b3 [ether] <span class="keyword">on</span> <span class="title">wlp2s0</span></span><br><span class="line">? (<span class="number">192.168</span><span class="number">.0</span><span class="number">.1</span>) <span class="keyword">at</span> <span class="number">20</span>:<span class="number">6</span>b:e7:<span class="number">0</span>f:<span class="number">1</span>b:<span class="number">42</span> [ether] <span class="keyword">on</span> <span class="title">wlp2s0</span></span><br><span class="line">? (<span class="number">192.168</span><span class="number">.0</span><span class="number">.108</span>) <span class="keyword">at</span> <span class="number">94</span>:d0:<span class="number">29</span>:<span class="number">9</span>d:<span class="number">74</span>:dd [ether] <span class="keyword">on</span> <span class="title">wlp2s0</span></span><br><span class="line">? (<span class="number">192.168</span><span class="number">.0</span><span class="number">.107</span>) <span class="keyword">at</span> <span class="number">94</span>:<span class="number">65</span>:<span class="number">2</span>d:ab:<span class="number">88</span>:<span class="number">8</span>b [ether] <span class="keyword">on</span> <span class="title">wlp2s0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">arp</span> </span><br><span class="line"><span class="attribute">Address</span>                  HWtype  HWaddress           Flags Mask            Iface</span><br><span class="line"><span class="attribute">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">101</span>            ether   <span class="number">4</span>c:<span class="number">32</span>:<span class="number">75</span>:<span class="number">3</span>a:<span class="number">09</span>:b3   C                     wlp2s0</span><br><span class="line"><span class="attribute">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">1</span>              ether   <span class="number">20</span>:<span class="number">6</span>b:e7:<span class="number">0</span>f:<span class="number">1</span>b:<span class="number">42</span>   C                     wlp2s0</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ip neigh</span><br><span class="line"><span class="number">192.168</span><span class="number">.0</span><span class="number">.101</span> dev wlp2s0 lladdr <span class="number">4</span>c:<span class="number">32</span>:<span class="number">75</span>:<span class="number">3</span>a:<span class="number">09</span>:b3 STALE</span><br><span class="line"><span class="number">192.168</span><span class="number">.0</span><span class="number">.1</span> dev wlp2s0 lladdr <span class="number">20</span>:<span class="number">6b</span>:e7:<span class="number">0f</span>:<span class="number">1b</span>:<span class="number">42</span> STALE</span><br><span class="line"><span class="number">192.168</span><span class="number">.0</span><span class="number">.108</span> dev wlp2s0 lladdr <span class="number">94</span>:d0:<span class="number">29</span>:<span class="number">9</span>d:<span class="number">74</span>:dd STALE</span><br><span class="line"><span class="number">192.168</span><span class="number">.0</span><span class="number">.107</span> dev wlp2s0 lladdr <span class="number">94</span>:<span class="number">65</span>:<span class="number">2</span>d:ab:<span class="number">88</span>:<span class="number">8b</span> STALE</span><br><span class="line"><span class="number">192.168</span><span class="number">.0</span><span class="number">.104</span> dev wlp2s0 lladdr e4:<span class="number">9</span>a:dc:b0:a5:<span class="number">36</span> STALE</span><br></pre></td></tr></table></figure></li>
+<li>arping命令：<br><a target="_blank" rel="noopener" href="http://man.linuxde.net/arping">http://man.linuxde.net/arping</a></li>
+<li>arp 命令<br>man arp 包括删除arp表项等，有问题，找男人~<h4 id="ARP协议内核状态机"><a href="#ARP协议内核状态机" class="headerlink" title="ARP协议内核状态机"></a>ARP协议内核状态机</h4></li>
+<li>对不存在的主机，arp请求的超时机制  </li>
+<li>arp缓存和老化时间：<br><a target="_blank" rel="noopener" href="http://www.jb51.net/LINUXjishu/65693.html%EF%BC%9A">http://www.jb51.net/LINUXjishu/65693.html：</a><br>改变老化时间：在Linux上如果你想设置你的ARP缓存老化时间，那么执行sysctl -w net.ipv4.neigh.ethX&#x3D;Y即<h4 id="ARP协议的编程"><a href="#ARP协议的编程" class="headerlink" title="ARP协议的编程"></a>ARP协议的编程</h4></li>
+<li>在PF_PACKET中发出ARP包</li>
+<li>直接贴例子，具体可以看博客的PF_PACKET文章：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;netdb.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/if.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/if_packet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/if_ether.h&gt;</span></span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取硬件网卡的相应信息</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">GetEthInfor</span><span class="params">(<span class="type">char</span> *name , <span class="type">char</span> *MAC_addr , <span class="keyword">struct</span> in_addr * IP_addr)</span></span>;</span><br><span class="line"><span class="comment">//arp包的结构定义</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">ARP_PACKET</span></span><br><span class="line">&#123;</span><br><span class="line">       <span class="comment">//以太网首部</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> dest_mac[<span class="number">6</span>]; <span class="comment">//6字节</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> sorce_mac[<span class="number">6</span>];<span class="comment">//6字节</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">short</span> type;       <span class="comment">//2字节</span></span><br><span class="line">  <span class="comment">//arp——内容</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">short</span> hw_type;   <span class="comment">//2字节：硬件地址类型     0x0001 表示mac地址</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">short</span> pro_type;  <span class="comment">//2字节：软件地址类型    0x0806 表示IPV4地址</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> hw_len;     <span class="comment">//1字节：硬件地址长度  </span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> pro_len;    <span class="comment">//1字节：软件地址长度</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">short</span> op;        <span class="comment">//2字节：操作类型           0x0001表示ARP请求；0x0002表示ARP应答</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> from_mac[<span class="number">6</span>];<span class="comment">//6字节</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> from_ip[<span class="number">4</span>]; <span class="comment">//4字节</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> to_mac[<span class="number">6</span>];  <span class="comment">//6字节</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> to_ip[<span class="number">4</span>];   <span class="comment">//4字节</span></span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> padding[<span class="number">18</span>];<span class="comment">//18字节：填充字节，因为以太网数据最少要46字节</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//主函数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line"> <span class="type">int</span> fd = <span class="number">0</span>;</span><br><span class="line"> <span class="type">int</span> num=<span class="number">0</span>;</span><br><span class="line"> <span class="type">unsigned</span> <span class="type">char</span> MAC_ADDR[<span class="number">6</span>];</span><br><span class="line"> <span class="keyword">struct</span> <span class="title class_">in_addr</span> IP_ADDR;<span class="comment">//结构体的定义在/netinet/in.h用来表示一个32位的IPv4地址.</span></span><br><span class="line"> <span class="keyword">struct</span> <span class="title class_">ARP_PACKET</span> arp_pk=&#123;<span class="number">0</span>&#125;;</span><br><span class="line"> <span class="keyword">struct</span> <span class="title class_">sockaddr_ll</span> eth_info;<span class="comment">//结构体的定义//在/linux/if_packet.h中， 表示设备无关的物理层地址结构</span></span><br><span class="line"> <span class="comment">//第一步：获取指定网卡的信息（MAC地址和IP地址）</span></span><br><span class="line"> <span class="built_in">GetEthInfor</span>(<span class="string">&quot;wlp2s0&quot;</span>,MAC_ADDR,&amp;IP_ADDR);</span><br><span class="line">   <span class="comment">/*printf(&quot;The MAC_addr is:&quot;);</span></span><br><span class="line"><span class="comment"> for(i =0 ;i&lt;6;i++)</span></span><br><span class="line"><span class="comment">    printf(&quot;%4X&quot;,MAC_ADDR[i]); </span></span><br><span class="line"><span class="comment"> printf(&quot;\n&quot;);</span></span><br><span class="line"><span class="comment">    printf(&quot;the IP is:%s\n&quot;,inet_ntoa(IP_ADDR));*/</span></span><br><span class="line">      </span><br><span class="line">    <span class="comment">//第二步：填充ARP数据包的内容</span></span><br><span class="line"> <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">6</span>;i++)                 <span class="comment">//填充以太网首部的目的mac地址</span></span><br><span class="line"> &#123;</span><br><span class="line">  arp_pk.dest_mac[i]=<span class="number">0XFF</span>;      </span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">6</span>;i++)                 <span class="comment">//填充以太网首部的源mac地址</span></span><br><span class="line"> &#123;</span><br><span class="line">  arp_pk.sorce_mac[i]=MAC_ADDR[i];</span><br><span class="line"> &#125;</span><br><span class="line">   arp_pk.type = <span class="built_in">htons</span>(<span class="number">0x0806</span>);    <span class="comment">//填充以太网首部的侦类型</span></span><br><span class="line">   arp_pk.hw_type = <span class="built_in">htons</span>(<span class="number">0x0001</span>); <span class="comment">//填充硬件地址类型：0x0001表示的是MAC地址</span></span><br><span class="line">   arp_pk.pro_type = <span class="built_in">htons</span>(<span class="number">0x0800</span>);<span class="comment">//填充协议地址类型：0x0800表示的是IP地址</span></span><br><span class="line">   arp_pk.hw_len = <span class="number">6</span>;              <span class="comment">//填充硬件地址长度</span></span><br><span class="line">   arp_pk.pro_len = <span class="number">4</span>;             <span class="comment">//填充协议地址长度</span></span><br><span class="line">   arp_pk.op = <span class="built_in">htons</span>(<span class="number">0x0001</span>);      <span class="comment">//填充操作类型：0x0001表示ARP请求</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">6</span>;i++)                 <span class="comment">//填充源mac地址</span></span><br><span class="line">   &#123;</span><br><span class="line">  arp_pk.from_mac[i]=MAC_ADDR[i];</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="type">in_addr_t</span> ipaddr=<span class="built_in">inet_network</span>(<span class="built_in">inet_ntoa</span>(IP_ADDR));</span><br><span class="line">   <span class="keyword">for</span>(i=<span class="number">3</span>;i&gt;=<span class="number">0</span>;i--)                 <span class="comment">//填充源IP地址</span></span><br><span class="line">   &#123;</span><br><span class="line">  arp_pk.from_ip[i]=(<span class="type">unsigned</span> <span class="type">char</span>)ipaddr&amp;<span class="number">0xFF</span>;</span><br><span class="line">   ipaddr=ipaddr&gt;&gt;<span class="number">8</span>;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;-%d-&quot;</span>,arp_pk.from_ip[i]);</span><br><span class="line">   &#125;</span><br><span class="line"> <span class="comment">/* arp_pk.from_ip[0]=192;</span></span><br><span class="line"><span class="comment">  arp_pk.from_ip[1]=168;</span></span><br><span class="line"><span class="comment">  arp_pk.from_ip[2]=199;</span></span><br><span class="line"><span class="comment">  arp_pk.from_ip[3]=145;*/</span></span><br><span class="line">  </span><br><span class="line">   <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">6</span>;i++)                 <span class="comment">//填充欲获取的目的mac地址</span></span><br><span class="line">   &#123;</span><br><span class="line">    arp_pk.to_mac[i]=<span class="number">0X00</span>;</span><br><span class="line">   &#125;</span><br><span class="line">  </span><br><span class="line">   arp_pk.to_ip[<span class="number">0</span>]=<span class="number">0X0B</span>;        <span class="comment">//填充想要装换为MAC地址的IP地址。可以使用命令行参数来做</span></span><br><span class="line">   arp_pk.to_ip[<span class="number">1</span>]=<span class="number">0X40</span>;</span><br><span class="line">   arp_pk.to_ip[<span class="number">2</span>]=<span class="number">0X39</span>;</span><br><span class="line">   arp_pk.to_ip[<span class="number">3</span>]=<span class="number">0X0A</span>;</span><br><span class="line"> </span><br><span class="line"> <span class="comment">//第三步：填充sockaddr_ll eth_info结构</span></span><br><span class="line">    eth_info.sll_family = PF_PACKET;</span><br><span class="line"> eth_info.sll_ifindex = if_nametoindex(<span class="string">&quot;wlp2s0&quot;</span>);<span class="comment">//返回输入的接口名称的索引值</span></span><br><span class="line"> <span class="comment">//printf(&quot;number is:%d\n&quot;,eth_info.sll_family);</span></span><br><span class="line"> </span><br><span class="line"> <span class="comment">//第四步：创建原始套接字</span></span><br><span class="line"> fd = <span class="built_in">socket</span>(PF_PACKET,SOCK_RAW,<span class="built_in">htons</span>(ETH_P_ALL));  <span class="comment">//</span></span><br><span class="line"> <span class="keyword">if</span>(fd&lt;<span class="number">0</span>)</span><br><span class="line"> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;socket SOCK_RAW failed!\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"> <span class="comment">//第五步：发送ARP数据包</span></span><br><span class="line"> num = <span class="built_in">sendto</span>(fd , &amp;arp_pk , <span class="built_in">sizeof</span>(<span class="keyword">struct</span> ARP_PACKET) , <span class="number">0</span> ,(<span class="keyword">struct</span> sockaddr*)(&amp;eth_info),<span class="built_in">sizeof</span>(eth_info));</span><br><span class="line"> <span class="keyword">if</span>(num&lt;<span class="number">0</span>)</span><br><span class="line"> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;sendto failed!\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"> &#125;</span><br><span class="line">        <span class="comment">//第六步：接受ARP应答</span></span><br><span class="line"> num = <span class="built_in">recvfrom</span>(fd , &amp;arp_pk , <span class="built_in">sizeof</span>(<span class="keyword">struct</span> ARP_PACKET) ,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"> <span class="keyword">if</span>(num&lt;<span class="number">0</span>)</span><br><span class="line"> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;rcvfrom failed!\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">else</span></span><br><span class="line"> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;I receive %d bytes!\n&quot;</span>,num);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;the mac  is:&quot;</span>);</span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">6</span>;i++)</span><br><span class="line">  &#123;</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">&quot;%4X &quot;</span>,arp_pk.from_mac[i]);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;op:%d\n&quot;</span>,arp_pk.op);</span><br><span class="line"> <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">4</span>;i++)</span><br><span class="line">  &#123;</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">&quot;%d. &quot;</span>,arp_pk.to_ip[i]);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="built_in">close</span>(fd);</span><br><span class="line"> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">GetEthInfor</span><span class="params">(<span class="type">char</span> *name ,  <span class="type">char</span> *MAC_addr , <span class="keyword">struct</span> in_addr * IP_addr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> <span class="keyword">struct</span> <span class="title class_">ifreq</span>  eth;  <span class="comment">//够结构用于存放最初多获取的接口信息</span></span><br><span class="line"><span class="comment">//该结构存放在：/net/if.h,详细字段表示在头文件中</span></span><br><span class="line">   <span class="type">int</span> fd;             <span class="comment">//用于创建套接字</span></span><br><span class="line"> <span class="type">int</span> temp=<span class="number">0</span>;         <span class="comment">//用于验证接口调用</span></span><br><span class="line"> <span class="type">int</span> i=<span class="number">0</span>;            <span class="comment">//用于循环</span></span><br><span class="line"> </span><br><span class="line"> <span class="built_in">strncpy</span>(eth.ifr_name,name,<span class="built_in">sizeof</span>(<span class="keyword">struct</span> ifreq)<span class="number">-1</span>);</span><br><span class="line"><span class="comment">// fd = socket(AF_INET,SOCK_DGRAM,0);</span></span><br><span class="line"> <span class="comment">// fd=socket(AF_INET,SOCK_STREAM,0); </span></span><br><span class="line">    fd=<span class="built_in">socket</span>(AF_PACKET,SOCK_DGRAM,<span class="built_in">htons</span>(ETH_P_ALL));</span><br><span class="line"><span class="keyword">if</span>(fd&lt;<span class="number">0</span>)</span><br><span class="line"> &#123;</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">&quot;socket failed!\n&quot;</span>);</span><br><span class="line">   <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="comment">//获取并且保存和打印指定的物理接口MAC地址信息</span></span><br><span class="line">   temp = <span class="built_in">ioctl</span>(fd,SIOCGIFHWADDR,&amp;eth);</span><br><span class="line"> <span class="keyword">if</span>(temp&lt;<span class="number">0</span>)</span><br><span class="line"> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;ioctl--get hardware addr failed!\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"> <span class="built_in">strncpy</span>(MAC_addr,eth.ifr_hwaddr.sa_data,<span class="number">6</span>);</span><br><span class="line"> <span class="built_in">printf</span>(<span class="string">&quot;The MAC_addr is:&quot;</span>);</span><br><span class="line"> <span class="keyword">for</span>(i =<span class="number">0</span> ;i&lt;<span class="number">6</span>;i++)</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%4X&quot;</span>,(<span class="type">unsigned</span> <span class="type">char</span>)eth.ifr_hwaddr.sa_data[i]); </span><br><span class="line"> <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">       </span><br><span class="line">        <span class="comment">//获取并且保存和打印指定的物理接口IP地址信息</span></span><br><span class="line">   temp = <span class="built_in">ioctl</span>(fd,SIOCGIFADDR,&amp;eth);</span><br><span class="line"> <span class="keyword">if</span>(temp&lt;<span class="number">0</span>)</span><br><span class="line"> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;ioctl--get hardware addr failed!\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"> <span class="built_in">memcpy</span>(IP_addr ,&amp;(((<span class="keyword">struct</span> sockaddr_in *)(&amp;eth.ifr_addr))-&gt;sin_addr),<span class="number">4</span>);</span><br><span class="line"> <span class="comment">//关闭套接口</span></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;got ipaddr:%s\n&quot;</span>,<span class="built_in">inet_ntoa</span>(*IP_addr));</span><br><span class="line"><span class="comment">/*i=0;</span></span><br><span class="line"><span class="comment">printf(&quot;get the MAC_ADDR:\n&quot;);</span></span><br><span class="line"><span class="comment">for(i;i&lt;6;i++)</span></span><br><span class="line"><span class="comment">  printf(&quot;%.2X:&quot;,MAC_addr[i]&amp;0xFF);*/</span></span><br><span class="line">   <span class="built_in">close</span>(fd);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//第二步填充arp数据包的时候，填充的数据和类型根据需要进行。</span></span><br><span class="line"><span class="comment">//这里的arp数据包结构体是自己定义的，也可以是利用linux的相关结构：</span></span><br><span class="line"><span class="comment">/*eg:</span></span><br><span class="line"><span class="comment">typedef struct _tagARP_PACKET&#123;    </span></span><br><span class="line"><span class="comment">    struct ether_header  eh;    ///net/ethernet.h</span></span><br><span class="line"><span class="comment">    struct ether_arp arp;    </span></span><br><span class="line"><span class="comment">&#125;ARP_PACKET_OBJ, *ARP_PACKET_HANDLE; /netinet/if_ether.h;/net/if_arp.h</span></span><br><span class="line"><span class="comment">各个字段的填充见头文件*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*第三步：填充sockaddr_ll eth_info结构,关键是填充网络接口索引值，最直接的方法是上面的函数，</span></span><br><span class="line"><span class="comment">还有另外的方法:利用ioctl函数获取struct ifreq结构的信息，该结构放置了很多网络接口的相关信息*/</span></span><br><span class="line"><span class="comment">/*  struct sockaddr_ll&#123;</span></span><br><span class="line"><span class="comment">    unsigned short sll_family; //总是 AF_PACKET </span></span><br><span class="line"><span class="comment">    unsigned short sll_protocol; // 物理层的协议 </span></span><br><span class="line"><span class="comment">    int sll_ifindex; //接口号 </span></span><br><span class="line"><span class="comment">    unsigned short sll_hatype; // 报头类型 </span></span><br><span class="line"><span class="comment">    unsigned char sll_pkttype; // 分组类型 </span></span><br><span class="line"><span class="comment">    unsigned char sll_halen; // 地址长度 </span></span><br><span class="line"><span class="comment">    unsigned char sll_addr[8]; // 物理层地址 </span></span><br><span class="line"><span class="comment">&#125;;</span></span><br><span class="line"><span class="comment">eg:</span></span><br><span class="line"><span class="comment">*     struct sockaddr_ll peer_addr;  </span></span><br><span class="line"><span class="comment">*    memset(&amp;peer_addr, 0, sizeof(peer_addr));    </span></span><br><span class="line"><span class="comment">        peer_addr.sll_family = AF_PACKET;    </span></span><br><span class="line"><span class="comment">        struct ifreq req;  </span></span><br><span class="line"><span class="comment">    bzero(&amp;req, sizeof(struct ifreq));  </span></span><br><span class="line"><span class="comment">        strcpy(req.ifr_name, &quot;eth0&quot;);    </span></span><br><span class="line"><span class="comment">        if(ioctl(sockfd, SIOCGIFINDEX, &amp;req) != 0)  </span></span><br><span class="line"><span class="comment">        perror(&quot;ioctl()&quot;);    </span></span><br><span class="line"><span class="comment">        peer_addr.sll_ifindex = req.ifr_ifindex;    </span></span><br><span class="line"><span class="comment">        peer_addr.sll_protocol = htons(ETH_P_ARP);  </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">/*第四步，创建套结字的时候，有以下的组合：更多见：man packet</span></span><br><span class="line"><span class="comment"> * 利用AF_PACKET 套接字发送一个任意的以太网帧。针对linux.</span></span><br><span class="line"><span class="comment"> * 第二个参数： 2）套接字类型：</span></span><br><span class="line"><span class="comment">          SOCK_DGRAM----以太网头已经构造好了</span></span><br><span class="line"><span class="comment">          SOCK_RAW------自己构造以太头 </span></span><br><span class="line"><span class="comment">          * 一种为SOCK_RAW,它是包含了MAC层头部信息的原始分组，当然这种类型的套接字</span></span><br><span class="line"><span class="comment">          * 在发送的时候需要自己加上一个MAC头部（其类型定义在linux/if_ether.h中，ethhdr），</span></span><br><span class="line"><span class="comment">          * 另一种是SOCK_DGRAM类型，它是已经进行了MAC层头部处理的，即收上的帧已经去掉了头部，</span></span><br><span class="line"><span class="comment">          * 而发送时也无须用户添加头部字段。</span></span><br><span class="line"><span class="comment">   第三个参数表示协议类型:链路层承载的协议IP ,ARP,RARP</span></span><br><span class="line"><span class="comment">   * 以太网帧中的以太网类型指定了它包含的负载的类型。有很多途径可以获取以太网类型：</span></span><br><span class="line"><span class="comment">   1）头文件Linux/if_ether.h 定义了大多数常用的以太网类型。包括以太网协议的ETH_P_IP(0x8000)、arp的ETH_P_ARP(0x0806)</span></span><br><span class="line"><span class="comment">  和IEEE 802.1Q VLAN tags的ETH_P_8021Q(0x8100)</span></span><br><span class="line"><span class="comment">    2)IEEE维护的注册以太网类型列表</span></span><br><span class="line"><span class="comment">     3）半官方的列表由IANA维护</span></span><br><span class="line"><span class="comment">      ETH_P_ALL允许任何在没有使用多个套接字的情况下接受所有以太网类型的报文。</span></span><br><span class="line"><span class="comment">      0x88b5和0x88b6是保留以太网类型，供实验或私人使用。 </span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">   <span class="comment">/*第五步发送和接收套接字的函数可以是read write操作套结字，也可以是上文的UDP无连接用的函数*/</span></span><br></pre></td></tr></table></figure>
+
+<p>处理的时候可能需要获取网关的ip地址：</p>
+<pre><code class="cpp">/*proc方法获取网关地址*/
+void GetGateWayIP(uint8 *ip_addr)
+&#123;
+      char inf[100];
+      FILE *file_fd;
+      uint8 high=0,low=0,value;
+      int i;
+      file_fd = fopen(&quot;/proc/net/route&quot;,&quot;r&quot;);
+      if(file_fd==NULL)
+      &#123;
+            printf(&quot;can not open /proc/net/route\n&quot;);
+      &#125;
+      else
+     &#123;
+             while(!feof(file_fd))
+             &#123;
+                     memset(inf,0,sizeof(inf));
+                     fgets(inf,100,file_fd);
+                     if(inf[5]==&#39;0&#39;&amp;&amp;inf[6]==&#39;0&#39;&amp;&amp;inf[7]==&#39;0&#39;&amp;&amp;inf[8]==&#39;0&#39;&amp;&amp;inf[9]==&#39;0&#39;&amp;&amp;inf[10]==&#39;0&#39;&amp;&amp;inf[11]==&#39;0&#39;&amp;&amp;inf[12]==&#39;0&#39;)
+                     &#123;
+                              for(i=20;i&gt;=14;i-=2)
+                              &#123;
+                                         if(inf[i]&gt;=65)
+                                                 high = inf[i]-55;
+                                         else
+                                                 high = inf[i]-48;
+                                         if(inf[i+1]&gt;=65)
+                                                 low = inf[i+1]-55;
+                                         else
+                                                 low = inf[i+1]-48;
+                                        value = high*16+low;
+                                       ip_addr[10-i/2] = value;
+                              &#125;
+                              break;
+                       &#125;
+              &#125;
+      &#125;
+&#125;```
+#### ARP攻击
++ ARP包可以直接发送给对端不经过路由器，有趣
+在一个局域网中，客户端的几乎所有的包都是发往路由器的，这归结于默认路由设置，而在无线网，网卡其实可以接收所有数据，毕竟空气介质，所以，局域网中的设备可以直接通信  
+实验：在文件全能王中开启wifi文件传输，和它在同一个局域网的sta能访问该地址，抓包，发现目的地址和源地址都为同一个局域网的不同ip,且不为路由器网关ip，证明其两个设备是可以直接通信的
++ 再来做一个实验：通过pf_packet  
+1、在电脑A上写一个程序，mac目的地址为B,源地址为A,协议类型随机，数据随意，发送给B  
+   同时在B端进行接收，过滤掉其他mac地址，看是否可以接收到，在连接ap和不连接ap的条件下  
+2、在A和B设置静态ip地址，且不同网段，都不连接AP ,让A向B 发送ARP请求包，B接收到后回复arp响应包，接着做ping或其他操作，看是否能互相通信
++ 编程可以参考上述程序，改一下地址什么的就可以，或者参考其他：
+http://www.freebuf.com/articles/system/5157.html
+这篇文章讲的很具体，个人也喜欢这个网站，emm,实验过了，还可以，can also make your own program,具体程序不贴了  
++ arp欺骗的基本原理：   
+在局域网中，设备A,B连接同一个路由器，他们之间可以直接相互通信，因此可以直接向对方发送arp包；   
+设备A ,B都会定期和AP交互arp请求和回复，相互知道对方的mac地址，这样，就能给ap发送请求，ap也能知道回复给谁；    
+arp欺骗的基本原理在于，如B是攻击方，则B向A发送ARP回复自己是AP ,即在ARP回复包中带上自己的mac地址，ap的ip地址；
+同时向AP回复自己是A，即带上A的ip地址，自己的mac地址；   
+这样A就会以为B是AP，就会把请求发给B ,同时AP以为B是A，会把回复传给B,但是同时得配置B的转发功能，  
+echo 1 &gt;&gt; /proc/sys/net/ipv4/ip_forwardroot  
+该博文中有一处错误，见评论
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tcpip-mac/" rel="tag"># tcpip_mac</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/27/tcpip-PF-PACKET/" rel="prev" title="tcpip_PF_PACKET">
+      <i class="fa fa-chevron-left"></i> tcpip_PF_PACKET
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/03/tcpip-MAC/" rel="next" title="tcpip_MAC">
+      tcpip_MAC <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ARP-%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.</span> <span class="nav-text">ARP 协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ARP%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">ARP协议的作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARP%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">ARP协议的交互过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARP%E4%BB%A3%E7%90%86%E5%92%8C%E5%85%8D%E8%B4%B9ARP"><span class="nav-number">1.3.</span> <span class="nav-text">ARP代理和免费ARP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARP%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%8C%85%E5%B0%81%E8%A3%85%E6%A0%BC%E5%BC%8F%E5%92%8C%E6%8A%93%E5%8C%85%E5%88%86%E6%9E%90"><span class="nav-number">1.4.</span> <span class="nav-text">ARP协议的包封装格式和抓包分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARP%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%92%8C%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90"><span class="nav-number">1.5.</span> <span class="nav-text">ARP协议的常用命令和调试分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARP%E5%8D%8F%E8%AE%AE%E5%86%85%E6%A0%B8%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">1.6.</span> <span class="nav-text">ARP协议内核状态机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARP%E5%8D%8F%E8%AE%AE%E7%9A%84%E7%BC%96%E7%A8%8B"><span class="nav-number">1.7.</span> <span class="nav-text">ARP协议的编程</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'f661d531bf8c5cabe167e065100a8da3',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

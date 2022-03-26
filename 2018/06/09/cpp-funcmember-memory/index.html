@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="c++ function语意学something:恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。 可以参考；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_funcmember_memory">
+<meta property="og:url" content="https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="c++ function语意学something:恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。 可以参考；">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-09T08:21:29.000Z">
+<meta property="article:modified_time" content="2022-03-26T09:04:05.923Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="cpp_class">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_funcmember_memory | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/09/cpp-funcmember-memory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_funcmember_memory
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-09 16:21:29" itemprop="dateCreated datePublished" datetime="2018-06-09T16:21:29+08:00">2018-06-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-26 17:04:05" itemprop="dateModified" datetime="2022-03-26T17:04:05+08:00">2022-03-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="c-function语意学"><a href="#c-function语意学" class="headerlink" title="c++ function语意学"></a>c++ function语意学</h3><p>something:<br>恩，这部分记录自己对c++中的函数特殊性的理解，本想深入函数本质，之前接触过，记得在linux内核剖析那本书讲的很好。<br> 可以参考；<span id="more"></span></p>
+<ul>
+<li><p>实现类的成员函数和类之间的关联，即通过对象能调用成员函数。这种实现，可以是以下几种方式：<br> 1）struct+函数指针：结构体中，一个成员函数对应一个指针，增加空间 如何操作成员？<br> 2）函数+this指针，普通函数，this指针一个，不添加额外多的空间，this 操作成员<br> 。。。</p>
+</li>
+<li><p>c++的类主要是将成员和函数封装起来。那么成员的封装就像struct一样，而函数呢？成员函数如何和类，对象联系起来？–this指针</p>
+</li>
+<li><p>c++中的成员函数和普通函数一样，只是多了个this指针，这个指针指向当前调用这个函数的对象，并以形参传入，这样，成员函数就可以使用对象成员了，通过<br> this指针；</p>
+</li>
+<li><p>这里也是根据深入探索c++模型中第四章，function语义学总结的：</p>
+<h4 id="引入这个问题："><a href="#引入这个问题：" class="headerlink" title="引入这个问题："></a>引入这个问题：</h4><p> 通过对象和对象指针来调用成员函数的不同：<br>Point3d obj;<br>Point3d *p&#x3D;&amp;obj;<br>两者效率有何不同？</p>
+<p>通过上面分析：当这个成员函数为普通的成员函数时，则直接调用函数，传入this指针，所以基本没有大的区别</p>
+</li>
+</ul>
+<h4 id="以下分为几种函数讨论："><a href="#以下分为几种函数讨论：" class="headerlink" title="以下分为几种函数讨论："></a>以下分为几种函数讨论：</h4><h5 id="非静态成员函数："><a href="#非静态成员函数：" class="headerlink" title="非静态成员函数："></a>非静态成员函数：</h5><p>   为了支持this指针等构成成员函数，c++做了如下步骤：  </p>
+<ul>
+<li><p>a;改写函数原型：安插了一个this参数</p>
+</li>
+<li><p>b；对对象成员的操作，通过this</p>
+</li>
+<li><p>c;对成员函数写成外部函数，并将其名称进行mangling处理，成独一无二～类似：函数名___类名参数名 等等</p>
+</li>
+<li><p>如何命名：成员函数和成员都会被名称特殊化处理：一般加上base class &amp;derived class名<br>   对重载函数而言如何区分：加上参数链表；<br>   当extern C时，会压抑这种特殊命名化<br>   具体编译器实现不同，可以通过汇编等。gdb等看</p>
+</li>
+<li><p>鉴于此：看一个例子：<br>当你需要构造一个（拷贝构造函数）或者改变一个类的成员： 伪代码：  </p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">normalize__Point</span><span class="params">(<span class="keyword">register</span> <span class="type">const</span> Point3d *<span class="type">const</span> <span class="keyword">this</span>,Point3d &amp;_result)</span></span></span><br><span class="line"><span class="function"> </span>&#123;</span><br><span class="line">    _reuslt.Point3d::<span class="built_in">Point3d</span>() <span class="comment">//默认构造函数：</span></span><br><span class="line">    _result._x=<span class="keyword">this</span>-&gt;__x/<span class="number">2</span>;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line"> &#125;</span><br><span class="line"> 那么，以下这种方式：更好：</span><br><span class="line"> <span class="function">Point3d <span class="title">Point3d::normmalize</span><span class="params">()</span> <span class="type">const</span></span>&#123;</span><br><span class="line">     <span class="keyword">return</span>  <span class="built_in">Point3d</span>(_x/<span class="number">2</span> ...)直接构建会更快） </span><br><span class="line">  =》转换为<span class="keyword">return</span> <span class="built_in">Point3d</span>(<span class="keyword">this</span>-&gt;_x/<span class="number">2</span>,...)   </span><br></pre></td></tr></table></figure>
+<h5 id="virtual-func"><a href="#virtual-func" class="headerlink" title="virtual func"></a>virtual func</h5><p> 若normilaze是虚拟函数，则<br> ptr-&gt;normilaze()&#x3D;》 （*ptr-&gt;vptr[1])(ptr);<br> 可以看到效率较低，所以当确认不用多态机制的时候，最好抑制它，直接使用：Point3d::xxx  这种方式调用函数<br> 而若被写成内连函数会更优–原因待探索：</p>
+</li>
+</ul>
+<h5 id="静态成员函数："><a href="#静态成员函数：" class="headerlink" title="静态成员函数："></a>静态成员函数：</h5><p> 显然这种能被类直接调用的函数，没有this指针，从而也就无法用成员<br> 这种函数的出现，是因为一种需求：即不用每个成员函数都会使用成员，不一定需要this<br> 不用声明一个对象就可以调用函数，当非要对象不可，又不用成员时：<br> <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"> ((Point3d*)<span class="number">0</span>)-&gt;<span class="built_in">object_count</span>() ;```</span><br><span class="line"> 有了<span class="type">static</span>后，就不用上述方式了  </span><br><span class="line"> 所以<span class="type">static</span>的特性完全来源它的原理：  </span><br><span class="line">+ 它不能直接存取non <span class="type">static</span> 成员</span><br><span class="line">+ 它不能被声明为<span class="type">const</span> <span class="keyword">volatile</span> <span class="keyword">virtual</span></span><br><span class="line">+ 能直接被类调用  </span><br><span class="line"> 静态成员函数和普通函数更像，因为它没有<span class="keyword">this</span>指针，也就不是这种类型：~ <span class="function"><span class="type">unsigned</span> <span class="title">int</span><span class="params">(*)</span> <span class="params">()</span></span>;</span><br><span class="line"> 所以更可以和类之外的元素沟通，比如回调函数</span><br><span class="line"> </span><br><span class="line"> ##### 虚拟成员函数</span><br><span class="line"> + a 为了支持多态，需要在执行期间能判断到底调用哪个函数？即pz-&gt;<span class="built_in">z</span>()这个函数，pz为基类指针，而能调用子类函数</span><br><span class="line"> + b 基类指针或引用参考到的（指向的）子类，，子类中的重写父类的函数，在调用时并不知道传入哪个<span class="keyword">this</span>,即表现为调用哪个函数</span><br><span class="line"> +  c　那么为了支持通过基类能调用它，通过子类也能调用该函数，则需要基类和子类共享某个东西，他能正确决议出要调用的函数</span><br><span class="line"> </span><br><span class="line">+  带来：额外的空间，和c的兼容性</span><br><span class="line">##### 积极多态的概念：</span><br><span class="line">（１）被指出的对象真正被使用；（２）<span class="keyword">dynamic_cast</span>  </span><br><span class="line"> 那么哪些函数需要支持这样的特性－－－》由<span class="keyword">virtual</span>标志来指出  </span><br><span class="line"> 如何在执行期间调用真正的函数？－－－》ptr所指的对象真实类型＋函数的位置　真实类型放在vtable[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">+ 编译期间做的：  </span><br><span class="line">在每个对象中加入：一个字符串或数字来表示<span class="keyword">class</span>　类型＋一个指针，指向表格vtable,它带有程序的<span class="keyword">virtual</span> func执行期地址</span><br><span class="line">确定表格中的函数指针，执行期无法改变表格一个类对应一个表格，每个<span class="keyword">virtual</span> func被指定一个固定的索引值</span><br><span class="line">+ 执行期间做的：</span><br><span class="line"> 为vptr分配内存地址。它的值在编译期间确定，类似于x=<span class="number">3</span>;  指向vtable</span><br><span class="line">调用函数时激活　。编译器已经为其转换语义为xxx-&gt;vptr[n](<span class="keyword">this</span>).. </span><br><span class="line">+ 注意，当一个子类继承基类时，vptr继承过来，当子类改写<span class="keyword">virtual</span>函数时，则改变表中的指针指向子类的；当子类添加一个新的<span class="keyword">virtual</span> func时，则在表中加一个slot</span><br><span class="line">+ 唯一在执行期间才知道的：<span class="built_in">slot</span>(n)到底指向哪个函数实体</span><br><span class="line"> 细想一下：  </span><br><span class="line">      derived de; <span class="comment">//编译期间，符号表确认要分配的对象类型,执行期间分配内存和调用构造函数等，构造函数中会初始化vptr,    </span></span><br><span class="line">      base *p=&amp;de;<span class="comment">//编译期间，类似于int x=3;,执行期间分</span></span><br><span class="line">      配内存给x,并将３给x,确定p所指的真正对象，从而才能取得vptr,到调用到最终的函数</span><br><span class="line">      p-&gt;<span class="built_in">xx</span>();<span class="comment">//xx为virtual (*p-&gt;vptr[1])(p)</span></span><br><span class="line">     </span><br><span class="line">####<span class="meta"># some question     </span></span><br><span class="line"> <span class="comment">//关于执行期和编译期确定的东西，有些困惑，为啥编译器不能在p-&gt;xx()的时候指定调用子类的xx()?</span></span><br><span class="line"> <span class="comment">//在编译器扫描代码的时候，知道定义了一个derived类型的变量，知道，定义了一个base指针，并指向的变量类型为derived,后面调用时也能</span></span><br><span class="line"> 确定函数名，为啥不能根据已存的这些信息。来得到哦。这时p指向的是derive类型的。所以调用derived的函数？</span><br><span class="line"> 不过也是，编译器从做词汇扫描，到语义扫描，出符号表，到语法检查，语义规则等</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">##### 多重继承下面的<span class="keyword">virtual</span> func</span><br><span class="line"> 考虑以下例子：</span><br><span class="line"> ```cpp</span><br><span class="line"> <span class="keyword">class</span> <span class="title class_">base1</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> :</span><br><span class="line">     <span class="type">int</span> a;</span><br><span class="line"> 　　　<span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">a</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> a;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> base1* <span class="title">clone</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">   &#125;</span><br><span class="line"> <span class="keyword">class</span> <span class="title class_">base2</span>&#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> b;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">b</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> b;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> base2* <span class="title">clone</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"> <span class="keyword">class</span> <span class="title class_">derive</span>:<span class="keyword">public</span> base1,<span class="keyword">public</span> base2</span><br><span class="line">    <span class="type">int</span> c;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">c</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> c;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> derive* <span class="title">clone</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><br> 对于和derived有相同起点的base1不用考虑太多，关键是base2,;有三个问题要解决：</p>
+<pre><code>  　(1)virtual destructor (记得之前是逐层调用）
+ 　（２）被继承下来的b()
+    (3）一组clone函数 
+  （a)   做base2 *pbase2=new derive;
+  　　　　＆＆＆编译期间确定：＆＆＆
+   =&gt;  derived *tmp=new derive;
+   　　　base2 *pbase2=tmp?tmp+sizeof(base1):0;```
+      
+ 为了使pbase2能访问到　b 即pbase２-&gt;b, 多重继承下使用 base *p=de;时，注意此时需要调整，让p指向的是de中的base对应部分
++ 当通过delete pbase2时，此时需要删除完整的对象，所以pbase２指针需要调整到指出完整对象的起始点  
+  他也要通过上述a类似的加法，以及调用virtual destructor函数  
+```cpp 
+   如base2 *pbase2=new derive;  
+  delete pbase2;//invoke derive class&#39;s destructor (virtual )```
+  
+ 　首先这个调用要通过vptr,其次，传入的this指针需要调整
+  ＆＆＆执行期间确定＆＆＆
++ 注意：然而，这种offset加法无法在编译期间直接设定。pbase2所指的真正对象只有在执行期间才能确定  
+//如何调整；早期的想法是：将vtable中的slot改为一个slot放置函数指针faddr和this的offset  
+ //则：（*pbase2-&gt;vptr[1])(pbase2);  
+ //改为　（*pbase2-&gt;vptr[1].faddr)(pbase2+pbase2-  &gt;vptr[1].offset);但是连带处罚了其他形式virtual func调用，
+  
+ + 那如何处理？  
+ + [１]方法１：thunk
+  　　　～：this+=sizeof(base1)
+          Derived::~Derived(this);//只有汇编才有效率
+   如何使能？在virtual table slot继续内含一个简单的指针，slot中的地址可以指向一个virtual func或者一个thunk(若需要调整this)
+  其实多重继承来讲，每个继承的基类，都需要一个virtual table;,这样派生类就会维护多个基类的vtable
+  + 1)经由derived或第一个base class)调用，不需要调整this
+  + 2)经由&gt;=2的base class 调用，同一种函数在virtual table中可能需要多笔对应的slot
+        base1 *pbase1 =new derived;
+        base2 *pbase2=new derived;
+        delete pbase1//不需要调整this,virtual table slot放置正真的destructor地址
+        
+        delete pbase2//需要调整this ,放置thunk
+        vptr和vtable命名也会被特殊化
+        参考图在书中，这里不放
++ [２]方法２　：  
+   因为动态链接器的原因，使得符号链接变得缓慢
+   为了调整执行期链接器的效率，sun编译器将多个vtable 连锁为一个，指向次要表格的指针可以由主要表格加offset
+　  其他类似。
+例子：
+```cpp
+　　　　　　　base2 *ptr =new derived;
+       delete ptr;//此时调用derived::~deirved,故ptr需要被调整，若为virtual，需要更多
+       
+       derived *pder=new derived;
+       pder-&gt;b();//注意b没有被改写，所以需要调整pder指向base2 subobj
+       
+       base2 *pb1=new derived;
+       base2 *pb2=pb1-&gt;clone()//注意是调用derived:clone,所以调用后返回值要改变器指向base2 subobj
+       
+       当函数被认为足够小　，sun编译器会采用某种算法优化，split。。，否则不会，具体待了解。
+       所以virtual func的通常大小为８行```
++ [３]IBM:  
+函数若支持多重进入点，将不必有许多thunk;将thunk操作放在virtual func中，里面判断是否需要调整this指针
+     
+     
+##### 虚拟继承下的virtual func
+这种情况相当复杂了。需要探索上述的这些问题：point2d.point3d的对象不再相符，即使只继承一个，即单一虚拟继承，也需要调整this指针
+```cpp
+class point2d&#123;
+  public:
+  point2d()
+  virtual ~point2d()
+  virtual void mumble()
+  virutal  float z()
+  protected:
+  float _x,_y;
+  &#125; 
+  class point3d:public virtual point2d&#123;
+    public:
+    point3d()
+    ~point3d
+    protected:
+    float _z;
+    &#125;```
+    可以尝试下写出例子比较point2d和point3d指针看指向是否相同
+    当virtual base class中包含virtual func和nonstatic member时，各个厂商实现不同，复杂，作者不建议这么做
+    
+    －－－－－－－－－－－－－－－－－－－
+#### 函数的效能：
+  这部分可以通过函数的调用方式感性的了解，或者根据不同的编译器。测试对比几种调用的时间，以及是否已经开启优化等
+  （如编译器将被视为不变的表达式提到循环之外）
+  （通过消除局部对象的使用可以消除对constructor的调用）
+  
+#### 指向memeber　func的指针：
+  取一个nonstatic member func的地址，若为nonvirtual 则为其在内存中的真正地址。
+  但需要this参数。　
+  指向member func的指针：double (Point::*pmf)();类似
+  定义：double (point::*coord)() =&amp;point::x;
+       赋值:coord=&amp;point::y
+       调用：（origin.*coord)()/(ptr-&gt;*coord)()
+       转换为：(coord)(&amp;origin)/(coord)(ptr)
+       
+##### 指向virtual memeber func指针
+  在g++中
+  ```cpp
+  #include&lt;iostream&gt;
+#include&lt;stdio.h&gt;
+using namespace std;
+class Base1 &#123;
+        public:
+                virtual float getp() &#123; return mp;&#125;
+                void setp(float mmp)&#123;mp=mmp;&#125;
+                virtual int test()&#123;return 3;&#125;
+                virtual int test1()&#123;return 4;&#125;
+        private:
+                float mp;
+&#125;; 
+int main()
+&#123;  
+        float (Base1::*pmf)()=&amp;Base1::getp;
+        Base1 *ptr=new Base1;
+        ptr-&gt;setp(3.2);
+        cout&lt;&lt;ptr-&gt;getp()&lt;&lt;endl;//3.2
+        cout&lt;&lt;(ptr-&gt;*pmf)()&lt;&lt;endl;//3.2　　会被内部转换：（*ptr-&gt;vptr[(int)pmf])(ptr)
+        printf(&quot;%p\n&quot;,&amp;Base1::getp);//1　索引值
+        printf(&quot;%p\n&quot;,&amp;Base1::setp);//40xxx真实地址
+        printf(&quot;%p\n&quot;,&amp;Base1::test);// 9，为什么是９不清楚
+        printf(&quot;%p\n&quot;,&amp;Base1::test1);//11
+        
+        return  0;
+&#125;```
+　　所以，对于虚拟函数也是可以通过函数指针来访问的，只不过得到的地址是索引值，但不影响访问
+或者对以下
+```cpp
+#include&lt;iostream&gt;
+#include&lt;stdio.h&gt;
+using namespace std;
+class Base1 &#123;
+        public:
+                virtual float getp() &#123; return mp;&#125;
+                void setp(float mmp)&#123;mp=mmp;&#125;
+                    int test()&#123;return 3;&#125;
+                virtual int test1()&#123;return 4;&#125;
+        private:
+                float mp;
+&#125;; 
+int main()
+&#123;  
+        float (Base1::*pmf)()=&amp;Base1::getp;
+        Base1 *ptr=new Base1;
+        ptr-&gt;setp(3.2);
+        cout&lt;&lt;ptr-&gt;getp()&lt;&lt;endl;
+        cout&lt;&lt;(ptr-&gt;*pmf)()&lt;&lt;endl;
+        printf(&quot;%p\n&quot;,&amp;Base1::getp);
+        printf(&quot;%p\n&quot;,&amp;Base1::setp);
+        printf(&quot;%p\n&quot;,&amp;Base1::test);
+        printf(&quot;%p\n&quot;,&amp;Base1::test1);
+                  
+                int (Base1::*pmi)()=&amp;Base1::test1;//or test　可以指向两种，编译器如何区分呢？cfront２　通过判断是索引（may &lt;127)还是函数地址来区分
+                Base1 *ptr2=new Base1;
+                cout&lt;&lt;(ptr2-&gt;*pmi)()&lt;&lt;endl;
+                delete ptr;
+                delete ptr2;
+        
+        return  0;
+&#125;```
+##### 多重继承下指向member func指针
+为了让mem func point能支持多重继承和虚拟继承：
+噢这种情况很复杂了。你得知道它指向的是virtual 还是non virtual
+书中并没有探讨太多，野比较复杂，这里举一个例子，探索细节可以看编译器，gdb等结果：
+```cpp
+#include&lt;iostream&gt;
+#include&lt;stdio.h&gt;
+using namespace std;
+class Base1 &#123;
+        public:
+                virtual float getp() &#123; return mp;&#125;
+                void setp(float mmp)&#123;mp=mmp;&#125;
+                    int test()&#123;return 3;&#125;
+                virtual int test1()&#123;return 4;&#125;
+        private:
+                float mp;
+&#125;;
+class Base2 &#123;
+        public:
+                virtual float get2p()&#123;return m2p;&#125;
+                virtual void set2p(float m2pp)&#123;m2p=m2pp;&#125;
+                int test22() &#123;return 5;&#125;
+                virtual int test21()&#123;return 6;&#125;
+        private:
+                float m2p;
+&#125;;
+class Der:public Base1,public Base2&#123;
+        public:
+                virtual float get3p()&#123;return m3p;&#125;
+        private:
+                float m3p;
+
+&#125;;
+int main()
+&#123;  
+        float (Base1::*pmf)()=&amp;Base1::getp;//这后面的调用就发挥想象把，想怎么尝试都行
+        Base1 *ptr=new Der;
+        ptr-&gt;setp(3.2);
+        cout&lt;&lt;ptr-&gt;getp()&lt;&lt;endl;
+        cout&lt;&lt;(ptr-&gt;*pmf)()&lt;&lt;endl;
+        printf(&quot;%p\n&quot;,&amp;Der::getp);
+        printf(&quot;%p\n&quot;,&amp;Base1::setp);
+        printf(&quot;%p\n&quot;,&amp;Base1::test);
+        printf(&quot;%p\n&quot;,&amp;Base1::test1);
+                  
+                int (Base1::*pmi)()=&amp;Base1::test1;//or test
+                Base1 *ptr2=new Base1;
+                cout&lt;&lt;(ptr2-&gt;*pmi)()&lt;&lt;endl;
+                delete ptr;
+                delete ptr2;
+        
+        return  0;
+&#125;```
+##### 效能
+##### inline func:
+首先得直到，内联函数实际上表现为什么？函数本质上被经过栈调用，而内联函数是直接　在主函数中铺开为表达式，所以调用内联函数　能提高效率，但是响应的
+源代码会变大，而且有参数的限制
+应用：在操作符函数中，指定set,get类函数，使得操作符函数能被写成普通的函数。　而set get 写成inline函数，会减少效率降低
+inline关键词只是请求，并不会所有都inline展开，编译器会做判断权衡
+具体看书，不是很细
+内联函数两个注意点：
+形式参数：inline扩展时，每一个形式参数会被对应的实际参数代替：
+```cpp
+　　　　　　　　inline int min (int i,int j)&#123;
+                   return i&lt;j?i:j;
+                   &#125;
+         三个调用：
+         inline int bar() &#123;
+            int minval;
+            int val1=1024;
+            int val2=2048;
+            minval=min(val1,val2); 参数直接替换val1&lt;val2?val1:val2;
+            minval=min(1024,2048);替换后直接使用常量：1024
+            minval=min(fool(),bar()+1) 引发参数副作用，需要导入一个临时对象，以避免重复求值：
+            　　　　     int t1,t2; minval=(t1=foo()),(t2=bar()+1),t1&lt;t2?...)
+           
+           
+            return minval&#125;```
+ 局部变量:在内联函数中加入局部变量，会导致因为维护局部变量带来的成本；  
+ 内联函数在替代c宏，是比较安全的；但是若宏中参数有副作用的话，如上，会导致大的扩展码以维护局部变量或者生成临时的变量
+            
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-class/" rel="tag"># cpp_class</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/09/cpp-datamember-memory/" rel="prev" title="cpp_datamember_memory">
+      <i class="fa fa-chevron-left"></i> cpp_datamember_memory
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/09/cpp-conanddest-semantics/" rel="next" title="cpp_conanddest_semantics">
+      cpp_conanddest_semantics <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#c-function%E8%AF%AD%E6%84%8F%E5%AD%A6"><span class="nav-number">1.</span> <span class="nav-text">c++ function语意学</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%95%E5%85%A5%E8%BF%99%E4%B8%AA%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">引入这个问题：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A5%E4%B8%8B%E5%88%86%E4%B8%BA%E5%87%A0%E7%A7%8D%E5%87%BD%E6%95%B0%E8%AE%A8%E8%AE%BA%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">以下分为几种函数讨论：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9D%9E%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="nav-number">1.2.1.</span> <span class="nav-text">非静态成员函数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#virtual-func"><span class="nav-number">1.2.2.</span> <span class="nav-text">virtual func</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="nav-number">1.2.3.</span> <span class="nav-text">静态成员函数：</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '8e76ff0702e38cb5489d99eab6d40431',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

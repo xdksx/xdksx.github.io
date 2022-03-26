@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="c++ class constructor and destructor构造函数构造函数表现构造函数的作用：构造函数主要是用来初始化对象的－－－一般是成员，函数不用–所以它需要在构建对象时就执行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_conandde">
+<meta property="og:url" content="https://xdksx.github.io/2018/06/09/cpp-conandde/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="c++ class constructor and destructor构造函数构造函数表现构造函数的作用：构造函数主要是用来初始化对象的－－－一般是成员，函数不用–所以它需要在构建对象时就执行">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-09T03:03:35.000Z">
+<meta property="article:modified_time" content="2022-03-26T09:04:05.916Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="cpp_class">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2018/06/09/cpp-conandde/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_conandde | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/09/cpp-conandde/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_conandde
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-09 11:03:35" itemprop="dateCreated datePublished" datetime="2018-06-09T11:03:35+08:00">2018-06-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-26 17:04:05" itemprop="dateModified" datetime="2022-03-26T17:04:05+08:00">2022-03-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="c-class-constructor-and-destructor"><a href="#c-class-constructor-and-destructor" class="headerlink" title="c++ class constructor and destructor"></a>c++ class constructor and destructor</h2><h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><h4 id="构造函数表现"><a href="#构造函数表现" class="headerlink" title="构造函数表现"></a>构造函数表现</h4><h5 id="构造函数的作用："><a href="#构造函数的作用：" class="headerlink" title="构造函数的作用："></a>构造函数的作用：</h5><p>构造函数主要是用来初始化对象的－－－一般是成员，函数不用<br>–所以它需要在构建对象时就执行<span id="more"></span></p>
+<h5 id="构造函数如何写："><a href="#构造函数如何写：" class="headerlink" title="构造函数如何写："></a>构造函数如何写：</h5><pre><code class="cpp">public:　classname(arg...):member(arg),mem2(arg),..&#123;xxx&#125;
+    classname(..)&#123;..&#125;
+</code></pre>
+<h5 id="默认构造函数的生成规则（深入对象模型）"><a href="#默认构造函数的生成规则（深入对象模型）" class="headerlink" title="默认构造函数的生成规则（深入对象模型）"></a>默认构造函数的生成规则（深入对象模型）</h5><ul>
+<li><p>下面四个情况下会生成默认构造函数（编译器控制）(nontrivial default constructor)  </p>
+</li>
+<li><p>带有default constructor的member class object<br> 即在类中带有对象成员，该对象成员所属的类有构造函数<br>如：　</p>
+<pre><code class="cpp">class Foo &#123;public :Foo(),Foo(int)...&#125;
+class Bar&#123;public:Foo foo;char *str&#125;;
+                       void funv()
+                       &#123;   Bar bar;....
+                       &#125;```
+这种情况下若程序员没有实现构造函数，则编译器会自己生成构造函数，来调用Foo的构造函数
+但是不初始化str,这个得由程序员来做。
+如类似于：
+```cpp
+Bar::Bar()&#123;
+foo.Foo::Foo();
+</code></pre>
+<p> 若程序员自己写了构造函数但是不包括初始化foo则，编译器会在程序眼写的构造函数中加入上述，另外若有多个对象<br>则按照声明顺序进行调用他们的构造函数；</p>
+</li>
+<li><p>带有Default constructor 的base class<br> 同理，当继承的基类带有构造函数时就会加入，若程序员的构造函数没有初始化他们时就会扩展<br>&#x2F;&#x2F;以上见例子class_constructor.cpp，</p>
+</li>
+<li><p>和vcirtual相关need to create vptr<br> 带有一个virtual　func的class<br>  1)class　声明或继承一个virtua func<br>  2)class派生自一个继承琏，其中有virtual base classes       这个比较容易理解</p>
+</li>
+<li><p>和virtual相关 need to init vptr<br>带有一个virtual　base class 的class<br>如：<br><code>cpp class X&#123;  public int i;&#125;   class A :public virtual X &#123;/// class B :public virtual X &#123; class C: public A,public B </code></p>
+</li>
+</ul>
+<h5 id="构造函数何时被执行"><a href="#构造函数何时被执行" class="headerlink" title="构造函数何时被执行"></a>构造函数何时被执行</h5><p>-在对象定义时若有构造函数，则会执行</p>
+<h5 id="实践："><a href="#实践：" class="headerlink" title="实践："></a>实践：</h5><p>1:5构造函数的使用：重载，初始化式</p>
+<h4 id="构造函数表现的原理"><a href="#构造函数表现的原理" class="headerlink" title="构造函数表现的原理"></a>构造函数表现的原理</h4><h5 id="构造函数在静态代码块中的位置和符号体现"><a href="#构造函数在静态代码块中的位置和符号体现" class="headerlink" title="构造函数在静态代码块中的位置和符号体现"></a>构造函数在静态代码块中的位置和符号体现</h5><p>如果有定义构造函数，它本身也是一个函数，放在代码段中，可以通过kdbg查看</p>
+<pre><code class="c">origin(int ax=3,int bx=4):a(ax),b(bx)&#123;&#125;
+0x400bae push   %rbp
+0x400baf mov    %rsp,%rbp
+0x400bb2 mov    %rdi,-0x8(%rbp)
+0x400bb6 mov    %esi,-0xc(%rbp)
+0x400bb9 mov    %edx,-0x10(%rbp)```
+##### 构造函数在动态执行时，放在哪个内存段中，如何被引用，使用
++ 动态执行时，在代码段中，通过this引用
++ 构造函数总结：任何c++ class只有在以上四中情况下才会产生默认构造函数，且产生的默认构造函数不会去初始化成员的值
+### 拷贝构造函数
+#### 拷贝的动作发生了什么
+拷贝的本质，为什么需要拷贝构造函数？
++ 首先对基本的类型而言，拷贝是把值赋给另一个同类型的变量，而数租不能做=赋值拷贝
++ 对对象而言，也是把值赋给同类型的对象，而不是共享一个指针，所以这个过程需要将对象中的成员也复制过去（复制的是当前对象在此时时成员的值　）
++ c++中的拷贝构造函数针对三种行为：＝　，f(T t)和　f()&#123;T t;return t&#125;返回对象－－这三种情况都针对左值的　　　
++ =:注意这个是在定义时做的，如origin or1=or2;此时会调用&quot;拷贝构造函数&quot;（　同or1(or2))
+　or2=or3;此时不会调用拷贝构造函数
+（当程序员自己写了拷贝构造函数时，默认调用该构造函数，而不会区做成员复制，所以若在其中没有做复制，可能得到不想要的值，见例子)
+
+#### 拷贝构造函数的作用和使用
+##### 什么情况下会生成默认的拷贝构造函数？
+类似于构造函数，在以下情形会生成默认的拷贝构造函数－
++ 当需要调用别的拷贝构造函数时，如：当类内含有一个member object而后者的class声明有一个copy　constructor时；
++ 当类继承自一个base class而后者有拷贝构造函数
++ 当类声明了一个或多个virtual functions时
++ 当class 派生自一个继承　串琏，而其中有一个或多个virtual base classes 时
+
+#### 拷贝构造函数和编译器－－－汇编，转换：
+分三种情况讨论：
++ 初始化拷贝构造：
+```cpp
+                   X x1(x0);
+                   X x2=x0;
+                   X x3=X(x0);```
+   上述三种都是定义一个类，即定义的本质会在内存中开辟空间
+上述三个都会执行拷贝构造函数，如何执行？  
+会被转换为：伪代码
+        X x1;
+        x1.X::X(x0);
+        会调用X::X(const X&amp; xx) 
+        x2,x3也是这样，将拷贝方作为函数参数传入
+        这样就可以解释为什么拷贝构造函数的定义是      
+        classname (const classname &amp;obj)
++ 参数的初始化
+即传入一个参数给函数：
+       foo(X x)
+如：
+       X xx;
+       //,..
+       foo(xx);
+       则会产生一个临时的对象：
+ 伪代码
+        X __temp0;
+        _temp0.X::X(xx);//use copy construtor
+         foo(__temp0)
+这里因为它是临时的，所以则定义的时候需要用引用foo(X &amp;x)//这里不是很清楚为什么用引用～！，是否后面的操作直接面向该对象，需要做实际的修改，所以。。
+所以，为了对付临时的对象，在执行完函数后，需要调用该对象的析构函数
++ 返回值的初始化：  
+如
+       X bar()&#123;
+                      X xx;
+                       //...
+                       return xx;
+            &#125;
+         如何做X xxx=bar();如何拷贝的？双阶段初始化：
+         a 增加一个额外的引用参数给函数，如void bar(X＆　_result)
+         b 在return 前插入一个copy constructor 
+             void bar(X &amp;__result)&#123;
+                       X xx;
+                       xx.X::X();
+                       __result.X::XX(xx);
+                       return ;
+               &#125;
+        所以上述会被转化为：
+        Ｘ　xx=bar()  ---&gt;  X xx ;//注意这里不会执行默认构造函数　　bar(xx);
+            ex:bar().memfunc()---&gt;X __temp0;(bar(__temp0),__temp0).memfunc();
+            X (*pf)();pf=bar;---&gt;void (*pf)(X&amp;);pf=bar;
+            
+##### 关于上述三种情况的优化：
+１)在使用者层面上优化；２）在编译器层面的优化（ＮＲＶ）具体见深入模型（书）
+##### 关于该不该编写copy  constructor: 
+除非需要大量的memberwise 初始化操作，如传值给object以便做NRV优化，否则不需要
+//上述情况的检验可以通过代码，或者去看编译器的生成代码～    
+##### 拷贝构造函数的内存
+放在代码段，
+### 初始化队列
+即构造函数的一种形式如：X(int f):a(ax),b(bx)..&#123;....&#125;
++ 问题：什么时候用初始化列表？它和初始化赋值有什么不同？
+        有以下四种情况需要使用初始化列表：
+        １）当初始化一个reference member时
+        ２）当初始化一个const member时
+        ３）当调用一个base class的constructor,当它拥有一组参数时
+        ４）当调用一个member　class 的consructor，而它有一组参数时；
+如
+``cpp
+   class world &#123;
+          String _nhame;
+          int cnt;
+          public :world()&#123;_nhame=0;cnt=0;&#125;&#125;```
+//此时，对_nhame这个成员，需要做较多的事，如产生临时对像，调用operator=....
+   －－－－所以想到用初始化列表：
+```cpp 
+          world::world:nhame(0)&#123;
+            cnt=0;
+            &#125;
+            这样只会调用nhame的构造函数
+            会被转换为：world::world&#123; //伪代码
+             _nhame.String::String(0);
+              cnt=0;
+              &#125;```
++ 更具体的，初始化列表如何进行：顺序如何：如前，初始化列表最终会被转换为初始化表达式到构造函数体中，那是什么顺序呢？  
+注意这里的初始化顺序是根据成员在类中的定义（声明）顺序来的，而不是初始化列表中的顺序
+看这个例子：
+```cpp 
+       class X&#123;
+                    int i; 
+                    int j;
+                   public:
+                     X(int cal):i(j)&#123;&#125;
+                     ...
+                     此时，因为i先初始化,再j,出错，i需要j```
+                     
+  ----&gt;可以改善为：X::X(int cal):j(cal)&#123;i=j;&#125;   
+   ----为什么这样可以？  
+   因为初始化列表的内容会放到初始化体中的表达式前面，这样j就会先定义
+        －－－－》另一个可能出错的例子：
+        　　　X::X(int cal):i(xfoo(cal)),j(cal)&#123;&#125;
+        --&gt;转换为：X::X(/*this pointer*/ int cal)&#123;
+                      i=this-&gt;xfoo(cal);
+                      j=cal;
+                      &#125;
+            这个情况在这里是对的，但是当X 继承自某个类，在xfoo是基类的函数，，则会出错this-&gt;xfoo
+
+#### 几个问题：
++ 较为简单的例子见文件中的例子
++ 当程序员定义了拷贝构造函数时，还会执行memberwise initialization吗　－－会执行拷贝构造函数
+参考：深入c++对象模型和http://en.cppreference.com/w/cpp/language/copy_constructor
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-class/" rel="tag"># cpp_class</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/09/cpp-class-memory/" rel="prev" title="cpp_class_memory">
+      <i class="fa fa-chevron-left"></i> cpp_class_memory
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/09/cpp-inheritance/" rel="next" title="cpp_inheritance">
+      cpp_inheritance <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#c-class-constructor-and-destructor"><span class="nav-number">1.</span> <span class="nav-text">c++ class constructor and destructor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E8%A1%A8%E7%8E%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">构造函数表现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9A"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">构造函数的作用：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%A6%82%E4%BD%95%E5%86%99%EF%BC%9A"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">构造函数如何写：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99%EF%BC%88%E6%B7%B1%E5%85%A5%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B%EF%BC%89"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">默认构造函数的生成规则（深入对象模型）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%BD%95%E6%97%B6%E8%A2%AB%E6%89%A7%E8%A1%8C"><span class="nav-number">1.1.1.4.</span> <span class="nav-text">构造函数何时被执行</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5%EF%BC%9A"><span class="nav-number">1.1.1.5.</span> <span class="nav-text">实践：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E8%A1%A8%E7%8E%B0%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.1.2.</span> <span class="nav-text">构造函数表现的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%9C%A8%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%9D%97%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE%E5%92%8C%E7%AC%A6%E5%8F%B7%E4%BD%93%E7%8E%B0"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">构造函数在静态代码块中的位置和符号体现</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '5c310fade6c4b3cf24d064dc906237c8',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="install and make first app20170608今天主要是安装了android-studio环境并成功开发第一个helloworld   app 在模拟器和手机上运行，下面是整个教程：在ubuntu下 1 安装java-jdk:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android_makefirst_app">
+<meta property="og:url" content="https://xdksx.github.io/2018/05/20/android-makefirst-app/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="install and make first app20170608今天主要是安装了android-studio环境并成功开发第一个helloworld   app 在模拟器和手机上运行，下面是整个教程：在ubuntu下 1 安装java-jdk:">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-20T09:38:24.000Z">
+<meta property="article:modified_time" content="2022-03-26T09:04:05.911Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="android_make">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2018/05/20/android-makefirst-app/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>android_makefirst_app | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/05/20/android-makefirst-app/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          android_makefirst_app
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-05-20 17:38:24" itemprop="dateCreated datePublished" datetime="2018-05-20T17:38:24+08:00">2018-05-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-26 17:04:05" itemprop="dateModified" datetime="2022-03-26T17:04:05+08:00">2022-03-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index"><span itemprop="name">android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="install-and-make-first-app"><a href="#install-and-make-first-app" class="headerlink" title="install and make first app"></a>install and make first app</h3><p>20170608<br>今天主要是安装了android-studio环境并成功开发第一个helloworld   app 在模拟器和手机上运行，下面是整个教程：在ubuntu下</p>
+<h4 id="1-安装java-jdk"><a href="#1-安装java-jdk" class="headerlink" title="1 安装java-jdk:"></a>1 安装java-jdk:<span id="more"></span></h4><p>a  先下载java-jdk:Java SE Development Kit 8 Downloads<br><a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a><br>下载对应系统的版本</p>
+<p>b  下载到某个目录，解压到要安装的目录：如：&#x2F;usr&#x2F;jdk-8&#x2F;</p>
+<p>c   设置全局环境变量：如上述的安装目录，则将<br>export JAVA_HOME&#x3D;&#x2F;usr&#x2F;jdk-8<br>export JRE_HOME&#x3D;$JAVA_HOME&#x2F;jre<br>export CLASSPATH&#x3D;.:$CLASSPATH:$JAVA_HOME&#x2F;lib:$JRE_HOME&#x2F;lib<br>export PATH&#x3D;$PATH:$JAVA_HOME&#x2F;bin:$JRE_HOME&#x2F;bin<br>添加到&#x2F;etc&#x2F;profile文件中，在末尾另起一行添加</p>
+<p>d 使用source &#x2F;etc&#x2F;profile命令使刚才配置的信息生效</p>
+<p>e 测试是否成功：java -version<br>测试,编写java文件：<br>public class test{<br>    public static void main(String[] args){<br>        System.out.println(“hello world”);<br>    }<br>}<br>保存为test.java，<br>生成字节码：javac test.java<br>运行:java test</p>
+<h3 id="2-安装android-studio"><a href="#2-安装android-studio" class="headerlink" title="2 安装android-studio:"></a>2 安装android-studio:</h3><p>a 下载：在官网或者其他网站下载后<br>b 按照installion说明进行：一般是先选择要安装的目录：如&#x2F;usr&#x2F;android-studio<br>c　直接在终端,进入bin目录后:.&#x2F;studio.sh<br>d 还有其他配置．比如在任意目录都能打开软件．<br>e 其他见说明文件等</p>
+<p>3 第一个app helloworld<br>在模拟器上运行<br>打开软件－－&gt;选择新建一个工程，适当选择之后-&gt;选择build-&gt;make project-&gt;点击run–<br>–&gt;会提示选择安装下载模拟器–&gt;选择合适的，最好不要是带锁的<br>－－－&gt;之后会提示成功．再选择建立一个模拟器，之后就可以了</p>
+<p>注意有两种架构，x86的比arm的快10倍,但是，linux下需要加速kvm<br>如果不能运行x86的，可能需要安装kvm:<br>也可以使用genymotion模拟器</p>
+<h4 id="4-安装kvm可选"><a href="#4-安装kvm可选" class="headerlink" title="4 安装kvm可选"></a>4 安装kvm可选</h4><p>要知道Android的编译环境Google首推Linux平台（64位的Ubuntu）而Mac系统排到第二位。那么在Linux平台下是如何硬件加速的呢？<br>那就是传说中的kvm（Kernel-based Virtual Machine），同样的，它需要硬件的支持，比如intel的VT和AMD的V，它是基于硬件的完全虚拟化。<br>首先要确定你的cpu满足要求，下面有几个命令可以参考：</p>
+<p>$ egrep -c ‘(vmx|svm)’ &#x2F;proc&#x2F;cpuinfo<br>4</p>
+<p>打印的值不为0即可。</p>
+<p>下面安装kvm：</p>
+<p>$ sudo apt-get install qemu-kvm<br>$ sudo adduser linc kvm<br>$ sudo apt-get install libvirt-bin ubuntu-vm-builder bridge-utils<br>$ sudo adduser linc libvirtd</p>
+<p>(linc为用户名，适当改）<br>检验安装是否成功：</p>
+<p>$ sudo virsh -c qemu:&#x2F;&#x2F;&#x2F;system list<br> Id    Name                           State</p>
+<hr>
+<p>运行，在有模拟器的目录中：<br>如&#x2F;home&#x2F;ksx&#x2F;Android&#x2F;Sdk&#x2F;emulator&#x2F;emulator -avd Nexus_4_API_22 -qemu -m 2047 -enable-kvm</p>
+<p>使用起来果然飞快，连打开网页的速度都令人惊奇。当然了，如果不用命令行启动，直接在Android Studio中启动x86_64架构的模拟器，速度也是很快，唯独arm架构的模拟器启动速度奇慢无比。话又说回来，既然有了比较不错的cpu，那么机器的其他配置一定差不了，这样的配置跑起模拟器来肯定要比原来强。</p>
+<p>如果觉得用自带的模拟器不能够满足你的要求，那么可以使用第三方的模拟器Genymotion,网传开发者反应良好。</p>
+<h4 id="5在手机上运行app"><a href="#5在手机上运行app" class="headerlink" title="5在手机上运行app"></a>5在手机上运行app</h4><p>首先连接手机，打开usb调试<br>还是一样，但是选择app那里不是app,而是选择Edit Configurations<br>之后选择usb　device，ok，就可以了，接着运行</p>
+<h4 id="关于项目结构模式："><a href="#关于项目结构模式：" class="headerlink" title="关于项目结构模式："></a>关于项目结构模式：</h4><p>默认为android<br>设置为project可以看到整个完整的目录结构：<br>　　　　　.gradle和.idea 为自动生成<br>　　　　　app<br>　　　　　build   编译时自动生成的文件，不用太关心<br>　　　　　gradle   包含gradle wrapper的配置文件，使用gradle wrapper的方式不需要提前将gradle下载好，会自动根据本地缓存情况来决定是否联网下载gradle<br>     .gitignore<br>     build.gradle<br>     gradle.properties  全局的gradle配置文件，这里配置的属性会影响项目中所有的的gradle编译脚本<br>     gradlew　和gradlew.bat在命令行中执行gradle命令<br>     local.properties　　指定本机android sdk路径<br>     setting.gradle指定项目中引入的模块</p>
+<pre><code> app目录下
+ build　　为自动生成，同上
+ lib   项目使用的第三方库
+ test 测试用例
+ proguard-rules.pro  代码混淆规则
+</code></pre>
+<h4 id="build-gradle-intruduce"><a href="#build-gradle-intruduce" class="headerlink" title="build gradle intruduce"></a>build gradle intruduce</h4><p>gradle  Groovy 领域语言　　DSL    摒弃了Ant 和Maven </p>
+<p>在app 外有一个 build.gradle。在app中有一个build.gradle</p>
+<p>在外面的　gradle 也可以构建c++等项目，<br>buildscript {<br>    repositories {<br>        jcenter()　　　&#x2F;&#x2F;代码托管仓库　利用它可以轻松引用jcenter开源项目</p>
+<pre><code>&#125;
+dependencies &#123;
+    classpath &#39;com.android.tools.build:gradle:2.3.2&#39;　　//声明构建的是android
+
+    // NOTE: Do not place your application dependencies here; they belong
+    // in the individual module build.gradle files
+&#125;
+</code></pre>
+<p>}</p>
+<p>allprojects {<br>    repositories {<br>        jcenter()<br>    }<br>}</p>
+<p>task clean(type: Delete) {<br>    delete rootProject.buildDir<br>}</p>
+<p>app中<br>apply plugin: ‘com.android.application’　&#x2F;&#x2F;表明为android 应用程序模块，为com.android.library表示库模块</p>
+<p>android {　　　&#x2F;&#x2F;安卓闭包<br>    compileSdkVersion 25　　　　&#x2F;&#x2F;项目的编译版本，25为API 25,对应android 7.1<br>    buildToolsVersion “25.0.3”   &#x2F;&#x2F;项目构建工具版本<br>    defaultConfig {<br>        applicationId “org.example.myactivity1”　　　项目包名<br>        minSdkVersion 25　　　　　&#x2F;&#x2F;项目最低兼容的android系统版本<br>        targetSdkVersion 25　　&#x2F;&#x2F;表明如22表示只在22测试充分，如不启动运行时权限，android６　的运行时权限就不会加，表明只在5上做充分测试<br>        versionCode 1　　　项目版本编号<br>        versionName “1.0”　　　项目版本名<br>        testInstrumentationRunner “android.support.test.runner.AndroidJUnitRunner”<br>    }<br>    buildTypes {&#x2F;&#x2F;分debug和release版本<br>        release {<br>            minifyEnabled false　&#x2F;&#x2F;是否混淆代码<br>            proguardFiles getDefaultProguardFile(‘proguard-android.txt’), ‘proguard-rules.pro’&#x2F;&#x2F;混淆时使用的规则文件，.txt为sdk文件。pro为根目录文件<br>        }<br>    }<br>}</p>
+<p>dependencies {&#x2F;&#x2F;分本地依赖，库依赖和远程依赖<br>    compile fileTree(dir: ‘libs’, include: [‘*.jar’])　　&#x2F;&#x2F;本地依赖声明<br>    androidTestCompile(‘com.android.support.test.espresso:espresso-core:2.2.2’, {<br>        exclude group: ‘com.android.support’, module: ‘support-annotations’<br>    })<br>    compile ‘com.android.support:appcompat-v7:25.3.1’　　&#x2F;&#x2F;　依赖库<br>    compile ‘com.android.support.constraint:constraint-layout:1.0.2’<br>    testCompile ‘junit:junit:4.12’　　&#x2F;&#x2F;测试用例库<br>}</p>
+<p>其他：分区工具：gpart,在官网上找到live usb之后下载并做成启动盘，就可以对任意的格式文件系统进行分区，在ubuntu 本地是无法对根目录扩容的，所以可以这样做来扩容</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/android-make/" rel="tag"># android_make</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/20/android-howto-makeapk-cmd/" rel="prev" title="android_howto_makeapk_cmd">
+      <i class="fa fa-chevron-left"></i> android_howto_makeapk_cmd
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/05/20/android-AndroidManifest/" rel="next" title="android_AndroidManifest">
+      android_AndroidManifest <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#install-and-make-first-app"><span class="nav-number">1.</span> <span class="nav-text">install and make first app</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85java-jdk"><span class="nav-number">1.1.</span> <span class="nav-text">1 安装java-jdk:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85android-studio"><span class="nav-number">2.</span> <span class="nav-text">2 安装android-studio:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E5%AE%89%E8%A3%85kvm%E5%8F%AF%E9%80%89"><span class="nav-number">2.1.</span> <span class="nav-text">4 安装kvm可选</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5%E5%9C%A8%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8Capp"><span class="nav-number">2.2.</span> <span class="nav-text">5在手机上运行app</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84%E6%A8%A1%E5%BC%8F%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">关于项目结构模式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#build-gradle-intruduce"><span class="nav-number">2.4.</span> <span class="nav-text">build gradle intruduce</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '985e428539ac1d2b656c89f10e71b7f4',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

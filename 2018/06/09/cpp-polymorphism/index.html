@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="多态：为什么需要多态？引入几个点：　　继承的机制中，基类的指针和引用能指向派生类，（派生类对象中的基类成员是在内存前面的，即指向派生类对象的指针指向的是第一个基类的第一个成员）    指针的值本质上是内存地址，也就是说指向不同变量(int char.)，对象的指针本身的值都是地址的value) 指针的类型限定了指针的操作内存范围和取值的方式，如通过int指针取值的时候，取到４byte,通过char">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_polymorphism">
+<meta property="og:url" content="https://xdksx.github.io/2018/06/09/cpp-polymorphism/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="多态：为什么需要多态？引入几个点：　　继承的机制中，基类的指针和引用能指向派生类，（派生类对象中的基类成员是在内存前面的，即指向派生类对象的指针指向的是第一个基类的第一个成员）    指针的值本质上是内存地址，也就是说指向不同变量(int char.)，对象的指针本身的值都是地址的value) 指针的类型限定了指针的操作内存范围和取值的方式，如通过int指针取值的时候，取到４byte,通过char">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-09T06:06:57.000Z">
+<meta property="article:modified_time" content="2022-03-26T09:04:05.925Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="cpp_class">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2018/06/09/cpp-polymorphism/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_polymorphism | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2018/06/09/cpp-polymorphism/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_polymorphism
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-09 14:06:57" itemprop="dateCreated datePublished" datetime="2018-06-09T14:06:57+08:00">2018-06-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-26 17:04:05" itemprop="dateModified" datetime="2022-03-26T17:04:05+08:00">2022-03-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="多态："><a href="#多态：" class="headerlink" title="多态："></a>多态：</h3><h4 id="为什么需要多态？"><a href="#为什么需要多态？" class="headerlink" title="为什么需要多态？"></a>为什么需要多态？</h4><p>引入几个点：<br>　　继承的机制中，基类的指针和引用能指向派生类，（派生类对象中的基类成员是在内存前面的，即指向派生类对象的指针指向的是第一个基类的第一个成员）  </p>
+<ul>
+<li>指针的值本质上是内存地址，也就是说指向不同变量(int char.)，对象的指针本身的值都是地址的value)</li>
+<li>指针的类型限定了指针的操作内存范围和取值的方式，如通过int指针取值的时候，取到４byte,通过char指针取值时取得1byte;）<span id="more"></span></li>
+<li>因此，基类指针限定了，即使它指向派生类，它也只能操作基类自身的成员和方法；就像char形指针指向int形，取得的只是一部分）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">　　　<span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"> <span class="number">3</span> <span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"> <span class="number">4</span> <span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 5 </span>&#123;</span><br><span class="line"> <span class="number">6</span>     <span class="type">int</span> in=<span class="number">2</span>;</span><br><span class="line"> <span class="number">7</span>     <span class="type">char</span> *pc=(<span class="type">char</span>*)&amp;in;</span><br><span class="line"> <span class="number">8</span>     cout&lt;&lt;*pc&lt;&lt;endl;<span class="comment">//乱码</span></span><br><span class="line"> <span class="number">9</span>     <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">10</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以基类指针可以指向子类，但是只能调用基类的函数，即使子类复写了父类的函数</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;Base&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Derived</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;Derived&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived derived;</span><br><span class="line">    Base &amp;rBase = derived;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;rBase is a &quot;</span> &lt;&lt; rBase.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This example prints the result:</p>
+<p>rBase is a Base</p>
+<p>&#x2F;＝》简化：如何让下面的例子得到想要的结果？  </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Animal *animals[] = &#123; &amp;fred, &amp;garbo, &amp;misty, &amp;pooky, &amp;truffle, &amp;zeke &#125;;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> iii=<span class="number">0</span>; iii &lt; <span class="number">6</span>; iii++)</span><br><span class="line">        std::cout &lt;&lt; animals[iii]-&gt;<span class="built_in">getName</span>() &lt;&lt; <span class="string">&quot; says &quot;</span> &lt;&lt; animals[iii]-&gt;<span class="built_in">speak</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如何让父类指针指向子类对象，可以调用子类函数呢？<br>－－－多态</li>
+<li>调用的子类函数要满足:<br>A derived function is considered a match if it has the same signature (name, parameter types, and whether it is const) and return type as the base version of the function. Such functions are called overrides.</li>
+</ul>
+<h4 id="如何使用－－－例子"><a href="#如何使用－－－例子" class="headerlink" title="如何使用－－－例子"></a>如何使用－－－例子</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;Base&quot;</span>; &#125; <span class="comment">// note addition of virtual keyword</span></span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Derived</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;Derived&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived derived;</span><br><span class="line">    Base &amp;rBase = derived;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;rBase is a &quot;</span> &lt;&lt; rBase.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This example prints the result:</p>
+<p>rBase is a Derived<br>－－－－－－－－－－－－－－－－－－－－－－－<br>再盗一个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    std::string m_name;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// We&#x27;re making this constructor protected because</span></span><br><span class="line">    <span class="comment">// we don&#x27;t want people creating Animal objects directly,</span></span><br><span class="line">    <span class="comment">// but we still want derived classes to be able to use it.</span></span><br><span class="line">    <span class="built_in">Animal</span>(std::string name)</span><br><span class="line">        : <span class="built_in">m_name</span>(name)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">std::string <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> m_name; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">speak</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;???&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>: <span class="keyword">public</span> Animal</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Cat</span>(std::string name)</span><br><span class="line">        : <span class="built_in">Animal</span>(name)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">speak</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;Meow&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Dog</span>: <span class="keyword">public</span> Animal</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Dog</span>(std::string name)</span><br><span class="line">        : <span class="built_in">Animal</span>(name)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">speak</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;Woof&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">report</span><span class="params">(Animal &amp;animal)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; animal.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&quot; says &quot;</span> &lt;&lt; animal.<span class="built_in">speak</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Cat <span class="title">cat</span><span class="params">(<span class="string">&quot;Fred&quot;</span>)</span></span>;</span><br><span class="line">    <span class="function">Dog <span class="title">dog</span><span class="params">(<span class="string">&quot;Garbo&quot;</span>)</span></span>;</span><br><span class="line"> </span><br><span class="line">    <span class="built_in">report</span>(cat);</span><br><span class="line">    <span class="built_in">report</span>(dog);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="注意多态的方式："><a href="#注意多态的方式：" class="headerlink" title="注意多态的方式："></a>注意多态的方式：</h4><p>调用基类指针指向子类，函数时，会调用到继承琏最底端，且该最低端的子类有该virtual函数的，否则只调用到最下且复写了该函数的。如下例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">  <span class="number">1</span> <span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line">  <span class="number">2</span> <span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line">  <span class="number">3</span> <span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">  <span class="number">4</span> &#123;</span><br><span class="line">  <span class="number">5</span>         <span class="keyword">public</span>:</span><br><span class="line">  <span class="number">6</span>                     <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;A&quot;</span>; &#125;</span><br><span class="line">  <span class="number">7</span> &#125;;</span><br><span class="line">  <span class="number">8</span> </span><br><span class="line">  <span class="number">9</span> <span class="keyword">class</span> <span class="title class_">B</span>: <span class="keyword">public</span> A</span><br><span class="line"> <span class="number">10</span> &#123;</span><br><span class="line"> <span class="number">11</span>         <span class="keyword">public</span>:</span><br><span class="line"> <span class="number">12</span>                     <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;B&quot;</span>; &#125;</span><br><span class="line"> <span class="number">13</span> &#125;;</span><br><span class="line"> <span class="number">14</span> </span><br><span class="line"> <span class="number">15</span> <span class="keyword">class</span> <span class="title class_">C</span>: <span class="keyword">public</span> B</span><br><span class="line"> <span class="number">16</span> &#123;</span><br><span class="line"> <span class="number">17</span>         <span class="keyword">public</span>:</span><br><span class="line"> <span class="number">18</span>                     <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;C&quot;</span>; &#125;</span><br><span class="line">                        <span class="comment">//or const char * getName()&#123;..&#125; and default virtual</span></span><br><span class="line"> <span class="number">19</span> &#125;;</span><br><span class="line"> <span class="number">20</span> </span><br><span class="line"> <span class="number">21</span> <span class="keyword">class</span> <span class="title class_">D</span>: <span class="keyword">public</span> C</span><br><span class="line"> <span class="number">22</span> &#123;</span><br><span class="line"> <span class="number">23</span>         <span class="keyword">public</span>:</span><br><span class="line"> <span class="number">24</span>                    <span class="comment">// virtual const char* getName() &#123; return &quot;D&quot;; &#125;</span></span><br><span class="line"> <span class="number">25</span> &#125;;</span><br><span class="line"> <span class="number">26</span> </span><br><span class="line"> <span class="number">27</span> <span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 28 </span>&#123;</span><br><span class="line"> <span class="number">29</span>             D d;</span><br><span class="line"> <span class="number">30</span>             A &amp;rBase = d;</span><br><span class="line"> <span class="number">31</span>             std::cout &lt;&lt; <span class="string">&quot;rBase is a &quot;</span> &lt;&lt; rBase.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line"> <span class="number">32</span> </span><br><span class="line"> <span class="number">33</span>             <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"> <span class="number">34</span> &#125;```</span><br><span class="line">     输出c</span><br><span class="line">     </span><br><span class="line">#### 注意点：</span><br><span class="line">+ <span class="keyword">virtual</span>关键字是否都需要写？：  </span><br><span class="line">Only the most base <span class="keyword">class</span> <span class="title class_">function</span> needs to be tagged as <span class="keyword">virtual</span> <span class="keyword">for</span> all of the derived </span><br><span class="line">functions to work virtually. However, having the keyword <span class="keyword">virtual</span> on the derived functions</span><br><span class="line"> does <span class="keyword">not</span> hurt, <span class="keyword">and</span> it serves as a useful reminder that the function is a <span class="keyword">virtual</span> function </span><br><span class="line"> rather than a normal one.</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">+ 不能在构造函数和西沟函数中调用它，因为此时子类对象还没有被构造</span><br><span class="line"> </span><br><span class="line">+ c++<span class="number">11</span>引入<span class="keyword">override</span>和<span class="keyword">final</span>来防止避免不匹配的复写和阻止继承：  </span><br><span class="line"> １）<span class="keyword">override</span>:  </span><br><span class="line"> 出现错误的例子:</span><br><span class="line"> ```cpp</span><br><span class="line"> <span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName1</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;A&quot;</span>; &#125;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName2</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;A&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> : <span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName1</span><span class="params">(<span class="type">short</span> <span class="type">int</span> x)</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;B&quot;</span>; &#125; <span class="comment">// note: parameter is a short int</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName2</span><span class="params">(<span class="type">int</span> x)</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;B&quot;</span>; &#125; <span class="comment">// note: function is const</span></span><br><span class="line">&#125;; </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	B b;</span><br><span class="line">	A &amp;rBase = b;</span><br><span class="line">	std::cout &lt;&lt; rBase.<span class="built_in">getName1</span>(<span class="number">1</span>) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">	std::cout &lt;&lt; rBase.<span class="built_in">getName2</span>(<span class="number">2</span>) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 由于参数返回值不匹配，所以编译器认为不是复写，结果：<br> A<br>A</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">加入<span class="keyword">override</span>:</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName1</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;A&quot;</span>; &#125;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName2</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;A&quot;</span>; &#125;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName3</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;A&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> : <span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName1</span><span class="params">(<span class="type">short</span> <span class="type">int</span> x)</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;B&quot;</span>; &#125; <span class="comment">// compile error, function is not an override</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName2</span><span class="params">(<span class="type">int</span> x)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;B&quot;</span>; &#125; <span class="comment">// compile error, function is not an override</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName3</span><span class="params">(<span class="type">int</span> x)</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;B&quot;</span>; &#125; <span class="comment">// okay, function is an override of A::getName3(int) </span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125; </span><br><span class="line">Rule: Apply the <span class="keyword">override</span> specifier to every intended <span class="keyword">override</span> function you write.</span><br></pre></td></tr></table></figure>
+<ul>
+<li>final: <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"> 加了<span class="keyword">final</span>的函数无法被复写：</span><br><span class="line"> <span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;A&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> : <span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">// note use of final specifier on following line -- that makes this function no longer overridable</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> <span class="keyword">override</span> <span class="keyword">final</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;B&quot;</span>; &#125; <span class="comment">// okay, overrides A::getName()</span></span><br><span class="line">&#125;; </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span> : <span class="keyword">public</span> B</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;C&quot;</span>; &#125; <span class="comment">// compile error: overrides B::getName(), which is final</span></span><br><span class="line">&#125;;</span><br><span class="line"> 加了<span class="keyword">final</span>的类不能被继承：</span><br><span class="line"> <span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;A&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> <span class="keyword">final</span> : <span class="keyword">public</span> A <span class="comment">// note use of final specifier here</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;B&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span> : <span class="keyword">public</span> B <span class="comment">// compile error: cannot inherit from final class</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">getName</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;C&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> ````</span><br><span class="line"> </span><br><span class="line">+ 对匹配返回值的一个“例外”：covariant <span class="keyword">return</span> types:</span><br><span class="line"> ```cpp</span><br><span class="line"> <span class="keyword">class</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// This version of getThis() returns a pointer to a Base class</span></span><br><span class="line">    <span class="keyword">virtual</span> Base* <span class="built_in">getThis</span>() &#123; <span class="keyword">return</span> <span class="keyword">this</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Derived</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Normally override functions have to return objects of the same type as the base function</span></span><br><span class="line">    <span class="comment">// However, because Derived is derived from Base, it&#x27;s okay to return Derived* instead of Base*</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Derived* <span class="title">getThis</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">this</span>; &#125;</span><br><span class="line">&#125;;```</span><br><span class="line"></span><br><span class="line">注意当base=&amp;derive;</span><br><span class="line">     base.<span class="built_in">getThis</span>()----取得的任然是base</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">#### 当想基类指针指向派生类，虚函数但仍然想用基类虚函数时：</span><br><span class="line">```cpp</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived derived;</span><br><span class="line">    Base &amp;base = derived;</span><br><span class="line">    <span class="comment">// Calls Base::GetName() instead of the virtualized Derived::GetName()</span></span><br><span class="line">    std::cout &lt;&lt; base.Base::<span class="built_in">getName</span>() &lt;&lt; std::endl;</span><br><span class="line">&#125;　　</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="虚析构函数-："><a href="#虚析构函数-：" class="headerlink" title="虚析构函数　："></a>虚析构函数　：</h3><h4 id="为什么需要虚析构函数："><a href="#为什么需要虚析构函数：" class="headerlink" title="为什么需要虚析构函数："></a>为什么需要虚析构函数：</h4><p> 当基类指针指向派生类时，当析构后，只会调用基类的析构函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ~<span class="built_in">Base</span>() <span class="comment">// note: not virtual</span></span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Calling ~Base()&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Derived</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span>* m_array;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Derived</span>(<span class="type">int</span> length)</span><br><span class="line">    &#123;</span><br><span class="line">        m_array = <span class="keyword">new</span> <span class="type">int</span>[length];</span><br><span class="line">    &#125;</span><br><span class="line">    ~<span class="built_in">Derived</span>() <span class="comment">// note: not virtual</span></span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Calling ~Derived()&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        <span class="keyword">delete</span>[] m_array;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived *derived = <span class="keyword">new</span> <span class="built_in">Derived</span>(<span class="number">5</span>);</span><br><span class="line">    Base *base = derived ;</span><br><span class="line">    <span class="keyword">delete</span> base;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;```</span><br><span class="line"> 只输出Calling ~<span class="built_in">Base</span>()</span><br><span class="line"> + 所以为了调用派生类的析构函数，需要定义为虚析构函数：</span><br><span class="line"> ```cpp</span><br><span class="line"> <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Base</span>() <span class="comment">// note: virtual</span></span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Calling ~Base()&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Derived</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span>* m_array;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Derived</span>(<span class="type">int</span> length)</span><br><span class="line">    &#123;</span><br><span class="line">        m_array = <span class="keyword">new</span> <span class="type">int</span>[length];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Derived</span>() <span class="comment">// note: virtual</span></span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Calling ~Derived()&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        <span class="keyword">delete</span>[] m_array;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived *derived = <span class="keyword">new</span> <span class="built_in">Derived</span>(<span class="number">5</span>);</span><br><span class="line">    Base *base = derived;</span><br><span class="line">    <span class="keyword">delete</span> base;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">Now <span class="keyword">this</span> program produces the following result:</span><br><span class="line">Calling ~<span class="built_in">Derived</span>()</span><br><span class="line">Calling ~<span class="built_in">Base</span>()</span><br><span class="line">Rule: Whenever you are dealing with inheritance, you should make any <span class="keyword">explicit</span> destructors <span class="keyword">virtual</span>. ```</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> ### 虚表：</span><br><span class="line"> #### Early binding（静态绑定） <span class="keyword">and</span> late binding（动态绑定）</span><br><span class="line"> 前者指的是直接在代码里调用函数，通过函数名，即编译期间就可以直到函数的地址的（偏移，非真实的内存地址）  </span><br><span class="line"><span class="string">&quot;&quot;</span> <span class="function">Early <span class="title">binding</span> <span class="params">(also called <span class="type">static</span> binding)</span> means the <span class="title">compiler</span> <span class="params">(<span class="keyword">or</span> linker)</span> is able to directly associate the identifier <span class="title">name</span> <span class="params">(such as a function <span class="keyword">or</span> variable name)</span> with a machine address. </span></span><br><span class="line"><span class="function"> Remember that all functions have a unique address. So when the <span class="title">compiler</span> <span class="params">(<span class="keyword">or</span> linker)</span> encounters a function call, </span></span><br><span class="line"><span class="function">  it replaces the function call with a machine language instruction that tells the CPU to jump to the address of the function.&quot;&quot;</span></span><br><span class="line"><span class="function"> ```cpp</span></span><br><span class="line"><span class="function"> <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">add</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">subtract</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x - y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">multiply</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> x;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Enter a number: &quot;</span>;</span><br><span class="line">    std::cin &gt;&gt; x;</span><br><span class="line">    <span class="type">int</span> y;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Enter another number: &quot;</span>;</span><br><span class="line">    std::cin &gt;&gt; y;</span><br><span class="line">    <span class="type">int</span> op;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Enter an operation (0=add, 1=subtract, 2=multiply): &quot;</span>;</span><br><span class="line">        std::cin &gt;&gt; op;</span><br><span class="line">    &#125; <span class="keyword">while</span> (op &lt; <span class="number">0</span> || op &gt; <span class="number">2</span>);</span><br><span class="line">    <span class="type">int</span> result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">switch</span> (op)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// call the target function directly using early binding</span></span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span>: result = <span class="built_in">add</span>(x, y); <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">1</span>: result = <span class="built_in">subtract</span>(x, y); <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">2</span>: result = <span class="built_in">multiply</span>(x, y); <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;The answer is: &quot;</span> &lt;&lt; result &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;```</span><br><span class="line"> 后者指的是通过函数指针等方式，即在编译期间无法确定调用什么函数，需要通过指针来访问函数（函数指针），效率比前者低</span><br><span class="line"> in some programs, <span class="function">it is <span class="keyword">not</span> possible to know which function will be called until <span class="title">runtime</span> <span class="params">(when the program is run)</span>. </span></span><br><span class="line"><span class="function"> This is known as late <span class="title">binding</span> <span class="params">(<span class="keyword">or</span> dynamic binding)</span>. In C++, one way to get late binding is to use function pointers. </span></span><br><span class="line"><span class="function"> ```cpp</span></span><br><span class="line"><span class="function"> <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">add</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Create a function pointer and make it point to the Add function</span></span><br><span class="line">    <span class="built_in">int</span> (*pFcn)(<span class="type">int</span>, <span class="type">int</span>) = add;</span><br><span class="line">    std::cout &lt;&lt; <span class="built_in">pFcn</span>(<span class="number">5</span>, <span class="number">3</span>) &lt;&lt; std::endl; <span class="comment">// add 5 + 3</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="虚表"><a href="#虚表" class="headerlink" title="虚表"></a>虚表</h4><p> 为什么虚函数能成立－－基类指针指向派生类能调用派生类的函数：<br> 实际上，在定义了虚函数的基类中维护了一个虚指针：它指向一张表，表中包含各个虚函数指针；在这个继承琏中的每一个类有自己的一张虚表，这张表由编译器在编译期间生成, 虚指针在包含虚函数的类的对象被创建时自动创建</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">function1</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">function2</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D1</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">function1</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D2</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">function2</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">&#125;; </span><br><span class="line"> 实际上为：</span><br><span class="line"> <span class="keyword">class</span> <span class="title class_">Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    FunctionPointer *__vptr;<span class="comment">//虚指针</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">function1</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">function2</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D1</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">function1</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D2</span>: <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">function2</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"> base</span><br><span class="line">    *__vptr;--------------------------&gt;<span class="function">base vtable</span></span><br><span class="line"><span class="function">   <span class="keyword">virtual</span> <span class="title">function1</span><span class="params">()</span>&lt;----------------<span class="title">function1</span><span class="params">()</span></span></span><br><span class="line"><span class="function">|-&gt;<span class="keyword">virtual</span> <span class="title">function2</span><span class="params">()</span>&lt;----------------<span class="title">function2</span><span class="params">()</span></span></span><br><span class="line"><span class="function">-----------------------------------------------------|</span></span><br><span class="line"><span class="function">   D1:public base                                    |</span></span><br><span class="line"><span class="function">   *__vptr,(inherited) ----------------D1 vtable     |</span></span><br><span class="line"><span class="function">   virtual function1();</span> &lt;--------------<span class="built_in">function1</span>()   |</span><br><span class="line">                                       <span class="built_in">function2</span>()----</span><br><span class="line"> D2类似D1</span><br></pre></td></tr></table></figure>
+<h3 id="纯虚函数和纯虚类："><a href="#纯虚函数和纯虚类：" class="headerlink" title="纯虚函数和纯虚类："></a>纯虚函数和纯虚类：</h3><h4 id="什么是纯虚函数和纯虚类："><a href="#什么是纯虚函数和纯虚类：" class="headerlink" title="什么是纯虚函数和纯虚类："></a>什么是纯虚函数和纯虚类：</h4><ul>
+<li>没有定义函数体的虚成员函数成为纯虚函数：<br>  virtual int getValue() &#x3D; 0; &#x2F;&#x2F; a pure virtual function<br>  包含一个或多个纯虚函数的类成为纯虚类<br>  虚基类是不能被对象化的，当对象化后调用纯虚函数，就会出现错误  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Base base; <span class="comment">// We can&#x27;t instantiate an abstract base class, but for the sake of example, pretend this was allowed</span></span><br><span class="line">    base.<span class="built_in">getValue</span>(); <span class="comment">// what would this do?</span></span><br><span class="line">&#125;```</span><br><span class="line">#### 为什么需要纯虚函数和纯虚类？</span><br><span class="line">当子类继承了基类后，对虚函数来讲，需要复写基类的虚函数，而当忘记去写时，默认就会调用基类的虚函数；  </span><br><span class="line">而如果将基类的虚函数定义为纯虚函数。就会通过编译报错来提醒我们要复写子类的虚函数：  </span><br><span class="line"> 例子：  </span><br><span class="line"> ```cpp</span><br><span class="line"> <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span> <span class="comment">// This Animal is an abstract base class</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    std::string m_name;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Animal</span>(std::string name)</span><br><span class="line">        : <span class="built_in">m_name</span>(name)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">std::string <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> m_name; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">speak</span><span class="params">()</span> </span>= <span class="number">0</span>; <span class="comment">// note that speak is now a pure virtual function</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Cow</span>: <span class="keyword">public</span> Animal</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Cow</span>(std::string name)</span><br><span class="line">        : <span class="built_in">Animal</span>(name)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// We forgot to redefine speak</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Cow <span class="title">cow</span><span class="params">(<span class="string">&quot;Betsy&quot;</span>)</span></span>;</span><br><span class="line">    std::cout &lt;&lt; cow.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&quot; says &quot;</span> &lt;&lt; cow.<span class="built_in">speak</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Cow</span>: <span class="keyword">public</span> Animal</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Cow</span>(std::string name)</span><br><span class="line">        : <span class="built_in">Animal</span>(name)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">speak</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">&quot;Moo&quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Cow <span class="title">cow</span><span class="params">(<span class="string">&quot;Betsy&quot;</span>)</span></span>;</span><br><span class="line">    std::cout &lt;&lt; cow.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&quot; says &quot;</span> &lt;&lt; cow.<span class="built_in">speak</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当想要使用虚基类的实现时，又同时想让虚基类不能对象化且子类能提示需要实现纯虚函数时，应该怎么做？<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span> </span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span> <span class="comment">// This Animal is an abstract base class</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    std::string m_name;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Animal</span>(std::string name)</span><br><span class="line">        : <span class="built_in">m_name</span>(name)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">std::string <span class="title">getName</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> m_name; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">speak</span><span class="params">()</span> </span>= <span class="number">0</span>; <span class="comment">// note that speak is a pure virtual function</span></span><br><span class="line">&#125;; </span><br><span class="line"><span class="function"><span class="type">const</span> <span class="type">char</span>* <span class="title">Animal::speak</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;buzz&quot;</span>; <span class="comment">// some default implementation</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Dragonfly</span>: <span class="keyword">public</span> Animal</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Dragonfly</span>(std::string name)</span><br><span class="line">        : <span class="built_in">Animal</span>(name)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">speak</span><span class="params">()</span> <span class="comment">// this class is no longer abstract because we defined this function</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Animal::<span class="built_in">speak</span>(); <span class="comment">// use Animal&#x27;s default implementation</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Dragonfly <span class="title">dfly</span><span class="params">(<span class="string">&quot;Sally&quot;</span>)</span></span>;</span><br><span class="line">    std::cout &lt;&lt; dfly.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&quot; says &quot;</span> &lt;&lt; dfly.<span class="built_in">speak</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line">The above code prints:</span><br><span class="line">Sally says buzz</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="接口类："><a href="#接口类：" class="headerlink" title="接口类："></a>接口类：</h4><p>接口类的类中没有成员变量。全部由纯虚函数构成；常命名为I开头的:如IErrorLog,类似于java中的接口</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">IErrorLog</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">openLog</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *filename)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">closeLog</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">writeError</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *errorMessage)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">IErrorLog</span>() &#123;&#125;; <span class="comment">// make a virtual destructor in case we delete an IErrorLog pointer, so the proper derived destructor is called</span></span><br><span class="line">&#125;;```</span><br><span class="line">###<span class="meta"># virtual base class</span></span><br><span class="line">当普通的继承，即一个子类继承自两个不同的父类，这两个父类继承自同一个基类时。就容易出现问题：</span><br><span class="line">如：</span><br><span class="line">```cpp</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PoweredDevice</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">PoweredDevice</span>(<span class="type">int</span> power)</span><br><span class="line">    &#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;PoweredDevice: &quot;</span> &lt;&lt; power &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Scanner</span>: <span class="keyword">public</span> PoweredDevice</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Scanner</span>(<span class="type">int</span> scanner, <span class="type">int</span> power)</span><br><span class="line">        : <span class="built_in">PoweredDevice</span>(power)</span><br><span class="line">    &#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;Scanner: &quot;</span> &lt;&lt; scanner &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Printer</span>: <span class="keyword">public</span> PoweredDevice</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Printer</span>(<span class="type">int</span> printer, <span class="type">int</span> power)</span><br><span class="line">        : <span class="built_in">PoweredDevice</span>(power)</span><br><span class="line">    &#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;Printer: &quot;</span> &lt;&lt; printer &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Copier</span>: <span class="keyword">public</span> Scanner, <span class="keyword">public</span> Printer</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Copier</span>(<span class="type">int</span> scanner, <span class="type">int</span> printer, <span class="type">int</span> power)</span><br><span class="line">        : <span class="built_in">Scanner</span>(scanner, power), <span class="built_in">Printer</span>(printer, power)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Copier <span class="title">copier</span><span class="params">(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line">PoweredDevice: <span class="number">3</span></span><br><span class="line">Scanner: <span class="number">1</span></span><br><span class="line">PoweredDevice: <span class="number">3</span></span><br><span class="line">Printer: <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>从输出看，基类被构造了两次<br>如何防止构造两个基类呢？使用virtual base class</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">PoweredDevice</span></span><br><span class="line">&#123;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Scanner</span>: <span class="keyword">virtual</span> <span class="keyword">public</span> PoweredDevice</span><br><span class="line">&#123;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Printer</span>: <span class="keyword">virtual</span> <span class="keyword">public</span> PoweredDevice</span><br><span class="line">&#123;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Copier</span>: <span class="keyword">public</span> Scanner, <span class="keyword">public</span> Printer</span><br><span class="line">&#123;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PoweredDevice</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">PoweredDevice</span>(<span class="type">int</span> power)</span><br><span class="line">    &#123;</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;PoweredDevice: &quot;</span> &lt;&lt; power &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Scanner</span>: <span class="keyword">virtual</span> <span class="keyword">public</span> PoweredDevice <span class="comment">// note: PoweredDevice is now a virtual base class</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Scanner</span>(<span class="type">int</span> scanner, <span class="type">int</span> power)</span><br><span class="line">        : <span class="built_in">PoweredDevice</span>(power) <span class="comment">// this line is required to create Scanner objects, but ignored in this case</span></span><br><span class="line">    &#123;</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;Scanner: &quot;</span> &lt;&lt; scanner &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Printer</span>: <span class="keyword">virtual</span> <span class="keyword">public</span> PoweredDevice <span class="comment">// note: PoweredDevice is now a virtual base class</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Printer</span>(<span class="type">int</span> printer, <span class="type">int</span> power)</span><br><span class="line">        : <span class="built_in">PoweredDevice</span>(power) <span class="comment">// this line is required to create Printer objects, but ignored in this case</span></span><br><span class="line">    &#123;</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;Printer: &quot;</span> &lt;&lt; printer &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Copier</span>: <span class="keyword">public</span> Scanner, <span class="keyword">public</span> Printer</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Copier</span>(<span class="type">int</span> scanner, <span class="type">int</span> printer, <span class="type">int</span> power)</span><br><span class="line">        : <span class="built_in">Scanner</span>(scanner, power), <span class="built_in">Printer</span>(printer, power),</span><br><span class="line">        <span class="built_in">PoweredDevice</span>(power) <span class="comment">// PoweredDevice is constructed here</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">This time, our previous example:</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Copier <span class="title">copier</span><span class="params">(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line">produces the result:</span><br><span class="line">PoweredDevice: <span class="number">3</span></span><br><span class="line">Scanner: <span class="number">1</span></span><br><span class="line">Printer: <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>这样的话，基类的构造交给了继承琏最底层的类</p>
+<ul>
+<li>注意：</li>
+<li>virtual base class在子类对象之前就创建了</li>
+<li>if Copier was singly inherited from Printer, and Printer was virtually inherited from PoweredDevice, Copier is still responsible for creating PoweredDevice</li>
+<li>Fourth, a virtual base class is always considered a direct base of its most derived class<br>(which is why the most derived class is responsible for its construction).</li>
+<li>But classes inheriting the virtual base still need access to it. So in order to facilitate this, the compiler creates a virtual table for each class directly inheriting the virtual class (Printer and Scanner). These virtual tables point to the functions in the most derived class. Because the derived classes have a virtual table,  that also means they are now larger by a pointer (to the virtual table).</li>
+</ul>
+<h4 id="对象分割："><a href="#对象分割：" class="headerlink" title="对象分割："></a>对象分割：</h4><p>当子类对象赋值给基类会发生什么？<br>子类对象的基类部分会给基类对象</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Derived <span class="title">derived</span><span class="params">(<span class="number">5</span>)</span></span>;</span><br><span class="line">    Base base = derived; <span class="comment">// what happens here?</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;base is a &quot;</span> &lt;&lt; base.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&quot; and has value &quot;</span> &lt;&lt; base.<span class="built_in">getValue</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">传值给基类</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">printName</span><span class="params">(<span class="type">const</span> Base base)</span> <span class="comment">// note: base passed by value, not reference</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;I am a &quot;</span> &lt;&lt; base.<span class="built_in">getName</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line">This is a pretty simple function with a <span class="type">const</span> base object parameter that is passed by value. If we call <span class="keyword">this</span> function like such:	</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Derived <span class="title">d</span><span class="params">(<span class="number">5</span>)</span></span>;</span><br><span class="line">    <span class="built_in">printName</span>(d); <span class="comment">// oops, didn&#x27;t realize this was pass by value on the calling end </span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>vector<base>和vector&lt;&amp;base&gt;和vector&lt;base*&gt;<br>第一种可以但是只能调用基类的部分<br>第二种不行：std::vector&lt;Base&amp;&gt; v;<br>Unfortunately, this won’t compile. The elements of std::vector must be assignable, whereas references can’t be reassigned (only initialized).<br>第三种可以但是要做delete</p>
+<pre><code class="cpp">#include &lt;vector&gt;
+int main()
+&#123;
+    std::vector&lt;Base*&gt; v;
+    v.push_back(new Base(5)); // add a Base object to our vector
+    v.push_back(new Derived(6)); // add a Derived object to our vector
+        // Print out all of the elements in our vector
+    for (int count = 0; count &lt; v.size(); ++count)
+        std::cout &lt;&lt; &quot;I am a &quot; &lt;&lt; v[count]-&gt;getName() &lt;&lt; &quot; with value &quot; &lt;&lt; v[count]-&gt;getValue() &lt;&lt; &quot;\n&quot;;
+    for (int count = 0; count &lt; v.size(); ++count)
+        delete v[count];
+    return 0;
+&#125;
+用智能指针可以避免：
+#include &lt;vector&gt;
+#include &lt;functional&gt; // for std::reference_wrapper
+int main()
+&#123;
+    std::vector&lt;std::reference_wrapper&lt;Base&gt; &gt; v; // our vector is a vector of std::reference_wrapper wrapped Base (not Base&amp;)
+    Base b(5); // b and d can&#39;t be anonymous objects
+    Derived d(6);
+    v.push_back(b); // add a Base object to our vector
+    v.push_back(d); // add a Derived object to our vector
+    // Print out all of the elements in our vector
+    for (int count = 0; count &lt; v.size(); ++count)
+        std::cout &lt;&lt; &quot;I am a &quot; &lt;&lt; v[count].get().getName() &lt;&lt; &quot; with value &quot; &lt;&lt; v[count].get().getValue() &lt;&lt; &quot;\n&quot;; // we use .get() to get our element from the wrapper
+    return 0;
+&#125;```
+
+
+一种极端情况：
+```cpp
+int main()
+&#123;
+    Derived d1(5);
+    Derived d2(6);
+    Base &amp;b = d2;//b为d2的引用
+    b = d1; // this line is problematic　导致b的基类部分为d1,子类部分为d2,因为b是d2的引用，导致现在d2的基类部分是d1而子类部分是d2
+    return 0;
+&#125;```
+
+#### 总结多态的方式＋dynamic_cast:
++ 　shape *ps=new circle();
+    经由virtual func:  ps-&gt;rotate()    //virtual func
+    经由dynamic_cast:和type运算符：
+    if(circle *pc=dynamic_cast&lt;circle*&gt;(ps))
+    
+    (理解了指针类型的本质就可以理解它和理解分割的内容了:指针的类型会教导编译器如何解释某个特定地址的内容和大小:
+    所以一个void*的指针无法去确定涵盖多大的地址空间，所以它只能含有一个地址但是不能操作它指向的Ｏｂｊｅｃｔ
+    所以转型只是一种编译器指令，不改变真正的地址，而是改变解读指针的方式让它指出其内存的大小和内容）
+    更多见内存布局第一章图就能理解）
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-class/" rel="tag"># cpp_class</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/09/cpp-inheritance/" rel="prev" title="cpp_inheritance">
+      <i class="fa fa-chevron-left"></i> cpp_inheritance
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/09/cpp-datamember-memory/" rel="next" title="cpp_datamember_memory">
+      cpp_datamember_memory <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%80%81%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">多态：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%A4%9A%E6%80%81%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">为什么需要多态？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%EF%BC%8D%EF%BC%8D%EF%BC%8D%E4%BE%8B%E5%AD%90"><span class="nav-number">1.2.</span> <span class="nav-text">如何使用－－－例子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E5%A4%9A%E6%80%81%E7%9A%84%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">注意多态的方式：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0-%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">虚析构函数　：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E8%99%9A%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">为什么需要虚析构函数：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%99%9A%E8%A1%A8"><span class="nav-number">2.2.</span> <span class="nav-text">虚表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0%E5%92%8C%E7%BA%AF%E8%99%9A%E7%B1%BB%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">纯虚函数和纯虚类：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0%E5%92%8C%E7%BA%AF%E8%99%9A%E7%B1%BB%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">什么是纯虚函数和纯虚类：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%B1%BB%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">接口类：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%88%86%E5%89%B2%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">对象分割：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'bc642a6dc8ab8173f5de9ee7be34e354',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
