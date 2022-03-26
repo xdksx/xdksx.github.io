@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="流量控制概述linux下通过tc traffic control 框架及系列实现和工具来实现对出口，甚至入口流量的控制，所谓的控制，就是进行包延迟传输，丢包，包损坏，带宽限制，针对某个ip规则进行限制等等，来达到模拟网络异常状况，包优先级传输，或者更多功能；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tcpip_tc">
+<meta property="og:url" content="https://xdksx.github.io/2021/05/22/tcpip-tc/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="流量控制概述linux下通过tc traffic control 框架及系列实现和工具来实现对出口，甚至入口流量的控制，所谓的控制，就是进行包延迟传输，丢包，包损坏，带宽限制，针对某个ip规则进行限制等等，来达到模拟网络异常状况，包优先级传输，或者更多功能；">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-22T11:35:21.000Z">
+<meta property="article:modified_time" content="2021-05-22T18:38:44.000Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="tcpip_tc">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/05/22/tcpip-tc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>tcpip_tc | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/05/22/tcpip-tc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          tcpip_tc
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-22 19:35:21" itemprop="dateCreated datePublished" datetime="2021-05-22T19:35:21+08:00">2021-05-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-23 02:38:44" itemprop="dateModified" datetime="2021-05-23T02:38:44+08:00">2021-05-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index"><span itemprop="name">tcpip</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="流量控制概述"><a href="#流量控制概述" class="headerlink" title="流量控制概述"></a>流量控制概述</h3><p>linux下通过tc traffic control 框架及系列实现和工具来实现对出口，甚至入口流量的控制，所谓的控制，就是进行包延迟传输，<br>丢包，包损坏，带宽限制，针对某个ip规则进行限制等等，来达到模拟网络异常状况，包优先级传输，或者更多功能；<span id="more"></span><br>从手册上看：主要提供一下几种控制：<br>SHAPING: 平滑突发流量，如限制传输速率，小于有效带宽，作用于出口<br>       When traffic is shaped, its rate of transmission is under<br>       control. Shaping may be more than lowering the available<br>       bandwidth - it is also used to smooth out bursts in<br>       traffic for better network behaviour. Shaping occurs on<br>       egress.<br>SCHEDULING : 作用于出口，调度数据包的传输，比如优先级等<br>       By scheduling the transmission of packets it is possible<br>       to improve interactivity for traffic that needs it while<br>       still guaranteeing bandwidth to bulk transfers. Reordering<br>       is also called prioritizing, and happens only on egress.<br>POLICING： 作用于入口流量<br>       Whereas shaping deals with transmission of traffic,<br>       policing pertains to traffic arriving. Policing thus<br>       occurs on ingress.<br>DROPPING： 当流量超过阈值，丢弃数据包，作用于入口和出口；<br>       Traffic exceeding a set bandwidth may also be dropped<br>       forthwith, both on ingress and on egress.</p>
+<!--more-->
+<h4 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h4><p>ref:  <a target="_blank" rel="noopener" href="https://netbeez.net/blog/how-to-use-the-linux-traffic-control/">https://netbeez.net/blog/how-to-use-the-linux-traffic-control/</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">查看：当前只有默认的先入先出规则</span><br><span class="line">think@think-VirtualBox:~$ tc qdisc</span><br><span class="line">qdisc noqueue <span class="number">0</span>: dev lo root refcnt <span class="number">2</span> </span><br><span class="line">qdisc pfifo_fast <span class="number">0</span>: dev eth0 root refcnt <span class="number">2</span> bands <span class="number">3</span> priomap  <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">1</span> <span class="number">2</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line">准备设置延迟：</span><br><span class="line">think@think-VirtualBox:~$ ping www.baidu.com</span><br><span class="line">PING www.baidu.<span class="built_in">com</span> (<span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>) <span class="number">56</span>(<span class="number">84</span>) bytes of data.</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">1</span> ttl=<span class="number">56</span> time=<span class="number">9.13</span> ms</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">2</span> ttl=<span class="number">56</span> time=<span class="number">9.38</span> ms</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">3</span> ttl=<span class="number">56</span> time=<span class="number">9.09</span> ms</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">4</span> ttl=<span class="number">56</span> time=<span class="number">9.68</span> ms</span><br><span class="line">^C</span><br><span class="line">--- www.baidu.com ping statistics ---</span><br><span class="line"><span class="number">4</span> packets transmitted, <span class="number">4</span> received, <span class="number">0</span>% packet loss, time <span class="number">7048</span>ms</span><br><span class="line">rtt min/avg/max/mdev = <span class="number">9.093</span>/<span class="number">9.324</span>/<span class="number">9.687</span>/<span class="number">0.256</span> ms</span><br><span class="line"></span><br><span class="line">添加延迟规则：</span><br><span class="line">think@think-VirtualBox:~$ sudo tc qdisc add dev eth0 root netem delay <span class="number">200</span>ms</span><br><span class="line"></span><br><span class="line">think@think-VirtualBox:~$ ping www.baidu.com</span><br><span class="line">PING www.baidu.<span class="built_in">com</span> (<span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>) <span class="number">56</span>(<span class="number">84</span>) bytes of data.</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">1</span> ttl=<span class="number">56</span> time=<span class="number">209</span> ms</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">2</span> ttl=<span class="number">56</span> time=<span class="number">212</span> ms</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">3</span> ttl=<span class="number">56</span> time=<span class="number">211</span> ms</span><br><span class="line"></span><br><span class="line">删除规则： sudo tc qdisc del dev eth0 root netem delay <span class="number">200</span>ms</span><br><span class="line">/ sudo tc qdisc del dev eth0 root </span><br><span class="line"></span><br><span class="line">设置丢包规则：</span><br><span class="line">think@think-VirtualBox:~$ sudo tc qdisc add dev eth0 root netem loss <span class="number">20</span>%</span><br><span class="line">[sudo] password <span class="keyword">for</span> think: </span><br><span class="line">think@think-VirtualBox:~$ ping www.baidu.com -c <span class="number">100</span></span><br><span class="line">PING www.baidu.<span class="built_in">com</span> (<span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>) <span class="number">56</span>(<span class="number">84</span>) bytes of data.</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">1</span> ttl=<span class="number">56</span> time=<span class="number">9.68</span> ms</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">2</span> ttl=<span class="number">56</span> time=<span class="number">8.92</span> ms</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">3</span> ttl=<span class="number">56</span> time=<span class="number">8.92</span> ms</span><br><span class="line">。。。</span><br><span class="line"><span class="number">64</span> bytes from <span class="number">14.215</span><span class="number">.177</span><span class="number">.39</span>: icmp_seq=<span class="number">100</span> ttl=<span class="number">56</span> time=<span class="number">10.1</span> ms</span><br><span class="line"></span><br><span class="line">--- www.baidu.com ping statistics ---</span><br><span class="line"><span class="number">100</span> packets transmitted, <span class="number">80</span> received, <span class="number">20</span>% packet loss, time <span class="number">103846</span>ms</span><br><span class="line">rtt min/avg/max/mdev = <span class="number">8.510</span>/<span class="number">9.537</span>/<span class="number">23.505</span>/<span class="number">1.655</span> ms</span><br><span class="line">删除规则：</span><br><span class="line">think@think-VirtualBox:~$ sudo tc qdisc del dev eth0 root netem loss <span class="number">20</span>%</span><br><span class="line"></span><br><span class="line">设置带宽限制规则：</span><br><span class="line">tc qdisc add dev eth0 root tbf rate <span class="number">1</span>mbit burst <span class="number">32</span>kbit latency <span class="number">400</span>ms</span><br><span class="line"></span><br><span class="line">tbf: use the token buffer filter to manipulate traffic rates</span><br><span class="line">rate: sustained maximum rate</span><br><span class="line">burst: maximum allowed burst</span><br><span class="line">latency: packets with higher latency get dropped</span><br><span class="line"></span><br><span class="line">通过iperf测试：</span><br><span class="line">iperf -c <span class="number">172.31</span><span class="number">.0</span><span class="number">.142</span></span><br><span class="line">------------------------------------------------------------</span><br><span class="line">Client connecting to <span class="number">172.31</span><span class="number">.0</span><span class="number">.142</span>, TCP port <span class="number">5001</span></span><br><span class="line">TCP window size: <span class="number">85.3</span> <span class="built_in">KByte</span> (<span class="keyword">default</span>)</span><br><span class="line">------------------------------------------------------------</span><br><span class="line">[  <span class="number">3</span>] local <span class="number">172.31</span><span class="number">.0</span><span class="number">.25</span> port <span class="number">40233</span> connected with <span class="number">172.31</span><span class="number">.0</span><span class="number">.142</span> port <span class="number">5001</span></span><br><span class="line">[ ID] Interval       Transfer     Bandwidth</span><br><span class="line">[  <span class="number">3</span>]  <span class="number">0.0</span><span class="number">-10.0</span> sec   <span class="number">113</span> MBytes  <span class="number">95.0</span> Mbits/sec ---&gt; <span class="number">1.1</span>Mbits/sec</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>指令解释：<br>qdisc: modify the scheduler (aka queuing discipline) 即实际的使用是依赖的qidsc机制<br>add: add a new rule 添加一个排队规则<br>dev eth0: rules will be applied on device eth0 排队规则作用对象一般是网卡<br>root: modify the outbound traffic scheduler (aka known as the egress qdisc) 修改出口流量调度程序<br>netem: use the network emulator to emulate a WAN property 使用wan网络模拟器<br>delay: the network property that is modified<br>200ms: introduce delay of 200 ms</li>
+</ul>
+<p>tc是系统如linux提供的用户层操作指令，这里用的是shell指令：<br>更多  <a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man8/tc.8.html">https://man7.org/linux/man-pages/man8/tc.8.html</a> </p>
+<h3 id="流量控制的基本实现原理"><a href="#流量控制的基本实现原理" class="headerlink" title="流量控制的基本实现原理"></a>流量控制的基本实现原理</h3><p>在linux内核中，流量控制用Qos实现，实际上使用了qdisc队列；主要是出口队列；（egress)<br>在链路层，每个数据包通过邻居子系统后，或者说离开协议栈后，都会由dev_queue_xmit(dev.c)来进一步调用相关设备驱动的发送函数<br>来发送出去； 而qdisc队列，和相关的排队规则即作用在dev_queue_xmit之后，设备驱动发送函数之前；</p>
+<h3 id="流量控制的实现和基本流程："><a href="#流量控制的实现和基本流程：" class="headerlink" title="流量控制的实现和基本流程："></a>流量控制的实现和基本流程：</h3><h4 id="相关代码："><a href="#相关代码：" class="headerlink" title="相关代码："></a>相关代码：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sch_generic.c</span><br><span class="line">sch_generic.h</span><br><span class="line">sch_api.c</span><br><span class="line">pkt_sched.h</span><br><span class="line">net/core/dev.c</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h4><p>在内核中的整体处理流程，及位置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">net/core/dev.<span class="function">c</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">dev_queue_xmit</span><span class="params">(<span class="keyword">struct</span> sk_buff *skb)</span> --发送函数</span></span><br><span class="line"><span class="function">    <span class="comment">// 1 从设备中拿到设备下的qdisc结构，每个设备net_device结构都有</span></span></span><br><span class="line"><span class="function">  	txq </span>= <span class="built_in">netdev_pick_tx</span>(dev, skb, accel_priv);</span><br><span class="line">	q = <span class="built_in">rcu_dereference_bh</span>(txq-&gt;qdisc);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">trace_net_dev_queue</span>(skb);</span><br><span class="line">	<span class="keyword">if</span> (q-&gt;enqueue) &#123;</span><br><span class="line">		rc = __dev_xmit_skb(skb, q, dev, txq);</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//2 插入根排队规则中，并启动运行：</span></span><br><span class="line">	rc = q-&gt;<span class="built_in">enqueue</span>(skb, q, &amp;to_free) &amp; NET_XMIT_MASK; <span class="comment">//插入根排队规则</span></span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">qdisc_run_begin</span>(q)) &#123;</span><br><span class="line">			<span class="keyword">if</span> (<span class="built_in">unlikely</span>(contended)) &#123;</span><br><span class="line">				<span class="built_in">spin_unlock</span>(&amp;q-&gt;busylock);</span><br><span class="line">				contended = <span class="literal">false</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			__qdisc_run(q);<span class="comment">//会走netif_schedule来调度数据包输出软中断 net_tx_action,然后在合适的时机，比如延迟200ms，发送数据包；</span></span><br><span class="line">			在调度前会检查网络设备的启动情况，以及是否已经在调度了；</span><br><span class="line">			<span class="type">void</span> __qdisc_run(<span class="keyword">struct</span> Qdisc *q)</span><br><span class="line">              &#123;</span><br><span class="line">              	<span class="type">int</span> quota = weight_p;</span><br><span class="line">              	<span class="type">int</span> packets;</span><br><span class="line">              </span><br><span class="line">              	<span class="keyword">while</span> (<span class="built_in">qdisc_restart</span>(q, &amp;packets)) &#123;</span><br><span class="line">              		<span class="comment">/*</span></span><br><span class="line"><span class="comment">              		 * Ordered by possible occurrence: Postpone processing if</span></span><br><span class="line"><span class="comment">              		 * 1. we&#x27;ve exceeded packet quota</span></span><br><span class="line"><span class="comment">              		 * 2. another process needs the CPU;</span></span><br><span class="line"><span class="comment">              		 */</span></span><br><span class="line">              		quota -= packets;</span><br><span class="line">              		<span class="keyword">if</span> (quota &lt;= <span class="number">0</span> || <span class="built_in">need_resched</span>()) &#123;</span><br><span class="line">              			__netif_schedule(q);</span><br><span class="line">              			<span class="keyword">break</span>;</span><br><span class="line">              		&#125;</span><br><span class="line">              	&#125;</span><br><span class="line">              </span><br><span class="line">              	<span class="built_in">qdisc_run_end</span>(q);</span><br><span class="line">              &#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">    dev.c:</span><br><span class="line">	net_tx_action:</span><br><span class="line">	<span class="built_in">smp_mb__before_atomic</span>();</span><br><span class="line">			<span class="built_in">clear_bit</span>(__QDISC_STATE_SCHED, &amp;q-&gt;state);</span><br><span class="line">			<span class="built_in">qdisc_run</span>(q);</span><br><span class="line">			<span class="built_in">spin_unlock</span>(root_lock);</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	<span class="comment">//3 qdisc_run/ __qdisc_run都会调用qdisc_restart，当可以发送时</span></span><br><span class="line">	<span class="comment">//这个restart函数，将包从根排队规则中取出，然后调用设备发送函数发送：</span></span><br><span class="line">	<span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">int</span> <span class="title">qdisc_restart</span><span class="params">(<span class="keyword">struct</span> Qdisc *q, <span class="type">int</span> *packets)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">    	<span class="keyword">struct</span> <span class="title class_">netdev_queue</span> *txq;</span><br><span class="line">    	<span class="keyword">struct</span> <span class="title class_">net_device</span> *dev;</span><br><span class="line">    	<span class="type">spinlock_t</span> *root_lock;</span><br><span class="line">    	<span class="keyword">struct</span> <span class="title class_">sk_buff</span> *skb;</span><br><span class="line">    	<span class="type">bool</span> validate;</span><br><span class="line">    </span><br><span class="line">    	<span class="comment">/* Dequeue packet */</span></span><br><span class="line">    	skb = <span class="built_in">dequeue_skb</span>(q, &amp;validate, packets);</span><br><span class="line">    	<span class="keyword">if</span> (<span class="built_in">unlikely</span>(!skb))</span><br><span class="line">    		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    	root_lock = <span class="built_in">qdisc_lock</span>(q);</span><br><span class="line">    	dev = <span class="built_in">qdisc_dev</span>(q);</span><br><span class="line">    	txq = <span class="built_in">skb_get_tx_queue</span>(dev, skb);</span><br><span class="line">         <span class="comment">//4 发送</span></span><br><span class="line">    	<span class="keyword">return</span> <span class="built_in">sch_direct_xmit</span>(skb, q, dev, txq, root_lock, validate);----&gt;ops-&gt;<span class="built_in">ndo_start_xmit</span>(skb, dev);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+
+<h4 id="流量控制的结构："><a href="#流量控制的结构：" class="headerlink" title="流量控制的结构："></a>流量控制的结构：</h4><p>构成流量控制的基本元素有三种： 排队规则，类和过滤器</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="literal">----------</span><span class="comment">排队规则1:0</span><span class="literal">--------------</span>  <span class="literal">--</span>&gt;<span class="comment">根排队规则，提供两个外部接口，enqueue和dequeue</span></span><br><span class="line"><span class="literal">---</span><span class="comment">过滤器1</span><span class="literal">---</span><span class="comment">过滤器2</span><span class="literal">----</span><span class="comment">过滤器3</span><span class="literal">-----</span></span><br><span class="line"><span class="literal">---</span><span class="comment">|</span><span class="literal">-------------</span><span class="comment">|</span><span class="literal">------</span><span class="comment">|</span><span class="literal">---------</span></span><br><span class="line"><span class="literal">--</span><span class="comment">类1:1</span><span class="literal">---------</span><span class="comment">(类  1:2  )</span><span class="literal">-------</span></span><br><span class="line"><span class="literal">--</span><span class="comment">|</span><span class="literal">-----------------</span><span class="comment">|</span><span class="literal">-------------</span></span><br><span class="line"><span class="literal">--</span><span class="comment">排队规则2:0</span><span class="literal">-----</span><span class="comment">排队规则3:0</span><span class="literal">-------</span> <span class="literal">--</span>&gt;<span class="comment">内部规则</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>排队规则：<br>  在启用了流量控制的情况下，每个网络设备至少会配置一个排队规则；排队规则包括简单的fifo缓冲和令牌桶等，而精确的排队规则通常需要管理多个队列；<br>常见的排队规则由 fifo,令牌桶tbf(token bucket filter)等；</p>
+</li>
+<li><p>排队规则的分类：<br>排队规则至少有一个队列，可能简单，如fifo排队规则，也有复杂如令牌桶；通常排队规则分无类和有类两种，无类规则简单，内部不能包含可配置的子类及内部规则<br>而有类则可包含多个类，如上图，且每个类又可以包含一个排队规则，这里的排队规则叫内部规则，可以是有类和无类的；<br>无类规则不可被用户配置，而有类的可以；</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">   分为可分类的qdisc和不可分类的qdisc实现：</span><br><span class="line">不可分类：pfifo ,pfifo_fast,<span class="built_in">red</span>,sfq,tbf</span><br><span class="line">可分类：cbq,htb,prio</span><br></pre></td></tr></table></figure>
+<p>如默认：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qdisc pfifo_fast <span class="number">0</span>: dev eth0 root refcnt <span class="number">2</span> bands <span class="number">3</span> priomap  <span class="number">1</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">1</span> <span class="number">2</span> <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>在tc指令中，如下的，其中结尾的 qdisc [qdisc specific parameters] 就是指定具体的排队规则类型；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br></pre></td><td class="code"><pre><span class="line">创建qdisc 规则</span><br><span class="line">tc [ OPTIONS ] qdisc [ add | change | replace | link | <span class="keyword">delete</span> ]</span><br><span class="line">       dev DEV [ parent qdisc-id | root ] [ handle qdisc-id ] [</span><br><span class="line">       ingress_block BLOCK_INDEX ] [ egress_block BLOCK_INDEX ] qdisc [</span><br><span class="line">       qdisc specific parameters ]</span><br><span class="line">eg:</span><br><span class="line"></span><br><span class="line">目前支持的qdisc: 无类的：</span><br><span class="line">The classless qdiscs are:</span><br><span class="line"></span><br><span class="line">       <span class="function">choke  <span class="title">CHOKe</span> <span class="params">(CHOose <span class="keyword">and</span> Keep <span class="keyword">for</span> responsive flows, CHOose <span class="keyword">and</span></span></span></span><br><span class="line"><span class="params"><span class="function">              Kill <span class="keyword">for</span> unresponsive flows)</span> is a classless qdisc designed</span></span><br><span class="line"><span class="function">              to both identify <span class="keyword">and</span> penalize flows that monopolize the</span></span><br><span class="line"><span class="function">              queue. CHOKe is a variation of RED, <span class="keyword">and</span> the configuration</span></span><br><span class="line"><span class="function">              is similar to RED.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       codel  <span class="title">CoDel</span> <span class="params">(pronounced <span class="string">&quot;coddle&quot;</span>)</span> is an adaptive &quot;no-knobs&quot;</span></span><br><span class="line"><span class="function">              active queue management <span class="title">algorithm</span> <span class="params">(AQM)</span> scheme that was</span></span><br><span class="line"><span class="function">              developed to address the shortcomings of RED <span class="keyword">and</span> its</span></span><br><span class="line"><span class="function">              variants.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       [p|b]fifo</span></span><br><span class="line"><span class="function">              Simplest usable qdisc, pure First In, First Out behaviour.</span></span><br><span class="line"><span class="function">              Limited in packets <span class="keyword">or</span> in bytes.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       fq     Fair Queue Scheduler realises TCP pacing <span class="keyword">and</span> scales to</span></span><br><span class="line"><span class="function">              millions of concurrent flows per qdisc.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       fq_codel</span></span><br><span class="line"><span class="function">              Fair Queuing Controlled Delay is queuing discipline that</span></span><br><span class="line"><span class="function">              combines Fair Queuing with the CoDel AQM scheme. FQ_Codel</span></span><br><span class="line"><span class="function">              uses a stochastic model to classify incoming packets into</span></span><br><span class="line"><span class="function">              different flows <span class="keyword">and</span> is used to provide a fair share of the</span></span><br><span class="line"><span class="function">              bandwidth to all the flows <span class="keyword">using</span> the queue. Each such flow</span></span><br><span class="line"><span class="function">              is managed by the CoDel queuing discipline. Reordering</span></span><br><span class="line"><span class="function">              within a flow is avoided since Codel internally uses a</span></span><br><span class="line"><span class="function">              FIFO queue.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       fq_pie FQ-<span class="title">PIE</span> <span class="params">(Flow Queuing with Proportional Integral controller</span></span></span><br><span class="line"><span class="params"><span class="function">              Enhanced)</span> is a queuing discipline that combines Flow</span></span><br><span class="line"><span class="function">              Queuing with the PIE AQM scheme. FQ-PIE uses a Jenkins</span></span><br><span class="line"><span class="function">              hash function to classify incoming packets into different</span></span><br><span class="line"><span class="function">              flows <span class="keyword">and</span> is used to provide a fair share of the bandwidth</span></span><br><span class="line"><span class="function">              to all the flows <span class="keyword">using</span> the qdisc. Each such flow is</span></span><br><span class="line"><span class="function">              managed by the PIE algorithm.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       gred   Generalized Random Early Detection combines multiple RED</span></span><br><span class="line"><span class="function">              queues in order to achieve multiple drop priorities. This</span></span><br><span class="line"><span class="function">              is required to realize Assured <span class="title">Forwarding</span> <span class="params">(RFC <span class="number">2597</span>)</span>.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       hhf    Heavy-Hitter Filter differentiates between small flows <span class="keyword">and</span></span></span><br><span class="line"><span class="function">              the opposite, heavy-hitters. The goal is to <span class="keyword">catch</span> the</span></span><br><span class="line"><span class="function">              heavy-hitters <span class="keyword">and</span> move them to a separate queue with less</span></span><br><span class="line"><span class="function">              priority so that bulk traffic does <span class="keyword">not</span> affect the latency</span></span><br><span class="line"><span class="function">              of critical traffic.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       ingress</span></span><br><span class="line"><span class="function">              This is a special qdisc as it applies to incoming traffic</span></span><br><span class="line"><span class="function">              on an interface, allowing <span class="keyword">for</span> it to be filtered <span class="keyword">and</span></span></span><br><span class="line"><span class="function">              policed.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       mqprio The Multiqueue Priority Qdisc is a simple queuing</span></span><br><span class="line"><span class="function">              discipline that allows mapping traffic flows to hardware</span></span><br><span class="line"><span class="function">              queue ranges <span class="keyword">using</span> priorities <span class="keyword">and</span> a configurable priority</span></span><br><span class="line"><span class="function">              to traffic <span class="keyword">class</span> mapping. A traffic <span class="keyword">class</span> in <span class="keyword">this</span> context</span></span><br><span class="line"><span class="function">              is a set of contiguous qdisc classes which map 1:<span class="number">1</span> to a</span></span><br><span class="line"><span class="function">              set of hardware exposed queues.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       multiq Multiqueue is a qdisc optimized for devices with multiple</span></span><br><span class="line"><span class="function">              Tx queues. It has been added for hardware that wishes to</span></span><br><span class="line"><span class="function">              avoid head-of-line blocking.  It will cycle though the</span></span><br><span class="line"><span class="function">              bands and verify that the hardware queue associated with</span></span><br><span class="line"><span class="function">              the band is not stopped prior to dequeuing a packet.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       netem  Network Emulator is an enhancement of the Linux traffic</span></span><br><span class="line"><span class="function">              control facilities that allow to add delay, packet loss,</span></span><br><span class="line"><span class="function">              duplication and more other characteristics to packets</span></span><br><span class="line"><span class="function">              outgoing from a selected network interface.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       pfifo_fast</span></span><br><span class="line"><span class="function">              Standard qdisc for <span class="string">&#x27;Advanced Router&#x27;</span> enabled kernels.</span></span><br><span class="line"><span class="function">              Consists of a three-band queue which honors Type of</span></span><br><span class="line"><span class="function">              Service flags, as well as the priority that may be</span></span><br><span class="line"><span class="function">              assigned to a packet.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       pie    Proportional Integral controller-Enhanced (PIE) is a</span></span><br><span class="line"><span class="function">              control theoretic active queue management scheme. It is</span></span><br><span class="line"><span class="function">              based on the proportional integral controller but aims to</span></span><br><span class="line"><span class="function">              control delay.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       red    Random Early Detection simulates physical congestion by</span></span><br><span class="line"><span class="function">              randomly dropping packets when nearing configured</span></span><br><span class="line"><span class="function">              bandwidth allocation. Well suited to very large bandwidth</span></span><br><span class="line"><span class="function">              applications.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       rr     Round-Robin qdisc with support for multiqueue network</span></span><br><span class="line"><span class="function">              devices. Removed from Linux since kernel version <span class="number">2.6</span><span class="number">.27</span>.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       sfb    Stochastic Fair Blue is a classless qdisc to manage</span></span><br><span class="line"><span class="function">              congestion based on packet loss and link utilization</span></span><br><span class="line"><span class="function">              history while trying to prevent non-responsive flows (i.e.</span></span><br><span class="line"><span class="function">              flows that do not react to congestion marking or dropped</span></span><br><span class="line"><span class="function">              packets) from impacting performance of responsive flows.</span></span><br><span class="line"><span class="function">              Unlike RED, where the marking probability has to be</span></span><br><span class="line"><span class="function">              configured, BLUE tries to determine the ideal marking</span></span><br><span class="line"><span class="function">              probability automatically.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       sfq    Stochastic Fairness Queueing reorders queued traffic so</span></span><br><span class="line"><span class="function">              each <span class="string">&#x27;session&#x27;</span> gets to send a packet in turn.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       tbf    The Token Bucket Filter is suited for slowing traffic down</span></span><br><span class="line"><span class="function">              to a precisely configured rate. Scales well to large</span></span><br><span class="line"><span class="function">              bandwidths.</span></span><br><span class="line"><span class="function">无类的，在添加规则时需要注意：</span></span><br><span class="line"><span class="function">In the absence of classful qdiscs, classless qdiscs can only be</span></span><br><span class="line"><span class="function">       attached at the root of a device. Full syntax:</span></span><br><span class="line"><span class="function">       tc qdisc add dev DEV root QDISC QDISC-PARAMETERS</span></span><br><span class="line"><span class="function">To remove, issue</span></span><br><span class="line"><span class="function">       tc qdisc del dev DEV root</span></span><br><span class="line"><span class="function"> The pfifo_fast qdisc is the automatic default in the absence of a</span></span><br><span class="line"><span class="function">       configured qdisc.</span></span><br><span class="line"><span class="function">有类的：</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       ATM    Map flows to virtual circuits of an underlying</span></span><br><span class="line"><span class="function">              asynchronous transfer mode device.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       CBQ    Class Based Queueing implements a rich linksharing</span></span><br><span class="line"><span class="function">              hierarchy of classes.  It contains shaping elements as</span></span><br><span class="line"><span class="function">              well as prioritizing capabilities. Shaping is performed</span></span><br><span class="line"><span class="function">              using link idle time calculations based on average packet</span></span><br><span class="line"><span class="function">              size and underlying link bandwidth. The latter may be ill-</span></span><br><span class="line"><span class="function">              defined for some interfaces.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       DRR    The Deficit Round Robin Scheduler is a more flexible</span></span><br><span class="line"><span class="function">              replacement for Stochastic Fairness Queuing. Unlike SFQ,</span></span><br><span class="line"><span class="function">              there are no built-in queues -- you need to add classes</span></span><br><span class="line"><span class="function">              and then set up filters to classify packets accordingly.</span></span><br><span class="line"><span class="function">              This can be useful e.g. for using RED qdiscs with</span></span><br><span class="line"><span class="function">              different settings for particular traffic. There is no</span></span><br><span class="line"><span class="function">              default class -- if a packet cannot be classified, it is</span></span><br><span class="line"><span class="function">              dropped.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       DSMARK Classify packets based on TOS field, change TOS field of</span></span><br><span class="line"><span class="function">              packets based on classification.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       ETS    The ETS qdisc is a queuing discipline that merges</span></span><br><span class="line"><span class="function">              functionality of PRIO and DRR qdiscs in one scheduler. ETS</span></span><br><span class="line"><span class="function">              makes it easy to configure a set of strict and bandwidth-</span></span><br><span class="line"><span class="function">              sharing bands to implement the transmission selection</span></span><br><span class="line"><span class="function">              described in <span class="number">802.1</span>Qaz.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       HFSC   Hierarchical Fair Service Curve guarantees precise</span></span><br><span class="line"><span class="function">              bandwidth and delay allocation for leaf classes and</span></span><br><span class="line"><span class="function">              allocates excess bandwidth fairly. Unlike HTB, it makes</span></span><br><span class="line"><span class="function">              use of packet dropping to achieve low delays which</span></span><br><span class="line"><span class="function">              interactive sessions benefit from.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       HTB    The Hierarchy Token Bucket implements a rich linksharing</span></span><br><span class="line"><span class="function">              hierarchy of classes with an emphasis on conforming to</span></span><br><span class="line"><span class="function">              existing practices. HTB facilitates guaranteeing bandwidth</span></span><br><span class="line"><span class="function">              to classes, while also allowing specification of upper</span></span><br><span class="line"><span class="function">              limits to inter-class sharing. It contains shaping</span></span><br><span class="line"><span class="function">              elements, based on TBF and can prioritize classes.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       PRIO   The PRIO qdisc is a non-shaping container for a</span></span><br><span class="line"><span class="function">              configurable number of classes which are dequeued in</span></span><br><span class="line"><span class="function">              order. This allows for easy prioritization of traffic,</span></span><br><span class="line"><span class="function">              where lower classes are only able to send if higher ones</span></span><br><span class="line"><span class="function">              have no packets available. To facilitate configuration,</span></span><br><span class="line"><span class="function">              Type Of Service bits are honored by default.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       QFQ    Quick Fair Queueing is an O(<span class="number">1</span>) scheduler that provides</span></span><br><span class="line"><span class="function">              near-optimal guarantees, and is the first to achieve that</span></span><br><span class="line"><span class="function">              goal with a constant cost also with respect to the number</span></span><br><span class="line"><span class="function">              of groups and the packet length. The QFQ algorithm has no</span></span><br><span class="line"><span class="function">              loops, and uses very simple instructions and data</span></span><br><span class="line"><span class="function">              structures that lend themselves very well to a hardware</span></span><br><span class="line"><span class="function">              implementation.</span></span><br><span class="line"><span class="function">			  </span></span><br><span class="line"><span class="function">#创建规则：</span></span><br><span class="line"><span class="function">tc qdisc add dev eth0 root handle <span class="number">1</span>:<span class="number">0</span> htb default <span class="number">1</span> </span></span><br><span class="line"><span class="function">#添加一个tbf规则，绑定到eth0上，命名为<span class="number">1</span>:<span class="number">0</span> ，默认归类为<span class="number">1</span></span></span><br><span class="line"><span class="function">#handle：为规则命名或指定某规则</span></span><br></pre></td></tr></table></figure>
+<p>排队规则在内核中的表示结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">描述排队规则的结构：</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Qdisc</span> &#123;</span><br><span class="line">	<span class="built_in">int</span> 			(*enqueue)(<span class="keyword">struct</span> sk_buff *skb,   --上面提到的两个函数</span><br><span class="line">					   <span class="keyword">struct</span> Qdisc *sch,</span><br><span class="line">					   <span class="keyword">struct</span> sk_buff **to_free);</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">sk_buff</span> *	(*dequeue)(<span class="keyword">struct</span> Qdisc *sch);</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		flags;</span><br><span class="line">	<span class="type">const</span> <span class="keyword">struct</span> <span class="title class_">Qdisc_ops</span>	*ops;<span class="comment">//队列操作的接口，每个排队规则都必须实现该接口，如pfifo,tbf</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">qdisc_size_table</span>	__rcu *stab;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">list_head</span>	list;</span><br><span class="line">	u32			handle; <span class="comment">//和tc的handle对应 句柄，排队规则，类和过滤器都有一个32位的句柄标识；</span></span><br><span class="line">	u32			parent; <span class="comment">//父句柄</span></span><br><span class="line">	<span class="type">void</span>			*u32_node;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">netdev_queue</span>	*dev_queue;<span class="comment">//和netdevice挂钩</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">sk_buff_head</span>	q;<span class="comment">//队列当前的数据包数</span></span><br><span class="line">    ..</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Qdisc_ops</span> &#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">Qdisc_ops</span>	*next;<span class="comment">//用于链接已注册的各种排队规则的操作接口</span></span><br><span class="line">	<span class="type">const</span> <span class="keyword">struct</span> <span class="title class_">Qdisc_class_ops</span>	*cl_ops;<span class="comment">//所在规则提供的类操作接口</span></span><br><span class="line">	<span class="type">char</span>			id[IFNAMSIZ];</span><br><span class="line">	<span class="type">int</span>			priv_size;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">int</span> 			(*enqueue)(<span class="keyword">struct</span> sk_buff *skb, <span class="comment">//将数据包加入排队规则的函数</span></span><br><span class="line">					   <span class="keyword">struct</span> Qdisc *sch,</span><br><span class="line">					   <span class="keyword">struct</span> sk_buff **to_free);</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">sk_buff</span> *	(*dequeue)(<span class="keyword">struct</span> Qdisc *);</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">sk_buff</span> *	(*peek)(<span class="keyword">struct</span> Qdisc *);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">int</span>			(*init)(<span class="keyword">struct</span> Qdisc *, <span class="keyword">struct</span> nlattr *arg);<span class="comment">//排队规则的初始化</span></span><br><span class="line">	<span class="built_in">void</span>			(*reset)(<span class="keyword">struct</span> Qdisc *);</span><br><span class="line">	<span class="built_in">void</span>			(*destroy)(<span class="keyword">struct</span> Qdisc *);</span><br><span class="line">	<span class="built_in">int</span>			(*change)(<span class="keyword">struct</span> Qdisc *, <span class="keyword">struct</span> nlattr *arg);</span><br><span class="line">	<span class="built_in">void</span>			(*attach)(<span class="keyword">struct</span> Qdisc *);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">int</span>			(*dump)(<span class="keyword">struct</span> Qdisc *, <span class="keyword">struct</span> sk_buff *);</span><br><span class="line">	<span class="built_in">int</span>			(*dump_stats)(<span class="keyword">struct</span> Qdisc *, <span class="keyword">struct</span> gnet_dump *);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">module</span>		*owner;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>类：<br>类： 定义在排队规则中，报文通过过滤器，过滤，分配到不同的类中；排队规则可以没有类，如fifo先进先出，也可以有多个类<br>类中也可以有内部的排队规则，包被过滤器过滤为某个类后，在这个类中通过fifo的排队规则出去，或者其他规则，这里的规则就是内部规则；<br>创建类：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> tc [ OPTIONS ] <span class="keyword">class</span> [ add | change | replace | <span class="keyword">delete</span> ] dev DEV</span><br><span class="line">       parent qdisc-id [ classid <span class="keyword">class</span>-id ] qdisc [ qdisc specific</span><br><span class="line">       parameters ]</span><br><span class="line">eg:</span><br><span class="line">#创建分类</span><br><span class="line">tc <span class="keyword">class</span> <span class="title class_">add</span> dev eth0 parent <span class="number">1</span>:<span class="number">0</span> classid <span class="number">1</span>:<span class="number">1</span> htb rate <span class="number">10</span>Mbit burst <span class="number">15</span>k</span><br><span class="line">#为eth0下的root队列<span class="number">1</span>:<span class="number">0</span>添加一个分类并命名为<span class="number">1</span>:<span class="number">1</span>，类型为htb，带宽为<span class="number">10</span>M</span><br><span class="line"><span class="meta">#rate: 是一个类保证得到的带宽值.如果有不只一个类,请保证所有子类总和是小于或等于父类.</span></span><br><span class="line"><span class="meta">#ceil: ceil是一个类最大能得到的带宽值.</span></span><br></pre></td></tr></table></figure>
+<p>类的表示：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">在linux中，以xxx_class来表示，如htb:</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">htb_class</span> &#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">Qdisc_class_common</span> common;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">psched_ratecfg</span>	rate;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">psched_ratecfg</span>	ceil;</span><br><span class="line">	s64			buffer, cbuffer;<span class="comment">/* token bucket depth/rate */</span></span><br><span class="line">	s64			mbuffer;	<span class="comment">/* max wait time */</span></span><br><span class="line">	u32			prio;		<span class="comment">/* these two are used only by leaves... */</span></span><br><span class="line">	<span class="type">int</span>			quantum;	<span class="comment">/* but stored for parent-to-leaf return */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">tcf_proto</span> __rcu	*filter_list;	<span class="comment">/* class attached filters */</span> 类的过滤器链</span><br><span class="line">	<span class="type">int</span>			filter_cnt;</span><br><span class="line">	<span class="type">int</span>			refcnt;		<span class="comment">/* usage count of this class */</span></span><br><span class="line"></span><br><span class="line">	<span class="type">int</span>			level;		<span class="comment">/* our level (see above) */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		children;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">htb_class</span>	*parent;	<span class="comment">/* parent class */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">gnet_stats_rate_est64</span> rate_est;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Written often fields</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">gnet_stats_basic_packed</span> bstats;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">tc_htb_xstats</span>	xstats;	<span class="comment">/* our special stats */</span></span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p>过滤器<br>过滤器： 具体的过滤规则，用来分类；包含若干个匹配条件，如果符合条件的包，被分类到具体的类中；</p>
+</li>
+</ul>
+<p>一个类至少有一个过滤器，可能有多个过滤器，<br>tc指令：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">tc [ OPTIONS ] filter [ add | change | replace | <span class="keyword">delete</span> | get ]</span><br><span class="line">       dev DEV [ parent qdisc-id | root ] [ handle filter-id ] protocol</span><br><span class="line">       protocol prio priority filtertype [ filtertype specific</span><br><span class="line">       parameters ] flowid flow-id</span><br><span class="line">内核目前提供的过滤器有：</span><br><span class="line"> The available filters are:</span><br><span class="line"></span><br><span class="line">       basic  Filter packets based on an ematch expression. See</span><br><span class="line">              tc-<span class="built_in">ematch</span>(<span class="number">8</span>) <span class="keyword">for</span> details.</span><br><span class="line"></span><br><span class="line">       <span class="function">bpf    Filter packets <span class="title">using</span> <span class="params">(e)</span>BPF, see tc-<span class="title">bpf</span><span class="params">(<span class="number">8</span>)</span> <span class="keyword">for</span> details.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       cgroup Filter packets based on the control group of their</span></span><br><span class="line"><span class="function">              process. See tc-<span class="title">cgroup</span><span class="params">(<span class="number">8</span>)</span> <span class="keyword">for</span> details.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       flow, flower</span></span><br><span class="line"><span class="function">              Flow-based classifiers, filtering packets based on their</span></span><br><span class="line"><span class="function">              <span class="title">flow</span> <span class="params">(identified by selectable keys)</span>. See tc-<span class="title">flow</span><span class="params">(<span class="number">8</span>)</span> <span class="keyword">and</span></span></span><br><span class="line"><span class="function">              tc-<span class="title">flower</span><span class="params">(<span class="number">8</span>)</span> <span class="keyword">for</span> details.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       fw     Filter based on fwmark. Directly maps fwmark value to</span></span><br><span class="line"><span class="function">              traffic <span class="keyword">class</span>. See tc-<span class="title">fw</span><span class="params">(<span class="number">8</span>)</span>.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       route  Filter packets based on routing table. See tc-<span class="title">route</span><span class="params">(<span class="number">8</span>)</span> <span class="keyword">for</span></span></span><br><span class="line"><span class="function">              details.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       rsvp   Match Resource Reservation <span class="title">Protocol</span> <span class="params">(RSVP)</span> packets.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       tcindex</span></span><br><span class="line"><span class="function">              Filter packets based on traffic control index. See</span></span><br><span class="line"><span class="function">              tc-<span class="title">tcindex</span><span class="params">(<span class="number">8</span>)</span>.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">       u32    Generic filtering on arbitrary packet data, assisted by</span></span><br><span class="line"><span class="function">              syntax to abstract common operations. See tc-<span class="title">u32</span><span class="params">(<span class="number">8</span>)</span> <span class="keyword">for</span></span></span><br><span class="line"><span class="function">              details.</span></span><br><span class="line"><span class="function">    matchall</span></span><br><span class="line"><span class="function">              Traffic control filter that matches every packet. See</span></span><br><span class="line"><span class="function">              tc-<span class="title">matchall</span><span class="params">(<span class="number">8</span>)</span> <span class="keyword">for</span> details.</span></span><br><span class="line"><span class="function">eg:</span></span><br><span class="line"><span class="function">#使用u32创建过滤器</span></span><br><span class="line"><span class="function">tc filter add dev eth0 protocol ip parent <span class="number">1</span>:<span class="number">0</span> prio <span class="number">1</span> u32 match ip sport <span class="number">22</span> flowid <span class="number">1</span>:<span class="number">10</span></span></span><br></pre></td></tr></table></figure>
+<p>在内核中的结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">tcf_proto</span> &#123;</span><br><span class="line">	<span class="comment">/* Fast access part */</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">tcf_proto</span> __rcu	*next;<span class="comment">//将多个过滤器连接起来</span></span><br><span class="line">	<span class="type">void</span> __rcu		*root;</span><br><span class="line">	<span class="built_in">int</span>			(*classify)(<span class="keyword">struct</span> sk_buff *,</span><br><span class="line">					    <span class="type">const</span> <span class="keyword">struct</span> tcf_proto *,</span><br><span class="line">					    <span class="keyword">struct</span> tcf_result *); <span class="comment">//报文分类函数--&gt; tcf_proto_ops上</span></span><br><span class="line">	__be16			protocol;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* All the rest */</span></span><br><span class="line">	u32			prio;</span><br><span class="line">	u32			classid;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">Qdisc</span>		*q;</span><br><span class="line">	<span class="type">void</span>			*data;</span><br><span class="line">	<span class="type">const</span> <span class="keyword">struct</span> <span class="title class_">tcf_proto_ops</span>	*ops;<span class="comment">//过滤器操作函数接口</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">rcu_head</span>		rcu;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="qdisc的例子：-pfifo-ftb等"><a href="#qdisc的例子：-pfifo-ftb等" class="headerlink" title="qdisc的例子： pfifo ,ftb等"></a>qdisc的例子： pfifo ,ftb等</h3><p>通过fifo学习如何实现一个规则；<br>默认情况下是pfifo，这个通过dev_open挂到设备上；如果需要其他的，通过tc后-&gt;netlink再操作到dev结构等上；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Qdisc</span> noop_qdisc = &#123;</span><br><span class="line">	.enqueue	=	noop_enqueue,</span><br><span class="line">	.dequeue	=	noop_dequeue,</span><br><span class="line">	.flags		=	TCQ_F_BUILTIN,</span><br><span class="line">	.ops		=	&amp;noop_qdisc_ops,</span><br><span class="line">	.list		=	<span class="built_in">LIST_HEAD_INIT</span>(noop_qdisc.list),</span><br><span class="line">	.q.lock		=	__SPIN_LOCK_UNLOCKED(noop_qdisc.q.lock),</span><br><span class="line">	.dev_queue	=	&amp;noop_netdev_queue,</span><br><span class="line">	.running	=	<span class="built_in">SEQCNT_ZERO</span>(noop_qdisc.running),</span><br><span class="line">	.busylock	=	__SPIN_LOCK_UNLOCKED(noop_qdisc.busylock),</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Qdisc_ops</span> pfifo_fast_ops __read_mostly = &#123;</span><br><span class="line">	.id		=	<span class="string">&quot;pfifo_fast&quot;</span>,</span><br><span class="line">	.priv_size	=	<span class="built_in">sizeof</span>(<span class="keyword">struct</span> pfifo_fast_priv),</span><br><span class="line">	.enqueue	=	pfifo_fast_enqueue,</span><br><span class="line">	.dequeue	=	pfifo_fast_dequeue,</span><br><span class="line">	.peek		=	pfifo_fast_peek,</span><br><span class="line">	.init		=	pfifo_fast_init,</span><br><span class="line">	.reset		=	pfifo_fast_reset,</span><br><span class="line">	.dump		=	pfifo_fast_dump,</span><br><span class="line">	.owner		=	THIS_MODULE,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="tc工具的netlink接口"><a href="#tc工具的netlink接口" class="headerlink" title="tc工具的netlink接口"></a>tc工具的netlink接口</h3><p>定义在sch_api.c，主要操作排队规则中的类和过滤器；<br>tc是通过netlink向内核通信，从而实现创建，修改qos等功能</p>
+<p>本文只是给了一个流程和具体认知，通过本文来知道tc大致原理和框架，从而为进一步提供便利和查找依据；</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tcpip-tc/" rel="tag"># tcpip_tc</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/22/linux-netdevicelayer/" rel="prev" title="linux_netdevicelayer">
+      <i class="fa fa-chevron-left"></i> linux_netdevicelayer
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/23/c-valuetype/" rel="next" title="c++_valuetype">
+      c++_valuetype <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">流量控制概述</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">例子：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">流量控制的基本实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%92%8C%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">流量控制的实现和基本流程：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">相关代码：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B"><span class="nav-number">3.2.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E7%9A%84%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">流量控制的结构：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#qdisc%E7%9A%84%E4%BE%8B%E5%AD%90%EF%BC%9A-pfifo-ftb%E7%AD%89"><span class="nav-number">4.</span> <span class="nav-text">qdisc的例子： pfifo ,ftb等</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tc%E5%B7%A5%E5%85%B7%E7%9A%84netlink%E6%8E%A5%E5%8F%A3"><span class="nav-number">5.</span> <span class="nav-text">tc工具的netlink接口</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'bafb454a1572209072a952977a1c7cc8',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="音频科技发展史：声音的本质：声音的本质是一种振动，可以说是一种一维的物理信号；可以通过敲击，让物体振动产生，并且可以使空气产生振动，从而传播，不过会能量衰减，导致只能传播一定的距离，原始振动能量越大，传输的距离就越大；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="live_media_audio">
+<meta property="og:url" content="https://xdksx.github.io/2021/02/18/live-media-audio/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="音频科技发展史：声音的本质：声音的本质是一种振动，可以说是一种一维的物理信号；可以通过敲击，让物体振动产生，并且可以使空气产生振动，从而传播，不过会能量衰减，导致只能传播一定的距离，原始振动能量越大，传输的距离就越大；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2021/02/18/live-media-audio/pcmall.png">
+<meta property="og:image" content="https://xdksx.github.io/2021/02/18/live-media-audio/channel.png">
+<meta property="article:published_time" content="2021-02-17T18:28:34.000Z">
+<meta property="article:modified_time" content="2021-05-22T16:29:26.000Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="audio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2021/02/18/live-media-audio/pcmall.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/02/18/live-media-audio/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>live_media_audio | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/02/18/live-media-audio/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          live_media_audio
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-18 02:28:34" itemprop="dateCreated datePublished" datetime="2021-02-18T02:28:34+08:00">2021-02-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-23 00:29:26" itemprop="dateModified" datetime="2021-05-23T00:29:26+08:00">2021-05-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/audio/" itemprop="url" rel="index"><span itemprop="name">audio</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="音频科技发展史："><a href="#音频科技发展史：" class="headerlink" title="音频科技发展史："></a>音频科技发展史：</h3><h4 id="声音的本质："><a href="#声音的本质：" class="headerlink" title="声音的本质："></a>声音的本质：</h4><p>声音的本质是一种振动，可以说是一种一维的物理信号；可以通过敲击，让物体振动产生，并且可以使空气产生振动，从而传播，不过会能量衰减，导致只能传播一定的距离，原始振动<br>能量越大，传输的距离就越大；<span id="more"></span><br>声音作为这种波动类型的物理信号的特点和表示：振幅，频率，相位，波长，共振等等，这些不赘述，有兴趣再翻阅资料；</p>
+<h4 id="音频的录制发展史："><a href="#音频的录制发展史：" class="headerlink" title="音频的录制发展史："></a>音频的录制发展史：</h4><p><em>豆瓣有篇文章说的还可以：<a target="_blank" rel="noopener" href="https://www.douban.com/group/topic/28212958/">https://www.douban.com/group/topic/28212958/</a></em></p>
+<ul>
+<li>简单来说，声音的录制经历了一下的时代:<br>声音-&lt;-&gt;动能(机械)的时代： 即通过声波振记器，比如：可以将声波变换成金属针的震动，然后将波形刻录在圆筒形腊管的锡箔上。当针再一次沿着刻录的轨迹行进时，便可以重新发出留下的声音。<br>声音&lt;–&gt;电信号的时代：即：声音–&gt;振动–麦克风振动膜放大–&gt;线圈磁铁–&gt;电信号磁信号： 由磁带记录，播放；<br>声音&lt;–&gt;数字信号和处理时代：即声音–&gt;麦克风–&gt;电信号–&gt;模拟信号处理AD&#x2F;DA转换成数字信号：具体学习数字信号和模拟信号处理，了解示波器等器件；–&gt;101010的数字信号–&gt;<br>电脑接收和处理–&gt;数字信号转模拟信号AD&#x2F;DA –&gt;转为声音信号–&gt;扬声器  增加了立体声；<br>PS:<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/64050348">https://zhuanlan.zhihu.com/p/64050348</a><br>ADC&#x3D;Analog Digital Change 模数转换<br>DAC&#x3D; Digital Analog Change 数模转换<h4 id="现代声音录制采集处理的基本过程："><a href="#现代声音录制采集处理的基本过程：" class="headerlink" title="现代声音录制采集处理的基本过程："></a>现代声音录制采集处理的基本过程：</h4>即上述的第三个时代，这里稍微详细解释：现代为了提高声音的质量，在采集上也有各种细分： 环境的保证，声音无损传递，放大，麦克风的设计和材料，声音芯片的设计和材料(语音芯片有多种，涉及<br>声音从模拟信号到数字信号的过程：AD&#x2F;DA转换), 采样也有相关定理：奈奎斯特采样定律；(模拟信号数字化必须经过三个过程，即抽样、量化和编码，以实现话音数字化的脉冲编码调制（PCM，Pulse Coding Modulation）技术。)，至此，完成声音的数字化过程，但是对声音的处理还远不止于此，采集到的声音可能有噪声，对噪声的处理，降噪技术等，采集到的声音的转换，混合，传输<br>识别，智能转文本等等。</li>
+</ul>
+<h3 id="音频的组成："><a href="#音频的组成：" class="headerlink" title="音频的组成："></a>音频的组成：</h3><h4 id="音频的表示和基本参数："><a href="#音频的表示和基本参数：" class="headerlink" title="音频的表示和基本参数："></a>音频的表示和基本参数：</h4><pre><code>      + 简单介绍PCM 声音如何从模拟信号转换为数字信号：  
+</code></pre>
+<img src="/2021/02/18/live-media-audio/pcmall.png" class="" title="This is an example image">
+<pre><code>      + 采样：采样是将模拟信号以其带宽两倍以上的频率提取样值，变为在时间轴上离散数据的过程：
+         采样率：每秒从连续信号中提取出并组成离散信号的采样个数：用Hz表示；  
+         如：
+    如音频信号采样率为8000hz。
+    可以理解上图采样对应图中 那段电压随时间变化的曲线 为1秒 那下面那个1 2 3 …10那就因该有1-8000个点，即将1秒均分为8000份，依次取出来那8000个点时间 对应的电压值。
+      + 量化：
+         可以看到，在时间轴上连续的值已经变为离散的了，但是在电压上(y轴)上的值还是可能有无限多个值的情况，所以这个时候需要将电压上的值进行量化,举个例子：
+         采样位数： 即描述数字信号所用的位数：如t1时间的电压值V1用8bit的数值表示： 3： 00000011 ，8bit最大可以表示数值为256,16位类似；
+         量化精度，即将一个范围的值转换为另一个范围的值，两个值之间的间隔： 比如：将0-3.3V的范围电压值存储在8位的数字里即： 3.3/256=0.0128
+         量化： 即比如将0-3.3V的电压值放到8位数字中：即 电压值1.65V对应的值就是128，以此类推；
+         量化的后果：量化后的抽样信号与量化前的抽样信号相比较，当然有所失真，且不再是模拟信号。这种量化失真在接收端还原模拟信号时表现为噪声，并称为量化噪声。量化噪声的大小取决于把样值分级“取整”的方式，分的级数越多，即          量化级差或间隔越小，量化噪声也越小。
+
+      + 编码：将量化后得到的类似十进制数字码流经过一定的规则转换为二进制码流进入数字系统的过程；  
+         常见的有PCM音频编码：
+         PCM协议：  
+PCM（PCM-clock、PCM-sync、PCM-in、PCM-out）脉冲编码调制，模拟语音信号经过采样量化以及一定数据排列就是PCM了。理论上可以传   输单声道，双声道立体声和多声道。是数字音频的raw data.
+         PCM信号：PCM信号未经过任何编码和压缩处理(无损压缩)。与模拟信号比，它不易受传送系统的杂波及失真的影响。动态范围宽，可得到音质相当好的效果。编码上采用A律13折线编码。
+        关于双声道的采样：  
+</code></pre>
+<img src="/2021/02/18/live-media-audio/channel.png" class="" title="This is an example image">
+<pre><code>        +  关于采样频率：
+         人对频率的识别范围是 20HZ - 20000HZ, 如果每秒钟能对声音做 20000 个采样, 回放时就足可以满足人耳的需求.
+            8000hz 为电话采样。
+            22050 的采样频率是常用的。
+            44100已是CD音质, 超过48000的采样对人耳已经没有意义
+            对采样率为44.1kHz的AAC（Advanced Audio Coding）音频进行解码时，一帧的解码时间须控制在23.22毫秒内。通常是按1024个采样点一帧。
+            而一个采样点，可以理解为就是一个8bit/16bit的音频值/hz
+            PS： 音频其实没有帧的概念，音频是一连串的采样值，比如采样率为44.1kHZ，采样精度为16位的音频，你可以算出bitrate（比特率）是4410016kbps，每秒的音频数据是固定的4410016/8 字节。而一般是每次返回1024个采样值；
+      + 什么样的采样和音频值位数叫无损呢？
+</code></pre>
+<h5 id="音频的采集和表示："><a href="#音频的采集和表示：" class="headerlink" title="音频的采集和表示："></a>音频的采集和表示：</h5><ul>
+<li>pcm的格式的raw data数据；<br>    在linux下的采集<br>    1）采集白噪音，播放并导入到&#x2F;null  cat &#x2F;dev&#x2F;urandom | padsp tee &#x2F;dev&#x2F;audio &gt; &#x2F;dev&#x2F;null<br>    2）采集内存内容到播放audio,和&#x2F;null cat &#x2F;dev&#x2F;mem | padsp tee &#x2F;dev&#x2F;audio &gt; &#x2F;dev&#x2F;null<br>    3)  采集白噪音并播放和保存：cat &#x2F;dev&#x2F;urandom | padsp tee &#x2F;dev&#x2F;audio &gt; &#x2F;home&#x2F;some.raw<br>    注意这里是按默认的采样率，声道数，量化位数的；<br>    更多接口：音频的linux下的编程接口；<a target="_blank" rel="noopener" href="https://docs.google.com/viewerng/viewer?url=https://www.programmer-books.com/wp-content/uploads/2019/06/Linux-Sound-Programming.pdf">https://docs.google.com/viewerng/viewer?url=https://www.programmer-books.com/wp-content/uploads/2019/06/Linux-Sound-Programming.pdf</a></li>
+<li>音频音量，pcm格式等表示；见上</li>
+<li>音频编码情况：<br>WAV:pcm是无损wav文件中音频数据的一种编码方式，但wav还可以用其它方式编码<h5 id="音频的基本参数：采样率，音频值位数，比特率等；"><a href="#音频的基本参数：采样率，音频值位数，比特率等；" class="headerlink" title="音频的基本参数：采样率，音频值位数，比特率等；"></a>音频的基本参数：采样率，音频值位数，比特率等；</h5><h4 id="音频查看的相关工具：Audacity-可以导入原始格式进行播放和查看："><a href="#音频查看的相关工具：Audacity-可以导入原始格式进行播放和查看：" class="headerlink" title="音频查看的相关工具：Audacity 可以导入原始格式进行播放和查看："></a>音频查看的相关工具：Audacity 可以导入原始格式进行播放和查看：</h4>将wav或其他格式转换为pcm: eg:<br>ffmpeg -i file.wav -f s16be -ar 8000 -acodec pcm_s16be file.raw<br>PCM数据格式：即原始的音频采样数据：<br>比如：在得到file.raw后，用audacity播放，用文本编辑器打开，删除一半或一些数据，保存后再次用audacity播放，即可得到剩一半的数据；<br>WAV数据格式：PCM的基础上加上一些头，meta信息<br>其他工具：praat</li>
+</ul>
+<h4 id="认识音频原始数据"><a href="#认识音频原始数据" class="headerlink" title="认识音频原始数据"></a>认识音频原始数据</h4><h5 id="在windows-x2F-linux上采集pcm原始音频"><a href="#在windows-x2F-linux上采集pcm原始音频" class="headerlink" title="在windows&#x2F;linux上采集pcm原始音频"></a>在windows&#x2F;linux上采集pcm原始音频</h5><p>1） 列出设备：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -list_devices true -f dshow -i dummy  </span><br><span class="line">在DirectShow audio devices下  </span><br><span class="line">eg: &quot;xxx&quot;(Realtek Audio)&quot; 中文时可能有乱码，这个时候可以选择可选的另一个名字：  </span><br><span class="line">eg: Alternative name &quot;@device_cm_&#123;33D9A762<span class="string">-90</span>C8<span class="string">-11</span>D0-BD43<span class="string">-00</span>A0C911CE86&#125;\wave_&#123;E41DED46<span class="string">-6012</span><span class="string">-4493</span><span class="string">-8</span>D55<span class="string">-7</span>D9322A433B6&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>2）通过展示出来的设备进行录制音频：  </p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg.exe -f dshow -t 20 -i audio=&quot;@device_cm_&#123;33D9A762<span class="string">-90</span>C8<span class="string">-11</span>D0-BD43<span class="string">-00</span>A0C911CE86&#125;\wave_&#123;E41DED46<span class="string">-6012</span><span class="string">-4493</span><span class="string">-8</span>D55<span class="string">-7</span>D9322A433B6&#125;&quot;  -f s16le -y D:\sijiruni3.pcm </span><br></pre></td></tr></table></figure>
+
+
+<ol start="3">
+<li>按格式播放采集的音频：  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ffplay<span class="selector-class">.exe</span> -channels <span class="number">2</span> -f s16le -<span class="selector-tag">i</span> D:\sijiruni<span class="selector-class">.pcm</span></span><br><span class="line">将pcm转为wav:ffmpeg<span class="selector-class">.exe</span> -f s16le -ar <span class="number">44100</span> -ac <span class="number">2</span> -<span class="selector-tag">i</span> D:\audiotest\output_halfleft<span class="selector-class">.pcm</span> out_halfleft.wav</span><br></pre></td></tr></table></figure>
+注意：若播放失败，尝试用大端&#x2F;小端都尝试下；</li>
+</ol>
+<h5 id="参数解释："><a href="#参数解释：" class="headerlink" title="参数解释："></a>参数解释：</h5><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-f  s16le  : </span><br><span class="line">   f: format </span><br><span class="line">   s16  ： <span class="keyword">signed</span> <span class="number">16</span><span class="keyword">bit</span></span><br><span class="line">   u16: <span class="keyword">unsigned</span> <span class="number">16</span><span class="keyword">bit</span> </span><br><span class="line">   le : little <span class="keyword">end</span>  小端</span><br><span class="line">   be: big <span class="keyword">end</span> 大端</span><br></pre></td></tr></table></figure>
+<p>更多格式：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$ ffmpeg -formats | grep PCM</span><br><span class="line"> DE alaw            PCM A-law</span><br><span class="line"> DE f32be           PCM <span class="number">32</span>-bit floating-point big-endian</span><br><span class="line"> DE f32le           PCM <span class="number">32</span>-bit floating-point little-endian</span><br><span class="line"> DE f64be           PCM <span class="number">64</span>-bit floating-point big-endian</span><br><span class="line"> DE f64le           PCM <span class="number">64</span>-bit floating-point little-endian</span><br><span class="line"> DE mulaw           PCM mu-law</span><br><span class="line"> DE s16be           PCM <span class="type">signed</span> <span class="number">16</span>-bit big-endian</span><br><span class="line"> DE s16le           PCM <span class="type">signed</span> <span class="number">16</span>-bit little-endian</span><br><span class="line"> DE s24be           PCM <span class="type">signed</span> <span class="number">24</span>-bit big-endian</span><br><span class="line"> DE s24le           PCM <span class="type">signed</span> <span class="number">24</span>-bit little-endian</span><br><span class="line"> DE s32be           PCM <span class="type">signed</span> <span class="number">32</span>-bit big-endian</span><br><span class="line"> DE s32le           PCM <span class="type">signed</span> <span class="number">32</span>-bit little-endian</span><br><span class="line"> DE s8              PCM <span class="type">signed</span> <span class="number">8</span>-bit</span><br><span class="line"> DE u16be           PCM <span class="type">unsigned</span> <span class="number">16</span>-bit big-endian</span><br><span class="line"> DE u16le           PCM <span class="type">unsigned</span> <span class="number">16</span>-bit little-endian</span><br><span class="line"> DE u24be           PCM <span class="type">unsigned</span> <span class="number">24</span>-bit big-endian</span><br><span class="line"> DE u24le           PCM <span class="type">unsigned</span> <span class="number">24</span>-bit little-endian</span><br><span class="line"> DE u32be           PCM <span class="type">unsigned</span> <span class="number">32</span>-bit big-endian</span><br><span class="line"> DE u32le           PCM <span class="type">unsigned</span> <span class="number">32</span>-bit little-endian</span><br><span class="line"> DE u8              PCM <span class="type">unsigned</span> <span class="number">8</span>-bit</span><br><span class="line"> https:<span class="comment">//trac.ffmpeg.org/wiki/audio%20types</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="音频采集常见参数解释："><a href="#音频采集常见参数解释：" class="headerlink" title="音频采集常见参数解释："></a>音频采集常见参数解释：</h5><figure class="highlight vhdl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> channel: 通道数，可以有多个通道支持，常见有，单声道和立体声(两个通道)</span><br><span class="line">rate： 采样率： 即每秒采样的点数，比如<span class="number">44100</span>hz,则每秒采集<span class="number">44100</span>个值，这个值大小代表振幅大小，即音频音量值</span><br><span class="line">位深： 即一个采样点用多大类型的值表示： 常见有<span class="number">8</span><span class="built_in">bit</span>,<span class="number">16</span><span class="built_in">bit</span>等，见上；</span><br><span class="line">frame: 在单声道：一个帧表示一个通道下的一个采样，而双通道，则一个帧包含两个采样点；所以帧率和sample rate采样率一样；</span><br><span class="line">           比如：单声道： <span class="number">44100</span>hz,则表示 ，每秒<span class="number">44100</span>个采样点，帧率为<span class="number">44100</span>/s,而 双通道下，<span class="number">44100</span>hz,由于一帧两个采样，所以帧率也是<span class="number">44100</span>；</span><br><span class="line">           注意这里的帧率和传输上的帧率不同；</span><br><span class="line">period <span class="built_in">time</span>: 毫秒单位，两个硬件中断的时间间隔，这个中断用来刷新缓存；</span><br><span class="line">period size: 硬件中断之间的帧数量；和以下相关：</span><br><span class="line">          period <span class="built_in">time</span> = period size * <span class="built_in">time</span>/frame  : 帧数*每帧占用的时间长度；</span><br><span class="line">                             = period size * number <span class="keyword">of</span> channels * <span class="built_in">time</span>/sample : 帧数* 每个采样占用的时长</span><br><span class="line">                            = period size * number <span class="keyword">of</span> channels / samplate rate : 帧数/采样率(帧率)</span><br><span class="line">            eg:  <span class="number">48000</span>hz 双通道，periodsize = <span class="number">8192</span>frames,则 period <span class="built_in">time</span> = <span class="number">8192</span>/<span class="number">48000</span>=<span class="number">170.5</span>ms</span><br><span class="line">periods: 每个<span class="keyword">buffer</span>的periods数量</span><br><span class="line"><span class="keyword">buffer</span> <span class="built_in">time</span>: 一个<span class="keyword">buffer</span>的时长</span><br><span class="line"><span class="keyword">buffer</span> size: 一个<span class="keyword">buffer</span>的帧数；</span><br><span class="line">    一个<span class="keyword">buffer</span>的时长= <span class="keyword">buffer</span> size * <span class="built_in">time</span>/frame ： 一个<span class="keyword">buffer</span>的帧数* 一个帧的时长</span><br><span class="line">                              = <span class="keyword">buffer</span> size * number <span class="keyword">of</span> channels * <span class="built_in">time</span>/sample : 一个<span class="keyword">buffer</span>帧数 * channel数* 一个采样点的时长</span><br><span class="line">                              = <span class="keyword">buffer</span> size * number <span class="keyword">of</span> channels / sample rate</span><br><span class="line"></span><br><span class="line">注意一个<span class="keyword">buffer</span>可能是多个periods;</span><br><span class="line">https://www.alsa-project.org/wiki/FramesPeriods  更多更详细解释</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="音频数据组织方式和解释："><a href="#音频数据组织方式和解释：" class="headerlink" title="音频数据组织方式和解释："></a>音频数据组织方式和解释：</h5><p>音频中的数据如何排放：<br>对单声道： 每个采样点一个数据，以16bit，44100hz为例，XXOO  OOXX …. ,1s有44100个值<br>对双声道： 每个采样点一个数据，PCM16LE双声道数据中左声道和右声道的采样值是间隔存储的.<br>注意： 对单声道来讲，也是两个耳机都能播放的，关键在于左右声道平衡的设置，如audacity<br>而当双声道下，一个声道的数据为0时，则会出现左&#x2F;右 只有一个有声音的情况；默认播放时 ；<br>所以我们可以将音频数据左右交替清除来达到空间的效果；  </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">eg:</span><br><span class="line">只有右耳能听到；</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">simplest_pcm16le_halfvolumeleft</span><span class="params">(<span class="type">char</span> *url)</span></span>&#123;</span><br><span class="line">	FILE *fp=<span class="built_in">fopen</span>(url,<span class="string">&quot;rb+&quot;</span>);</span><br><span class="line">	FILE *fp1=<span class="built_in">fopen</span>(<span class="string">&quot;output_halfleft.pcm&quot;</span>,<span class="string">&quot;wb+&quot;</span>);</span><br><span class="line"> </span><br><span class="line">	<span class="type">int</span> cnt=<span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line">	<span class="type">unsigned</span> <span class="type">char</span> *sample=(<span class="type">unsigned</span> <span class="type">char</span> *)<span class="built_in">malloc</span>(<span class="number">4</span>);</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">while</span>(!<span class="built_in">feof</span>(fp))&#123;</span><br><span class="line">		<span class="type">short</span> *samplenum=<span class="literal">NULL</span>;</span><br><span class="line">		<span class="built_in">fread</span>(sample,<span class="number">1</span>,<span class="number">4</span>,fp);</span><br><span class="line"> </span><br><span class="line">		samplenum=(<span class="type">short</span> *)sample;</span><br><span class="line">		*samplenum=<span class="number">0</span>;</span><br><span class="line">		<span class="comment">//L</span></span><br><span class="line">		<span class="built_in">fwrite</span>(sample,<span class="number">1</span>,<span class="number">2</span>,fp1);</span><br><span class="line">		<span class="comment">//R</span></span><br><span class="line">		<span class="built_in">fwrite</span>(sample+<span class="number">2</span>,<span class="number">1</span>,<span class="number">2</span>,fp1);</span><br><span class="line"> </span><br><span class="line">		cnt++;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Sample Cnt:%d\n&quot;</span>,cnt);</span><br><span class="line"> </span><br><span class="line">	<span class="built_in">free</span>(sample);</span><br><span class="line">	<span class="built_in">fclose</span>(fp);</span><br><span class="line">	<span class="built_in">fclose</span>(fp1);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">https:<span class="comment">//blog.csdn.net/leixiaohua1020/article/details/50534316</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="音频技术："><a href="#音频技术：" class="headerlink" title="音频技术："></a>音频技术：</h5><ul>
+<li>混音  TODO</li>
+<li>重采样 TODO</li>
+</ul>
+<h5 id="音频压缩："><a href="#音频压缩：" class="headerlink" title="音频压缩："></a>音频压缩：</h5><p>TODO</p>
+<h5 id="alsa音频编程："><a href="#alsa音频编程：" class="headerlink" title="alsa音频编程："></a>alsa音频编程：</h5><p>ref linux-sound-programming.pdf<br>mark:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">对alsa编程编译运行成功，但是貌似录制不到声音，用了arecord也不行；</span><br><span class="line">sudo arecord -D <span class="string">&quot;hw:0,0&quot;</span> -f S16_LE -r <span class="number">16000</span> -c <span class="number">2</span> -d <span class="number">20</span> -t wav test2.wav</span><br><span class="line">./<span class="keyword">test</span> hw:<span class="number">0.0</span> <span class="keyword">file</span>.pcm</span><br><span class="line">也都不行，但是其实命令和设备都是对的；</span><br><span class="line">先不搞了，本来还想依赖它搞硬件的混音，这里不了，直接录制后，从pcm或其他级别来搞混音；</span><br></pre></td></tr></table></figure>
+
+<h4 id="next"><a href="#next" class="headerlink" title="next:"></a>next:</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1）学习audacity和理解各个音频功能： 混音，音频重采样等</span><br><span class="line">2）学习音频相关协议： aac,wav,ogg,flac等；</span><br><span class="line">3)  学习如何编程处理，裸，或者用ffmpeg库；</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/audio/" rel="tag"># audio</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/18/live-media-overiew/" rel="prev" title="live_media_overiew">
+      <i class="fa fa-chevron-left"></i> live_media_overiew
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/18/live-media-video/" rel="next" title="live_media_video">
+      live_media_video <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E7%A7%91%E6%8A%80%E5%8F%91%E5%B1%95%E5%8F%B2%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">音频科技发展史：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A3%B0%E9%9F%B3%E7%9A%84%E6%9C%AC%E8%B4%A8%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">声音的本质：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E7%9A%84%E5%BD%95%E5%88%B6%E5%8F%91%E5%B1%95%E5%8F%B2%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">音频的录制发展史：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%8E%B0%E4%BB%A3%E5%A3%B0%E9%9F%B3%E5%BD%95%E5%88%B6%E9%87%87%E9%9B%86%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%BF%87%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">现代声音录制采集处理的基本过程：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E7%9A%84%E7%BB%84%E6%88%90%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">音频的组成：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%9F%BA%E6%9C%AC%E5%8F%82%E6%95%B0%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">音频的表示和基本参数：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E7%9A%84%E9%87%87%E9%9B%86%E5%92%8C%E8%A1%A8%E7%A4%BA%EF%BC%9A"><span class="nav-number">2.1.1.</span> <span class="nav-text">音频的采集和表示：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8F%82%E6%95%B0%EF%BC%9A%E9%87%87%E6%A0%B7%E7%8E%87%EF%BC%8C%E9%9F%B3%E9%A2%91%E5%80%BC%E4%BD%8D%E6%95%B0%EF%BC%8C%E6%AF%94%E7%89%B9%E7%8E%87%E7%AD%89%EF%BC%9B"><span class="nav-number">2.1.2.</span> <span class="nav-text">音频的基本参数：采样率，音频值位数，比特率等；</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E6%9F%A5%E7%9C%8B%E7%9A%84%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7%EF%BC%9AAudacity-%E5%8F%AF%E4%BB%A5%E5%AF%BC%E5%85%A5%E5%8E%9F%E5%A7%8B%E6%A0%BC%E5%BC%8F%E8%BF%9B%E8%A1%8C%E6%92%AD%E6%94%BE%E5%92%8C%E6%9F%A5%E7%9C%8B%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">音频查看的相关工具：Audacity 可以导入原始格式进行播放和查看：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A4%E8%AF%86%E9%9F%B3%E9%A2%91%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">2.3.</span> <span class="nav-text">认识音频原始数据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9C%A8windows-x2F-linux%E4%B8%8A%E9%87%87%E9%9B%86pcm%E5%8E%9F%E5%A7%8B%E9%9F%B3%E9%A2%91"><span class="nav-number">2.3.1.</span> <span class="nav-text">在windows&#x2F;linux上采集pcm原始音频</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%A7%A3%E9%87%8A%EF%BC%9A"><span class="nav-number">2.3.2.</span> <span class="nav-text">参数解释：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E9%87%87%E9%9B%86%E5%B8%B8%E8%A7%81%E5%8F%82%E6%95%B0%E8%A7%A3%E9%87%8A%EF%BC%9A"><span class="nav-number">2.3.3.</span> <span class="nav-text">音频采集常见参数解释：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E6%95%B0%E6%8D%AE%E7%BB%84%E7%BB%87%E6%96%B9%E5%BC%8F%E5%92%8C%E8%A7%A3%E9%87%8A%EF%BC%9A"><span class="nav-number">2.3.4.</span> <span class="nav-text">音频数据组织方式和解释：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E6%8A%80%E6%9C%AF%EF%BC%9A"><span class="nav-number">2.3.5.</span> <span class="nav-text">音频技术：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E5%8E%8B%E7%BC%A9%EF%BC%9A"><span class="nav-number">2.3.6.</span> <span class="nav-text">音频压缩：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#alsa%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A8%8B%EF%BC%9A"><span class="nav-number">2.3.7.</span> <span class="nav-text">alsa音频编程：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#next"><span class="nav-number">2.4.</span> <span class="nav-text">next:</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'f7c378ee5e502c53d54f97aeb68dad34',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

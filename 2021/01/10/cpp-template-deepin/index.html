@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="模板是什么，为什么要引入模板：模板是用来生成代码的，通过模板可以定义一组类型的共同行为；为什么要引入模板：继承和组合是实现重用代码的方法，而容器也是，为了实现能承载不同类型的容器，java等其他语言用所有类都继承于根类型等方式，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp_template_deepin">
+<meta property="og:url" content="https://xdksx.github.io/2021/01/10/cpp-template-deepin/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="模板是什么，为什么要引入模板：模板是用来生成代码的，通过模板可以定义一组类型的共同行为；为什么要引入模板：继承和组合是实现重用代码的方法，而容器也是，为了实现能承载不同类型的容器，java等其他语言用所有类都继承于根类型等方式，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-09T16:23:38.000Z">
+<meta property="article:modified_time" content="2021-01-10T00:32:42.000Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="cpp_template">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/01/10/cpp-template-deepin/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>cpp_template_deepin | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/01/10/cpp-template-deepin/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cpp_template_deepin
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-10 00:23:38 / 修改时间：08:32:42" itemprop="dateCreated datePublished" datetime="2021-01-10T00:23:38+08:00">2021-01-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c-cpp/" itemprop="url" rel="index"><span itemprop="name">c&cpp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="模板是什么，为什么要引入模板："><a href="#模板是什么，为什么要引入模板：" class="headerlink" title="模板是什么，为什么要引入模板："></a>模板是什么，为什么要引入模板：</h3><p>模板是用来生成代码的，通过模板可以定义一组类型的共同行为；<br>为什么要引入模板：<br>继承和组合是实现重用代码的方法，而容器也是，为了实现能承载不同类型的容器，java等其他语言用所有类都继承于根类型等方式，<span id="more"></span><br>而c++这里为了减少不必要的开支，和冗余，采用预定义等方式，在预处理和编译时，将T替换为实际类型参数，并生成对应的类型；<br>来从而实现了容器；<br>所以说：模板的引入，是为了实现容器的需求；</p>
+<p>那么容器呢？为什么容器被需要？<br>栈的内存管理依赖于函数本身，或者说操作系统，在函数的调用结束后，会回收相关的存于栈的结构，所以不用我们去考虑清理的事情；<br>但是当我们在堆上使用时，malloc&#x2F;new后，往往需要free&#x2F;delete,在传统的c中，malloc后会需要进行free，否则程序运行时会出现内存泄漏；<br>容器的真正需求，是在这种情景下，减轻程序员的负担，担负起自动new和清理的工作；</p>
+<p>c++是怎么做的？ c++标准容器，用new创建需要的对象，将其指针放入容器中，实际使用时取出并处理，这种方法创建的只是对象，<br>清理时依赖析构函数时进行合理的free；不过需要注意，当存储的对象是指针时，此时的指针需要程序员自己去new和释放；<br>同时为了支持承载多种类型的对象，所以模板就被创建出来；</p>
+<h3 id="模板的基本原理："><a href="#模板的基本原理：" class="headerlink" title="模板的基本原理："></a>模板的基本原理：</h3><p>为了解决多类型：有几个方法，模板采用的是第三个：</p>
+<ol>
+<li>c方法复制粘贴代码</li>
+<li>继承来实现代码重用，但是需要学习基础类库</li>
+<li>实现类似宏替换的逻辑，并放到编译器中，编译器识别到类似声明，就进行替换，从而重新生成类定义等，也取消类型的指定；而容器的实现则是<br> 以堆来存放一组特定类型对象。类似对象数组等；</li>
+</ol>
+<h3 id="模板是怎么工作的，工程上，内部结构等，编译器的作用；"><a href="#模板是怎么工作的，工程上，内部结构等，编译器的作用；" class="headerlink" title="模板是怎么工作的，工程上，内部结构等，编译器的作用；"></a>模板是怎么工作的，工程上，内部结构等，编译器的作用；</h3><h4 id="1）工程文件上，如何预编译，编译，链接等；"><a href="#1）工程文件上，如何预编译，编译，链接等；" class="headerlink" title="1）工程文件上，如何预编译，编译，链接等；"></a>1）工程文件上，如何预编译，编译，链接等；</h4><p> 模板中分为函数模板和类模板：<br>类模板：定义和成员函数实现都是写在头文件中<br>函数模板：定义声明等都是写在头文件中；<br>模板编译模型：<br>模板的完整定义都是放在每个编译单元中；例如完全放在单个文件程序中，或者放在文件程序的头文件中；和传统的编程方式背道而驰；</p>
+<h5 id="1-传统的为什么要这么做？—分离模型："><a href="#1-传统的为什么要这么做？—分离模型：" class="headerlink" title="(1) 传统的为什么要这么做？—分离模型："></a>(1) 传统的为什么要这么做？—分离模型：</h5><p>不要放置分配存储空间的任何东西(这条规定是为了防止在链接期间的多重定义错误)，编译期间是单个文件的，此时不会出现，但是链接的时候是多个实现文件，若是头文件里也定义了，就会导致链接的时候多重定义，而编译器对此并没有去重；</p>
+<p>头文件中的非内联函数体会导致多函数的定义，从而导致链接错误；<br>隐藏来自客户有益函数实现，减少了编译时链接；<br>隐藏代码，代码所有权；<br>头文件越小，编译时间越短；</p>
+<h5 id="2-模板时包含模型，那这样客户代码想隐藏怎么办？"><a href="#2-模板时包含模型，那这样客户代码想隐藏怎么办？" class="headerlink" title="(2) 模板时包含模型，那这样客户代码想隐藏怎么办？"></a>(2) 模板时包含模型，那这样客户代码想隐藏怎么办？</h5><p>在template&lt;..&gt;后的任何东西都意味着编译器在当时不为它分配存储空间，而是一直处于等待状态直到一个模板示例告知，而此时是编译器在碰到模板示例时，往往是编译期间，然后生成对应的类，然后在运行时，才分配对象的空间；在编译器和连接器中有机制能去掉同一模板的多重定义；所以为了使用方便，几乎总是在头文件中放置全部的模板声明和定义；</p>
+<p>模板代码本质上只是产生代码的指令，不是真正的代码，只有实例化了才是，一个编译器在编译期间看到模板的完整定义后，在同一个翻译单元中碰到模板实例化点时，也会在其他翻译单元碰到同样的实例化点，这样就会重复生成实例化代码；而编译器和连接器需要解决这个重复定义；<br>这种有两个缺点：<br>a  编译时间增加  b 无法隐藏实现代码；<br>如何处理？ 如何实现分离？<br>一种是显示实例化，一种是导出模板：<br>显示实例化：<br>    <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">	eg:</span><br><span class="line">ourMin.h :</span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> OURMIN_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> OURMIN_H</span></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="type">const</span> T&amp; <span class="title">min</span><span class="params">(<span class="type">const</span> T&amp;,<span class="type">const</span> T&amp;)</span></span>;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">ourMin.cpp</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ourMin.h&quot;</span></span></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="type">const</span> T&amp; <span class="title">min</span><span class="params">(<span class="type">const</span> T&amp; a,<span class="type">const</span> T&amp; b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">     <span class="keyword">return</span> (a&lt;b)?a:b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">UseMin1.cpp:</span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&quot;outMin.h&quot;</span></span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">usemin1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout&lt;&lt;<span class="built_in">min</span>(<span class="number">1</span>,<span class="number">2</span>) &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">UseMin2.cpp:</span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line">#Include <span class="string">&quot;outMin.h&quot;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">usemin2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   std::cout&lt;&lt;<span class="built_in">min</span>(<span class="number">3.2</span> ,<span class="number">4.3</span>) &lt;&lt;std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">main.cpp;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">usemin1</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">usemin2</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">usemin1</span>();</span><br><span class="line">    <span class="built_in">usemin2</span>();</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>建立这个程序式，连接器报告有未解析的min<int>() 和min<double>()的外部引用； 因为编译器在min的特化时，只有min的声明可见，定义不可见，编译器认为它可能来自于其他单元，所以即没有实例化，问题留给了连接器，连接器无法找到；<br>所以可用加一个显示实例化来进行，即显示特化：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Minstances.cpp:</span><br><span class="line">#Include <span class="string">&quot;ourMin.cpp&quot;</span><span class="comment">//因为编译器需要模板定义来实例化；</span></span><br><span class="line"><span class="keyword">template</span> <span class="type">const</span> <span class="type">int</span>&amp; <span class="built_in">min</span>&lt;min&gt;(<span class="type">const</span> <span class="type">int</span>&amp;, <span class="type">const</span> <span class="type">int</span>&amp;);</span><br><span class="line"><span class="keyword">template</span> <span class="type">const</span> <span class="type">double</span>&amp; <span class="built_in">min</span>&lt;<span class="type">double</span>&gt; (<span class="type">const</span> <span class="type">double</span> &amp;,<span class="type">const</span> <span class="type">double</span>&amp;);</span><br></pre></td></tr></table></figure>
+
+<p>导出模板：<br>export关键字： </p>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">export</span> <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="type">const</span> T&amp; <span class="title">min</span><span class="params">(<span class="type">const</span> T&amp;,<span class="type">const</span> T&amp;)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-模板定义的几种方式："><a href="#2-模板定义的几种方式：" class="headerlink" title="2)模板定义的几种方式："></a>2)模板定义的几种方式：</h4><p>声明和内联函数的形式</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AA</span></span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">public</span> :</span><br><span class="line">       <span class="built_in">AA</span> ()&#123;&#125;;</span><br><span class="line">       <span class="function"><span class="type">void</span> <span class="title">add</span><span class="params">()</span> </span>&#123;...&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">声明和非内联函数的形式；</span><br><span class="line">      <span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line">      <span class="keyword">class</span> <span class="title class_">Array</span> &#123;</span><br><span class="line">          <span class="keyword">enum</span> &#123; size = <span class="number">1000</span>&#125;;</span><br><span class="line">          T A[size];</span><br><span class="line">          <span class="keyword">public</span>:</span><br><span class="line">               T&amp; <span class="keyword">operator</span>[](<span class="type">int</span> index);</span><br><span class="line">    &#125;;</span><br><span class="line">       <span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line">      T&amp; Array&lt;T&gt;::<span class="keyword">operator</span>[](<span class="type">int</span> index) &#123;</span><br><span class="line">               .....</span><br><span class="line">              <span class="keyword">return</span> A[index];</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+
+<p>声明在头文件，定义在cpp的显示实例化，注意需要cpp加显示实例声明，见上面2</p>
+<h4 id="3）模板的一些使用技巧：-在stl源码解析中："><a href="#3）模板的一些使用技巧：-在stl源码解析中：" class="headerlink" title="3）模板的一些使用技巧： 在stl源码解析中："></a>3）模板的一些使用技巧： 在stl源码解析中：</h4><pre><code> 涉及以下几种： 类型萃取，迭代器，智能指针(引用释放等) ,泛型算法等等；
+</code></pre>
+<h3 id="模板的使用细节："><a href="#模板的使用细节：" class="headerlink" title="模板的使用细节："></a>模板的使用细节：</h3><h4 id="1-模板参数：-类型-基础或用户自定义-编译时常数值-整数，指针或某些静态实体的引用，通常作为无类型模板参数，支持默认参数-其他模板；"><a href="#1-模板参数：-类型-基础或用户自定义-编译时常数值-整数，指针或某些静态实体的引用，通常作为无类型模板参数，支持默认参数-其他模板；" class="headerlink" title="1) 模板参数： 类型(基础或用户自定义), 编译时常数值(整数，指针或某些静态实体的引用，通常作为无类型模板参数，支持默认参数),其他模板；"></a>1) 模板参数： 类型(基础或用户自定义), 编译时常数值(整数，指针或某些静态实体的引用，通常作为无类型模板参数，支持默认参数),其他模板；</h4><p>模板类型参数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Array</span>&#123;</span><br><span class="line">     ....</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>, <span class="keyword">template</span>&lt;<span class="keyword">class</span>&gt; <span class="keyword">class</span> <span class="title class_">Seq</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Container</span></span><br><span class="line">&#123;</span><br><span class="line">    Seq&lt;T&gt; seq;<span class="comment">//通知编译器，Seq是一个模板；本例子中Seq代表Array</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">使用：Container&lt;<span class="type">int</span>,Array&gt; container;</span><br><span class="line">还可以支持标准库中的容器：</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>, <span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">U</span>,<span class="keyword">class</span> = allocator&lt;U&gt;&gt;  <span class="keyword">class</span> Seq&gt;</span><br><span class="line"><span class="keyword">class</span> Container</span><br><span class="line">&#123;</span><br><span class="line">    Seq&lt;T&gt; seq;</span><br><span class="line">    ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用： Container&lt;int ,vector&gt; xxx;实际上容器适配器就是用类似的方法实现的，如stack<br>typename关键字用法；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">当在模板中用T::id这种类型时，编译器会默认解析为T类中的静态成员id,而不会认为这个是一个内部类，所以，当用法为：</span><br><span class="line">T::id i ;这种定义变量的方式时，会出错，此时需要向编译器说明这个是一个嵌套类；</span><br><span class="line">所以<span class="keyword">typename</span>在这里的作用： <span class="number">1</span>) 声明是一个类型，<span class="number">2</span>）可以替换<span class="keyword">class</span> <span class="title class_">template</span>&lt; <span class="keyword">typename</span> T&gt; <span class="keyword">class</span> <span class="title class_">X</span>&#123;&#125;;</span><br><span class="line"><span class="keyword">typename</span>并不能起到定义新类型的作用，可以用<span class="keyword">typedef</span> <span class="keyword">typename</span> Seq&lt;it&gt;::iterator It;类似的 </span><br></pre></td></tr></table></figure>
+
+<p>template关键字的作用：<br>1）声明模板<br>2）模板中遇到&gt; &lt;等和模板的&gt; &lt;混合时，用template声明；</p>
+<h4 id="2-成员模板；"><a href="#2-成员模板；" class="headerlink" title="2)成员模板；"></a>2)成员模板；</h4><p>就是在类模板中定义一个新的内部类模板：<br>eg:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt; <span class="keyword">class</span> <span class="title class_">Outer</span>&#123;</span><br><span class="line">     <span class="keyword">public</span> :</span><br><span class="line">         <span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">R</span>&gt; <span class="keyword">class</span> <span class="title class_">inter</span>&#123;</span><br><span class="line">            <span class="keyword">public</span>:</span><br><span class="line">                 <span class="function"><span class="type">void</span> <span class="title">g</span><span class="params">()</span></span>;</span><br><span class="line">       &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt; <span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">R</span>&gt;</span><br><span class="line"><span class="type">void</span> Outer&lt;T&gt;::inter&lt;R&gt;::<span class="built_in">g</span>() &#123;</span><br><span class="line">      ..</span><br><span class="line">&#125;</span><br><span class="line">使用：</span><br><span class="line"> Outer&lt;<span class="type">int</span>&gt;::inter&lt;<span class="type">bool</span>&gt; interr;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-有关函数模板的内容"><a href="#3-有关函数模板的内容" class="headerlink" title="3) 有关函数模板的内容"></a>3) 有关函数模板的内容</h4><ol>
+<li>函数模板定义了一簇函数； —函数模板参数的类型如何推断：涉及一些参数可以省略的问题</li>
+<li>函数模板重载：其实是直接定义了普通函数，这样若是符合普通函数的类型则调用的是定义的普通函数，否则是模板生成；<br>3）以一个已生成的函数模板地址作为参数：</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="type">void</span> <span class="title">f</span><span class="params">(T*)</span> </span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">h</span><span class="params">(<span class="type">void</span> (*pf)(<span class="type">int</span>*))</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;<span class="function"><span class="type">void</span> <span class="title">g</span><span class="params">(<span class="type">void</span> (*pf)(T*))</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> main</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">h</span>(&amp;f&lt;<span class="type">int</span>&gt;);</span><br><span class="line">    <span class="built_in">h</span>(&amp;f);</span><br><span class="line">    <span class="built_in">g</span>&lt;<span class="type">int</span>&gt;(&amp;f&lt;<span class="type">int</span>&gt;);</span><br><span class="line">    <span class="built_in">g</span>&lt;<span class="type">int</span>&gt;(&amp;f);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4)将函数用到stl序列容器中：TODO<br>5）函数模板的半有序： 即T, T*,const T*的区分，优先匹配特化程度最高的那个模板；他们的特化程度逐渐递增；</p>
+<h4 id="4-模板特化相关"><a href="#4-模板特化相关" class="headerlink" title="4)模板特化相关"></a>4)模板特化相关</h4><p>显示特化：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;&gt; </span><br><span class="line"><span class="type">const</span> <span class="type">char</span>* <span class="type">const</span>&amp; <span class="built_in">min</span>&lt;<span class="type">const</span> <span class="type">char</span>*&gt;(.....)</span><br></pre></td></tr></table></figure>
+
+<p>半特化：<br>比如有两个参数，只限定了其中一个类型；<br>防止代码膨胀– TODO</p>
+<h4 id="5-模板中的名称查找问题"><a href="#5-模板中的名称查找问题" class="headerlink" title="5)模板中的名称查找问题"></a>5)模板中的名称查找问题</h4><p>编译器解析模板定义，并寻找明显的语法错误，还要对其所能解析的所有名称进行解析；对于不依赖模板参数的名称，编译器使用普通名称查找解析他们，不能解析的就是关联名称，只有等到实例化才知道；<br>模板和友元：  –TODO</p>
+<h4 id="6-模板编程中的习语"><a href="#6-模板编程中的习语" class="headerlink" title="6)模板编程中的习语:"></a>6)模板编程中的习语:</h4><ol>
+<li>特征：将与某种类型相关联的所有声明绑定在一起的实现方式；<br>2）策略： 其实就是类似萃取类型；<br>3）神奇的递归模板，在编译期间就算出来值了；运行时只需要读取即可</li>
+</ol>
+<h4 id="7-模板元编程："><a href="#7-模板元编程：" class="headerlink" title="7)模板元编程："></a>7)模板元编程：</h4><p>1） 编译时编程 :模板中编译时循环，循环分解，编译时选择，编译时断言—即利用模板，在编译时就算出值，减少运行开销哈<br>2)  表达式模板：</p>
+<h4 id="8-模板与继承：-模板实例也可以作为被继承方；"><a href="#8-模板与继承：-模板实例也可以作为被继承方；" class="headerlink" title="8)模板与继承： 模板实例也可以作为被继承方；"></a>8)模板与继承： 模板实例也可以作为被继承方；</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">xx</span>: <span class="keyword">public</span> tes&lt;A&gt; &#123;&#125;;</span><br><span class="line">模板其他资料；见书：c++ templates,the complete guide</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h3><p>懒惰初始化，使用时才分配空间，读写时分配<br>存放指针对象时，为了避免多重释放，可以实现所有权函数，拥有所有权的才有释放的权利 owns函数</p>
+<h3 id="ref"><a href="#ref" class="headerlink" title="ref:"></a>ref:</h3><p>c++编程思想；</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp-template/" rel="tag"># cpp_template</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/11/gdb%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" rel="prev" title="gdb基础">
+      <i class="fa fa-chevron-left"></i> gdb基础
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/10/cpp-template-func/" rel="next" title="cpp_template_func">
+      cpp_template_func <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%95%E5%85%A5%E6%A8%A1%E6%9D%BF%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">模板是什么，为什么要引入模板：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">模板的基本原理：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%8C%E5%B7%A5%E7%A8%8B%E4%B8%8A%EF%BC%8C%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84%E7%AD%89%EF%BC%8C%E7%BC%96%E8%AF%91%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9B"><span class="nav-number">3.</span> <span class="nav-text">模板是怎么工作的，工程上，内部结构等，编译器的作用；</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89%E5%B7%A5%E7%A8%8B%E6%96%87%E4%BB%B6%E4%B8%8A%EF%BC%8C%E5%A6%82%E4%BD%95%E9%A2%84%E7%BC%96%E8%AF%91%EF%BC%8C%E7%BC%96%E8%AF%91%EF%BC%8C%E9%93%BE%E6%8E%A5%E7%AD%89%EF%BC%9B"><span class="nav-number">3.1.</span> <span class="nav-text">1）工程文件上，如何预编译，编译，链接等；</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E4%BC%A0%E7%BB%9F%E7%9A%84%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%BF%99%E4%B9%88%E5%81%9A%EF%BC%9F%E2%80%94%E5%88%86%E7%A6%BB%E6%A8%A1%E5%9E%8B%EF%BC%9A"><span class="nav-number">3.1.1.</span> <span class="nav-text">(1) 传统的为什么要这么做？—分离模型：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E6%A8%A1%E6%9D%BF%E6%97%B6%E5%8C%85%E5%90%AB%E6%A8%A1%E5%9E%8B%EF%BC%8C%E9%82%A3%E8%BF%99%E6%A0%B7%E5%AE%A2%E6%88%B7%E4%BB%A3%E7%A0%81%E6%83%B3%E9%9A%90%E8%97%8F%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="nav-number">3.1.2.</span> <span class="nav-text">(2) 模板时包含模型，那这样客户代码想隐藏怎么办？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E6%A8%A1%E6%9D%BF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">2)模板定义的几种方式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%EF%BC%89%E6%A8%A1%E6%9D%BF%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%EF%BC%9A-%E5%9C%A8stl%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%AD%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">3）模板的一些使用技巧： 在stl源码解析中：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E7%9A%84%E4%BD%BF%E7%94%A8%E7%BB%86%E8%8A%82%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">模板的使用细节：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%A8%A1%E6%9D%BF%E5%8F%82%E6%95%B0%EF%BC%9A-%E7%B1%BB%E5%9E%8B-%E5%9F%BA%E7%A1%80%E6%88%96%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89-%E7%BC%96%E8%AF%91%E6%97%B6%E5%B8%B8%E6%95%B0%E5%80%BC-%E6%95%B4%E6%95%B0%EF%BC%8C%E6%8C%87%E9%92%88%E6%88%96%E6%9F%90%E4%BA%9B%E9%9D%99%E6%80%81%E5%AE%9E%E4%BD%93%E7%9A%84%E5%BC%95%E7%94%A8%EF%BC%8C%E9%80%9A%E5%B8%B8%E4%BD%9C%E4%B8%BA%E6%97%A0%E7%B1%BB%E5%9E%8B%E6%A8%A1%E6%9D%BF%E5%8F%82%E6%95%B0%EF%BC%8C%E6%94%AF%E6%8C%81%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0-%E5%85%B6%E4%BB%96%E6%A8%A1%E6%9D%BF%EF%BC%9B"><span class="nav-number">4.1.</span> <span class="nav-text">1) 模板参数： 类型(基础或用户自定义), 编译时常数值(整数，指针或某些静态实体的引用，通常作为无类型模板参数，支持默认参数),其他模板；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E6%88%90%E5%91%98%E6%A8%A1%E6%9D%BF%EF%BC%9B"><span class="nav-number">4.2.</span> <span class="nav-text">2)成员模板；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E6%9C%89%E5%85%B3%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-number">4.3.</span> <span class="nav-text">3) 有关函数模板的内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E6%A8%A1%E6%9D%BF%E7%89%B9%E5%8C%96%E7%9B%B8%E5%85%B3"><span class="nav-number">4.4.</span> <span class="nav-text">4)模板特化相关</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E6%A8%A1%E6%9D%BF%E4%B8%AD%E7%9A%84%E5%90%8D%E7%A7%B0%E6%9F%A5%E6%89%BE%E9%97%AE%E9%A2%98"><span class="nav-number">4.5.</span> <span class="nav-text">5)模板中的名称查找问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E6%A8%A1%E6%9D%BF%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%B9%A0%E8%AF%AD"><span class="nav-number">4.6.</span> <span class="nav-text">6)模板编程中的习语:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-%E6%A8%A1%E6%9D%BF%E5%85%83%E7%BC%96%E7%A8%8B%EF%BC%9A"><span class="nav-number">4.7.</span> <span class="nav-text">7)模板元编程：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-%E6%A8%A1%E6%9D%BF%E4%B8%8E%E7%BB%A7%E6%89%BF%EF%BC%9A-%E6%A8%A1%E6%9D%BF%E5%AE%9E%E4%BE%8B%E4%B9%9F%E5%8F%AF%E4%BB%A5%E4%BD%9C%E4%B8%BA%E8%A2%AB%E7%BB%A7%E6%89%BF%E6%96%B9%EF%BC%9B"><span class="nav-number">4.8.</span> <span class="nav-text">8)模板与继承： 模板实例也可以作为被继承方；</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="nav-number">5.</span> <span class="nav-text">使用技巧</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ref"><span class="nav-number">6.</span> <span class="nav-text">ref:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '522de1bb56b6337ed873acb3c55b771d',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

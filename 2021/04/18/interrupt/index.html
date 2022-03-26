@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="中断概述除了系统调用外，中断也是一种内核活动；系统调用不是在用户态和系统状态之间切换的唯一途径中断的处理往往会涉及到汇编等和硬件相关的代码，但是中断处理部分随着时间的演化，已经达到了这样一种状态：高层代码和底层的硬件交互代码，已经尽可能有效而干净地分隔开了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="interrupt">
+<meta property="og:url" content="https://xdksx.github.io/2021/04/18/interrupt/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="中断概述除了系统调用外，中断也是一种内核活动；系统调用不是在用户态和系统状态之间切换的唯一途径中断的处理往往会涉及到汇编等和硬件相关的代码，但是中断处理部分随着时间的演化，已经达到了这样一种状态：高层代码和底层的硬件交互代码，已经尽可能有效而干净地分隔开了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-17T16:42:52.000Z">
+<meta property="article:modified_time" content="2021-04-17T23:43:54.000Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="interrupt">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2021/04/18/interrupt/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>interrupt | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2021/04/18/interrupt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          interrupt
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-18 00:42:52 / 修改时间：07:43:54" itemprop="dateCreated datePublished" datetime="2021-04-18T00:42:52+08:00">2021-04-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="中断概述"><a href="#中断概述" class="headerlink" title="中断概述"></a>中断概述</h3><p>除了系统调用外，中断也是一种内核活动；系统调用不是在用户态和系统状态之间切换的唯一途径<br>中断的处理往往会涉及到汇编等和硬件相关的代码，但是中断处理部分随着时间的演化，已经达到了这样一种状态：高层代码和底层的硬件交互代码，已经尽可能有效而干净<br>地分隔开了。<span id="more"></span></p>
+<h3 id="中断框架："><a href="#中断框架：" class="headerlink" title="中断框架："></a>中断框架：</h3><p>老版本的linux，中断代码比较杂乱，新版本，因为其中引入了一个用于中断和IRQ的通用框架。各个平台现在只负责在最低层次上与硬件交互。所有其他功能都由通用代码提供</p>
+<h4 id="中断类型："><a href="#中断类型：" class="headerlink" title="中断类型："></a>中断类型：</h4><p>同步中断和异步中断，两者都是通过中断服务程序（ISR中断处理程序）来处理的</p>
+<h5 id="同步中断和异常"><a href="#同步中断和异常" class="headerlink" title="同步中断和异常"></a>同步中断和异常</h5><p>由cpu产生，针对当前执行的程序，比如除0，内核可能通过信号机制通知进程，进程做默认或注册行为比如输出错误信息，或者直接结束；<br>异常情况也可能是如缺页异常，这种由内核自动修复，进程往往无感知；</p>
+<h5 id="异步中断"><a href="#异步中断" class="headerlink" title="异步中断"></a>异步中断</h5><p>经典的中断，由外部设备产生，可能发生在任意时间。不同于同步中断，<br>异步中断并不与特定进程关联。它们可能发生在任何时间，而不牵涉系统当前执行的活动。 ①<br>网卡通过发出一个相关的中断来报告新分组的到达。因为数据可能在任意时刻到达系统，所<br>以当前执行的很可能是与数据无关的某个进程或其他东西。为避免损害该进程，内核必须确<br>保中断能够尽快处理完毕（通过缓冲数据），使得CPU时间能够返还给当前进程。这也是内核<br>需要延期操作机制的原因</p>
+<h5 id="中断的一些其他逻辑："><a href="#中断的一些其他逻辑：" class="headerlink" title="中断的一些其他逻辑："></a>中断的一些其他逻辑：</h5><ul>
+<li>禁用中断，应尽量避免；</li>
+<li>设备共享中断编号–中断共享</li>
+</ul>
+<h3 id="硬件中断"><a href="#硬件中断" class="headerlink" title="硬件中断"></a>硬件中断</h3><p>由系统自身和与之连接的外设自动产生。它们用于支持更高效地实现设备驱动程序，也用于引起处理器自身对异常或错误的关注，这些是需要与内核代码进行交互的。<br>中断不能由处理器外部的外设直接产生，而必须借助于一个称为中断控制器(interrupt controller)的标准组件来请求，该组件存在于每个系统中。<br>&#x2F;proc&#x2F;interrupts 这个文件可以查看系统的中断编号和对应中断；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">think@think-VirtualBox:~/c++/ptrace$ cat /proc/interrupts </span><br><span class="line">           CPU0       CPU1       </span><br><span class="line">  <span class="number">0</span>:         <span class="number">39</span>          <span class="number">0</span>   IO-APIC   <span class="number">2</span>-edge      timer</span><br><span class="line">  <span class="number">1</span>:       <span class="number">3038</span>          <span class="number">0</span>   IO-APIC   <span class="number">1</span>-edge      i8042</span><br><span class="line">  <span class="number">8</span>:          <span class="number">0</span>          <span class="number">0</span>   IO-APIC   <span class="number">8</span>-edge      rtc0</span><br><span class="line">  <span class="number">9</span>:          <span class="number">0</span>          <span class="number">0</span>   IO-APIC   <span class="number">9</span>-fasteoi   acpi</span><br><span class="line"> <span class="number">12</span>:       <span class="number">3144</span>          <span class="number">0</span>   IO-APIC  <span class="number">12</span>-edge      i8042</span><br><span class="line"> <span class="number">14</span>:          <span class="number">0</span>          <span class="number">0</span>   IO-APIC  <span class="number">14</span>-edge      ata_piix</span><br><span class="line"> <span class="number">15</span>:       <span class="number">9824</span>          <span class="number">0</span>   IO-APIC  <span class="number">15</span>-edge      ata_piix</span><br><span class="line"> <span class="number">18</span>:          <span class="number">0</span>          <span class="number">0</span>   IO-APIC  <span class="number">18</span>-fasteoi   vmwgfx</span><br><span class="line"> <span class="number">19</span>:        <span class="number">129</span>       <span class="number">7562</span>   IO-APIC  <span class="number">19</span>-fasteoi   eth0</span><br><span class="line"> <span class="number">20</span>:      <span class="number">18055</span>          <span class="number">0</span>   IO-APIC  <span class="number">20</span>-fasteoi   vboxguest</span><br><span class="line"> <span class="number">21</span>:      <span class="number">46875</span>          <span class="number">0</span>   IO-APIC  <span class="number">21</span>-fasteoi   <span class="number">0000</span>:<span class="number">00</span>:<span class="number">0</span>d<span class="number">.0</span>, snd_intel8x0</span><br><span class="line"> <span class="number">22</span>:         <span class="number">27</span>          <span class="number">0</span>   IO-APIC  <span class="number">22</span>-fasteoi   ohci_hcd:usb1</span><br><span class="line">NMI:          <span class="number">0</span>          <span class="number">0</span>   Non-maskable interrupts</span><br><span class="line">LOC:     <span class="number">257382</span>     <span class="number">487413</span>   Local timer interrupts</span><br><span class="line">SPU:          <span class="number">0</span>          <span class="number">0</span>   Spurious interrupts</span><br><span class="line">PMI:          <span class="number">0</span>          <span class="number">0</span>   Performance monitoring interrupts</span><br><span class="line">IWI:          <span class="number">0</span>          <span class="number">0</span>   IRQ work interrupts</span><br><span class="line">RTR:          <span class="number">0</span>          <span class="number">0</span>   APIC ICR read retries</span><br><span class="line">RES:     <span class="number">299362</span>     <span class="number">323826</span>   Rescheduling interrupts</span><br><span class="line">CAL:       <span class="number">2173</span>      <span class="number">26988</span>   Function call interrupts</span><br><span class="line">TLB:       <span class="number">1760</span>       <span class="number">1871</span>   TLB shootdowns</span><br><span class="line">TRM:          <span class="number">0</span>          <span class="number">0</span>   Thermal event interrupts</span><br><span class="line">THR:          <span class="number">0</span>          <span class="number">0</span>   Threshold APIC interrupts</span><br><span class="line">DFR:          <span class="number">0</span>          <span class="number">0</span>   Deferred Error APIC interrupts</span><br><span class="line">MCE:          <span class="number">0</span>          <span class="number">0</span>   Machine check exceptions</span><br><span class="line">MCP:         <span class="number">35</span>         <span class="number">35</span>   Machine check polls</span><br><span class="line">ERR:          <span class="number">0</span></span><br><span class="line">MIS:          <span class="number">0</span></span><br><span class="line">PIN:          <span class="number">0</span>          <span class="number">0</span>   Posted-interrupt notification event</span><br><span class="line">PIW:          <span class="number">0</span>          <span class="number">0</span>   Posted-interrupt wakeup event</span><br></pre></td></tr></table></figure>
+
+<h4 id="硬件中断的处理"><a href="#硬件中断的处理" class="headerlink" title="硬件中断的处理"></a>硬件中断的处理</h4><h5 id="进入和退出任务："><a href="#进入和退出任务：" class="headerlink" title="进入和退出任务："></a>进入和退出任务：</h5><p>首先，必须建立一个适当的环境，使得处理程序函数能够在其中执行，接下来调用处理程序自身，最后将系统复原（在当前程序看来）到中断之前的状态。<br>进入是从用户态切到核心太，退出是从核心态到用户态，而且需要通过调度器是否选择新进程替代旧进程；中断到达时也可能处于核心态，所以这个时候需要判断；</p>
+<h5 id="中断处理程序"><a href="#中断处理程序" class="headerlink" title="中断处理程序"></a>中断处理程序</h5><ul>
+<li>特点：<br>可以禁用中断来防止被打断，但是只能短时间使用，处理过程短暂；<br>可以在其他ISR执行期间调用的中断处理程序，不能彼此干扰<br>可延期的处理，不用在中断处理程序中实现，可以放到类似下半部的软中断；或者tasklet</li>
+</ul>
+<h4 id="中断相关数据结构："><a href="#中断相关数据结构：" class="headerlink" title="中断相关数据结构："></a>中断相关数据结构：</h4><ul>
+<li><p>总的数组：<br>在kernel&#x2F;irq&#x2F;handle.c,kernel&#x2F;irq&#x2F;irqdesc.c:可以看到初始化的中断处理数组；每个都被处理为handle_bad_irq;此时还没赋值；<br>赋值发生在驱动程序或模块初始化时调用request_irq等类似函数进行注册；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">irq_desc</span> irq_desc[NR_IRQS] __cacheline_aligned_in_smp = &#123;</span><br><span class="line">	[<span class="number">0</span> ... NR_IRQS<span class="number">-1</span>] = &#123;</span><br><span class="line">		.handle_irq	= handle_bad_irq,</span><br><span class="line">		.depth		= <span class="number">1</span>,</span><br><span class="line">		.lock		= __RAW_SPIN_LOCK_UNLOCKED(irq_desc-&gt;lock),</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>但IRQ的最大可能数目是通过一个平台相关的常数NR_IRQS指定的。大多数体系结构下，该常数定义在处理器相关的头文件include&#x2F;asm-generic&#x2F;irq.h中<br>不同处理器可能支持的不同；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> NR_IRQS</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NR_IRQS 64</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数组每个元素：<br>看下中断处理数组中每个元素的结构：每个irq都可以由该结构完全描述</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * struct irq_desc - interrupt descriptor</span></span><br><span class="line"><span class="comment"> * @irq_common_data:	per irq and chip data passed down to chip functions</span></span><br><span class="line"><span class="comment"> * @kstat_irqs:		irq stats per cpu</span></span><br><span class="line"><span class="comment"> * @handle_irq:		highlevel irq-events handler</span></span><br><span class="line"><span class="comment"> 电流层ISR由handle_irq提供。 handler_data可以指向任意数据，该数据可以是特定于IRQ</span></span><br><span class="line"><span class="comment">或处理程序的。每当发生中断时，特定于体系结构的代码都会调用handle_irq。该函数负责</span></span><br><span class="line"><span class="comment">使用chip中提供的特定于控制器的方法，进行处理中断所必需的一些底层操作。用于不同中</span></span><br><span class="line"><span class="comment">断类型的默认函数由内核提供。 </span></span><br><span class="line"><span class="comment"> * @preflow_handler:	handler called before the flow handler (currently used by sparc)</span></span><br><span class="line"><span class="comment"> * @action:		the irq action chain    irq操作列表</span></span><br><span class="line"><span class="comment"> action提供了一个操作链，需要在中断发生时执行。由中断通知的设备驱动程序，可以将与</span></span><br><span class="line"><span class="comment">之相关的处理程序函数放置在此处。有一个专门的数据结构用于表示这些操作</span></span><br><span class="line"><span class="comment"> * @status:		status information      irq状态</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Bit masks for irq_common_data.state_use_accessors</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * IRQD_TRIGGER_MASK		- Mask for the trigger type bits</span></span><br><span class="line"><span class="comment"> * IRQD_SETAFFINITY_PENDING	- Affinity setting is pending</span></span><br><span class="line"><span class="comment"> * IRQD_NO_BALANCING		- Balancing disabled for this IRQ</span></span><br><span class="line"><span class="comment"> * IRQD_PER_CPU			- Interrupt is per cpu</span></span><br><span class="line"><span class="comment"> * IRQD_AFFINITY_SET		- Interrupt affinity was set</span></span><br><span class="line"><span class="comment"> * IRQD_LEVEL			- Interrupt is level triggered</span></span><br><span class="line"><span class="comment"> * IRQD_WAKEUP_STATE		- Interrupt is configured for wakeup</span></span><br><span class="line"><span class="comment"> *				  from suspend</span></span><br><span class="line"><span class="comment"> * IRDQ_MOVE_PCNTXT		- Interrupt can be moved in process</span></span><br><span class="line"><span class="comment"> *				  context</span></span><br><span class="line"><span class="comment"> * IRQD_IRQ_DISABLED		- Disabled state of the interrupt</span></span><br><span class="line"><span class="comment"> * IRQD_IRQ_MASKED		- Masked state of the interrupt</span></span><br><span class="line"><span class="comment"> * IRQD_IRQ_INPROGRESS		- In progress state of the interrupt</span></span><br><span class="line"><span class="comment"> * IRQD_WAKEUP_ARMED		- Wakeup mode armed</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment">enum &#123;</span></span><br><span class="line"><span class="comment">	IRQD_TRIGGER_MASK		= 0xf,</span></span><br><span class="line"><span class="comment">	IRQD_SETAFFINITY_PENDING	= (1 &lt;&lt;  8),</span></span><br><span class="line"><span class="comment">	IRQD_NO_BALANCING		= (1 &lt;&lt; 10),</span></span><br><span class="line"><span class="comment">	IRQD_PER_CPU			= (1 &lt;&lt; 11),</span></span><br><span class="line"><span class="comment">	IRQD_AFFINITY_SET		= (1 &lt;&lt; 12),</span></span><br><span class="line"><span class="comment">	IRQD_LEVEL			= (1 &lt;&lt; 13),</span></span><br><span class="line"><span class="comment">	IRQD_WAKEUP_STATE		= (1 &lt;&lt; 14),</span></span><br><span class="line"><span class="comment">	IRQD_MOVE_PCNTXT		= (1 &lt;&lt; 15),</span></span><br><span class="line"><span class="comment">	IRQD_IRQ_DISABLED		= (1 &lt;&lt; 16),</span></span><br><span class="line"><span class="comment">	IRQD_IRQ_MASKED			= (1 &lt;&lt; 17),</span></span><br><span class="line"><span class="comment">	IRQD_IRQ_INPROGRESS		= (1 &lt;&lt; 18),</span></span><br><span class="line"><span class="comment">	IRQD_WAKEUP_ARMED		= (1 &lt;&lt; 19),</span></span><br><span class="line"><span class="comment">&#125;;*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* @core_internal_state__do_not_mess_with_it: core internal status information</span></span><br><span class="line"><span class="comment"> * @depth:		disable-depth, for nested irq_disable() calls</span></span><br><span class="line"><span class="comment"> * @wake_depth:		enable depth, for multiple irq_set_irq_wake() callers</span></span><br><span class="line"><span class="comment"> * @irq_count:		stats field to detect stalled irqs</span></span><br><span class="line"><span class="comment"> * @last_unhandled:	aging timer for unhandled count</span></span><br><span class="line"><span class="comment"> * @irqs_unhandled:	stats field for spurious unhandled interrupts</span></span><br><span class="line"><span class="comment"> * @threads_handled:	stats field for deferred spurious detection of threaded handlers</span></span><br><span class="line"><span class="comment"> * @threads_handled_last: comparator field for deferred spurious detection of theraded handlers</span></span><br><span class="line"><span class="comment"> * @lock:		locking for SMP</span></span><br><span class="line"><span class="comment"> * @affinity_hint:	hint to user space for preferred irq affinity</span></span><br><span class="line"><span class="comment"> * @affinity_notify:	context for notification of affinity changes</span></span><br><span class="line"><span class="comment"> * @pending_mask:	pending rebalanced interrupts</span></span><br><span class="line"><span class="comment"> * @threads_oneshot:	bitfield to handle shared oneshot threads</span></span><br><span class="line"><span class="comment"> * @threads_active:	number of irqaction threads currently running</span></span><br><span class="line"><span class="comment"> * @wait_for_threads:	wait queue for sync_irq to wait for threaded handlers</span></span><br><span class="line"><span class="comment"> * @nr_actions:		number of installed actions on this descriptor</span></span><br><span class="line"><span class="comment"> * @no_suspend_depth:	number of irqactions on a irq descriptor with</span></span><br><span class="line"><span class="comment"> *			IRQF_NO_SUSPEND set</span></span><br><span class="line"><span class="comment"> * @force_resume_depth:	number of irqactions on a irq descriptor with</span></span><br><span class="line"><span class="comment"> *			IRQF_FORCE_RESUME set</span></span><br><span class="line"><span class="comment"> * @dir:		/proc/irq/ procfs entry</span></span><br><span class="line"><span class="comment"> * @name:		flow handler name for /proc/interrupts output</span></span><br><span class="line"><span class="comment">  name指定了电流层处理程序的名称，将显示在/proc/interrupts中。对边沿触发中断，通常</span></span><br><span class="line"><span class="comment">是“edge”，对电平触发中断，通常是“level”。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">irq_desc</span> &#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">irq_common_data</span>	irq_common_data;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">irq_data</span>		irq_data; <span class="comment">//其中包含了irq_chip成员：用于表示一个IRQ控制器抽象的具体特征；</span></span><br><span class="line"><span class="comment">//通常在一个系统上只有一种类型的中断控制器会占据支配地位（当然，并没有什么约束条件阻止多个控制器并存），所有irq_desc的 irq_data的chip成员都指向irq_chip的同一实例</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> __percpu	*kstat_irqs;</span><br><span class="line">	<span class="type">irq_flow_handler_t</span>	handle_irq;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_IRQ_PREFLOW_FASTEOI</span></span><br><span class="line">	<span class="type">irq_preflow_handler_t</span>	preflow_handler;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">irqaction</span>	*action;	<span class="comment">/* IRQ action list */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		status_use_accessors;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		core_internal_state__do_not_mess_with_it;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		depth;		<span class="comment">/* nested irq disables */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		wake_depth;	<span class="comment">/* nested wake enables */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		irq_count;	<span class="comment">/* For detecting broken IRQs */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		last_unhandled;	<span class="comment">/* Aging timer for unhandled count */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		irqs_unhandled;</span><br><span class="line">	<span class="type">atomic_t</span>		threads_handled;</span><br><span class="line">	<span class="type">int</span>			threads_handled_last;</span><br><span class="line">	<span class="type">raw_spinlock_t</span>		lock;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">cpumask</span>		*percpu_enabled;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SMP</span></span><br><span class="line">	<span class="type">const</span> <span class="keyword">struct</span> <span class="title class_">cpumask</span>	*affinity_hint;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">irq_affinity_notify</span> *affinity_notify;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_GENERIC_PENDING_IRQ</span></span><br><span class="line">	<span class="type">cpumask_var_t</span>		pending_mask;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		threads_oneshot;</span><br><span class="line">	<span class="type">atomic_t</span>		threads_active;</span><br><span class="line">	<span class="type">wait_queue_head_t</span>       wait_for_threads;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_PM_SLEEP</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		nr_actions;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		no_suspend_depth;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		cond_suspend_depth;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		force_resume_depth;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_PROC_FS</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">proc_dir_entry</span>	*dir;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="type">int</span>			parent_irq;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">module</span>		*owner;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>		*name;</span><br><span class="line">&#125; ____cacheline_internodealigned_in_smp;</span><br></pre></td></tr></table></figure>
+<p>一些结构的解释：</p>
+</li>
+<li><pre><code>irq控制器抽象：
+</code></pre>
+<p>struct irq_data        irq_data; &#x2F;&#x2F;其中包含了irq_chip成员：用于表示一个IRQ控制器抽象的具体特征；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * struct irq_chip - hardware interrupt chip descriptor</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @name:		name for /proc/interrupts</span></span><br><span class="line"><span class="comment"> * @irq_startup:	start up the interrupt (defaults to -&gt;enable if NULL)</span></span><br><span class="line"><span class="comment"> * @irq_shutdown:	shut down the interrupt (defaults to -&gt;disable if NULL)</span></span><br><span class="line"><span class="comment"> * @irq_enable:		enable the interrupt (defaults to chip-&gt;unmask if NULL)</span></span><br><span class="line"><span class="comment"> * @irq_disable:	disable the interrupt</span></span><br><span class="line"><span class="comment"> * @irq_ack:		start of a new interrupt</span></span><br><span class="line"><span class="comment"> * @irq_mask:		mask an interrupt source</span></span><br><span class="line"><span class="comment"> * @irq_mask_ack:	ack and mask an interrupt source</span></span><br><span class="line"><span class="comment"> * @irq_unmask:		unmask an interrupt source</span></span><br><span class="line"><span class="comment"> * @irq_eoi:		end of interrupt</span></span><br><span class="line"><span class="comment"> * @irq_set_affinity:	set the CPU affinity on SMP machines</span></span><br><span class="line"><span class="comment"> * @irq_retrigger:	resend an IRQ to the CPU</span></span><br><span class="line"><span class="comment"> * @irq_set_type:	set the flow type (IRQ_TYPE_LEVEL/etc.) of an IRQ</span></span><br><span class="line"><span class="comment"> * @irq_set_wake:	enable/disable power-management wake-on of an IRQ</span></span><br><span class="line"><span class="comment"> * @irq_bus_lock:	function to lock access to slow bus (i2c) chips</span></span><br><span class="line"><span class="comment"> * @irq_bus_sync_unlock:function to sync and unlock slow bus (i2c) chips</span></span><br><span class="line"><span class="comment"> * @irq_cpu_online:	configure an interrupt source for a secondary CPU</span></span><br><span class="line"><span class="comment"> * @irq_cpu_offline:	un-configure an interrupt source for a secondary CPU</span></span><br><span class="line"><span class="comment"> * @irq_suspend:	function called from core code on suspend once per chip</span></span><br><span class="line"><span class="comment"> * @irq_resume:		function called from core code on resume once per chip</span></span><br><span class="line"><span class="comment"> * @irq_pm_shutdown:	function called from core code on shutdown once per chip</span></span><br><span class="line"><span class="comment"> * @irq_calc_mask:	Optional function to set irq_data.mask for special cases</span></span><br><span class="line"><span class="comment"> * @irq_print_chip:	optional to print special chip info in show_interrupts</span></span><br><span class="line"><span class="comment"> * @irq_request_resources:	optional to request resources before calling</span></span><br><span class="line"><span class="comment"> *				any other callback related to this irq</span></span><br><span class="line"><span class="comment"> * @irq_release_resources:	optional to release resources acquired with</span></span><br><span class="line"><span class="comment"> *				irq_request_resources</span></span><br><span class="line"><span class="comment"> * @irq_compose_msi_msg:	optional to compose message content for MSI</span></span><br><span class="line"><span class="comment"> * @irq_write_msi_msg:	optional to write message content for MSI</span></span><br><span class="line"><span class="comment"> * @irq_get_irqchip_state:	return the internal state of an interrupt</span></span><br><span class="line"><span class="comment"> * @irq_set_irqchip_state:	set the internal state of a interrupt</span></span><br><span class="line"><span class="comment"> * @flags:		chip specific flags</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"> 结构需要考虑内核中出现的各个IRQ实现的所有特性。因而，一个该结构的特定实例，通常只</span><br><span class="line">定义所有可能方法的一个子集</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">irq_chip</span> &#123;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>	*name;<span class="comment">//表示硬件控制器，</span></span><br><span class="line">	<span class="function"><span class="type">unsigned</span> <span class="title">int</span>	<span class="params">(*irq_startup)</span><span class="params">(<span class="keyword">struct</span> irq_data *data)</span></span>;<span class="comment">//用于第一次初始化一个IRQ</span></span><br><span class="line">	<span class="built_in">void</span>		(*irq_shutdown)(<span class="keyword">struct</span> irq_data *data);<span class="comment">//完全关闭一个中断源</span></span><br><span class="line">	<span class="built_in">void</span>		(*irq_enable)(<span class="keyword">struct</span> irq_data *data);<span class="comment">//用于激活一个IRQ</span></span><br><span class="line">	<span class="built_in">void</span>		(*irq_disable)(<span class="keyword">struct</span> irq_data *data);<span class="comment">//禁用IRQ</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">void</span>		(*irq_ack)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">    <span class="comment">//在某些模型中， IRQ请求的到达（以及在处理器的对应中</span></span><br><span class="line">断）必须显式确认，后续的请求才能进行处理。如果芯片组没有这样的要求，该指针可以指</span><br><span class="line">向一个空函数，或<span class="literal">NULL</span>指针。 ack_and_mask确认一个中断，并在接下来屏蔽该中断。</span><br><span class="line">	<span class="built_in">void</span>		(*irq_mask)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_mask_ack)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_unmask)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_eoi)(<span class="keyword">struct</span> irq_data *data);<span class="comment">//eoi表示end of interrupt，即中断结束</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">int</span>		(*irq_set_affinity)(<span class="keyword">struct</span> irq_data *data, <span class="type">const</span> <span class="keyword">struct</span> cpumask *dest, <span class="type">bool</span> force);</span><br><span class="line">	<span class="built_in">int</span>		(*irq_retrigger)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">int</span>		(*irq_set_type)(<span class="keyword">struct</span> irq_data *data, <span class="type">unsigned</span> <span class="type">int</span> flow_type);</span><br><span class="line">	<span class="built_in">int</span>		(*irq_set_wake)(<span class="keyword">struct</span> irq_data *data, <span class="type">unsigned</span> <span class="type">int</span> on);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">void</span>		(*irq_bus_lock)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_bus_sync_unlock)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">void</span>		(*irq_cpu_online)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_cpu_offline)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">void</span>		(*irq_suspend)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_resume)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_pm_shutdown)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">void</span>		(*irq_calc_mask)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">void</span>		(*irq_print_chip)(<span class="keyword">struct</span> irq_data *data, <span class="keyword">struct</span> seq_file *p);</span><br><span class="line">	<span class="built_in">int</span>		(*irq_request_resources)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_release_resources)(<span class="keyword">struct</span> irq_data *data);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">void</span>		(*irq_compose_msi_msg)(<span class="keyword">struct</span> irq_data *data, <span class="keyword">struct</span> msi_msg *msg);</span><br><span class="line">	<span class="built_in">void</span>		(*irq_write_msi_msg)(<span class="keyword">struct</span> irq_data *data, <span class="keyword">struct</span> msi_msg *msg);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">int</span>		(*irq_get_irqchip_state)(<span class="keyword">struct</span> irq_data *data, <span class="keyword">enum</span> irqchip_irq_state which, <span class="type">bool</span> *state);</span><br><span class="line">	<span class="built_in">int</span>		(*irq_set_irqchip_state)(<span class="keyword">struct</span> irq_data *data, <span class="keyword">enum</span> irqchip_irq_state which, <span class="type">bool</span> state);</span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>	flags;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>找一个例子看看：&#x2F;arch&#x2F;x86&#x2F;kernel&#x2F;i8295.c:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">irq_chip</span> i8259A_chip = &#123;</span><br><span class="line">	.name		= <span class="string">&quot;XT-PIC&quot;</span>,</span><br><span class="line">	.irq_mask	= disable_8259A_irq,</span><br><span class="line">	.irq_disable	= disable_8259A_irq,</span><br><span class="line">	.irq_unmask	= enable_8259A_irq,</span><br><span class="line">	.irq_mask_ack	= mask_and_ack_8259A,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>处理程序函数的表示：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * struct irqaction - per interrupt action descriptor</span></span><br><span class="line"><span class="comment"> * @handler:	interrupt handler function</span></span><br><span class="line"><span class="comment"> * @name:	name of the device</span></span><br><span class="line"><span class="comment"> * @dev_id:	cookie to identify the device</span></span><br><span class="line"><span class="comment"> * @percpu_dev_id:	cookie to identify the device</span></span><br><span class="line"><span class="comment"> * @next:	pointer to the next irqaction for shared interrupts</span></span><br><span class="line"><span class="comment"> * @irq:	interrupt number</span></span><br><span class="line"><span class="comment"> * @flags:	flags (see IRQF_* above)</span></span><br><span class="line"><span class="comment"> * @thread_fn:	interrupt handler function for threaded interrupts</span></span><br><span class="line"><span class="comment"> * @thread:	thread pointer for threaded interrupts</span></span><br><span class="line"><span class="comment"> * @thread_flags:	flags related to @thread</span></span><br><span class="line"><span class="comment"> * @thread_mask:	bitmask for keeping track of @thread activity</span></span><br><span class="line"><span class="comment"> * @dir:	pointer to the proc/irq/NN/name entry</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">irqaction</span> &#123;</span><br><span class="line">	<span class="type">irq_handler_t</span>		handler;<span class="comment">//函数指针，指向中断处理程序</span></span><br><span class="line">	<span class="type">void</span>			*dev_id;</span><br><span class="line">	<span class="type">void</span> __percpu		*percpu_dev_id;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">irqaction</span>	*next;<span class="comment">//用于实现共享的IRQ处理程序，几个irqaction实例聚集到一个链表中。链表的所有元素都</span></span><br><span class="line"><span class="comment">//必须处理同一IRQ编号（处理不同编号的实例，位于irq_desc数组中不同的位置）,在发生一个共享中断时，内核扫描该链表找出中断实际上的来源设备。</span></span><br><span class="line">	<span class="type">irq_handler_t</span>		thread_fn;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">task_struct</span>	*thread;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		irq;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		flags;&lt;interrupt.h&gt;中定义了</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		thread_flags;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		thread_mask;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>		*name;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">proc_dir_entry</span>	*dir;</span><br><span class="line">&#125; ____cacheline_internodealigned_in_smp;</span><br></pre></td></tr></table></figure>
+name和dev_id唯一地标识一个中断处理程序。 name是一个短字符串，用于标识设备（例如，<br>“e100”、“ncr53c8xx”，等等），而dev_id是一个指针，指向在所有内核数据结构中唯一标识了该设<br>备的数据结构实例，例如网卡的net_device实例。</li>
+</ul>
+<p>上面的flag:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * These flags used only by the kernel as part of the</span></span><br><span class="line"><span class="comment"> * irq handling routines.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * IRQF_SHARED - allow sharing the irq among several devices表示有多于一个设备使用该IRQ电路。</span></span><br><span class="line"><span class="comment"> * IRQF_PROBE_SHARED - set by callers when they expect sharing mismatches to occur</span></span><br><span class="line"><span class="comment"> * IRQF_TIMER - Flag to mark this interrupt as timer interrupt</span></span><br><span class="line"><span class="comment"> * IRQF_PERCPU - Interrupt is per cpu</span></span><br><span class="line"><span class="comment"> * IRQF_NOBALANCING - Flag to exclude this interrupt from irq balancing</span></span><br><span class="line"><span class="comment"> * IRQF_IRQPOLL - Interrupt is used for polling (only the interrupt that is</span></span><br><span class="line"><span class="comment"> *                registered first in an shared interrupt is considered for</span></span><br><span class="line"><span class="comment"> *                performance reasons)</span></span><br><span class="line"><span class="comment"> * IRQF_ONESHOT - Interrupt is not reenabled after the hardirq handler finished.</span></span><br><span class="line"><span class="comment"> *                Used by threaded interrupts which need to keep the</span></span><br><span class="line"><span class="comment"> *                irq line disabled until the threaded handler has been run.</span></span><br><span class="line"><span class="comment"> * IRQF_NO_SUSPEND - Do not disable this IRQ during suspend.  Does not guarantee</span></span><br><span class="line"><span class="comment"> *                   that this interrupt will wake the system from a suspended</span></span><br><span class="line"><span class="comment"> *                   state.  See Documentation/power/suspend-and-interrupts.txt</span></span><br><span class="line"><span class="comment"> * IRQF_FORCE_RESUME - Force enable it on resume even if IRQF_NO_SUSPEND is set</span></span><br><span class="line"><span class="comment"> * IRQF_NO_THREAD - Interrupt cannot be threaded</span></span><br><span class="line"><span class="comment"> * IRQF_EARLY_RESUME - Resume IRQ early during syscore instead of at device</span></span><br><span class="line"><span class="comment"> *                resume time.</span></span><br><span class="line"><span class="comment"> * IRQF_COND_SUSPEND - If the IRQ is shared with a NO_SUSPEND user, execute this</span></span><br><span class="line"><span class="comment"> *                interrupt handler after suspending interrupts. For system</span></span><br><span class="line"><span class="comment"> *                wakeup devices users need to implement wakeup detection in</span></span><br><span class="line"><span class="comment"> *                their interrupt handlers.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_SHARED		0x00000080</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_PROBE_SHARED	0x00000100</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __IRQF_TIMER		0x00000200</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_PERCPU		0x00000400</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_NOBALANCING	0x00000800</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_IRQPOLL		0x00001000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_ONESHOT		0x00002000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_NO_SUSPEND		0x00004000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_FORCE_RESUME	0x00008000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_NO_THREAD		0x00010000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_EARLY_RESUME	0x00020000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_COND_SUSPEND	0x00040000</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IRQF_TIMER		(__IRQF_TIMER | IRQF_NO_SUSPEND | IRQF_NO_THREAD)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="中断处理的相关操作："><a href="#中断处理的相关操作：" class="headerlink" title="中断处理的相关操作："></a>中断处理的相关操作：</h4><ul>
+<li>设置控制器硬件：<br>irq.h:<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Set/get chip/data for an IRQ: */</span></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">int</span> <span class="title">irq_set_chip</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> irq, <span class="keyword">struct</span> irq_chip *chip)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">int</span> <span class="title">irq_set_handler_data</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> irq, <span class="type">void</span> *data)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">int</span> <span class="title">irq_set_chip_data</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> irq, <span class="type">void</span> *data)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">int</span> <span class="title">irq_set_irq_type</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> irq, <span class="type">unsigned</span> <span class="type">int</span> type)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">int</span> <span class="title">irq_set_msi_desc</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> irq, <span class="keyword">struct</span> msi_desc *entry)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">int</span> <span class="title">irq_set_msi_desc_off</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> irq_base, <span class="type">unsigned</span> <span class="type">int</span> irq_offset,</span></span></span><br><span class="line"><span class="params"><span class="function">				<span class="keyword">struct</span> msi_desc *entry)</span></span>;</span><br></pre></td></tr></table></figure></li>
+<li>初始化和分配irq:</li>
+</ul>
+<ol>
+<li><p>注册irq：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kernel/irq/manage.<span class="function">c</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">request_irq</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> irq,</span></span></span><br><span class="line"><span class="params"><span class="function"><span class="type">irqreturn_t</span> handler,</span></span></span><br><span class="line"><span class="params"><span class="function"><span class="type">unsigned</span> <span class="type">long</span> irqflags, <span class="type">const</span> <span class="type">char</span> *devname, <span class="type">void</span> *dev_id)</span></span></span><br><span class="line"><span class="function">往往在设备驱动程序初始化时会做这个request_irq操作把处理程序注册进去；</span></span><br><span class="line"><span class="function">setup_irq</span></span><br></pre></td></tr></table></figure>
+<p>2）释放irq:<br>free_irq</p>
+</li>
+<li><p>注册中断：</p>
+</li>
+</ol>
+<ul>
+<li><p>中断到达后：找到正确的中断处理程序的通用函数：do_IRQ,此时若处理器在用户态，需要切换到核心态；<br>linux中do_IRQ是和体系结构相关的函数：<br>例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">AMD:</span><br><span class="line">irq.c:</span><br><span class="line">do_IRQ</span><br><span class="line">  --&gt; set_irq_regs</span><br><span class="line">  --&gt; irq_enter</span><br><span class="line">  --&gt; generic_handle_irq --&gt;.... handle_irq</span><br><span class="line">  --&gt; irq_exit</span><br><span class="line">  --&gt; set_irq_regs</span><br></pre></td></tr></table></figure>
+<p>关键处理：<br>handle_irq_event</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">irqreturn_t</span> <span class="title">handle_irq_event</span><span class="params">(<span class="keyword">struct</span> irq_desc *desc)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">irqaction</span> *action = desc-&gt;action;</span><br><span class="line">	<span class="type">irqreturn_t</span> ret;</span><br><span class="line"></span><br><span class="line">	desc-&gt;istate &amp;= ~IRQS_PENDING;</span><br><span class="line">	<span class="built_in">irqd_set</span>(&amp;desc-&gt;irq_data, IRQD_IRQ_INPROGRESS);</span><br><span class="line">	<span class="built_in">raw_spin_unlock</span>(&amp;desc-&gt;lock);</span><br><span class="line"></span><br><span class="line">	ret = <span class="built_in">handle_irq_event_percpu</span>(desc, action);<span class="comment">//---&gt;res = action-&gt;handler(irq, action-&gt;dev_id);</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">raw_spin_lock</span>(&amp;desc-&gt;lock);</span><br><span class="line">	<span class="built_in">irqd_clear</span>(&amp;desc-&gt;irq_data, IRQD_IRQ_INPROGRESS);</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>IRQ栈：通过内核栈处理不够，所以又衍生了用于硬件IRQ处理的栈和用于软件IRQ处理的栈；<br>常规的内核栈对每个进程都会分配，而这两个额外的栈是针对各CPU分别分配的。在硬件中断发<br>生时（或处理软中断时），内核需要切换到适当的栈。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">下列数组提供了指向额外的栈的指针：</span><br><span class="line">arch/x86/kernel/irq_32.c</span><br><span class="line"><span class="type">static</span> <span class="keyword">union</span> <span class="title class_">irq_ctx</span> *hardirq_ctx[NR_CPUS] __read_mostly;</span><br><span class="line"><span class="type">static</span> <span class="keyword">union</span> <span class="title class_">irq_ctx</span> *softirq_ctx[NR_CPUS] __read_mostly;</span><br><span class="line"></span><br><span class="line">用作栈的数据结构并不复杂：</span><br><span class="line">arch/x86/kernel/irq_32.c</span><br><span class="line"><span class="keyword">union</span> <span class="title class_">irq_ctx</span> &#123;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">thread_info</span> tinfo;</span><br><span class="line">u32 stack[THREAD_SIZE/<span class="built_in">sizeof</span>(u32)];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关于中断处理程序：</p>
+</li>
+</ul>
+<ol>
+<li>中断是异步执行的。换句话说，它们可以在任何时间发生。</li>
+<li>例如，对网络驱动程序来说，不能将接收的数据直接转发到等待的应用程序。毕竟，内核无法确定等待数据的应用程序此时是否在运行（事实上，这种可能性很低）。</li>
+<li>中断上下文中不能调用调度器。因而不能自愿地放弃控制权。</li>
+<li>处理程序例程不能进入睡眠状态。<br>中断处理程序类型：irqreturn_t (*handler)(int irq, void *dev_id, struct pt_regs *regs)<br>一个例子：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">一个例子：tg3.c这个有napi形式的，故用这个：</span><br><span class="line">```<span class="function">c</span></span><br><span class="line"><span class="function"><span class="title">module_init</span><span class="params">(tg3_init)</span></span>;</span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> __init <span class="title">tg3_init</span><span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">pci_module_init</span>(&amp;tg3_driver);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">struct</span> <span class="title class_">pci_driver</span> tg3_driver = &#123;</span><br><span class="line">	.name		= DRV_MODULE_NAME,</span><br><span class="line">	.id_table	= tg3_pci_tbl,</span><br><span class="line">	.probe		= tg3_init_one,</span><br><span class="line">	.remove		= __devexit_p(tg3_remove_one),</span><br><span class="line">	.suspend	= tg3_suspend,</span><br><span class="line">	.resume		= tg3_resume</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> __devinit <span class="title">tg3_init_one</span><span class="params">(<span class="keyword">struct</span> pci_dev *pdev,</span></span></span><br><span class="line"><span class="params"><span class="function">				  <span class="type">const</span> <span class="keyword">struct</span> pci_device_id *ent)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">static</span> <span class="type">int</span> tg3_version_printed = <span class="number">0</span>;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> tg3reg_base, tg3reg_len;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">net_device</span> *dev;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">tg3</span> *tp;</span><br><span class="line">	<span class="type">int</span> i, err, pci_using_dac, pm_cap;</span><br><span class="line">                    ...</span><br><span class="line"><span class="comment">//在init中没有申请中断，直到open时才申请：</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">tg3_open</span><span class="params">(<span class="keyword">struct</span> net_device *dev)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">tg3</span> *tp = dev-&gt;priv;</span><br><span class="line">	<span class="type">int</span> err;</span><br><span class="line">                    ...</span><br><span class="line">                    err = <span class="built_in">request_irq</span>(dev-&gt;irq, tg3_interrupt,</span><br><span class="line">			  SA_SHIRQ, dev-&gt;name, dev);</span><br><span class="line">                   </span><br><span class="line"><span class="comment">//来看中断处理程序：</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">irqreturn_t</span> <span class="title">tg3_interrupt</span><span class="params">(<span class="type">int</span> irq, <span class="type">void</span> *dev_id, <span class="keyword">struct</span> pt_regs *regs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">net_device</span> *dev = dev_id;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">tg3</span> *tp = dev-&gt;priv;</span><br><span class="line">                    <span class="comment">//这里使用新式接口napi:</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">likely</span>(<span class="built_in">tg3_has_work</span>(dev, tp)))</span><br><span class="line">	       <span class="built_in">netif_rx_schedule</span>(dev);		<span class="comment">/* schedule NAPI poll */</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="重要的中断处理程序："><a href="#重要的中断处理程序：" class="headerlink" title="重要的中断处理程序："></a>重要的中断处理程序：</h4><ul>
+<li><p>电流处理： typedef void fastcall (*irq_flow_handler_t)(unsigned int irq,<br>struct irq_desc *desc);</p>
+</li>
+<li><p>边沿触发中断<br>handle_edge_irq，chip.c</p>
+</li>
+<li><p>电平触发中断：<br>handle_level_irq,</p>
+</li>
+</ul>
+<h3 id="软件中断"><a href="#软件中断" class="headerlink" title="软件中断"></a>软件中断</h3><p>用于有效实现内核中的延期操作。完全用软件来实现，但是运作方式和硬件中断类似；softIRQ;<br>不管是哪种体系结构的do_IRQ,其结尾都会去处理所有待决的软中断，确保软中断可以定期处理；</p>
+<h4 id="软中断表"><a href="#软中断表" class="headerlink" title="软中断表"></a>软中断表</h4><p>一个包含也许是32个softirq_action类型的数据表；<br>interrupt.h:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">softirq_action</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">void</span>	(*action)(<span class="keyword">struct</span> softirq_action *);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="软中断的流程："><a href="#软中断的流程：" class="headerlink" title="软中断的流程："></a>软中断的流程：</h4><ul>
+<li><p>先注册，内核才能执行：<br>open_softirq函数用于注册： 就是往上述表中填入action<br>kernel&#x2F;softirq.c:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">open_softirq</span><span class="params">(<span class="type">int</span> nr, <span class="type">void</span> (*action)(<span class="keyword">struct</span> softirq_action *))</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	softirq_vec[nr].action = action;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>各个软中断都有一个唯一的编号，这表明软中断是相对稀缺的资源，使用其必须谨慎，不能由各种设备驱动程序和内核组件随意使用。<br>这个数组也是被定义在softirq.c中；<br>static struct softirq_action softirq_vec[NR_SOFTIRQS] __cacheline_aligned_in_smp;<br>可以看枚举知道先有的以这种方式注册的软中断：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span></span><br><span class="line">&#123;</span><br><span class="line">	HI_SOFTIRQ=<span class="number">0</span>,</span><br><span class="line">	TIMER_SOFTIRQ,</span><br><span class="line">	NET_TX_SOFTIRQ, 网络的发送</span><br><span class="line">	NET_RX_SOFTIRQ, 网络接收</span><br><span class="line">	BLOCK_SOFTIRQ,块处理</span><br><span class="line">	BLOCK_IOPOLL_SOFTIRQ,</span><br><span class="line">	TASKLET_SOFTIRQ,</span><br><span class="line">	SCHED_SOFTIRQ,调度器</span><br><span class="line">	HRTIMER_SOFTIRQ,</span><br><span class="line">	RCU_SOFTIRQ,    <span class="comment">/* Preferable RCU should always be the last softirq */</span></span><br><span class="line"></span><br><span class="line">	NR_SOFTIRQS</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>只有重要的情况才能用软中断，其他可以使用tasklet,工作队列或内核定时器的方式来达到延期处理的目的；</p>
+</li>
+<li><p>发起中断：<br>硬件中断需要通过硬件设备触发中断控制器向cpu发起中断，然后进入中断处理程序处理，软中断没有这个机制，需要通过软件的方式发起中断：<br>void raise_softirq(unsigned int nr) 用于引发一个软中断；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">raise_softirq</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> nr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> flags;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">local_irq_save</span>(flags);</span><br><span class="line">	<span class="built_in">raise_softirq_irqoff</span>(nr);</span><br><span class="line">	<span class="built_in">local_irq_restore</span>(flags);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * This function must run with irqs disabled!</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">void</span> <span class="title">raise_softirq_irqoff</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> nr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	__raise_softirq_irqoff(nr);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * If we&#x27;re in an interrupt or softirq, we&#x27;re done</span></span><br><span class="line"><span class="comment">	 * (this also catches softirq-disabled code). We will</span></span><br><span class="line"><span class="comment">	 * actually run the softirq once we return from</span></span><br><span class="line"><span class="comment">	 * the irq or softirq.</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 * Otherwise we wake up ksoftirqd to make sure we</span></span><br><span class="line"><span class="comment">	 * schedule the softirq soon.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (!<span class="built_in">in_interrupt</span>())</span><br><span class="line">		<span class="built_in">wakeup_softirqd</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果不在中断上下文调用raise_softirq，则调用wakeup_softirqd来唤醒软中断守护进程，这</span></span><br><span class="line"><span class="comment">//是开启软中断处理的两个可选方法之一。 </span></span><br></pre></td></tr></table></figure>
+<p>该函数设置各CPU变量irq_stat[smp_processor_id].__softirq_pending中的对应比特位。<br>该函数将相应的软中断标记为执行，但这个执行是延期执行。通过使用特定于处理器的位图，内核确<br>保几个软中断（甚至是相同的）可以同时在不同的CPU上执行。</p>
+</li>
+<li><p>流程：<br>在注册了软中断后，若引发软中断且处理软中断的handler时，就会匹配到对应的函数，进行处理；<br>软中断处理被归结到do_softirq函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">do_softirq</span><br><span class="line"> --&gt;local_softirq_pending</span><br><span class="line"> --&gt;__do_softirq</span><br><span class="line"> --&gt;h-&gt;action--循环处理</span><br><span class="line"> --&gt; local_softirq_pending且重启次数没有超过次数-&gt;重启软中断</span><br></pre></td></tr></table></figure>
+<p>因为软中断大部分是用来延迟硬中断的后续处理，所以需要一个软中断守护进程来进行异步执行软中断，一方面不和硬中断冲突，另一方面确保软中断的及时执行；<br>系统为每个处理器都分配了自身的守护进程： ksoftirqd，为软中断守护进程；<br>所以实际上raise_softirq是为了唤醒这个守护进程，进行处理软件中断，进行及时处理；</p>
+</li>
+<li><p>软中断守护进程：ksoftirqd<br>软中断守护进程的任务是，与其余内核代码异步执行软中断。为此，系统中的每个处理器都分配了自身的守护进程，名为ksoftirqd<br>内核中有两处调用wakeup_softirqd唤醒了该守护进程。</p>
+</li>
+</ul>
+<ol>
+<li>在do_softirq中，如前所述。</li>
+<li>在raise_softirq_irqoff末尾。该函数由raise_softirq在内部调用，如果内核当前停用了<br>中断，也可以直接使用。<br>唤醒函数本身只需要几行代码。首先，借助于一些宏，从一个各CPU变量读取指向当前CPU软中<br>断守护进程的task_struct的指针。如果该进程当前的状态不是TASK_RUNNING，则通过wake_up_<br>process将其放置到就绪进程的列表末尾（参见第2章）。尽管这并不会立即开始处理所有待决软中断，<br>但只要调度器没有更好的选择，就会选择该守护进程（优先级为19）来执行。<br>(1) 软中断守护进程的初始化和启动：<br>在系统启动时用initcall机制调用init后，就创建了系统的软中断守护进程，初始化后，各个守护进程进行无限循环：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">kernel/softirq.<span class="function">c</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">ksoftirqd</span><span class="params">(<span class="type">void</span> * __bind_cpu)</span></span></span><br><span class="line"><span class="function">...</span></span><br><span class="line"><span class="function"><span class="title">while</span> <span class="params">(!kthread_should_stop())</span> </span>&#123;</span><br><span class="line"><span class="keyword">if</span> (!<span class="built_in">local_softirq_pending</span>()) &#123;</span><br><span class="line"><span class="built_in">schedule</span>();</span><br><span class="line">&#125;</span><br><span class="line">__set_current_state(TASK_RUNNING);</span><br><span class="line"><span class="keyword">while</span> (<span class="built_in">local_softirq_pending</span>()) &#123;</span><br><span class="line"><span class="built_in">do_softirq</span>();</span><br><span class="line"><span class="built_in">cond_resched</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">set_current_state</span>(TASK_INTERRUPTIBLE);</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="tasklet-另一种轻量的软中断"><a href="#tasklet-另一种轻量的软中断" class="headerlink" title="tasklet ,另一种轻量的软中断"></a>tasklet ,另一种轻量的软中断</h3>软中断是将操作推迟到未来时刻执行的最有效的方法。但该延期机制处理起来非常复杂。因为多<br>个处理器可以同时且独立地处理软中断，同一个软中断的处理程序例程可以在几个CPU上同时运行。<br>对软中断的效率来说，这是一个关键，多处理器系统上的网络实现显然受惠于此。</li>
+</ol>
+<p>但处理程序例程的设计必须是完全可重入且线程安全的。 另外， 临界区必须用自旋锁保护（或其他IPC机制），<br>而这需要大量审慎的考虑。</p>
+<p>tasklet是“小进程”，执行一些迷你任务，对这些任务使用全功能进程可能比较浪费</p>
+<h4 id="创建tasklet"><a href="#创建tasklet" class="headerlink" title="创建tasklet:"></a>创建tasklet:</h4><p>各个tasklet的中枢数据结构称作tasklet_struct，</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">interrupt.h:</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">tasklet_struct</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">tasklet_struct</span> *next;<span class="comment">//用于建立tasklet_struct实例的链表。这容许几个任务排队执行。</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> state;<span class="comment">//state表示任务的当前状态，类似于真正的进程。但只有两个选项，分别由state中的一个比特</span></span><br><span class="line"><span class="comment">//位表示，这也是二者可以独立设置/清除的原因。</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    在tasklet注册到内核，等待调度执行时，将设置TASKLET_STATE_SCHED。</span></span><br><span class="line"><span class="comment">    TASKLET_STATE_RUN表示tasklet当前正在执行。</span></span><br><span class="line"><span class="comment">    第二个状态只在SMP系统上有用。用于保护tasklet在多个处理器上并行执行。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">	<span class="type">atomic_t</span> count;</span><br><span class="line">    <span class="comment">//原子计数器count用于禁用已经调度的tasklet。如果其值不等于0，在接下来执行所有待决的tasklet时，将忽略对应的tasklet。</span></span><br><span class="line">	<span class="built_in">void</span> (*func)(<span class="type">unsigned</span> <span class="type">long</span>);<span class="comment">//执行函数地址</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> data;<span class="comment">//data用作该函数执行时的参数。</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>tasklet_vec 是一个pcpu变量，也就是每一个cpu上上的tasklet组成一个list.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">tasklet_head</span> &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">tasklet_struct</span> *head;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">tasklet_struct</span> **tail;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">static</span> <span class="title">DEFINE_PER_CPU</span><span class="params">(<span class="keyword">struct</span> tasklet_head, tasklet_vec)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="注册tasklet"><a href="#注册tasklet" class="headerlink" title="注册tasklet"></a>注册tasklet</h4><p>要使用它，首先必须注册它；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">tasklet_init</span><span class="params">(<span class="keyword">struct</span> tasklet_struct *t,</span></span></span><br><span class="line"><span class="params"><span class="function">		  <span class="type">void</span> (*func)(<span class="type">unsigned</span> <span class="type">long</span>), <span class="type">unsigned</span> <span class="type">long</span> data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	t-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">	t-&gt;state = <span class="number">0</span>;</span><br><span class="line">	<span class="built_in">atomic_set</span>(&amp;t-&gt;count, <span class="number">0</span>);</span><br><span class="line">	t-&gt;func = func;</span><br><span class="line">	t-&gt;data = data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="执行："><a href="#执行：" class="headerlink" title="执行："></a>执行：</h4><p>tasklet基于软中断实现，它们总是在处理软中断时执行。<br>tasklet关联到TASKLET_SOFTIRQ软中断。因而，调用raise_softirq(TASKLET_SOFTIRQ)，即可<br>在下一个适当的时机执行当前处理器的tasklet。<br>interrupt.h:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title">tasklet_schedule</span><span class="params">(<span class="keyword">struct</span> tasklet_struct *t)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!<span class="built_in">test_and_set_bit</span>(TASKLET_STATE_SCHED, &amp;t-&gt;state))</span><br><span class="line">		__tasklet_schedule(t);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> __tasklet_schedule(<span class="keyword">struct</span> tasklet_struct *t)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> flags;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">local_irq_save</span>(flags);</span><br><span class="line">	t-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">	*__this_cpu_read(tasklet_vec.tail) = t;</span><br><span class="line">	__this_cpu_write(tasklet_vec.tail, &amp;(t-&gt;next));</span><br><span class="line">	<span class="built_in">raise_softirq_irqoff</span>(TASKLET_SOFTIRQ);</span><br><span class="line">	<span class="built_in">local_irq_restore</span>(flags);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>内核使用tasklet_action作为该软中断的action函数<br>该函数首先确定特定于CPU的链表，其中保存了标记为将要执行的各个tasklet。它接下来将表头<br>重定向到函数局部的一个数据项，相当于从外部公开的链表删除了所有表项。接下来，函数在以下循<br>环中逐一处理各个tasklet：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">tasklet_action</span><span class="params">(<span class="keyword">struct</span> softirq_action *a)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">tasklet_struct</span> *list;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">local_irq_disable</span>();</span><br><span class="line">	list = __this_cpu_read(tasklet_vec.head);</span><br><span class="line">	__this_cpu_write(tasklet_vec.head, <span class="literal">NULL</span>);</span><br><span class="line">	__this_cpu_write(tasklet_vec.tail, <span class="built_in">this_cpu_ptr</span>(&amp;tasklet_vec.head));</span><br><span class="line">	<span class="built_in">local_irq_enable</span>();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (list) &#123;</span><br><span class="line">		<span class="keyword">struct</span> <span class="title class_">tasklet_struct</span> *t = list;</span><br><span class="line"></span><br><span class="line">		list = list-&gt;next;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">tasklet_trylock</span>(t)) &#123;</span><br><span class="line">			<span class="keyword">if</span> (!<span class="built_in">atomic_read</span>(&amp;t-&gt;count)) &#123;</span><br><span class="line">				<span class="keyword">if</span> (!<span class="built_in">test_and_clear_bit</span>(TASKLET_STATE_SCHED,</span><br><span class="line">							&amp;t-&gt;state))</span><br><span class="line">					<span class="built_in">BUG</span>();</span><br><span class="line">				t-&gt;<span class="built_in">func</span>(t-&gt;data);</span><br><span class="line">				<span class="built_in">tasklet_unlock</span>(t);</span><br><span class="line">				<span class="keyword">continue</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="built_in">tasklet_unlock</span>(t);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="built_in">local_irq_disable</span>();</span><br><span class="line">		t-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">		*__this_cpu_read(tasklet_vec.tail) = t;</span><br><span class="line">		__this_cpu_write(tasklet_vec.tail, &amp;(t-&gt;next));</span><br><span class="line">		__raise_softirq_irqoff(TASKLET_SOFTIRQ);</span><br><span class="line">		<span class="built_in">local_irq_enable</span>();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在while循环中执行tasklet，类似于处理软中断使用的机制。<br>因为一个tasklet只能在一个处理器上执行一次，但其他的tasklet可以并行运行，所以需要特定于<br>tasklet 的 锁 。 state 状 态 用 作 锁 变 量 。 在 执 行 一 个 tasklet 的 处 理 程 序 函 数 之 前 ， 内 核 使 用<br>tasklet_trylock检查tasklet的状态是否为TASKLET_STATE_RUN。换句话说，它是否已经在系<br>统的另一个处理器上运行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;interrupt.h&gt;</span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">int</span> <span class="title">tasklet_trylock</span><span class="params">(<span class="keyword">struct</span> tasklet_struct *t)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">return</span> !<span class="built_in">test_and_set_bit</span>(TASKLET_STATE_RUN, &amp;(t)-&gt;state);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除了普通的tasklet之外，内核还使用了另一种tasklet，它具有“较高”的优先级。除以下修改之<br>外，其实现与普通的tasklet完全相同。</p>
+<ol>
+<li>使用HI_SOFTIRQ作为软中断，而不是TASKLET_SOFTIRQ，相关的action函数是tasklet_<br>hi_action。</li>
+<li>注册的tasklet在CPU相关的变量tasklet_hi_vec中排队。这是使用tasklet_hi_schedule完<br>成的。<br>在这里，“较高优先级”是指该软中断的处理程序HI_SOFTIRQ在所有其他处理程序之前执行，<br>尤其是在构成了软中断活动主体的网络处理程序之前执行。<br>当前，大部分声卡驱动程序都利用了这一选项，因为操作延迟时间太长可能损害音频输出的音质。<br>而用于高速传输的网卡也可以得益于该机制</li>
+</ol>
+<h3 id="等待队列和完成量；"><a href="#等待队列和完成量；" class="headerlink" title="等待队列和完成量；"></a>等待队列和完成量；</h3><p>等待队列（ wait queue）用于使进程等待某一特定事件发生，而无须频繁轮询。进程在等待期间<br>睡眠，在事件发生时由内核自动唤醒。 完成量（ completion）机制基于等待队列，内核利用该机制等<br>待某一操作结束。这两种机制使用得都比较频繁，主要用于设备驱动程序，</p>
+<h4 id="等待队列："><a href="#等待队列：" class="headerlink" title="等待队列："></a>等待队列：</h4><h5 id="数据结构："><a href="#数据结构：" class="headerlink" title="数据结构："></a>数据结构：</h5><p>每个等待队列都有一个队列头：<br>wait.h:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">__wait_queue_head</span> &#123;</span><br><span class="line">	<span class="type">spinlock_t</span>		lock;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">list_head</span>	task_list;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">__wait_queue_head</span> <span class="type">wait_queue_head_t</span>;</span><br></pre></td></tr></table></figure>
+<p>因为等待队列也可以在中断时修改，在操作队列之前必须获得一个自旋锁lock。<br>task_list是一个双链表，用于实现双链表最擅长表示的结构，即队列。</p>
+<p>队列中的成员：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">__wait_queue</span> &#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		flags; <span class="comment">//表示等待进程想要被独占地唤醒：则用WQ_FLAG_EXCLUSIVE</span></span><br><span class="line">	<span class="type">void</span>			*<span class="keyword">private</span>;<span class="comment">//指向等待进程的task_struct实例；</span></span><br><span class="line">	<span class="type">wait_queue_func_t</span>	func;<span class="comment">//调用func，唤醒等待进程</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">list_head</span>	task_list;<span class="comment">//用作链表元素，将wait_queue_t实例放入等待队列中；</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>等待队列的使用分为如下两部分。<br>(1) 为使当前进程在一个等待队列中睡眠，需要调用wait_event函数（或某个等价函数，在下文<br>讨论）。进程进入睡眠，将控制权释放给调度器。<br>内核通常会在向块设备发出传输数据的请求后，调用该函数。因为传输不会立即发生，而在此期<br>间又没有其他事情可做，所以进程可以睡眠，将CPU时间让给系统中的其他进程。<br>(2) 在内核中另一处，就我们的例子而言，是来自块设备的数据到达后，必须调用wake_up函数（或<br>某个等价函数，将在下文讨论）来唤醒等待队列中的睡眠进程。<br>在使用wait_event使进程睡眠之后，必须确保在内核中另一处有一个对应的wake_up调用</p>
+<h5 id="使进程睡眠："><a href="#使进程睡眠：" class="headerlink" title="使进程睡眠："></a>使进程睡眠：</h5><p>add_wait_queue函数用于将一个进程增加到等待队列，该函数在获得必要的自旋锁后，将工作<br>委托给__add_wait_queue：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;wait.h&gt;</span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> __add_wait_queue(<span class="type">wait_queue_head_t</span> *head, <span class="type">wait_queue_t</span> *<span class="keyword">new</span>)</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">list_add</span>(&amp;<span class="keyword">new</span>-&gt;task_list, &amp;head-&gt;task_list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在将新进程统计到等待队列时，除了使用标准的list_add链表函数，没有其他工作需要做。<br>内核还提供了add_wait_queue_exclusive函数。它的工作方式与add_wait_queue相同，但将<br>进程插入在队列尾部，并将其标志设置为WQ_EXCLUSIVE</p>
+<p>另一种方法： prepare_to_wait也是用来使进程睡眠，比上述方法多一个参数，表示进程状态；</p>
+<p>初始化一个动态分配的wait_queue_t实例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title">init_waitqueue_entry</span><span class="params">(<span class="type">wait_queue_t</span> *q, <span class="keyword">struct</span> task_struct *p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	q-&gt;flags	= <span class="number">0</span>;</span><br><span class="line">	q-&gt;<span class="keyword">private</span>	= p;</span><br><span class="line">	q-&gt;func		= default_wake_function;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者DEFINE_WAIT创建wait_queue_t的静态实例，它可以自动初始化：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> DEFINE_WAIT_BIT(name, word, bit)				\</span></span><br><span class="line"><span class="meta">	struct wait_bit_queue name = &#123;					\</span></span><br><span class="line"><span class="meta">		.key = __WAIT_BIT_KEY_INITIALIZER(word, bit),		\</span></span><br><span class="line"><span class="meta">		.wait	= &#123;						\</span></span><br><span class="line"><span class="meta">			.private	= current,			\</span></span><br><span class="line"><span class="meta">			.func		= wake_bit_function,		\</span></span><br><span class="line"><span class="meta">			.task_list	=				\</span></span><br><span class="line"><span class="meta">				LIST_HEAD_INIT((name).wait.task_list),	\</span></span><br><span class="line"><span class="meta">		&#125;,							\</span></span><br><span class="line"><span class="meta">	&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>使进程睡眠，通常不直接调用add_wait_queue,而是调用wait_event；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> __wait_event(wq, condition)					\</span></span><br><span class="line"><span class="meta">	(void)___wait_event(wq, condition, TASK_UNINTERRUPTIBLE, 0, 0,	\</span></span><br><span class="line"><span class="meta">			    schedule())#<span class="keyword">define</span> ___wait_event(wq, condition, state, exclusive, ret, cmd)	\</span></span><br><span class="line"><span class="meta">(&#123;									\</span></span><br><span class="line"><span class="meta">	__label__ __out;						\</span></span><br><span class="line"><span class="meta">	wait_queue_t __wait;						\</span></span><br><span class="line"><span class="meta">	long __ret = ret;	<span class="comment">/* explicit shadow */</span>			\</span></span><br><span class="line"><span class="meta">									\</span></span><br><span class="line"><span class="meta">	INIT_LIST_HEAD(&amp;__wait.task_list);				\</span></span><br><span class="line"><span class="meta">	<span class="keyword">if</span> (exclusive)							\</span></span><br><span class="line"><span class="meta">		__wait.flags = WQ_FLAG_EXCLUSIVE;			\</span></span><br><span class="line"><span class="meta">	<span class="keyword">else</span>								\</span></span><br><span class="line"><span class="meta">		__wait.flags = 0;					\</span></span><br><span class="line"><span class="meta">									\</span></span><br><span class="line"><span class="meta">	for (;;) &#123;							\</span></span><br><span class="line"><span class="meta">		long __int = prepare_to_wait_event(&amp;wq, &amp;__wait, state);\</span></span><br><span class="line"><span class="meta">									\</span></span><br><span class="line"><span class="meta">		<span class="keyword">if</span> (condition)						\</span></span><br><span class="line"><span class="meta">			break;						\</span></span><br><span class="line"><span class="meta">									\</span></span><br><span class="line"><span class="meta">		<span class="keyword">if</span> (___wait_is_interruptible(state) &amp;&amp; __int) &#123;		\</span></span><br><span class="line"><span class="meta">			__ret = __int;					\</span></span><br><span class="line"><span class="meta">			<span class="keyword">if</span> (exclusive) &#123;				\</span></span><br><span class="line"><span class="meta">				abort_exclusive_wait(&amp;wq, &amp;__wait,	\</span></span><br><span class="line"><span class="meta">						     state, NULL);	\</span></span><br><span class="line"><span class="meta">				goto __out;				\</span></span><br><span class="line"><span class="meta">			&#125;						\</span></span><br><span class="line"><span class="meta">			break;						\</span></span><br><span class="line"><span class="meta">		&#125;							\</span></span><br><span class="line"><span class="meta">									\</span></span><br><span class="line"><span class="meta">		cmd;							\</span></span><br><span class="line"><span class="meta">	&#125;								\</span></span><br><span class="line"><span class="meta">	finish_wait(&amp;wq, &amp;__wait);					\</span></span><br><span class="line"><span class="meta">__out:	__ret;								\</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line">每次进程被唤醒时，内核都会检查指定的条件是否满足，如果条件满足则</span><br><span class="line">退出无限循环。否则，将控制转交给调度器，进程再次睡眠。</span><br></pre></td></tr></table></figure>
+<p>在条件满足时， finish_wait将进程状态设置回TASK_RUNNING，并从等待队列的链表移除对应的项。<br>除了wait_event之外，内核还定义了其他几个函数，可以将当前进程置于等待队列中。其实现实际上等同于sleep_on：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;wait.h&gt;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wait_event_interruptible(wq, condition)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wait_event_timeout(wq, condition, timeout) &#123; ... &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wait_event_interruptible_timeout(wq, condition, timeout)</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>wait_event_interruptible使用的进程状态为TASK_INTERRUPTIBLE。因而睡眠进程可以通<br>过接收信号而唤醒。</li>
+<li>wait_event_timeout等待满足指定的条件，但如果等待时间超过了指定的超时限制（按jiffies<br>指定）则停止。这防止了进程永远睡眠。</li>
+<li>wait_event_interruptible_timeout使进程睡眠，但可以通过接收信号唤醒。它也注册了<br>一个超时限制。从内核采用的命名方式来看，一般不会有出人意料之处！</li>
+</ol>
+<h5 id="唤醒进程："><a href="#唤醒进程：" class="headerlink" title="唤醒进程："></a>唤醒进程：</h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;wait.h&gt;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wake_up(x) __wake_up(x, TASK_UNINTERRUPTIBLE | TASK_INTERRUPTIBLE, 1, NULL)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wake_up_nr(x, nr) __wake_up(x, TASK_UNINTERRUPTIBLE | TASK_INTERRUPTIBLE, nr, NULL)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wake_up_all(x) __wake_up(x, TASK_UNINTERRUPTIBLE | TASK_INTERRUPTIBLE, 0, NULL)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wake_up_interruptible(x) __wake_up(x, TASK_INTERRUPTIBLE, 1, NULL)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wake_up_interruptible_nr(x, nr) __wake_up(x, TASK_INTERRUPTIBLE, nr, NULL)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> wake_up_interruptible_all(x) __wake_up(x, TASK_INTERRUPTIBLE, 0, NULL)</span></span><br><span class="line">在获得了用于保护等待队列首部的锁之后， _wake_up将工作委托给_wake_up_common。</span><br><span class="line"></span><br><span class="line">kernel/sched.c</span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __wake_up_common(<span class="type">wait_queue_head_t</span> *q, <span class="type">unsigned</span> <span class="type">int</span> mode,</span><br><span class="line"><span class="type">int</span> nr_exclusive, <span class="type">int</span> sync, <span class="type">void</span> *key)</span><br><span class="line">&#123;</span><br><span class="line"><span class="type">wait_queue_t</span> *curr, *next;</span><br><span class="line">...</span><br><span class="line">q用于选定等待队列，而mode指定进程的状态，用于控制唤醒进程的条件。 nr_exclusive表示</span><br><span class="line">将要唤醒的设置了WQ_FLAG_EXCLUSIVE标志的进程的数目。</span><br><span class="line">内核接下来遍历睡眠进程，并调用其唤醒函数func：</span><br><span class="line">kernel/sched.<span class="function">c</span></span><br><span class="line"><span class="function"><span class="title">list_for_each_safe</span><span class="params">(curr, next, &amp;q-&gt;task_list, task_list)</span> </span>&#123;</span><br><span class="line"><span class="type">unsigned</span> flags = curr-&gt;flags;</span><br><span class="line"><span class="keyword">if</span> (curr-&gt;<span class="built_in">func</span>(curr, mode, sync, key) &amp;&amp;</span><br><span class="line">(flags &amp; WQ_FLAG_EXCLUSIVE) &amp;&amp; !--nr_exclusive)</span><br></pre></td></tr></table></figure>
+
+<p>这里会反复扫描链表，直至没有更多进程需要唤醒，或已经唤醒的独占进程的数目达到了<br>nr_exclusive。该限制用于避免所谓的惊群（ thundering herd）问题。如果几个进程在等待独占访问<br>某一资源，那么同时唤醒所有等待进程是没有意义的，因为除了其中一个之外，其他进程都会再次睡<br>眠。 nr_exclusive推广了这一限制。<br>最常使用的wake_up函数将nr_exclusive设置为1，确保只唤醒一个独占访问的进程</p>
+<h4 id="完成量"><a href="#完成量" class="headerlink" title="完成量"></a>完成量</h4><p>完成量和信号量有相似之处，但是都是基于等待队列实现的；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;completion.h&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">completion</span> &#123;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">int</span> done;</span><br><span class="line"><span class="type">wait_queue_head_t</span> wait;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>init_completion初始化一个动态分配的completion实例，而DECLARE_COMPLETION宏用来建立<br>该数据结构的静态实例。<br>进程可以用wait_for_completion添加到等待队列，进程在其中等待（以独占睡眠状态），直至<br>请求被内核的某些部分处理。这函数需要一个completion实例作为参数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;completion.h&gt;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">wait_for_completion</span><span class="params">(<span class="keyword">struct</span> completion *)</span></span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">wait_for_completion_interruptible</span><span class="params">(<span class="keyword">struct</span> completion *x)</span></span>;</span><br><span class="line"><span class="function"><span class="type">unsigned</span> <span class="type">long</span> <span class="title">wait_for_completion_timeout</span><span class="params">(<span class="keyword">struct</span> completion *x,</span></span></span><br><span class="line"><span class="params"><span class="function"><span class="type">unsigned</span> <span class="type">long</span> timeout)</span></span>;</span><br><span class="line"><span class="function"><span class="type">unsigned</span> <span class="type">long</span> <span class="title">wait_for_completion_interruptible_timeout</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function"><span class="keyword">struct</span> completion *x, <span class="type">unsigned</span> <span class="type">long</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>在请求由内核的另一部分处理之后，必须调用complete或complete_all来唤醒等待的进程。因<br>为每次调用只能从完成量的等待队列移除一个进程，对n个等待进程来说，必须调用该函数n次。 另一<br>方面， complete_all将唤醒所有等待该完成的进程。 complete_and_exit是一个小的包装器，首先<br>调用complete，接下来调用do_exit结束内核线程。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;completion.h&gt;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">complete</span><span class="params">(<span class="keyword">struct</span> completion *)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">complete_all</span><span class="params">(<span class="keyword">struct</span> completion *)</span></span>;</span><br><span class="line">kernel/exit.<span class="function">c</span></span><br><span class="line"><span class="function">NORET_TYPE <span class="type">void</span> <span class="title">complete_and_exit</span><span class="params">(<span class="keyword">struct</span> completion *comp, <span class="type">long</span> code)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="工作队列："><a href="#工作队列：" class="headerlink" title="工作队列："></a>工作队列：</h4><p>工作队列是将操作延期执行的另一种手段：因为它们是通过守护进程在用户上下文执行，函数可<br>以睡眠任意长的时间，这与内核是无关的。在内核版本2.5开发期间，设计了工作队列，用以替换此前<br>使用的keventd机制。</p>
+<p>每个工作队列都有一个数组，数组项的数目与系统中处理器的数目相同。每个数组项都列出了将<br>延期执行的任务。<br>对每个工作队列来说，内核都会创建一个新的内核守护进程，延期任务使用上文描述的等待队列<br>机制，在该守护进程的上下文中执行。</p>
+<ul>
+<li>创建新工作队列：<br>新的工作队列通过调用create_workqueue或create_workqueue_singlethread函数来创建。前<br>一个函数在所有CPU上都创建一个工作线程，而后者只在系统的第一个CPU上创建一个线程。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/interrupt/" rel="tag"># interrupt</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/18/systemcall/" rel="prev" title="systemcall">
+      <i class="fa fa-chevron-left"></i> systemcall
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/22/linux-neighbor/" rel="next" title="linux_neighbor">
+      linux_neighbor <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">中断概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E6%A1%86%E6%9E%B6%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">中断框架：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E7%B1%BB%E5%9E%8B%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">中断类型：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E4%B8%AD%E6%96%AD%E5%92%8C%E5%BC%82%E5%B8%B8"><span class="nav-number">2.1.1.</span> <span class="nav-text">同步中断和异常</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E4%B8%AD%E6%96%AD"><span class="nav-number">2.1.2.</span> <span class="nav-text">异步中断</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E5%85%B6%E4%BB%96%E9%80%BB%E8%BE%91%EF%BC%9A"><span class="nav-number">2.1.3.</span> <span class="nav-text">中断的一些其他逻辑：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6%E4%B8%AD%E6%96%AD"><span class="nav-number">3.</span> <span class="nav-text">硬件中断</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6%E4%B8%AD%E6%96%AD%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">硬件中断的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%9B%E5%85%A5%E5%92%8C%E9%80%80%E5%87%BA%E4%BB%BB%E5%8A%A1%EF%BC%9A"><span class="nav-number">3.1.1.</span> <span class="nav-text">进入和退出任务：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E5%A4%84%E7%90%86%E7%A8%8B%E5%BA%8F"><span class="nav-number">3.1.2.</span> <span class="nav-text">中断处理程序</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E7%9B%B8%E5%85%B3%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">中断相关数据结构：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E5%A4%84%E7%90%86%E7%9A%84%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">中断处理的相关操作：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E7%9A%84%E4%B8%AD%E6%96%AD%E5%A4%84%E7%90%86%E7%A8%8B%E5%BA%8F%EF%BC%9A"><span class="nav-number">3.4.</span> <span class="nav-text">重要的中断处理程序：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E4%B8%AD%E6%96%AD"><span class="nav-number">4.</span> <span class="nav-text">软件中断</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BD%AF%E4%B8%AD%E6%96%AD%E8%A1%A8"><span class="nav-number">4.1.</span> <span class="nav-text">软中断表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BD%AF%E4%B8%AD%E6%96%AD%E7%9A%84%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-number">4.2.</span> <span class="nav-text">软中断的流程：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tasklet-%E5%8F%A6%E4%B8%80%E7%A7%8D%E8%BD%BB%E9%87%8F%E7%9A%84%E8%BD%AF%E4%B8%AD%E6%96%AD"><span class="nav-number">5.</span> <span class="nav-text">tasklet ,另一种轻量的软中断</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAtasklet"><span class="nav-number">5.1.</span> <span class="nav-text">创建tasklet:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E5%86%8Ctasklet"><span class="nav-number">5.2.</span> <span class="nav-text">注册tasklet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%EF%BC%9A"><span class="nav-number">5.3.</span> <span class="nav-text">执行：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%89%E5%BE%85%E9%98%9F%E5%88%97%E5%92%8C%E5%AE%8C%E6%88%90%E9%87%8F%EF%BC%9B"><span class="nav-number">6.</span> <span class="nav-text">等待队列和完成量；</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AD%89%E5%BE%85%E9%98%9F%E5%88%97%EF%BC%9A"><span class="nav-number">6.1.</span> <span class="nav-text">等待队列：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">6.1.1.</span> <span class="nav-text">数据结构：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%BF%E8%BF%9B%E7%A8%8B%E7%9D%A1%E7%9C%A0%EF%BC%9A"><span class="nav-number">6.1.2.</span> <span class="nav-text">使进程睡眠：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%94%A4%E9%86%92%E8%BF%9B%E7%A8%8B%EF%BC%9A"><span class="nav-number">6.1.3.</span> <span class="nav-text">唤醒进程：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%8C%E6%88%90%E9%87%8F"><span class="nav-number">6.2.</span> <span class="nav-text">完成量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E9%98%9F%E5%88%97%EF%BC%9A"><span class="nav-number">6.3.</span> <span class="nav-text">工作队列：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '50991def2ce921d21dbbc92451044c3d',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
