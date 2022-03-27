@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="视频编码压缩基本： 视频是什么？视频是连续的图片，以时间为x轴；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="video_encode_format">
+<meta property="og:url" content="https://xdksx.github.io/2022/03/26/video-encode-format/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="视频编码压缩基本： 视频是什么？视频是连续的图片，以时间为x轴；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/1.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/2.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/3.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/4.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/5.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/6.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/7.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/8.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/9.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/10.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/11.png">
+<meta property="article:published_time" content="2022-03-26T13:57:51.000Z">
+<meta property="article:modified_time" content="2022-03-26T15:01:54.365Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="video">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2022/03/26/video-encode-format/1.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/03/26/video-encode-format/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>video_encode_format | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/03/26/video-encode-format/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          video_encode_format
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-26 21:57:51 / 修改时间：23:01:54" itemprop="dateCreated datePublished" datetime="2022-03-26T21:57:51+08:00">2022-03-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/video/" itemprop="url" rel="index"><span itemprop="name">video</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="视频编码压缩基本："><a href="#视频编码压缩基本：" class="headerlink" title="视频编码压缩基本："></a>视频编码压缩基本：</h3><ul>
+<li><p>视频是什么？视频是连续的图片，以时间为x轴； <span id="more"></span><br>衡量视频的指标：帧率：FPS:Frame per second,即每秒画面数量，帧率越高，越流畅</p>
+</li>
+<li><p>视频的存储和传输：<br>没有经过编码压缩的视频，是一个图片一个图片构成的，那么：<br>一个视频，如果未经编码，它的体积是非常庞大的。以一个分辨率1920×1280，帧率30的视频<br>为例。1920×1280&#x3D;2,073,600（Pixels 像素）每个像素点是24bit（前面算过的哦）也就是每幅<br>图片2073600×24&#x3D;49766400bit   8 bit（位）&#x3D;1 byte（字节），所<br>以，49766400bit&#x3D;6220800byte≈6.22MB。这是一幅1920×1280图片的原始大小，再乘以帧率<br>30，也就是说，每秒视频的大小是186.6MB，每分钟大约是11GB，一部90分钟的电影，约是<br>1000GB。。。如果按照100M的网速（12.5MB&#x2F;s），下刚才那部电影，需要22个小时  </p>
+</li>
+<li><p>视频的压缩(编码)：编码就是为了压缩，即把原视频格式文件转换成另外一种格式文件  </p>
+</li>
+<li><p>编码的方式,如何压缩：<br>采集设备采集一帧图像会生成无损的**.bmp文件格式的图片文件，一个6M通过有损压缩得到200kb的JPEG文件，压缩比就是1&#x2F;30。<br>但是视频不需要单独传输一张张压缩图，只需要记录每帧之间的差别即可。于是，根据I帧（200K原始图像）生成差异文件P帧，通过I帧和P帧再生成B帧。<br>这，就是H.264编码。</p>
+</li>
+</ul>
+<p>编码压缩就像魔术一般，一段视频，如果经过编码压缩后，可以大幅度的缩小体积。而各种不同的压缩算法就是编码格式**，如今主流的音视频编码格式就是H.264+AAC，视频内容经过编码压缩大幅度的减少体积后，有利于存储和压缩。但是相应的，传输时也是被压缩算法所“加密”的视频。所以，在播放端也需要一个“解密”的过程。 因此，在编码和解码之间，显然需要一个编码器和解码器都可以理解的约定，就图像而言：生产端的编码器将多张图像进行编码后生成一段端的GOP（Group of pictures）， 播放端的解码器则是读取一段段的GOP解码后读取画面再渲染显示。<br>举个例子，如果一幅图（1920×1080分辨率），全是红色的，我有没有必要说2073600次[255,0,0]？我只要说一次[255,0,0]，然后再说2073599次“同上”，即去除冗余信息：冗余信息和编码：</p>
+<img src="/2022/03/26/video-encode-format/1.png" class="" title="tes">
+
+
+<ul>
+<li>视频编码优先消除空间冗余和时间冗余：<br>空间冗余：即一张图片的重复信息<br>时间冗余：即图片和图片之间的重复信息；<br>于是出现了I,P,B帧的策略；</li>
+</ul>
+<img src="/2022/03/26/video-encode-format/2.png" class="" title="tes">
+
+<ul>
+<li>I,P,B帧：</li>
+</ul>
+<p>视频是由不同的帧画面连续播放形成的；这些帧，分为三类，即I帧，P帧，B帧：<br>I帧：是自带全部信息的独立帧，是最完整的画面（占用的空间最大），无需参考其它图像便可独立进行解码。视频序列中的第一个帧，始终都是I帧<br>P帧：帧间预测编码帧”，需要参考前面的I帧和&#x2F;或P帧的不同部分，才能进行编码。P帧对前面的P和I参考帧有依赖性。但是，P帧压缩率比较高，占用的空间较小<br>B帧：“双向预测编码帧”，以前帧和后作为参考帧。不仅参考前面，还参考后面的帧，所以，它的压缩率最高，可以达到200:1。不过，因为依赖后面的帧，所以不适合实时传输（例如视频会议）  </p>
+<img src="/2022/03/26/video-encode-format/3.png" class="" title="tes">
+<ul>
+<li>视频中图像的切块：</li>
+</ul>
+<p>即并不是按照一张图片(比如分辨率为1920*1080)而是把图像切割为不同的“块（Block）”或“宏块（MacroBlock）”，对它们进行计算。一个宏块一般为16像素×16像素  </p>
+<ul>
+<li><p>帧内和帧间，即上面提到的空间冗余去除和时间冗余去除：</p>
+<img src="/2022/03/26/video-encode-format/4.png" class="" title="tes">
+<p>帧内处理：</p>
+<img src="/2022/03/26/video-encode-format/5.png" class="" title="tes">
+
+</li>
+<li><p>IDR帧，PTS,DTS,GOP:<br>IDR:把第一个首个I帧叫IDRPTS：Presentation Time Stamp。PTS主要用于度量解码后的视频帧什么时候被显示出来<br>DTS：Decode Time Stamp。DTS主要是标识读入内存中的bit流在什么时候开始送入解码器中进行解码。<br>DTS主要用于视频的解码,在解码阶段使用.PTS主要用于视频的同步和输出.在display的时候使用.在没有B frame的情况下.DTS和PTS的输出顺序是一样的.  </p>
+</li>
+<li><p>衡量编码的效果：信噪比&#x2F;峰值信噪比；客观人眼评价  </p>
+</li>
+<li><p>一个视频的采集，编码解码过程：</p>
+<img src="/2022/03/26/video-encode-format/6.png" class="" title="tes"></li>
+</ul>
+<h4 id="视频编码相关标准组织："><a href="#视频编码相关标准组织：" class="headerlink" title="视频编码相关标准组织："></a>视频编码相关标准组织：</h4><ul>
+<li>ITU（国际电信联盟）<img src="/2022/03/26/video-encode-format/7.png" class="" title="tes"></li>
+<li>ISO&#x2F;IEC：<br>ISO和IEC联合成立了一个专家组，负责开发电视图像数据和声音数据的编码、解码和它们的同步等标准。这个专家组，就是大名鼎鼎的MPEG，Moving Picture Expert Group（动态图像专家组）</li>
+<li>ITU和ISO&#x2F;IEC的关系：<br>ITU提出了H.261、H.262、H.263、H.263+、H.263++，这些统称为H.26X系列，主要应用于实时视频通信领域，如会议电视、可视电话等。<br>ISO&#x2F;IEC提出了MPEG1、MPEG2、MPEG4、MPEG7、MPEG21，统称为MPEG系列。<br>ITU和ISO&#x2F;IEC一开始是各自捣鼓，后来，两边成立了一个联合小组，名叫JVT（Joint Video Team，视频联合工作组）。</li>
+</ul>
+<img src="/2022/03/26/video-encode-format/8.png" class="" title="tes">
+<img src="/2022/03/26/video-encode-format/9.png" class="" title="tes">
+<img src="/2022/03/26/video-encode-format/10.png" class="" title="tes">
+
+<h4 id="视频加音频：封装技术："><a href="#视频加音频：封装技术：" class="headerlink" title="视频加音频：封装技术："></a>视频加音频：封装技术：</h4><p>只有视频，则是无声的，所以需要加上音频才完整：<br>封装，就是封装格式，简单来说，就是将已经编码压缩好的视频轨和音频轨按照一定的格式放到一个文件中。再通俗点，视频轨相当于饭，而音频轨相当于菜，封装格式就是一个饭盒，用来盛放饭菜的容器。<br>目前主要的视频容器有如下：MPG、VOB、MP4、3GP、ASF、RMVB、WMV、MOV、Divx、MKV、FLV、TS&#x2F;PS等。</p>
+<h4 id="互联网视频播放过程："><a href="#互联网视频播放过程：" class="headerlink" title="互联网视频播放过程："></a>互联网视频播放过程：</h4><img src="/2022/03/26/video-encode-format/11.png" class="" title="tes">
+<p>解协议的作用，就是将流媒体协议的数据，解析为标准的相应的封装格式数据。视音频在网络上传播的时候，常常采用各种流媒体协议，例如HTTP，RTMP，或是MMS等等。这些协议在传输视音频数据的同时，也会传输一些信令数据。这些信令数据包括对播放的控制（播放，暂停，停止），或者对网络状态的描述等。解协议的过程中会去除掉信令数据而只保留视音频数据。例如，采用RTMP协议传输的数据，经过解协议操作后，输出FLV格式的数据。</p>
+<p>解封装的作用，就是将输入的封装格式的数据，分离成为音频流压缩编码数据和视频流压缩编码数据。封装格式种类很多，例如MP4，MKV，RMVB，TS，FLV，AVI等等，它的作用就是将已经压缩编码的视频数据和音频数据按照一定的格式放到一起。例如，FLV格式的数据，经过解封装操作后，输出H.264编码的视频码流和AAC编码的音频码流。</p>
+<p>解码的作用，就是将视频&#x2F;音频压缩编码数据，解码成为非压缩的视频&#x2F;音频原始数据。音频的压缩编码标准包含AAC，MP3，AC-3等等，视频的压缩编码标准则包含H.264，MPEG2，VC-1等等。解码是整个系统中最重要也是最复杂的一个环节。通过解码，压缩编码的视频数据输出成为非压缩的颜色数据，例如YUV420P，RGB等等；压缩编码的音频数据输出成为非压缩的音频抽样数据，例如PCM数据。</p>
+<p>视音频同步的作用，就是根据解封装模块处理过程中获取到的参数信息，同步解码出来的视频和音频数据，并将视频音频数据送至系统的显卡和声卡播放出来</p>
+<h4 id="流媒体传输协议："><a href="#流媒体传输协议：" class="headerlink" title="流媒体传输协议："></a>流媒体传输协议：</h4><p>区分于视频封装，即视频文件，流媒体传输的是视频，但是不是以视频文件容器的形式传递的，除非下载整个视频文件，但这时也会封装更多的数据，以便于传输；<br>所以流媒体传输协议就是为了便于网络传输(带宽，网络复杂性等)，将视频数据和音频数据，以一定的格式和头，控制信息等封装起来形成一个包，并载于tcp&#x2F;udp上传输的协议；<br>流媒体传输会存在两种需求：顺序流式传输（progressive streaming）和实时流式传输（real time streaming）。<br>从本质上讲，直播就是一帧帧的数据加上时序标签流式传输。 这里有个悖论：一个容器封装好后的视频是“结构化”的，即不可变的，那直播又是怎么产生的呢？或者说，怎么去打破这个已经产生的“结果”，从而还往里面加上时序标签流式传输的呢？ 很简单，那就是**“边生产边传输边播放”</p>
+<ul>
+<li>所以在直播流中，为了保证一些特性：比如音视频同步，实时播放等，需要做一些处理：</li>
+</ul>
+<ol>
+<li>传输中音画同步dts<br>2）传输中实时携带解码信息，比如每个I帧都带视频头等；<br>3）本地保存流头，在拉流时先下发头；</li>
+</ol>
+<h4 id="顺序传输和实时传输："><a href="#顺序传输和实时传输：" class="headerlink" title="顺序传输和实时传输："></a>顺序传输和实时传输：</h4><ul>
+<li><p>顺序流式传输（progressive streaming）的特点：期望音视频数据无错误无丢失顺序的从一端传输到另一端，<br>例如警方对视频监控录像回放取证、网络电影播放等都需要数据正常到达然后解码播放，<br>对于这种情况一般采用可靠的 tcp 方式传输。  </p>
+</li>
+<li><p>实时流式传输（real time streaming）的特点：期望音视频数据实时的的从一段传输到另一端，<br>例如数字电视行业的电视直播，由于 tcp 的包确认机制的开销大，基于窗口的拥塞控制技术不<br>太适应稳定的流媒体传输，tcp 重传机制对实时流没有必要，对于这种情况一般采用 udp 方式传输。  </p>
+</li>
+<li><p>解决方案为：http（基于 tcp）做控制信息的传输，rtp（基于udp）做实时数据流的传输；http live streaming (hls) 码流自适应也可作为实时流传输的解决方案<br>直播就是将每帧数据（Video&#x2F;Audio&#x2F;Data Frame(元信息)），打上时序标签后进行流式传输的过程。<br>发送端源源不断的采集音视频数据，经过编码、封包、推流，再经过中继分发网络进行扩散传播。<br>播放端则源源不断的下载数据并按时序进行解码播放。 这样就完成了“边生产、边传输、边播放”的直播过程了。<br> 简而言之，视频直播技术，就是将视频内容的最小颗粒（I&#x2F;P&#x2F;B帧）,基于时序标签，以流式传输的一种技术。</p>
+</li>
+<li><p>PS:GOP越长，所包含的B帧和P帧越多，响应的压缩比也会更高。<br> GOP越短，I帧比例增高，压缩比增加，同码率下视频质量会下降。</p>
+</li>
+</ul>
+<h4 id="下载视频，点播，边下边播，直播；"><a href="#下载视频，点播，边下边播，直播；" class="headerlink" title="下载视频，点播，边下边播，直播；"></a>下载视频，点播，边下边播，直播；</h4><ul>
+<li><p>从流媒体传输的方式看，有：<br>渐进式下载：即边下边播：属于本地播放<br>单纯文件下载：属于本地播放  </p>
+</li>
+<li><p>点播即在线播放：索引文件包含所有切片下载地址，依次下载切片文件。建立一个Connection，边下边播，实时传输</p>
+</li>
+</ul>
+<h4 id="直播中的关键词："><a href="#直播中的关键词：" class="headerlink" title="直播中的关键词："></a>直播中的关键词：</h4><p>码率，转码等</p>
+<h4 id="流媒体相关协议："><a href="#流媒体相关协议：" class="headerlink" title="流媒体相关协议："></a>流媒体相关协议：</h4><p>FLV,RTMP,HLS，RTP,RTCP等。</p>
+<ul>
+<li>直播：实时更新索引文件，根据索引文件下载切片文件建立一个Connection，边放边播，实时更新流。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/video/" rel="tag"># video</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/26/audio-wav/" rel="prev" title="audio_wav">
+      <i class="fa fa-chevron-left"></i> audio_wav
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/26/audio-flac/" rel="next" title="audio_flac">
+      audio_flac <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%86%E9%A2%91%E7%BC%96%E7%A0%81%E5%8E%8B%E7%BC%A9%E5%9F%BA%E6%9C%AC%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">视频编码压缩基本：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%86%E9%A2%91%E7%BC%96%E7%A0%81%E7%9B%B8%E5%85%B3%E6%A0%87%E5%87%86%E7%BB%84%E7%BB%87%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">视频编码相关标准组织：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%86%E9%A2%91%E5%8A%A0%E9%9F%B3%E9%A2%91%EF%BC%9A%E5%B0%81%E8%A3%85%E6%8A%80%E6%9C%AF%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">视频加音频：封装技术：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%92%E8%81%94%E7%BD%91%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E8%BF%87%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">互联网视频播放过程：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E5%AA%92%E4%BD%93%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE%EF%BC%9A"><span class="nav-number">1.4.</span> <span class="nav-text">流媒体传输协议：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E4%BC%A0%E8%BE%93%E5%92%8C%E5%AE%9E%E6%97%B6%E4%BC%A0%E8%BE%93%EF%BC%9A"><span class="nav-number">1.5.</span> <span class="nav-text">顺序传输和实时传输：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E8%A7%86%E9%A2%91%EF%BC%8C%E7%82%B9%E6%92%AD%EF%BC%8C%E8%BE%B9%E4%B8%8B%E8%BE%B9%E6%92%AD%EF%BC%8C%E7%9B%B4%E6%92%AD%EF%BC%9B"><span class="nav-number">1.6.</span> <span class="nav-text">下载视频，点播，边下边播，直播；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B4%E6%92%AD%E4%B8%AD%E7%9A%84%E5%85%B3%E9%94%AE%E8%AF%8D%EF%BC%9A"><span class="nav-number">1.7.</span> <span class="nav-text">直播中的关键词：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E5%AA%92%E4%BD%93%E7%9B%B8%E5%85%B3%E5%8D%8F%E8%AE%AE%EF%BC%9A"><span class="nav-number">1.8.</span> <span class="nav-text">流媒体相关协议：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '0fe4ab0ecbbf2dfd3370636a11728a17',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

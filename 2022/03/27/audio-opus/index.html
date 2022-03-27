@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="content:1 简介2 opus编码总览   控制参数：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="audio_opus">
+<meta property="og:url" content="https://xdksx.github.io/2022/03/27/audio-opus/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="content:1 简介2 opus编码总览   控制参数：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-27T06:54:50.000Z">
+<meta property="article:modified_time" content="2022-03-27T08:08:45.039Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="audio">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/03/27/audio-opus/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>audio_opus | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/03/27/audio-opus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          audio_opus
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-27 14:54:50 / 修改时间：16:08:45" itemprop="dateCreated datePublished" datetime="2022-03-27T14:54:50+08:00">2022-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/audio/" itemprop="url" rel="index"><span itemprop="name">audio</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="content"><a href="#content" class="headerlink" title="content:"></a>content:</h4><p>1 简介<br>2 opus编码总览<br>   控制参数：<span id="more"></span><br>      2.1. Control Parameters ………………………………….10<br>           2.1.1. Bitrate ……………………………………..10<br>           2.1.2. Number of Channels (Mono&#x2F;Stereo) ……………….11<br>           2.1.3. Audio Bandwidth ………………………………11<br>           2.1.4. Frame Duration ……………………………….11<br>           2.1.5. Complexity …………………………………..11<br>           2.1.6. Packet Loss Resilience ………………………..12<br>           2.1.7. Forward Error Correction (FEC) …………………12<br>           2.1.8. Constant&#x2F;Variable Bitrate ……………………..12<br>           2.1.9. Discontinuous Transmission (DTX) ……………….13<br>3 internal framing<br>       3.1. The TOC Byte ……………………………………….13<br>       3.2. Frame Packing ………………………………………16<br>           3.2.1. Frame Length Coding …………………………..16<br>           3.2.2. Code 0: One Frame in the Packet ………………..16<br>           3.2.3. Code 1: Two Frames in the Packet, Each with<br>                  Equal Compressed Size …………………………17<br>           3.2.4. Code 2: Two Frames in the Packet, with<br>                  Different Compressed Sizes …………………….17<br>           3.2.5. Code 3: A Signaled Number of Frames in the Packet ..18<br>      3.3. Examples …………………………………………..21<br>      3.4. Receiving Malformed Packets ………………………….22<br>4 opus decoder<br> 4.1. Range Decoder ………………………………………23<br>           4.1.1. Range Decoder Initialization …………………..25<br>           4.1.2. Decoding Symbols ……………………………..25<br>           4.1.3. Alternate Decoding Methods …………………….27<br>           4.1.4. Decoding Raw Bits …………………………….29<br>           4.1.5. Decoding Uniformly Distributed Integers …………29<br>           4.1.6. Current Bit Usage …………………………….30<br>      4.2. SILK Decoder ……………………………………….32<br>           4.2.1. SILK Decoder Modules ………………………….32<br>           4.2.2. LP Layer Organization …………………………33<br>           4.2.3. Header Bits ………………………………….35<br>           4.2.4. Per-Frame LBRR Flags ………………………….36<br>           4.2.5. LBRR Frames ………………………………….36<br>           4.2.6. Regular SILK Frames …………………………..37<br>           4.2.7. SILK Frame Contents …………………………..37<br>                  4.2.7.1. Stereo Prediction Weights ……………..40<br>                  4.2.7.2. Mid-Only Flag ………………………..42<br>                  4.2.7.3. Frame Type …………………………..43<br>                  4.2.7.4. Subframe Gains ……………………….44<br>                  4.2.7.5. Normalized Line Spectral Frequency<br>                           (LSF) and Linear Predictive Coding (LPC)<br>                           Coeffieients …………………………46<br>                  4.2.7.6. Long-Term Prediction (LTP) Parameters …..74<br>                  4.2.7.7. Linear Congruential Generator (LCG) Seed ..86<br>                  4.2.7.8. Excitation …………………………..86<br>                  4.2.7.9. SILK Frame Reconstruction ……………..98<br>           4.2.8. Stereo Unmixing ……………………………..102<br>           4.2.9. Resampling ………………………………….103<br>      4.3. CELT Decoder ………………………………………104<br>           4.3.1. Transient Decoding …………………………..108<br>           4.3.2. Energy Envelope Decoding ……………………..108<br>           4.3.3. Bit Allocation ………………………………110<br>           4.3.4. Shape Decoding ………………………………116<br>           4.3.5. Anti-collapse Processing ……………………..120<br>           4.3.6. Denormalization ……………………………..121<br>           4.3.7. Inverse MDCT ………………………………..121<br>      4.4. Packet Loss Concealment (PLC) ……………………….122<br>           4.4.1. Clock Drift Compensation ……………………..122<br>      4.5. Configuration Switching …………………………….123<br>           4.5.1. Transition Side Information (Redundancy) ……….124<br>           4.5.2. State Reset …………………………………127<br>           4.5.3. Summary of Transitions ……………………….128<br>5 opus encoder<br>     5.1. Range Encoder ……………………………………..132<br>           5.1.1. Encoding Symbols …………………………….133<br>           5.1.2. Alternate Encoding Methods ……………………134<br>           5.1.3. Encoding Raw Bits ……………………………135<br>           5.1.4. Encoding Uniformly Distributed Integers ………..135<br>           5.1.5. Finalizing the Stream ………………………..135<br>           5.1.6. Current Bit Usage ……………………………136<br>      5.2. SILK Encoder ………………………………………136<br>           5.2.1. Sample Rate Conversion ……………………….137<br>           5.2.2. Stereo Mixing ……………………………….137<br>           5.2.3. SILK Core Encoder ……………………………138<br>      5.3. CELT Encoder ………………………………………150<br>           5.3.1. Pitch Pre-filter …………………………….150<br>           5.3.2. Bands and Normalization ………………………151<br>           5.3.3. Energy Envelope Quantization ………………….151<br>           5.3.4. Bit Allocation ………………………………151<br>           5.3.5. Stereo Decisions …………………………….152<br>           5.3.6. Time-Frequency Decision ………………………153<br>           5.3.7. Spreading Values Decision …………………….153<br>           5.3.8. Spherical Vector Quantization …………………154<br>6. Conformance ……………………………………………155<br>      6.1. Testing …………………………………………..155<br>      6.2. Opus Custom ……………………………………….156<br>7. Security Considerations …………………………………157<br>8. Acknowledgements ……………………………………….158<br>9. References …………………………………………….159<br>     9.1. Normative References ……………………………….159<br>     9.2. Informative References ……………………………..159</p>
+<h4 id="opus简述："><a href="#opus简述：" class="headerlink" title="opus简述："></a>opus简述：</h4><ul>
+<li><p>Opus编解码器是一种实时交互式音频编解码器，旨在满足[要求]中所述的要求。它由一个基于线性预测（LP）[LPC]的层和一个基于改进的离散余弦变换（MDCT）[MDCT]的层组成。使用两层的主要思想如下：在语音中，<br>线性预测技术（如code - excited linear prediction 码激励线性预测，或CELP）比变换（如MDCT）域技术更有效地编码低频，而音乐和更高的语音频率则相反。因此，具有两个可用层的编解码器可以在比单独使用其中一个更宽的范围内运行，并且通过组合它们可以实现比单独使用其中一个更好的质量。</p>
+</li>
+<li><p>本规范的主要规范性部分由附录A中的源代码提供。尽管编码器和解码器共享大量代码，但本软件的解码器部分是规范性的。第6节提供了解码器一致性测试。解码器包含大量需要精确执行的整数和定点算法，包括所有舍入考虑，因此任何有用的规范都需要特定于域的符号语言来充分定义这些操作。此外，必须解决符号表示和包含的引用实现之间的任何冲突。出于兼容性和可测试性的实际原因，在任何不一致的情况下，给予参考实现优先权都是有利的。C语言也是最广泛理解的、人类可读的机器行为符号表示之一。由于这些原因，此RFC使用参考实现作为编解码器的唯一符号表示。</p>
+</li>
+<li><p>虽然符号表示是明确和完整的，但它并不总是理解编解码器操作的最简单方法。因此，本文档还以散文的形式描述了编解码器的重要部分，并借此机会解释了设计中许多更令人惊讶的元素背后的基本原理。这些描述旨在准确且信息丰富，但普通英语的局限性有时会导致歧义，因此预计读者将始终在阅读符号表示的同时阅读这些描述。为此目的，提供了大量实施参考。这些描述有时在顺序上或通过数学简化与参考不同，因为这种偏差使得解释更容易理解。例如，参考实现中的右移和左移操作通常使用除法和除法来描述</p>
+</li>
+</ul>
+<h5 id="1-1符号约定："><a href="#1-1符号约定：" class="headerlink" title="1.1符号约定："></a>1.1符号约定：</h5><p>编解码器中的各种操作需要位精确的定点行为，即使在编写浮点实现时也是如此。符号“Q<n>”，其中n是整数，表示定点数字中小数点右侧的二进制位数。例如，16位字中的有符号Q14值可以表示从-2.0到1.999938964875（包括-2.0）的值。此符号仅供参考。当描述算术时，总是对基础整数进行运算。例如，文本将明确指示乘法后所需的任何移位。</p>
+<p>文本中包含的表达式遵循C运算符规则和优先级，但语法“x**y”表示x升为y的幂。本文还使用了以下功能。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.1</span>.<span class="number">1</span>.  <span class="built_in">min</span>(x,y)</span><br><span class="line"></span><br><span class="line">   The smallest of two values x and y.</span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">2</span>.  <span class="built_in">max</span>(x,y)</span><br><span class="line"></span><br><span class="line">   The largest of two values x and y.</span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">3</span>.  <span class="built_in">clamp</span>(lo,x,hi)</span><br><span class="line"></span><br><span class="line">                     <span class="built_in">clamp</span>(lo,x,hi) = <span class="built_in">max</span>(lo,<span class="built_in">min</span>(x,hi))</span><br><span class="line"></span><br><span class="line">   With this definition, <span class="keyword">if</span> lo &gt; hi, then lo is returned.</span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">4</span>.  <span class="built_in">sign</span>(x)</span><br><span class="line"></span><br><span class="line">   The sign of x, <span class="selector-tag">i</span><span class="selector-class">.e</span>.,</span><br><span class="line"></span><br><span class="line">                                    ( -<span class="number">1</span>,  x &lt; <span class="number">0</span></span><br><span class="line">                          <span class="built_in">sign</span>(x) = &lt;  <span class="number">0</span>,  x == <span class="number">0</span></span><br><span class="line">                                    (  <span class="number">1</span>,  x &gt; <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">5</span>.  <span class="built_in">abs</span>(x)</span><br><span class="line"></span><br><span class="line">   The absolute value of x, <span class="selector-tag">i</span><span class="selector-class">.e</span>.,</span><br><span class="line"></span><br><span class="line">                             <span class="built_in">abs</span>(x) = <span class="built_in">sign</span>(x)*x</span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">6</span>.  <span class="built_in">floor</span>(f)</span><br><span class="line"></span><br><span class="line">   The largest integer z such that z &lt;= f.</span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">7</span>.  <span class="built_in">ceil</span>(f)</span><br><span class="line"></span><br><span class="line">   The smallest integer z such that z &gt;= f.</span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">8</span>.  <span class="built_in">round</span>(f)</span><br><span class="line"></span><br><span class="line">   The integer z nearest to f, with ties rounded towards negative</span><br><span class="line">   infinity, <span class="selector-tag">i</span><span class="selector-class">.e</span>.,</span><br><span class="line"></span><br><span class="line">                           <span class="built_in">round</span>(f) = <span class="built_in">ceil</span>(f - <span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">9</span>.  <span class="built_in">log2</span>(f)</span><br><span class="line"></span><br><span class="line">   The base-two logarithm of f.</span><br><span class="line"></span><br><span class="line"><span class="number">1.1</span>.<span class="number">10</span>.  <span class="built_in">ilog</span>(n)</span><br><span class="line"></span><br><span class="line">   The minimum number of bits required to store <span class="selector-tag">a</span> positive integer n <span class="keyword">in</span></span><br><span class="line">   binary, or <span class="number">0</span> <span class="keyword">for</span> <span class="selector-tag">a</span> non-positive integer n.</span><br><span class="line"></span><br><span class="line">                              ( <span class="number">0</span>,                 n &lt;= <span class="number">0</span></span><br><span class="line">                    <span class="built_in">ilog</span>(n) = &lt;</span><br><span class="line">                              ( <span class="built_in">floor</span>(<span class="built_in">log2</span>(n))+<span class="number">1</span>,  n &gt; <span class="number">0</span></span><br><span class="line"></span><br><span class="line">   Examples:</span><br><span class="line"></span><br><span class="line">   o  <span class="built_in">ilog</span>(-<span class="number">1</span>) = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">   o  <span class="built_in">ilog</span>(<span class="number">0</span>) = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">   o  <span class="built_in">ilog</span>(<span class="number">1</span>) = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">   o  <span class="built_in">ilog</span>(<span class="number">2</span>) = <span class="number">2</span></span><br><span class="line"></span><br><span class="line">   o  <span class="built_in">ilog</span>(<span class="number">3</span>) = <span class="number">2</span></span><br><span class="line"></span><br><span class="line">   o  <span class="built_in">ilog</span>(<span class="number">4</span>) = <span class="number">3</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-Opus编解码器概述："><a href="#2-Opus编解码器概述：" class="headerlink" title="2 Opus编解码器概述："></a>2 Opus编解码器概述：</h4><p>Opus编解码器从6 kbit&#x2F;s窄带单声道语音扩展到510 kbit&#x2F;s全波段立体声音乐，算法延迟从5 ms到65.2 ms。在任何给定时间，LP层、MDCT层或两者都可能处于活动状态。它可以在所有不同的操作模式之间无缝切换，使其具有很大的灵活性以适应不同的内容和网络条件，而无需重新协商当前会话。编解码器允许输入和输出各种音频带宽，定义如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">+----------------------+-----------------+-------------------------+</span><br><span class="line">   |<span class="string"> Abbreviation         </span>|<span class="string"> Audio Bandwidth </span>|<span class="string"> Sample Rate (Effective) </span>|</span><br><span class="line">   +----------------------+-----------------+-------------------------+</span><br><span class="line">   |<span class="string"> NB (narrowband)      </span>|<span class="string">           4 kHz </span>|<span class="string">                   8 kHz </span>|</span><br><span class="line">   |<span class="string">                      </span>|<span class="string">                 </span>|<span class="string">                         </span>|</span><br><span class="line">   |<span class="string"> MB (medium-band)     </span>|<span class="string">           6 kHz </span>|<span class="string">                  12 kHz </span>|</span><br><span class="line">   |<span class="string">                      </span>|<span class="string">                 </span>|<span class="string">                         </span>|</span><br><span class="line">   |<span class="string"> WB (wideband)        </span>|<span class="string">           8 kHz </span>|<span class="string">                  16 kHz </span>|</span><br><span class="line">   |<span class="string">                      </span>|<span class="string">                 </span>|<span class="string">                         </span>|</span><br><span class="line">   |<span class="string"> SWB (super-wideband) </span>|<span class="string">          12 kHz </span>|<span class="string">                  24 kHz </span>|</span><br><span class="line">   |<span class="string">                      </span>|<span class="string">                 </span>|<span class="string">                         </span>|</span><br><span class="line">   |<span class="string"> FB (fullband)        </span>|<span class="string">      20 kHz (*) </span>|<span class="string">                  48 kHz </span>|</span><br><span class="line">   +----------------------+-----------------+-------------------------+</span><br><span class="line">                          表1</span><br></pre></td></tr></table></figure>
+<p>（*）尽管采样定理允许带宽高达采样率的一半，但Opus从未对20 kHz以上的音频进行编码，因为这是公认的人类听力上限。  </p>
+<ul>
+<li><p>Opus定义了有效采样率为24 kHz的超宽带（SWB），与其他一些使用32 kHz的音频编码标准不同。选择这一点有很多原因。MDCT层中的频带布局自然允许跳过12 kHz以上频率的系数，但不允许仅将那些超过16 kHz的频率完全丢弃。24 kHz的采样率也使得MDCT层中的重采样更容易，因为24均匀地除以48，并且当24 kHz足够时，它可以节省其他处理中的计算，例如声学回波消除（AEC）。对频带布局进行实验性更改，以允许16 kHz截止（32 kHz有效采样率）显示在其他采样率下存在潜在的质量下降，并且在典型比特率下，使用这种截止而不是在全频带（FB）模式下编码所节省的比特数非常少。因此，如果应用程序希望处理以32 kHz采样的信号，则应仅使用FB。</p>
+</li>
+<li><p>LP层基于SILK编解码器[SILK]。它支持10毫秒到60毫秒的NB、MB或WB音频和帧大小，并且需要额外的5毫秒前瞻以进行噪声整形估计。采样率转换可能需要额外的小延迟（高达1.5 ms）。与Vorbis[Vorbis-WEBSITE]和许多其他现代编解码器一样，SILK天生就是为可变比特率（VBR）编码而设计的，尽管编码器也可以产生恒定比特率（CBR）流。Opus中使用的SILK版本实质上是从Skype先前部署的独立SILK编解码器修改而来的，与之不兼容。本文档不用于定义该格式，但对原始SILK编解码器感兴趣的人应该查看[SILK]。</p>
+</li>
+<li><p>MDCT层基于受限能量重叠变换（CELT）编解码器[CELT]。它支持NB、WB、SWB或FB音频,并且其帧大小从2.5 ms到20 ms，并且由于MDCT窗口重叠，需要额外的2.5 ms前瞻。CELT编解码器本质上是为CBR编码而设计的，但与许多CBR编解码器不同，它不限于一组预定速率。它在内部分配位来精确地填充任何给定的目标预算，编码器可以通过每帧改变目标来生成VBR流。当音频带宽为WB或更低时，MDCT层不用于语音，因为它在那里没有用处。另一方面，非语音信号并不总是使用线性预测进行充分编码。因此，MDCT层应用于音乐信号。</p>
+</li>
+<li><p>“混合”模式允许以10或20 ms的帧大小和SWB或FB音频带宽同时使用两层。LP层通过将信号重采样到WB来对低频进行编码。随后是MDCT层，对信号的高频部分进行编码。两者之间的截止频率为8 kHz，即最大WB音频带宽。在MDCT层中，所有低于8 kHz的频带都被丢弃，因此两层之间没有编码冗余。</p>
+</li>
+<li><p>采样率（与实际音频带宽相反）可在编码器和解码器侧独立选择，例如，全频带(fullband)信号可解码为宽带(wideband)，反之亦然。这种方法确保发送方和接收方始终可以互操作，而不管其实际音频硬件的功能如何。在内部，LP层始终以音频带宽两倍的采样率运行，最高可达16 kHz，它将继续用于SWB和FB。解码器只需重新采样其输出，以支持不同的采样率。MDCT层始终以48 kHz的采样率在内部运行。由于所有支持的采样率均匀地划分该速率，并且由于解码器可以容易地将频域中频谱的高频部分归零，因此它可以简单地抽取MDCT层输出，以非常便宜地实现其他支持的采样率。</p>
+</li>
+<li><p>在转换到普通的、期望的输出采样率之后，解码器将两层的输出简单地相加。为了补偿各层所需的不同前瞻性，CELT编码器输入额外延迟2.7毫秒。这确保低频和高频同时到达。编码器可以通过使用较少的噪声整形前瞻或在LP层中使用更简单的重采样器来减少额外延迟，但这会降低质量。然而，在编码器中不能减少CELT层中的基本2.5 ms前瞻，因为MDCT重叠需要它，其大小由解码器固定。</p>
+</li>
+<li><p>这两层都使用相同的熵编码器，避免了它们之间“填充位”的浪费。这种混合方法使得CBR和VBR编码都可以很容易地支持。尽管LP层是VBR，但MDCT层的位分配可以通过使用LP层未使用的所有位来生成最终的CBR流。</p>
+</li>
+</ul>
+<h5 id="2-1-控制参数："><a href="#2-1-控制参数：" class="headerlink" title="2.1 控制参数："></a>2.1 控制参数：</h5><p>Opus编解码器包括许多控制参数，这些参数可以在编解码器的常规操作期间动态更改，而不会中断从编码器到解码器的音频流。这些参数仅影响编码器，因为它们对比特流的任何影响都在带内发出信号，使得解码器可以在没有带外信号的情况下解码任何Opus流。任何Opus实现都可以添加或修改这些控制参数，而不会影响互操作性。参考编码器中最重要的编码器控制参数如下所示。</p>
+<h6 id="2-1-1-比特率"><a href="#2-1-1-比特率" class="headerlink" title="2.1.1. 比特率"></a>2.1.1. 比特率</h6><p>Opus支持从6 kbit&#x2F;s到510 kbit&#x2F;s的所有比特率。所有其他参数相等时，比特率越高，质量越高。对于20 ms的帧大小，以下是各种配置中OPU的比特率“最佳点”：<br>o 8-12 kbit&#x2F;s for NB speech,<br>o 16-20 kbit&#x2F;s for WB speech,<br>o 28-40 kbit&#x2F;s for FB speech,<br>o 48-64 kbit&#x2F;s for FB mono music, and<br>o 64-128 kbit&#x2F;s for FB stereo music.</p>
+<h6 id="2-1-2-通道数（单声道-x2F-立体声）"><a href="#2-1-2-通道数（单声道-x2F-立体声）" class="headerlink" title="2.1.2 通道数（单声道&#x2F;立体声）"></a>2.1.2 通道数（单声道&#x2F;立体声）</h6><p>Opus可以在单个流中传输单声道或立体声帧。在立体声解码器中解码单声道帧时，左声道和右声道是相同的，在单声道解码器中解码立体声帧时，单声道输出是左声道和右声道的平均值。在某些情况下，希望以单声道编码立体声输入流（例如，因为比特率太低，无法以足够的质量编码立体声）。编码的通道数可以实时选择，但默认情况下，参考编码器会尝试在给定当前比特率的情况下做出最佳决策。</p>
+<h6 id="2-1-3-音频带宽"><a href="#2-1-3-音频带宽" class="headerlink" title="2.1.3. 音频带宽"></a>2.1.3. 音频带宽</h6><p>Opus支持的音频带宽如表1所示。就像信道数量一样，任何解码器都可以对在任何带宽上编码的音频进行解码。例如，以8khz工作的任何Opus解码器可以解码FB Opus帧，并且以48khz工作的任何Opus解码器可以解码NB帧。类似地，参考编码器可以获取48 kHz输入信号并将其编码为NB。音频带宽越高，达到可接受质量所需的比特率越高。音频带宽可以实时明确指定，但默认情况下，参考编码器会尝试在给定当前比特率的情况下做出最佳带宽决策。</p>
+<h6 id="2-1-4-帧持续时间"><a href="#2-1-4-帧持续时间" class="headerlink" title="2.1.4. 帧持续时间"></a>2.1.4. 帧持续时间</h6><p>Opus可以对2.5、5、10、20、40或60毫秒的帧进行编码。它还可以将多个帧组合成高达120毫秒的数据包。对于实时应用程序，每秒发送更少的数据包可以降低比特率，因为它减少了IP、UDP和RTP报头的开销。然而，它增加了延迟和对数据包丢失的敏感性，因为丢失一个数据包就意味着丢失更大的音频块。增加帧持续时间也会略微提高编码效率，但对于大于20 ms的帧大小，增益会变小。因此，对于大多数应用，20 ms帧是一个不错的选择。</p>
+<h6 id="2-1-5-复杂性"><a href="#2-1-5-复杂性" class="headerlink" title="2.1.5. 复杂性"></a>2.1.5. 复杂性</h6><p>Opus编码过程的各个方面都可以在CPU复杂性和质量&#x2F;比特率之间进行权衡。在参考编码器中，使用0到10之间的整数选择复杂度，其中0是最低复杂度，10是最高复杂度。可能出现此类权衡的计算示例如下：</p>
+<ul>
+<li>The order of the pitch analysis whitening filter [WHITENING],基音分析白化滤波器的阶数[白化]，</li>
+<li>The order of the short-term noise shaping filter,短期噪声整形滤波器的阶数</li>
+<li>The number of states in delayed decision quantization of the residual signal, and 剩余信号的延迟判决量化中的状态数，以及</li>
+<li>The use of certain bitstream features such as variable time-frequency resolution and the pitch post-filter.某些比特流特性的使用，如可变时频分辨率和基音后置滤波器。</li>
+</ul>
+<h6 id="2-1-6-丢包恢复能力"><a href="#2-1-6-丢包恢复能力" class="headerlink" title="2.1.6. 丢包恢复能力"></a>2.1.6. 丢包恢复能力</h6><p>音频编解码器通常利用帧间相关性来降低比特率，但要以错误传播为代价：丢失一个数据包后，需要接收多个数据包，解码器才能准确地重建语音信号。Opus利用帧间相关性的程度可以动态调整，以在比特率和错误传播量之间进行权衡。</p>
+<h6 id="2-1-7-前向纠错（FEC）"><a href="#2-1-7-前向纠错（FEC）" class="headerlink" title="2.1.7. 前向纠错（FEC）"></a>2.1.7. 前向纠错（FEC）</h6><p>提供抗分组丢失鲁棒性的另一种机制是带内前向纠错（FEC）。被确定为包含感知上重要的语音信息（例如启动或瞬态）的分组以较低的比特率再次编码，并且该重新编码的信息被添加到后续分组中。</p>
+<h6 id="2-1-8-恒定-x2F-可变比特率"><a href="#2-1-8-恒定-x2F-可变比特率" class="headerlink" title="2.1.8. 恒定&#x2F;可变比特率"></a>2.1.8. 恒定&#x2F;可变比特率</h6><p>Opus在使用默认的可变比特率（VBR）操作时效率更高。当需要通过相对较慢的连接进行低延迟传输时，也可以使用受限VBR。这以模拟“比特库”的方式使用VBR，相当于MP3（MPEG 1，第3层）和AAC（高级音频编码）所称的CBR（即，由于比特库而不是真正的CBR）。在某些（罕见）应用中，需要恒定比特率（CBR）。在CBR模式下运行有两个主要原因：</p>
+<ul>
+<li>当传输仅支持每个压缩帧的固定大小时，或</li>
+<li>当加密用于高度受限（例如，是&#x2F;否，录制的提示）或高度敏感[SRTP-VBR]的音频流时。<br>即使使用敏感数据，只要变化不是由输入信号驱动的（例如，为了匹配不断变化的网络条件），比特率仍然可以变化。要实现这一点，应用程序仍应在CBR模式下运行Opus，但在每个数据包之前更改目标速率。</li>
+</ul>
+<h6 id="2-1-9-不连续传输（DTX）"><a href="#2-1-9-不连续传输（DTX）" class="headerlink" title="2.1.9. 不连续传输（DTX）"></a>2.1.9. 不连续传输（DTX）</h6><p>不连续传输（DTX）在静音或背景噪声期间降低比特率。启用DTX时，每400毫秒仅对一帧进行编码。</p>
+<h4 id="3-内部组帧："><a href="#3-内部组帧：" class="headerlink" title="3 内部组帧："></a>3 内部组帧：</h4><p>Opus编码器产生“数据包”，每个数据包都是一组连续的字节，将作为单个单元传输。这里描述的数据包不包括诸如IP、UDP或RTP头之类的东西，它们通常在传输层数据包中找到。一个数据包可以包含多个音频帧，只要它们共享一组公共参数，包括操作模式、音频带宽、帧大小和通道计数（单声道与立体声）。本节描述了这些参数和用于将多个帧打包到单个数据包中的内部帧的可能组合。这种组帧不是自我界定的。相反，它假设较低的层（例如UDP或RTP[RFC3550]或Ogg[RFC3533]或Matroska[Matroska-WEBSITE]）将传输数据包的长度（以字节为单位），并使用此信息来减少数据包本身的帧开销。解码器实现必须支持本节中描述的帧。附录B中描述了框架的另一种自定界变体。该变体的支持是可选的。</p>
+<p>本文档中的所有位图都对位进行了编号，因此位0是第一个字节的最高有效位，位7是最低有效位。因此，第8位是第二字节的最高有效位，等等。格式良好的Opus数据包遵守某些要求，标记为下面的[R1]到[R7]。第3.4节总结了这些问题以及处理格式错误数据包的适当方法。</p>
+<h5 id="3-1-TOC字节-（单字节）"><a href="#3-1-TOC字节-（单字节）" class="headerlink" title="3.1 TOC字节 （单字节）"></a>3.1 TOC字节 （单字节）</h5><p>格式良好的Opus数据包必须至少包含一个字节[R1]。该字节形成一个目录（TOC）头，该头表示给定数据包使用的各种模式和配置中的哪一种。它由配置号“config”、立体声标志“s”和帧计数代码“c”组成，如图1所示。下面是对这些字段的描述。</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="code"> 0</span></span><br><span class="line"><span class="section"> 0 1 2 3 4 5 6 7</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">| config  |s| c |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+</span></span><br><span class="line">图1:TOC字节</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>TOC字节的前五位标记为“config”，对32种可能的操作模式、音频带宽和帧大小配置之一进行编码。As described, the LP (SILK) layer and MDCT (CELT) layer can be combined in three possible operating modes:</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">   1.  A SILK-only mode for use in low bitrate connections with an audio bandwidth of WB(wideband) or less,</span><br><span class="line">   2.  A Hybrid (SILK+CELT) mode for SWB(super-wideband) or FB(fullband) speech at medium bitrates, and</span><br><span class="line">   3.  A CELT-only mode for very low delay speech transmission as well  as music transmission (NB(narrowband) to FB).</span><br><span class="line">   32种可能的配置分别标识数据包使用哪种操作模式，以及音频带宽和帧大小。表2列出了每个配置的参数。</span><br><span class="line">   +-----------------------+-----------+-----------+-------------------+</span><br><span class="line">   |<span class="string"> Configuration         </span>|<span class="string"> Mode      </span>|<span class="string"> Bandwidth </span>|<span class="string"> Frame Sizes       </span>|</span><br><span class="line">   |<span class="string"> Number(s)             </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   +-----------------------+-----------+-----------+-------------------+</span><br><span class="line">   |<span class="string"> 0...3                 </span>|<span class="string"> SILK-only </span>|<span class="string"> NB        </span>|<span class="string"> 10, 20, 40, 60 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 4...7                 </span>|<span class="string"> SILK-only </span>|<span class="string"> MB        </span>|<span class="string"> 10, 20, 40, 60 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 8...11                </span>|<span class="string"> SILK-only </span>|<span class="string"> WB        </span>|<span class="string"> 10, 20, 40, 60 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 12...13               </span>|<span class="string"> Hybrid    </span>|<span class="string"> SWB       </span>|<span class="string"> 10, 20 ms         </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 14...15               </span>|<span class="string"> Hybrid    </span>|<span class="string"> FB        </span>|<span class="string"> 10, 20 ms         </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 16...19               </span>|<span class="string"> CELT-only </span>|<span class="string"> NB        </span>|<span class="string"> 2.5, 5, 10, 20 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 20...23               </span>|<span class="string"> CELT-only </span>|<span class="string"> WB        </span>|<span class="string"> 2.5, 5, 10, 20 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 24...27               </span>|<span class="string"> CELT-only </span>|<span class="string"> SWB       </span>|<span class="string"> 2.5, 5, 10, 20 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 28...31               </span>|<span class="string"> CELT-only </span>|<span class="string"> FB        </span>|<span class="string"> 2.5, 5, 10, 20 ms </span>|</span><br><span class="line">   +-----------------------+-----------+-----------+-------------------+</span><br><span class="line">        </span><br><span class="line">Table 2: TOC Byte Configuration Parameters</span><br><span class="line">每个范围内的配置编号(e.g., 0...3 for NB SILK-only)以相同的顺序对应不同的frame size选择。例如，配置0的帧大小为10毫秒，配置3的帧大小为60毫秒。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下来的一bit，表示是否为立体声：  One additional bit, labeled “s”, signals mono vs. stereo, with 0indicating mono and 1 indicating stereo.</p>
+</li>
+<li><p>接下来的两位，表示一个packet有几个frame:The remaining two bits of the TOC byte, labeled “c”, code the number of frames per packet (codes 0 to 3) as follows:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">o  <span class="number">0</span>: <span class="number">1</span> frame <span class="keyword">in</span> <span class="keyword">the</span> packet</span><br><span class="line">o  <span class="number">1</span>: <span class="number">2</span> frames <span class="keyword">in</span> <span class="keyword">the</span> packet, <span class="keyword">each</span> <span class="keyword">with</span> equal compressed size</span><br><span class="line">o  <span class="number">2</span>: <span class="number">2</span> frames <span class="keyword">in</span> <span class="keyword">the</span> packet, <span class="keyword">with</span> different compressed sizes</span><br><span class="line">o  <span class="number">3</span>: <span class="keyword">an</span> arbitrary <span class="built_in">number</span> <span class="keyword">of</span> frames <span class="keyword">in</span> <span class="keyword">the</span> packet</span><br><span class="line"></span><br><span class="line">This document refers <span class="built_in">to</span> <span class="keyword">a</span> packet <span class="keyword">as</span> <span class="keyword">a</span> code <span class="number">0</span> packet, code <span class="number">1</span> packet,</span><br><span class="line">etc., based <span class="keyword">on</span> <span class="title">the</span> <span class="title">value</span> <span class="title">of</span> <span class="string">&quot;c&quot;</span>.</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="3-2-frame-packing-帧如何打包："><a href="#3-2-frame-packing-帧如何打包：" class="headerlink" title="3.2 frame packing 帧如何打包："></a>3.2 frame packing 帧如何打包：</h5><p>本节描述如何根据TOC字节中每个可能的“c”值打包帧。</p>
+<h6 id="3-2-1-Frame-Length-Coding"><a href="#3-2-1-Frame-Length-Coding" class="headerlink" title="3.2.1  Frame Length Coding"></a>3.2.1  Frame Length Coding</h6><p>当数据包包含多个VBR帧（即code 2或3）时，这些帧中的一个或多个的压缩长度用一个或两个字节序列表示，第一个字节的含义如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">o</span> <span class="number">0</span>：无帧（不连续传输（DTX）或丢失数据包）</span><br><span class="line"><span class="attribute">o</span> <span class="number">1</span>…<span class="number">251</span>：帧的长度（字节）</span><br><span class="line"><span class="attribute">o</span> <span class="number">252</span>…<span class="number">255</span>:需要第二个字节。总长度为（第二个字节*<span class="number">4</span>）+第一个字节</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>特殊长度0表示没有可用的帧，这可能是因为它在传输过程中被某个中介丢弃，也可能是因为编码器选择不传输它。任何模式下的任何Opus帧的长度都可以为0。</p>
+</li>
+<li><p>最大可表示长度为255*4+255&#x3D;1275字节。对于20 ms帧，这表示510 kbit&#x2F;s的比特率，这大约是无损压缩全波段立体声音乐的最高有用速率。除此之外，无损编解码器更合适。它也大致是MDCT层的最大可用速率，因为此后不久，由于码本大小的限制，质量不再随附加比特而提高。</p>
+</li>
+<li><p>对于VBR数据包中的最后一帧或CBR数据包中的任何帧，不传输长度，因为可以从数据包的总大小和数据包中所有其他数据的大小推断长度。但是，任何单个帧的长度不得超过1275字节[R2]，以允许通过网关、会议网桥或其他软件重新打包。</p>
+</li>
+</ul>
+<h6 id="3-2-2-Code-0-One-Frame-in-the-Packet-数据包中只有一个帧"><a href="#3-2-2-Code-0-One-Frame-in-the-Packet-数据包中只有一个帧" class="headerlink" title="3.2.2. Code 0: One Frame in the Packet 数据包中只有一个帧"></a>3.2.2. Code 0: One Frame in the Packet 数据包中只有一个帧</h6><p>对于code 0数据包，TOC字节后面紧跟着单个帧的N-1字节压缩数据（其中N是数据包的大小），如图2所示。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">    <span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">     <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     | config  |s|0|0|                                               |</span><br><span class="line">     +-+-+-+-+-+-+-+-+                                               |</span><br><span class="line">     |                    Compressed frame<span class="number"> 1 </span>(N-1 bytes)...          :</span><br><span class="line">     :                                                               |</span><br><span class="line">     |                                                               |</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">        </span><br><span class="line">Figure 2: A Code<span class="number"> 0 </span>Packet</span><br></pre></td></tr></table></figure>
+
+<h6 id="3-2-3-code-1：数据包中的两个帧，每个帧具有相同的压缩大小"><a href="#3-2-3-code-1：数据包中的两个帧，每个帧具有相同的压缩大小" class="headerlink" title="3.2.3. code 1：数据包中的两个帧，每个帧具有相同的压缩大小"></a>3.2.3. code 1：数据包中的两个帧，每个帧具有相同的压缩大小</h6><p>对于code 1数据包，TOC字节后面紧跟第一帧的（N-1）&#x2F;2字节压缩数据，然后紧跟第二帧的（N-1）&#x2F;2字节压缩数据，如图3所示。对于所有code 1数据包，可用于压缩数据的有效负载字节数N-1必须为偶数[R3]。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">    <span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">     <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     | config  |s|0|1|                                               |</span><br><span class="line">     +-+-+-+-+-+-+-+-+                                               :</span><br><span class="line">     |             Compressed frame<span class="number"> 1 </span>((N-1)/2 bytes)...             |</span><br><span class="line">     :                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |                               |                               |</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               :</span><br><span class="line">     |             Compressed frame<span class="number"> 2 </span>((N-1)/2 bytes)...             |</span><br><span class="line">     :                                               +-+-+-+-+-+-+-+-+</span><br><span class="line">     |                                               |</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">        </span><br><span class="line">Figure 3: A Code<span class="number"> 1 </span>Packet</span><br></pre></td></tr></table></figure>
+
+<h6 id="3-2-4-code-2：数据包中有两个帧，压缩后大小不同"><a href="#3-2-4-code-2：数据包中有两个帧，压缩后大小不同" class="headerlink" title="3.2.4. code 2：数据包中有两个帧，压缩后大小不同"></a>3.2.4. code 2：数据包中有两个帧，压缩后大小不同</h6><ul>
+<li><p>对于code 2数据包，TOC字节后面是一个单字节或双字节序列，指示第一帧的长度（图4中标记为N1），然后是第一帧的N1字节压缩数据。剩余的N-N1-2或N-N1-3字节是第二帧的压缩数据。这如图4所示。<br>code 2数据包必须包含足够的字节来表示有效长度。例如，1字节code 2数据包始终无效，而第二个字节在252…255范围内的2字节code 2数据包也无效。</p>
+</li>
+<li><p>第一帧的长度N1也必须不大于对所有code 2分组解码该长度后剩余有效载荷的大小[R4]。例如，这使得第二个字节在1…251范围内的2字节code 2数据包也无效（唯一有效的2字节code 2数据包是两个帧的长度均为零的数据包）。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">    <span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">     <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     | config  |s|1|0| N1 (1-2 bytes):                               |</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               :</span><br><span class="line">     |               Compressed frame<span class="number"> 1 </span>(N1 bytes)...                |</span><br><span class="line">     :                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |                               |                               |</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               |</span><br><span class="line">     |                     Compressed frame 2...                     :</span><br><span class="line">     :                                                               |</span><br><span class="line">     |                                                               |</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">        </span><br><span class="line">Figure 4: A Code<span class="number"> 2 </span>Packet</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Code-3-A-Signaled-Number-of-Frames-in-the-Packet"><a href="#Code-3-A-Signaled-Number-of-Frames-in-the-Packet" class="headerlink" title="Code 3: A Signaled Number of Frames in the Packet"></a>Code 3: A Signaled Number of Frames in the Packet</h6><ul>
+<li><p>Code 3 packets将帧的数量填充在包中的字段，as well as additional padding,称为“Opus padding”，以指示此填充是在Opus层而不是在传输层添加的。</p>
+</li>
+<li><p>Code 3数据包必须至少有2个字节[R6，R7]。TOC字节后接一个字节，该字节编码数据包中的帧数，其位为2到7（图5中标记为“M”），位1表示是否插入了Opus填充（图5中标记为“p”），位0表示VBR（图5中标记为“v”）。M不得为零，且数据包中包含的音频持续时间不得超过120毫秒[R5]。这将任何帧大小的最大帧计数限制为48（对于2.5毫秒帧），对于较长的帧大小，限制为较低。图5显示了帧计数字节的布局。</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  <span class="number">0</span></span><br><span class="line">                              <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span></span><br><span class="line">                             +-+-+-+-+-+-+-+-+</span><br><span class="line">                             |<span class="type">v</span>|<span class="type">p</span>|     <span class="type">M</span>     |</span><br><span class="line">                             <span class="type">+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="type">        </span></span><br><span class="line"><span class="type">Figure</span> <span class="number">5</span>: The frame count byte</span><br></pre></td></tr></table></figure></li>
+<li><p>使用Opus填充时，填充的字节数以帧计数字节后的字节进行编码。0…254的值表示除了0…254字节之外，还包括0…254字节的填充</p>
+</li>
+<li><p>用于指示填充大小的字节。如果值为255，则附加填充的大小为254字节，加上下一个字节中编码的填充值。在这种情况下，数据包中必须至少还有一个字节[R6，R7]。额外的填充字节出现在数据包的末尾，编码器必须将其设置为零，以避免创建隐蔽通道。但是，解码器必须接受填充字节的任何值。</p>
+</li>
+<li><p>尽管这种编码提供了多种方法来指示给定数量的填充字节，但每种方法都使用不同数量的字节来指示填充大小，因此将以不同的量增加总数据包大小。例如，要向数据包添加255个字节，请将填充位p设置为1，在帧计数字节后插入一个值为254的单字节，并将值为零的254个填充字节追加到数据包的末尾。要向数据包添加256个字节，请将填充位设置为1，在帧计数字节后插入两个字节，分别为255和0，并在数据包末尾追加254个填充字节，值为0。通过多次使用值255，可以创建任意特定、所需大小的数据包。设P为用于指示填充大小的报头字节数加上填充字节数（即，P为添加到数据包的总字节数）。那么，P必须不大于N-2[R6，R7]。</p>
+</li>
+<li><p>在CBR情况下，让R&#x3D;N-2-P为减去（可选）填充后数据包中剩余的字节数。然后，每个帧的压缩长度（以字节为单位）等于R&#x2F;M。值R必须是M[R6]的非负整数倍。所有M帧的压缩数据如下，每个大小为R&#x2F;M字节，如图6所示。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> 0                   1                   2                   3</span><br><span class="line">      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string"> config  </span>|<span class="string">s</span>|<span class="string">1</span>|<span class="string">1</span>|<span class="string">0</span>|<span class="string">p</span>|<span class="string">     M     </span>|<span class="string">  Padding length (Optional)    :</span></span><br><span class="line"><span class="string">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="string">     </span>|<span class="string">                                                               </span>|</span><br><span class="line">     :               Compressed frame 1 (R/M bytes)...               :</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     :               Compressed frame 2 (R/M bytes)...               :</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     :                              ...                              :</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     :               Compressed frame M (R/M bytes)...               :</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     :                  Opus Padding (Optional)...                   |<span class="string"></span></span><br><span class="line"><span class="string">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="string">        </span></span><br><span class="line"><span class="string">Figure 6: A CBR Code 3 Packet</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在VBR的情况下，（可选）填充长度后面是M-1帧长度（在图7中由“N1”到“N[M-1]”表示），每个帧长度按照如上所述的一个或两个字节序列进行编码。删除（可选）填充后，数据包必须包含足够的M-1长度数据，并且这些长度的总和不得大于解码后数据包中剩余的字节数[R7]。所有M帧的压缩数据如下，每个帧由指定数量的字节组成，最终帧在最终填充之前消耗任何剩余字节，如图6所示。报头字节数（TOC字节、帧计数字节、填充长度字节和帧长度字节）加上前M-1帧本身的信号长度，再加上填充的信号长度不得大于数据包总大小N。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">0                   1                   2                   3</span><br><span class="line">      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string"> config  </span>|<span class="string">s</span>|<span class="string">1</span>|<span class="string">1</span>|<span class="string">1</span>|<span class="string">p</span>|<span class="string">     M     </span>|<span class="string"> Padding length (Optional)     :</span></span><br><span class="line"><span class="string">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="string">     : N1 (1-2 bytes): N2 (1-2 bytes):     ...       :     N[M-1]    </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     :               Compressed frame 1 (N1 bytes)...                :</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     :               Compressed frame 2 (N2 bytes)...                :</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     :                              ...                              :</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     :                     Compressed frame M...                     :</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     :                  Opus Padding (Optional)...                   |<span class="string"></span></span><br><span class="line"><span class="string">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="string">        </span></span><br><span class="line"><span class="string">Figure 7: A VBR Code 3 Packet</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="3-3-examples"><a href="#3-3-examples" class="headerlink" title="3.3 examples:"></a>3.3 examples:</h5><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">Simplest case, one NB mono<span class="number"> 20 </span>ms SILK frame:</span><br><span class="line"><span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">   <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |   <span class="number"> 1 </span>   |0|0|0|               compressed data...              :</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">        </span><br><span class="line">                             Figure 8</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   Two FB mono<span class="number"> 5 </span>ms CELT frames of the same compressed size:</span><br><span class="line"></span><br><span class="line">   <span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">   <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |  <span class="number"> 29 </span>   |0|0|1|               compressed data...              :</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">                                 Figure 9</span><br><span class="line"></span><br><span class="line">   Two FB mono<span class="number"> 20 </span>ms Hybrid frames of different compressed size:</span><br><span class="line"></span><br><span class="line">   <span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">   <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |  <span class="number"> 15 </span>   |0|1|1|1|0|    <span class="number"> 2 </span>    |      N1       |               |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               |</span><br><span class="line">   |                       compressed data...                      :</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">                                 Figure 10</span><br><span class="line"></span><br><span class="line">   Four FB stereo<span class="number"> 20 </span>ms CELT frames of the same compressed size:</span><br><span class="line"></span><br><span class="line">   <span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">   <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |  <span class="number"> 31 </span>   |1|1|1|0|0|    <span class="number"> 4 </span>    |      compressed data...       :</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">                                 Figure 11</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-Receiving-Malformed-Packets-接收格式错误的数据包"><a href="#3-4-Receiving-Malformed-Packets-接收格式错误的数据包" class="headerlink" title="3.4 Receiving Malformed Packets 接收格式错误的数据包"></a>3.4 Receiving Malformed Packets 接收格式错误的数据包</h5><p>接收方不得将违反上述任何规则的数据包作为正常Opus数据包进行处理。它们是为将来的应用程序保留的，例如带内标头（包含元数据等）。违反这些约束的数据包可能会导致该规范的实现将其视为格式错误并丢弃。<br>此处总结了这些约束条件，以供参考：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">[R1]  Packets are <span class="keyword">at</span> least one byte.</span><br><span class="line"></span><br><span class="line">[R2]  No implicit frame <span class="built_in">length</span> <span class="keyword">is</span> larger than <span class="number">1275</span> bytes.</span><br><span class="line"></span><br><span class="line">[R3]  Code <span class="number">1</span> packets have an odd total <span class="built_in">length</span>, N, so <span class="keyword">that</span> (N<span class="number">-1</span>)/<span class="number">2</span> <span class="keyword">is</span></span><br><span class="line">      an <span class="built_in">integer</span>.</span><br><span class="line"></span><br><span class="line">[R4]  Code <span class="number">2</span> packets have enough bytes <span class="keyword">after</span> <span class="keyword">the</span> TOC <span class="keyword">for</span> a valid</span><br><span class="line">      frame <span class="built_in">length</span>, <span class="keyword">and</span> <span class="keyword">that</span> <span class="built_in">length</span> <span class="keyword">is</span> no larger than <span class="keyword">the</span> <span class="built_in">number</span> <span class="keyword">of</span></span><br><span class="line">      bytes remaining <span class="keyword">in</span> <span class="keyword">the</span> packet.</span><br><span class="line"></span><br><span class="line">[R5]  Code <span class="number">3</span> packets <span class="keyword">contain</span> <span class="keyword">at</span> least one frame, <span class="keyword">but</span> no more than</span><br><span class="line">      <span class="number">120</span> ms <span class="keyword">of</span> audio total.</span><br><span class="line"></span><br><span class="line">[R6]  The <span class="built_in">length</span> <span class="keyword">of</span> a CBR code <span class="number">3</span> packet, N, <span class="keyword">is</span> <span class="keyword">at</span> least two bytes,</span><br><span class="line">      <span class="keyword">the</span> <span class="built_in">number</span> <span class="keyword">of</span> bytes added <span class="keyword">to</span> indicate <span class="keyword">the</span> padding size plus <span class="keyword">the</span></span><br><span class="line">      trailing padding bytes themselves, P, <span class="keyword">is</span> no more than N<span class="number">-2</span>, <span class="keyword">and</span></span><br><span class="line">      <span class="keyword">the</span> frame <span class="built_in">count</span>, M, satisfies <span class="keyword">the</span> constraint <span class="keyword">that</span> (N<span class="number">-2</span>-P) <span class="keyword">is</span> a</span><br><span class="line">      non-negative <span class="built_in">integer</span> multiple <span class="keyword">of</span> M.</span><br><span class="line"></span><br><span class="line">[R7]  VBR code <span class="number">3</span> packets are large enough <span class="keyword">to</span> <span class="keyword">contain</span> all <span class="keyword">the</span> header</span><br><span class="line">      bytes (TOC byte, frame <span class="built_in">count</span> byte, any padding <span class="built_in">length</span> bytes,</span><br><span class="line">      <span class="keyword">and</span> any frame <span class="built_in">length</span> bytes), plus <span class="keyword">the</span> <span class="built_in">length</span> <span class="keyword">of</span> <span class="keyword">the</span> <span class="keyword">first</span> M<span class="number">-1</span></span><br><span class="line">      frames, plus any trailing padding bytes.</span><br></pre></td></tr></table></figure>
+<h4 id="Opus解码器"><a href="#Opus解码器" class="headerlink" title="Opus解码器"></a>Opus解码器</h4><p>The Opus decoder consists of two main blocks: the SILK decoder and the CELT decoder.<br>在任何给定时间，一个或两个SILK和CELT解码器都可能处于活动状态。Opus解码的输出是来自SILK和CELT解码器的输出的总和，在SILK侧具有适当的采样率转换和延迟补偿，在CELT侧具有可选的抽取（当解码到采样率小于48 kHz时），如下图所示。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">                     +---------+    +------------+</span><br><span class="line">                         |<span class="string">  SILK   </span>|<span class="string">    </span>|<span class="string">   Sample   </span>|</span><br><span class="line">                      +-&gt;|<span class="string"> Decoder </span>|<span class="string">---&gt;</span>|<span class="string">    Rate    </span>|<span class="string">----+</span></span><br><span class="line"><span class="string">Bit-    +---------+   </span>|<span class="string">  </span>|<span class="string">         </span>|<span class="string">    </span>|<span class="string"> Conversion </span>|<span class="string">    v</span></span><br><span class="line"><span class="string">stream  </span>|<span class="string">  Range  </span>|<span class="string">---+  +---------+    +------------+  /---\  Audio</span></span><br><span class="line"><span class="string">-------&gt;</span>|<span class="string"> Decoder </span>|<span class="string">                                     </span>|<span class="string"> + </span>|<span class="string">------&gt;</span></span><br><span class="line"><span class="string">        </span>|<span class="string">         </span>|<span class="string">---+  +---------+    +------------+  \---/</span></span><br><span class="line"><span class="string">        +---------+   </span>|<span class="string">  </span>|<span class="string">  CELT   </span>|<span class="string">    </span>|<span class="string"> Decimation </span>|<span class="string">    ^</span></span><br><span class="line"><span class="string">                      +-&gt;</span>|<span class="string"> Decoder </span>|<span class="string">---&gt;</span>|<span class="string"> (Optional) </span>|<span class="string">----+</span></span><br><span class="line"><span class="string">                         </span>|<span class="string">         </span>|<span class="string">    </span>|<span class="string">            </span>|</span><br><span class="line">                         +---------+    +------------+</span><br></pre></td></tr></table></figure>
+<p>more :<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc6716">https://datatracker.ietf.org/doc/html/rfc6716</a><br>参考翻译：<br><a target="_blank" rel="noopener" href="https://rfc2cn.com/rfc6716.html">https://rfc2cn.com/rfc6716.html</a>  </p>
+<p>ref:<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc6716">https://datatracker.ietf.org/doc/html/rfc6716</a><br><a target="_blank" rel="noopener" href="https://xiph.org/ogg/doc/oggstream.html">https://xiph.org/ogg/doc/oggstream.html</a>  </p>
+<h4 id="PS-Webrtc中相关代码："><a href="#PS-Webrtc中相关代码：" class="headerlink" title="PS Webrtc中相关代码："></a>PS Webrtc中相关代码：</h4><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">void WebRtcWrap::create<span class="constructor">OggFirstPage()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">string</span> oggString;</span><br><span class="line"></span><br><span class="line">    ogg_packet data;</span><br><span class="line"></span><br><span class="line">    ogg_page page;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">string</span> headString;</span><br><span class="line">    data.b_o_s = <span class="number">1</span>;</span><br><span class="line">    data.e_o_s = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    headString.append(<span class="string">&quot;OpusHead&quot;</span>, <span class="number">8</span>);</span><br><span class="line">    <span class="built_in">char</span> version = <span class="number">1</span>;</span><br><span class="line">    headString.append(<span class="number">1</span>, version);</span><br><span class="line">    <span class="built_in">char</span> channels = <span class="number">2</span>;</span><br><span class="line">    headString.append(<span class="number">1</span>, channels);</span><br><span class="line">    <span class="built_in">char</span> padding = <span class="number">0</span>;</span><br><span class="line">    headString.append(<span class="number">2</span>, padding);</span><br><span class="line">    uint32_t sampleRate = <span class="number">48000</span>;</span><br><span class="line">    headString.append((<span class="built_in">char</span>*)&amp; sampleRate, <span class="number">4</span>);</span><br><span class="line">    <span class="built_in">char</span> gain = <span class="number">0</span>;</span><br><span class="line">    headString.append(<span class="number">2</span>, gain);</span><br><span class="line">    <span class="built_in">char</span> mapping = <span class="number">0</span>;</span><br><span class="line">    headString.append(<span class="number">1</span>, mapping);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//oggString.append((char*)rtpData.payLoad.data() + pRtpHeader-&gt;getHeaderLength(), rtpData.payLoad.size() - pRtpHeader-&gt;getHeaderLength());</span></span><br><span class="line">    data.packet = (unsigned <span class="built_in">char</span>*)headString.data<span class="literal">()</span>;</span><br><span class="line">    data.<span class="built_in">bytes</span> = headString.size<span class="literal">()</span>;</span><br><span class="line"></span><br><span class="line">    data.packetno = <span class="number">0</span>;</span><br><span class="line">    data.granulepos = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    ogg<span class="constructor">_stream_packetin(&amp;<span class="params">m_oggEncoder</span>, &amp;<span class="params">data</span>)</span>;</span><br><span class="line">    <span class="comment">//ogg_stream_flush(&amp;m_oggEncoder, &amp;page);</span></span><br><span class="line">    <span class="built_in">int</span> result = ogg<span class="constructor">_stream_flush(&amp;<span class="params">m_oggEncoder</span>, &amp;<span class="params">page</span>)</span>;</span><br><span class="line">    <span class="keyword">if</span> (result)</span><br><span class="line">    &#123;</span><br><span class="line">        oggString.append((<span class="built_in">char</span>*)page.header, (<span class="built_in">int</span>)page.header_len);</span><br><span class="line">        oggString.append((<span class="built_in">char</span>*)page.body, (<span class="built_in">int</span>)page.body_len);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//2nd packet</span></span><br><span class="line">    <span class="built_in">string</span> comment;</span><br><span class="line">    comment.append(<span class="string">&quot;OpusTags&quot;</span>);</span><br><span class="line">    uint32_t len = <span class="number">4</span>;</span><br><span class="line">    comment.append((<span class="built_in">char</span>*)&amp; len, <span class="number">4</span>);</span><br><span class="line">    comment.append(<span class="string">&quot;huya&quot;</span>);</span><br><span class="line">    len = <span class="number">0</span>;</span><br><span class="line">    comment.append((<span class="built_in">char</span>*)&amp; len, <span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">    data.packet = (unsigned <span class="built_in">char</span>*)comment.data<span class="literal">()</span>;</span><br><span class="line">    data.<span class="built_in">bytes</span> = comment.size<span class="literal">()</span>;</span><br><span class="line">    data.packetno = <span class="number">1</span>;</span><br><span class="line">    data.b_o_s = <span class="number">0</span>;</span><br><span class="line">    data.e_o_s = <span class="number">0</span>;</span><br><span class="line">    data.granulepos = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    ogg<span class="constructor">_stream_packetin(&amp;<span class="params">m_oggEncoder</span>, &amp;<span class="params">data</span>)</span>;</span><br><span class="line">    result = ogg<span class="constructor">_stream_flush(&amp;<span class="params">m_oggEncoder</span>, &amp;<span class="params">page</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (result)</span><br><span class="line">    &#123;</span><br><span class="line">        oggString.append((<span class="built_in">char</span>*)page.header, (<span class="built_in">int</span>)page.header_len);</span><br><span class="line">        oggString.append((<span class="built_in">char</span>*)page.body, (<span class="built_in">int</span>)page.body_len);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//fwrite(oggString.data(), oggString.size(), 1, m_fp);</span></span><br><span class="line">    <span class="comment">//fflush(m_fp);</span></span><br><span class="line"></span><br><span class="line">    m_oggFirstPageStr = oggString;</span><br><span class="line">    <span class="constructor">FUNLOG(Info, <span class="string">&quot;createOggFirstPage for uuid %s uid=%lu m_oggFirstPageStr size=%u&quot;</span>, <span class="params">m_uuid</span>.<span class="params">c_str</span>()</span>, m_uid, m_oggFirstPageStr.size<span class="literal">()</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/audio/" rel="tag"># audio</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/27/audio-oggs/" rel="prev" title="audio_ogg">
+      <i class="fa fa-chevron-left"></i> audio_ogg
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/27/audio-aac-adts/" rel="next" title="audio_aac_adts">
+      audio_aac_adts <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#content"><span class="nav-number">1.</span> <span class="nav-text">content:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#opus%E7%AE%80%E8%BF%B0%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">opus简述：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1%E7%AC%A6%E5%8F%B7%E7%BA%A6%E5%AE%9A%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">1.1符号约定：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Opus%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E6%A6%82%E8%BF%B0%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">2 Opus编解码器概述：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-%E6%8E%A7%E5%88%B6%E5%8F%82%E6%95%B0%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 控制参数：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-1-%E6%AF%94%E7%89%B9%E7%8E%87"><span class="nav-number">3.1.1.</span> <span class="nav-text">2.1.1. 比特率</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-2-%E9%80%9A%E9%81%93%E6%95%B0%EF%BC%88%E5%8D%95%E5%A3%B0%E9%81%93-x2F-%E7%AB%8B%E4%BD%93%E5%A3%B0%EF%BC%89"><span class="nav-number">3.1.2.</span> <span class="nav-text">2.1.2 通道数（单声道&#x2F;立体声）</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-3-%E9%9F%B3%E9%A2%91%E5%B8%A6%E5%AE%BD"><span class="nav-number">3.1.3.</span> <span class="nav-text">2.1.3. 音频带宽</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-4-%E5%B8%A7%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4"><span class="nav-number">3.1.4.</span> <span class="nav-text">2.1.4. 帧持续时间</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-5-%E5%A4%8D%E6%9D%82%E6%80%A7"><span class="nav-number">3.1.5.</span> <span class="nav-text">2.1.5. 复杂性</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-6-%E4%B8%A2%E5%8C%85%E6%81%A2%E5%A4%8D%E8%83%BD%E5%8A%9B"><span class="nav-number">3.1.6.</span> <span class="nav-text">2.1.6. 丢包恢复能力</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-7-%E5%89%8D%E5%90%91%E7%BA%A0%E9%94%99%EF%BC%88FEC%EF%BC%89"><span class="nav-number">3.1.7.</span> <span class="nav-text">2.1.7. 前向纠错（FEC）</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-8-%E6%81%92%E5%AE%9A-x2F-%E5%8F%AF%E5%8F%98%E6%AF%94%E7%89%B9%E7%8E%87"><span class="nav-number">3.1.8.</span> <span class="nav-text">2.1.8. 恒定&#x2F;可变比特率</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-9-%E4%B8%8D%E8%BF%9E%E7%BB%AD%E4%BC%A0%E8%BE%93%EF%BC%88DTX%EF%BC%89"><span class="nav-number">3.1.9.</span> <span class="nav-text">2.1.9. 不连续传输（DTX）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%86%85%E9%83%A8%E7%BB%84%E5%B8%A7%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">3 内部组帧：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-TOC%E5%AD%97%E8%8A%82-%EF%BC%88%E5%8D%95%E5%AD%97%E8%8A%82%EF%BC%89"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 TOC字节 （单字节）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-frame-packing-%E5%B8%A7%E5%A6%82%E4%BD%95%E6%89%93%E5%8C%85%EF%BC%9A"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 frame packing 帧如何打包：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-1-Frame-Length-Coding"><span class="nav-number">4.2.1.</span> <span class="nav-text">3.2.1  Frame Length Coding</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-2-Code-0-One-Frame-in-the-Packet-%E6%95%B0%E6%8D%AE%E5%8C%85%E4%B8%AD%E5%8F%AA%E6%9C%89%E4%B8%80%E4%B8%AA%E5%B8%A7"><span class="nav-number">4.2.2.</span> <span class="nav-text">3.2.2. Code 0: One Frame in the Packet 数据包中只有一个帧</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-3-code-1%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%8C%85%E4%B8%AD%E7%9A%84%E4%B8%A4%E4%B8%AA%E5%B8%A7%EF%BC%8C%E6%AF%8F%E4%B8%AA%E5%B8%A7%E5%85%B7%E6%9C%89%E7%9B%B8%E5%90%8C%E7%9A%84%E5%8E%8B%E7%BC%A9%E5%A4%A7%E5%B0%8F"><span class="nav-number">4.2.3.</span> <span class="nav-text">3.2.3. code 1：数据包中的两个帧，每个帧具有相同的压缩大小</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-4-code-2%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%8C%85%E4%B8%AD%E6%9C%89%E4%B8%A4%E4%B8%AA%E5%B8%A7%EF%BC%8C%E5%8E%8B%E7%BC%A9%E5%90%8E%E5%A4%A7%E5%B0%8F%E4%B8%8D%E5%90%8C"><span class="nav-number">4.2.4.</span> <span class="nav-text">3.2.4. code 2：数据包中有两个帧，压缩后大小不同</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Code-3-A-Signaled-Number-of-Frames-in-the-Packet"><span class="nav-number">4.2.5.</span> <span class="nav-text">Code 3: A Signaled Number of Frames in the Packet</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-examples"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 examples:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-Receiving-Malformed-Packets-%E6%8E%A5%E6%94%B6%E6%A0%BC%E5%BC%8F%E9%94%99%E8%AF%AF%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%85"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 Receiving Malformed Packets 接收格式错误的数据包</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Opus%E8%A7%A3%E7%A0%81%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">Opus解码器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PS-Webrtc%E4%B8%AD%E7%9B%B8%E5%85%B3%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">PS Webrtc中相关代码：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'ea483e734d341c543410af1a90400fe2',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

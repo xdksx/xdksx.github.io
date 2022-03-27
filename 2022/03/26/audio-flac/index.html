@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Flac:This is a detailed description of the FLAC format. There is also a companion document that describes FLAC-to-Ogg mapping.For a user-oriented overview, see About the FLAC Format.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="audio_flac">
+<meta property="og:url" content="https://xdksx.github.io/2022/03/26/audio-flac/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="Flac:This is a detailed description of the FLAC format. There is also a companion document that describes FLAC-to-Ogg mapping.For a user-oriented overview, see About the FLAC Format.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-26T15:01:31.000Z">
+<meta property="article:modified_time" content="2022-03-26T15:15:21.714Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="audio">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/03/26/audio-flac/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>audio_flac | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/03/26/audio-flac/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          audio_flac
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-26 23:01:31 / 修改时间：23:15:21" itemprop="dateCreated datePublished" datetime="2022-03-26T23:01:31+08:00">2022-03-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/audio/" itemprop="url" rel="index"><span itemprop="name">audio</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="Flac"><a href="#Flac" class="headerlink" title="Flac:"></a>Flac:</h3><p>This is a detailed description of the FLAC format. There is also a companion document that describes FLAC-to-Ogg mapping.<br>For a user-oriented overview, see About the FLAC Format.<span id="more"></span></p>
+<h4 id="Table-of-Contents"><a href="#Table-of-Contents" class="headerlink" title="Table of Contents"></a>Table of Contents</h4><ul>
+<li>Acknowledgments</li>
+<li>Scope</li>
+<li>Architecture</li>
+<li>Definitions</li>
+<li>Blocking</li>
+<li>Interchannel Decorrelation</li>
+<li>Prediction</li>
+<li>Residual Coding</li>
+<li>Format</li>
+<li>FLAC Subset</li>
+<li>Specification<ul>
+<li>STREAM<ul>
+<li>METADATA_BLOCK<ul>
+<li>METADATA_BLOCK_HEADER</li>
+<li>METADATA_BLOCK_DATA<ul>
+<li>METADATA_BLOCK_STREAMINFO</li>
+<li>METADATA_BLOCK_PADDING</li>
+<li>METADATA_BLOCK_APPLICATION</li>
+<li>METADATA_BLOCK_SEEKTABLE<ul>
+<li>SEEKPOINT</li>
+</ul>
+</li>
+<li>METADATA_BLOCK_VORBIS_COMMENT</li>
+<li>METADATA_BLOCK_CUESHEET<ul>
+<li>CUESHEET_TRACK<ul>
+<li>CUESHEET_TRACK_INDEX</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>METADATA_BLOCK_PICTURE</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>FRAME<ul>
+<li>FRAME_HEADER</li>
+<li>FRAME_FOOTER</li>
+<li>SUBFRAME<ul>
+<li>SUBFRAME_HEADER</li>
+<li>SUBFRAME_CONSTANT</li>
+<li>SUBFRAME_FIXED</li>
+<li>SUBFRAME_LPC</li>
+<li>SUBFRAME_VERBATIM<ul>
+<li>RESIDUAL<ul>
+<li>RESIDUAL_CODING_METHOD_PARTITIONED_RICE<ul>
+<li>RICE_PARTITION</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>RESIDUAL_CODING_METHOD_PARTITIONED_RICE2<br>  + RICE2_PARTITION</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="Acknowledgments"><a href="#Acknowledgments" class="headerlink" title="Acknowledgments"></a>Acknowledgments</h4><p>FLAC owes much to the many people who have advanced the audio compression field so freely. For instance:<br>FLAC 非常感谢许多人如此自由地推进音频压缩领域。例如：<br>A. J. Robinson for his work on Shorten; his paper is a good starting point on some of the basic methods used by FLAC. FLAC trivially extends and improves the fixed predictors, LPC coefficient quantization, and Rice coding used in Shorten.<br>A. J. Robinson 在 Shorten 方面的工作；他的论文是 FLAC 使用的一些基本方法的一个很好的起点。 FLAC 简单地扩展和改进了 Shorten 中使用的固定预测器、LPC 系数量化和 Rice 编码。<br>S. W. Golomb and Robert F. Rice; their universal codes are used by FLAC’s entropy coder.<br>S. W. Golomb 和 Robert F. Rice； FLAC 的熵编码器使用它们的通用代码。<br>N. Levinson and J. Durbin; the reference encoder uses an algorithm developed and refined by them for determining the LPC coefficients from the autocorrelation coefficients.<br>And of course, Claude Shannon<br>N. 莱文森和 J. 德宾；参考编码器使用由他们开发和改进的算法来根据自相关系数确定 LPC 系数。<br>当然，克劳德·香农</p>
+<h4 id="Scope"><a href="#Scope" class="headerlink" title="Scope"></a>Scope</h4><p>It is a known fact that no algorithm can losslessly compress all possible input, so most compressors restrict themselves to a useful domain and try to work as well as possible within that domain. FLAC’s domain is audio data. Though it can losslessly code any input, only certain kinds of input will get smaller. FLAC exploits the fact that audio data typically has a high degree of sample-to-sample correlation.</p>
+<p>众所周知没有算法能无损的压缩所有可能的输入，所以大多数压缩器把它们自己限制在一个有用的范围领域，并且尝试去在该领域工作的好。 FLAC的领域是音频数据。尽管它能无损编码任何输入，但是只有确定类型的输入才会更小。 FLAC 暴露的事实是，典型的音频有更高程度的 采样到采样的关联。</p>
+<p>Within the audio domain, there are many possible subdomains. For example: low bitrate speech, high-bitrate multi-channel music, etc. FLAC itself does not target a specific subdomain but many of the default parameters of the reference encoder are tuned to CD-quality music data (i.e. 44.1kHz, 2 channel, 16 bits per sample). The effect of the encoding parameters on different kinds of audio data will be examined later.</p>
+<p>在音频领域内，有很多可能的子领域。如： 低码率演讲，高码率多通道音乐等。<br>FLAC 本身并不针对特定的子域，但参考编码器的许多默认参数已调整为 CD 质量的音乐数据（即 44.1kHz、2 通道、每个样本 16 位）。稍后将检查编码参数对不同类型的音频数据的影响。</p>
+<p>FLAC stands for Free Lossless Audio Codec: it is designed to reduce<br>   the amount of computer storage space needed to store digital audio<br>   signals without needing to remove information in doing so (i.e.<br>   lossless).  FLAC is free in the sense that its specification is open,<br>   its reference implementation is open-source and it is not encumbered<br>   by any known patent.<br>FLAC 代表免费无损音频编解码器：被设计用来减少存储数字音频所需的计算机存储空间量，无需删除信息即可发出信号。即无损。<br>FLAC是免费的，因为它的规范是开放的，它的参考实现是源码开放的，并且不被任何已知专利受累。</p>
+<p>   FLAC is able to achieve lossless compression because samples in audio<br>   signals tend to be highly correlated with their close neighbors.  In<br>   contrast with general purpose compressors, which often use<br>   dictionaries, do run-length coding or exploit long-term repetition,<br>   FLAC removes redundancy solely in the very short term, looking back<br>   at most 32 samples.FLAC<br>   能够实现无损压缩，因为音频中的样本<br>信号往往与其近邻高度相关。在<br>与通常使用的通用压缩机相比<br>字典，进行游程编码或利用长期重复，<br>FLAC 仅在很短的时间内消除冗余，回顾过去<br>最多 32 个样本。</p>
+<p>   The FLAC format is suited for pulse-code modulated (PCM) audio with 1<br>   to 8 channels, sample rates from 1 to 1048576 Hertz and bit depths<br>   between 4 and 32 bits.  Most tools for reading and writing the FLAC<br>   format have been optimized for CD-audio, which is PCM audio with 2<br>   channels, a sample rate of 44.1 kHz and a bit depth of 16 bits.<br>FLAC 格式适用于脉冲编码调制 (PCM) 音频，具有 1<br>到 8 个通道，采样率从 1 到 1048576 赫兹和位深度<br>4 到 32 位之间。大多数用于读写 FLAC 的工具<br>格式已针对 CD 音频进行了优化，这是 PCM 音频，带有 2<br>通道，采样率为 44.1 kHz，位深度为 16 位。</p>
+<p>   Compared to other lossless (audio) coding formats, FLAC is a format<br>   with low complexity and can be coded to and from with little<br>   computing resources.  Decoding of FLAC has seen many independent<br>   implementations on many different platforms, and both encoding and<br>   decoding can be implemented without needing floating-point<br>   arithmetic.<br>与其他无损（音频）编码格式相比，FLAC 是一种格式<br>复杂度低，可以用很少的时间进行编码<br>计算资源。 FLAC 的解码已经看到许多独立的<br>许多不同平台上的实现，以及编码和<br>无需浮点数即可实现解码<br>算术。<br>   The coding methods provided by the FLAC format works best on PCM<br>   audio signals of which the samples have a signed representation and<br>   are centered around zero.  Audio signals in which samples have an<br>   unsigned representation must be transformed to a signed<br>   representation as described in this document in order to achieve<br>   reasonable compression.  The FLAC format is not suited to compress<br>   audio that is not PCM.  Pulse-density modulated audio, e.g.  DSD,<br>   cannot be compressed by FLAC.  </p>
+<p>FLAC 格式提供的编码方法在 PCM 上效果最好<br>特别那些，样本具有带符号表示的音频信号和<br>以零为中心。音频信号，其中样本具有<br>无符号表示必须转换为有符号<br>本文档中描述的表示，以实现<br>合理压缩。 FLAC 格式不适合压缩<br>不是 PCM 的音频。脉冲密度调制音频，例如渠务署，<br>不能被 FLAC 压缩。  </p>
+<h4 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h4><p>Similar to many audio coders, a FLAC encoder has the following stages:和许多音频编码器类似，一个FLAC编码器有如下阶段：<br>Blocking. The input is broken up into many contiguous blocks. With FLAC, the blocks may vary in size. The optimal size of the block is usually affected by many factors, including the sample rate, spectral characteristics over time, etc. Though FLAC allows the block size to vary within a stream, the reference encoder uses a fixed block size.<br>Blocking.<br>分段。 输入被分拆成多个连续的块。 用FLAC,则块可能是可变长的。 block的最佳长度通常被多种因素影响，包括sample rate，随时间变化的曲调特性等等。<br>尽管FLAC允许一个流内的block长度可变，参考编码器还是会使用一个固定的block size.</p>
+<p>Interchannel Decorrelation. In the case of stereo streams, the encoder will create mid and side signals based on the average and difference (respectively) of the left and right channels. The encoder will then pass the best form of the signal to the next stage.</p>
+<p>通道间去相关性。 在立体声流的例子下：编码器将根据左右声道的平均值和差值（分别）创建中音和侧音信号。然后编码器将信号的最佳形式传递到下一阶段。</p>
+<p>Prediction. The block is passed through a prediction stage where the encoder tries to find a mathematical description (usually an approximate one) of the signal. This description is typically much smaller than the raw signal itself. Since the methods of prediction are known to both the encoder and decoder, only the parameters of the predictor need be included in the compressed stream. FLAC currently uses four different classes of predictors (described in the prediction section), but the format has reserved space for additional methods. FLAC allows the class of predictor to change from block to block, or even within the channels of a block.</p>
+<p>预测：块被传递到一个预测阶段，在该阶段编码器尝试找到信号的数学描述（通常是近似描述）这种描述通常比原始信号本身小得多。由于编码器和解码器都知道预测方法，因此只需将预测器的参数包含在压缩流中。FLAC 当前使用四种不同类别的预测器（在预测部分中进行了描述），但该格式为其他方法保留了空间。 FLAC 允许预测器的类别在块之间变化，甚至在块的通道内变化。</p>
+<p>Residual coding. If the predictor does not describe the signal exactly, the difference between the original signal and the predicted signal (called the error or residual signal) must be coded losslessy. If the predictor is effective, the residual signal will require fewer bits per sample than the original signal. FLAC currently uses only one method for encoding the residual (see the Residual coding section), but the format has reserved space for additional methods. FLAC allows the residual coding method to change from block to block, or even within the channels of a block.</p>
+<p>残差编码：<br>      如果预测器不能准确描述信号，则必须对原始信号和预测信号（称为误差或残差信号）之间的差异进行无损编码。如果预测器有效，则残差信号每个样本所需的位数将比原始信号少。 FLAC 目前仅使用一种方法对残差进行编码（参见残差编码部分），但该格式为其他方法保留了空间。FLAC 允许残差编码方法从块到块改变，甚至在块的通道内改变。<br>In addition, FLAC specifies a metadata system, which allows arbitrary information about the stream to be included at the beginning of the stream.<br>此外，FLAC 指定了一个元数据系统，它允许在流的开头包含有关流的任意信息。<br>Definitions</p>
+<p>Many terms like “block” and “frame” are used to mean different things in differenct encoding schemes. For example, a frame in MP3 corresponds to many samples across several channels, whereas an S&#x2F;PDIF frame represents just one sample for each channel. The definitions we use for FLAC follow. Note that when we talk about blocks and subblocks we are referring to the raw unencoded audio data that is the input to the encoder, and when we talk about frames and subframes, we are referring to the FLAC-encoded data.<br>许多术语如“块”和“帧”在不同的编码方案中用于表示不同的事物。例如，MP3 中的帧对应多个通道的多个样本，而 S&#x2F;PDIF 帧仅代表每个通道的一个样本。我们用于 FLAC 的定义如下。请注意，当我们谈论块和子块时，我们指的是作为编码器输入的原始未编码音频数据，而当我们谈论帧和子帧时，我们指的是 FLAC 编码的数据。<br>Block: One or more audio samples that span several channels.跨越多个通道的一个或多个音频样本。<br>Subblock: One or more audio samples within a channel. So a block contains one subblock for each channel, and all subblocks contain the same number of samples.一个通道内的一个或多个音频样本。因此一个块包含每个通道的一个子块，并且所有子块包含相同数量的样本。<br>Blocksize: The number of samples in any of a block’s subblocks. For example, a one second block sampled at 44.1KHz has a blocksize of 44100, regardless of the number of channels.块的任何子块中的样本数。例如，以 44.1KHz 采样的一秒块的块大小为 44100，与通道数无关。<br>Frame: A frame header plus one or more subframes.一个帧头加上一个或多个子帧。<br>Subframe: A subframe header plus one or more encoded samples from a given channel. All subframes within a frame will contain the same number of samples.子帧头加上来自给定通道的一个或多个编码样本。一个帧内的所有子帧将包含相同数量的样本。</p>
+<p><em>Bit depth</em> or <em>bits per sample</em>: the number of bits used to<br>      contain each sample.  This MUST be the same for all subblocks in a<br>      block but MAY be different for different subframes in a frame<br>     because of interchannel decorrelation (#interchannel-<br>      decorrelation). 位深或每个采样的位数，这个在一个块中所有的子块的每个采样必须相同。但是在一个frame中的不同子frame可以不同；因为通道间的去相关性。</p>
+<ul>
+<li><p><em>Predictor</em>: a model used to predict samples in an audio signal<br>   based on past samples.  FLAC uses such predictors to remove<br>   redundancy in a signal in order to be able to compress it.<br>   预测器： 一个模型被用于预测采样，在一个音频信号中，基于过去的采样。FLAC使用这样的预测器去移除信号的冗余，来保障压缩。</p>
+</li>
+<li><p><em>Linear predictor</em>: a predictor using linear prediction<br>   (<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Linear_prediction">https://en.wikipedia.org/wiki/Linear_prediction</a>).  This is also<br>   called <em>linear predictive coding (LPC)</em>. With a linear predictor<br>   each prediction is a linear combination of past samples, hence the<br>   name.  A linear predictor has a causal discrete-time finite<br>   impulse response (<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/">https://en.wikipedia.org/wiki/</a><br>   Finite_impulse_response).</p>
+<p>线性预测： 一个预测器使用线性预测。</p>
+<ul>
+<li><p><em>Fixed predictor</em>: a linear predictor in which the model<br>parameters are the same across all FLAC files, and thus not need<br>to be stored.</p>
+</li>
+<li><p><em>Predictor order</em>: the number of past samples that a predictor<br>uses.  For example, a 4th order predictor uses the 4 samples<br>directly preceding a certain sample to predict it.  In FLAC,<br>samples used in a predictor are always consecutive, and are always<br>the samples directly before the sample that is being predicted</p>
+</li>
+</ul>
+</li>
+<li><p><em>Residual</em>: The audio signal that remains after a predictor has<br> been subtracted from a subblock.  If the predictor has been able<br> to remove redundancy from the signal, the samples of the remaining<br> signal (the <em>residual samples</em>) will have, on average, a smaller<br> numerical value than the original signal.</p>
+</li>
+<li><p><em>Rice code</em>: A variable-length code<br>(<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Variable-length_code">https://en.wikipedia.org/wiki/Variable-length_code</a>) which<br>compresses data by making use of the observation that, after using<br>an effective predictor, most residual samples are closer to zero<br>than the original samples, while still allowing for a small part<br>of the samples to be much larger.</p>
+</li>
+</ul>
+<h4 id="Blocking"><a href="#Blocking" class="headerlink" title="Blocking"></a>Blocking</h4><p>The size used for blocking the audio data has a direct effect on the compression ratio. If the block size is too small, the resulting large number of frames mean that excess bits will be wasted on frame headers. If the block size is too large, the characteristics of the signal may vary so much that the encoder will be unable to find a good predictor. In order to simplify encoder&#x2F;decoder design, FLAC imposes a minimum block size of 16 samples, and a maximum block size of 65535 samples. This range covers the optimal size for all of the audio data FLAC supports.<br>用于音频数据的块的大小对压缩率有直接影响。如果块大小太小，则产生的大量帧意味着多余的比特将浪费在帧头上。如果块大小太大，信号的特征可能变化很大，以至于编码器将无法找到一个好的预测器。为了简化编码器&#x2F;解码器设计，FLAC 规定最小块大小为 16 个样本，最大块大小为 65535 个样本。此范围涵盖 FLAC 支持的所有音频数据的最佳大小。<br>Currently the reference encoder uses a fixed block size, optimized on the sample rate of the input. Future versions may vary the block size depending on the characteristics of the signal.<br>目前，参考编码器使用固定块大小，并针对输入的采样率进行了优化。未来版本可能会根据信号的特性改变块大小。<br>Blocked data is passed to the predictor stage one subblock (channel) at a time. Each subblock is independently coded into a subframe, and the subframes are concatenated into a frame. Because each channel is coded separately, it means that one channel of a stereo frame may be encoded as a constant subframe, and the other an LPC subframe.<br>成块的数据一次传递到预测器阶段一个子块（通道）。每个子块被独立地编码成一个子帧，并且这些子帧被连接成一个帧。因为每个通道是单独编码的，这意味着立体声帧的一个通道可以被编码为一个恒定的子帧，而另一个可以被编码为一个LPC子帧。</p>
+<h4 id="Interchannel-Decorrelation"><a href="#Interchannel-Decorrelation" class="headerlink" title="Interchannel Decorrelation"></a>Interchannel Decorrelation</h4><p>通道间去相关性<br>In stereo streams, many times there is an exploitable amount of correlation between the left and right channels. FLAC allows the frames of stereo streams to have different channel assignments, and an encoder may choose to use the best representation on a frame-by-frame basis.<br>在立体声流中，很多时候左右声道之间存在可利用的相关性。 FLAC 允许立体声流的帧具有不同的通道分配，并且编码器可以逐帧选择使用最佳表示。</p>
+<ul>
+<li>Independent. The left and right channels are coded independently.左右声道独立编码。</li>
+<li>Mid-side. The left and right channels are transformed into mid and side channels. The mid channel is the midpoint (average) of the left and right signals, and the side is the difference signal (left minus right).左右声道转换为中声道和侧声道。中声道是左右信号的中点（平均值），边是差分信号（左减右）</li>
+<li>Left-side. The left channel and side channel are coded.左声道和侧声道被编码。</li>
+<li>Right-side. The right channel and side channel are coded右声道和侧声道编码</li>
+</ul>
+<p>Surprisingly, the left-side and right-side forms can be the most efficient in many frames, even though the raw number of bits per sample needed for the original signal is slightly more than that needed for independent or mid-side coding.<br>令人惊讶的是，左侧和右侧形式在许多帧中可能是最有效的，即使原始信号所需的每个样本的原始位数略多于独立或中侧编码所需的位数。</p>
+<h4 id="Prediction"><a href="#Prediction" class="headerlink" title="Prediction"></a>Prediction</h4><p>FLAC uses four methods for modeling the input signal:FLAC 使用四种方法对输入信号进行建模：</p>
+<ul>
+<li><p>Verbatim. This is essentially a zero-order predictor of the signal. The predicted signal is zero, meaning the residual is the signal itself, and the compression is zero. This is the baseline against which the other predictors are measured. If you feed random data to the encoder, the verbatim predictor will probably be used for every subblock. Since the raw signal is not actually passed through the residual coding stage (it is added to the stream ‘verbatim’), the encoding results will not be the same as a zero-order linear predictor.<br>逐字：这本质上是信号的零阶预测器。预测信号为零，意味着残差是信号本身，压缩为零。这是衡量其他预测变量的基线。如果将随机数据提供给编码器，则逐字预测器可能会用于每个子块。由于原始信号实际上并未通过残差编码阶段（它被添加到“逐字”流中），因此编码结果将与零阶线性预测器不同。</p>
+</li>
+<li><p>Constant. This predictor is used whenever the subblock is pure DC (“digital silence”), i.e. a constant value throughout. The signal is run-length encoded and added to the stream.<br>常量：翻译有限，看原文。</p>
+</li>
+<li><p>Fixed linear predictor. FLAC uses a class of computationally-efficient fixed linear predictors (for a good description, see audiopak and shorten). FLAC adds a fourth-order predictor to the zero-to-third-order predictors used by Shorten. Since the predictors are fixed, the predictor order is the only parameter that needs to be stored in the compressed stream. The error signal is then passed to the residual coder.<br>固定线性预测器。FLAC 使用一类计算效率高的固定线性预测器（有关详细说明，请参阅 audiopak 和缩短）。 FLAC 将四阶预测器添加到 Shorten 使用的零到三阶预测器。由于预测器是固定的，因此预测器顺序是需要存储在压缩流中的唯一参数。然后将误差信号传递给残差编码器。</p>
+</li>
+<li><p>FIR Linear prediction. For more accurate modeling (at a cost of slower encoding), FLAC supports up to 32nd order FIR linear prediction (again, for information on linear prediction, see audiopak and shorten). The reference encoder uses the Levinson-Durbin method for calculating the LPC coefficients from the autocorrelation coefficients, and the coefficients are quantized before computing the residual. Whereas encoders such as Shorten used a fixed quantization for the entire input, FLAC allows the quantized coefficient precision to vary from subframe to subframe. The FLAC reference encoder estimates the optimal precision to use based on the block size and dynamic range of the original signal.<br>FIR 线性预测：为了更准确的建模（以较慢的编码为代价），FLAC 支持高达 32 阶的 FIR 线性预测（同样，有关线性预测的信息，请参阅 audiopak 和缩短）。参考编码器使用 Levinson-Durbin 方法从自相关系数计算 LPC 系数，并在计算残差之前对系数进行量化。虽然 Shorten 等编码器对整个输入使用固定量化，但 FLAC 允许量化系数精度因子帧而异。 FLAC 参考编码器根据原始信号的块大小和动态范围估计要使用的最佳精度。</p>
+</li>
+</ul>
+<h4 id="Residual-Coding"><a href="#Residual-Coding" class="headerlink" title="Residual Coding"></a>Residual Coding</h4><p>残差编码<br>FLAC currently defines two similar methods for the coding of the error signal from the prediction stage. The error signal is coded using Rice codes in one of two ways: 1) the encoder estimates a single Rice parameter based on the variance of the residual and Rice codes the entire residual using this parameter; 2) the residual is partitioned into several equal-length regions of contiguous samples, and each region is coded with its own Rice parameter based on the region’s mean. (Note that the first method is a special case of the second method with one partition, except the Rice parameter is based on the residual variance instead of the mean.)<br>FLAC 目前定义了两种类似的方法来对来自预测阶段的误差信号进行编码。误差信号以两种方式之一使用莱斯编码进行编码：1) 编码器根据残差的方差估计单个莱斯参数，莱斯使用该参数对整个残差进行编码； 2）残差被分割成几个等长的连续样本区域，每个区域根据区域的均值用自己的Rice参数编码。 （请注意，第一种方法是第二种方法的特殊情况，只有一个分区，不同的是 Rice 参数基于残差方差而不是均值。）</p>
+<p>The FLAC format has reserved space for other coding methods. Some possiblities for volunteers would be to explore better context-modeling of the Rice parameter, or Huffman coding. See LOCO-I and pucrunch for descriptions of several universal codes.<br>FLAC 格式为其他编码方法保留了空间。志愿者的一些可能性是探索更好的 Rice 参数或霍夫曼编码的上下文建模。有关几种通用代码的说明，请参阅 LOCO-I 和 pucrunch。</p>
+<h4 id="Format"><a href="#Format" class="headerlink" title="Format"></a>Format</h4><p>This section specifies the FLAC bitstream format. FLAC has no format version information, but it does contain reserved space in several places. Future versions of the format may use this reserved space safely without breaking the format of older streams. Older decoders may choose to abort decoding or skip data encoded with newer methods. Apart from reserved patterns, in places the format specifies invalid patterns, meaning that the patterns may never appear in any valid bitstream, in any prior, present, or future versions of the format. These invalid patterns are usually used to make the synchronization mechanism more robust.<br>这节具体了FLAC的位流格式。FLAC没有格式版本信息，但它确实包含了预留格式在几个位置。格式的未来版本可能会使用这个预留空间，而不用打破老的格式。老的解码器也可选择终止解码或跳过这种新的方式的编码数据。除了保留模式之外，格式在某些地方指定了无效模式，这意味着模式可能永远不会出现在任何有效比特流中，在任何先前、现在或未来版本的格式中。这些无效模式通常用于使同步机制更加健壮。</p>
+<p>All numbers used in a FLAC bitstream are integers; there are no floating-point representations. All numbers are big-endian coded. All numbers are unsigned unless otherwise specified.</p>
+<p>FLAC 比特流中使用的所有数字都是整数；没有浮点表示。所有数字都是大端编码的。除非另有说明，所有数字都是无符号的。</p>
+<p>Before the formal description of the stream, an overview might be helpful.在正式描述流之前，概述可能会有所帮助。<br>    音频头或解码重要信息块<br>– A FLAC bitstream consists of the “fLaC” marker at the beginning of the stream, followed by a mandatory metadata block (called the STREAMINFO block), any number of other metadata blocks, then the audio frames.FLAC 比特流由流开头的“fLaC”标记组成，后跟强制性元数据块（称为 STREAMINFO 块）、任意数量的其他元数据块，然后是音频帧。<br>音频元数据块。<br>– FLAC supports up to 128 kinds of metadata blocks; currently the following are defined:FLAC 支持多达 128 种元数据块；目前定义了以下内容：</p>
+<ul>
+<li><p>STREAMINFO: This block has information about the whole stream, like sample rate, number of channels, total number of samples, etc. It must be present as the first metadata block in the stream. Other metadata blocks may follow, and ones that the decoder doesn’t understand, it will skip.该块包含有关整个流的信息，例如采样率、通道数、样本总数等。它必须作为流中的第一个元数据块出现。其他元数据块可能会跟随，解码器不理解的，它会跳过。</p>
+</li>
+<li><p>APPLICATION: This block is for use by third-party applications. The only mandatory field is a 32-bit identifier. This ID is granted upon request to an application by the FLAC maintainers. The remainder is of the block is defined by the registered application. Visit the registration page if you would like to register an ID for your application with FLAC.<br>此块供第三方应用程序使用。唯一的必填字段是 32 位标识符。此 ID 是应 FLAC 维护者对应用程序的请求授予的。块的其余部分由注册的应用程序定义。如果您想在 FLAC 中为您的应用程序注册 ID，请访问注册页面。</p>
+</li>
+<li><p>PADDING: This block allows for an arbitrary amount of padding. The contents of a PADDING block have no meaning. This block is useful when it is known that metadata will be edited after encoding; the user can instruct the encoder to reserve a PADDING block of sufficient size so that when metadata is added, it will simply overwrite the padding (which is relatively quick) instead of having to insert it into the right place in the existing file (which would normally require rewriting the entire file).<br>该块允许任意数量的填充。 PADDING 块的内容没有意义。当知道元数据将在编码后被编辑时，这个块很有用；用户可以指示编码器保留足够大小的 PADDING 块，以便在添加元数据时，它会简单地覆盖填充（相对较快），而不必将其插入到现有文件中的正确位置（这将通常需要重写整个文件）。</p>
+</li>
+<li><p>SEEKTABLE: This is an optional block for storing seek points. It is possible to seek to any given sample in a FLAC stream without a seek table, but the delay can be unpredictable since the bitrate may vary widely within a stream. By adding seek points to a stream, this delay can be significantly reduced. Each seek point takes 18 bytes, so 1% resolution within a stream adds less than 2k. There can be only one SEEKTABLE in a stream, but the table can have any number of seek points. There is also a special ‘placeholder’ seekpoint which will be ignored by decoders but which can be used to reserve space for future seek point insertion.<br>这是用于存储搜索点的可选块。可以在没有查找表的情况下查找 FLAC 流中的任何给定样本，但延迟可能无法预测，因为比特率可能在流内变化很大。通过向流添加查找点，可以显着减少此延迟。每个搜索点占用 18 个字节，因此流中 1% 的分辨率增加了不到 2k。一个流中只能有一个 SEEKTABLE，但该表可以有任意数量的搜索点。还有一个特殊的“占位符”搜索点，它会被解码器忽略，但可用于为将来的搜索点插入保留空间。</p>
+</li>
+<li><p>VORBIS_COMMENT: This block is for storing a list of human-readable name&#x2F;value pairs. Values are encoded using UTF-8. It is an implementation of the Vorbis comment specification (without the framing bit). This is the only officially supported tagging mechanism in FLAC. There may be only one VORBIS_COMMENT block in a stream. In some external documentation, Vorbis comments are called FLAC tags to lessen confusion.<br>此块用于存储人类可读的名称&#x2F;值对列表。值使用 UTF-8 编码。它是 Vorbis 注释规范的一个实现（没有帧位）。这是 FLAC 中唯一官方支持的标记机制。一个流中可能只有一个 VORBIS_COMMENT 块。在一些外部文档中，Vorbis 注释被称为 FLAC 标签以减少混淆。</p>
+</li>
+<li><p>CUESHEET: This block is for storing various information that can be used in a cue sheet. It supports track and index points, compatible with Red Book CD digital audio discs, as well as other CD-DA metadata such as media catalog number and track ISRCs. The CUESHEET block is especially useful for backing up CD-DA discs, but it can be used as a general purpose cueing mechanism for playback.此块用于存储可在提示表中使用的各种信息。它支持曲目和索引点，与 Red Book CD 数字音频光盘以及其他 CD-DA 元数据（如媒体目录编号和曲目 ISRC）兼容。 CUESHEET 块对于备份 CD-DA 光盘特别有用，但它可以用作播放的通用提示机制。</p>
+</li>
+<li><p>PICTURE: This block is for storing pictures associated with the file, most commonly cover art from CDs. There may be more than one PICTURE block in a file. The picture format is similar to the APIC frame in ID3v2. The PICTURE block has a type, MIME type, and UTF-8 description like ID3v2, and supports external linking via URL (though this is discouraged). The differences are that there is no uniqueness constraint on the description field, and the MIME type is mandatory. The FLAC PICTURE block also includes the resolution, color depth, and palette size so that the client can search for a suitable picture without having to scan them all.<br>此块用于存储与文件相关的图片，最常见的是 CD 中的封面艺术。一个文件中可能有多个 PICTURE 块。图片格式类似于ID3v2中的APIC帧。 PICTURE 块具有类型、MIME 类型和 UTF-8 描述（如 ID3v2），并支持通过 URL 进行外部链接（尽管不鼓励这样做）。不同之处在于描述字段没有唯一性约束，MIME 类型是强制性的。 FLAC PICTURE 块还包括分辨率、颜色深度和调色板大小，以便客户无需全部扫描即可搜索合适的图片。</p>
+</li>
+</ul>
+<h4 id="音频数据："><a href="#音频数据：" class="headerlink" title="音频数据："></a>音频数据：</h4><p>The audio data is composed of one or more audio frames. Each frame consists of a frame header, which contains a sync code, information about the frame like the block size, sample rate, number of channels, et cetera, and an 8-bit CRC. The frame header also contains either the sample number of the first sample in the frame (for variable-blocksize streams), or the frame number (for fixed-blocksize streams). This allows for fast, sample-accurate seeking to be performed. Following the frame header are encoded subframes, one for each channel, and finally, the frame is zero-padded to a byte boundary. Each subframe has its own header that specifies how the subframe is encoded.<br>音频数据由一个或多个音频帧组成。每个帧由一个帧头组成，其中包含一个同步代码、有关帧的信息，如块大小、采样率、通道数等，以及一个 8 位 CRC。帧头还包含帧中第一个样本的样本编号（对于可变块大小的流）或帧编号（对于固定块大小的流）。这允许执行快速、样本准确的搜索。在帧头之后是编码子帧，每个通道一个，最后，帧被零填充到字节边界。每个子帧都有自己的标头，用于指定子帧的编码方式。<br>Since a decoder may start decoding in the middle of a stream, there must be a method to determine the start of a frame. A 14-bit sync code begins each frame. The sync code will not appear anywhere else in the frame header. However, since it may appear in the subframes, the decoder has two other ways of ensuring a correct sync. The first is to check that the rest of the frame header contains no invalid data. Even this is not foolproof since valid header patterns can still occur within the subframes. The decoder’s final check is to generate an 8-bit CRC of the frame header and compare this to the CRC stored at the end of the frame header.<br>由于解码器可能在流的中间开始解码，因此必须有一种方法来确定帧的开始。每帧开始一个 14 位同步代码。同步代码不会出现在帧头中的任何其他地方。然而，由于它可能出现在子帧中，解码器有两种其他方式来确保正确的同步。首先是检查帧头的其余部分是否不包含无效数据。即使这也不是万无一失的，因为有效的报头模式仍然可以出现在子帧内。解码器的最终检查是生成帧头的 8 位 CRC，并将其与存储在帧头末尾的 CRC 进行比较。<br>Again, since a decoder may start decoding at an arbitrary frame in the stream, each frame header must contain some basic information about the stream because the decoder may not have access to the STREAMINFO metadata block at the start of the stream. This information includes sample rate, bits per sample, number of channels, etc. Since the frame header is pure overhead, it has a direct effect on the compression ratio. To keep the frame header as small as possible, FLAC uses lookup tables for the most commonly used values for frame parameters. For instance, the sample rate part of the frame header is specified using 4 bits. Eight of the bit patterns correspond to the commonly used sample rates of 8&#x2F;16&#x2F;22.05&#x2F;24&#x2F;32&#x2F;44.1&#x2F;48&#x2F;96 kHz. However, odd sample rates can be specified by using one of the ‘hint’ bit patterns, directing the decoder to find the exact sample rate at the end of the frame header. The same method is used for specifying the block size and bits per sample. In this way, the frame header size stays small for all of the most common forms of audio data.<br>同样，由于解码器可以在流中的任意帧开始解码，每个帧头必须包含一些关于流的基本信息，因为解码器可能无法访问流开始处的 STREAMINFO 元数据块。该信息包括采样率、每个样本的位数、通道数等。由于帧头是纯开销，它对压缩率有直接影响。为了使帧头尽可能小，FLAC 使用查找表来查找最常用的帧参数值。例如，帧头的采样率部分使用 4 位指定。八个位模式对应于常用的采样率 8&#x2F;16&#x2F;22.05&#x2F;24&#x2F;32&#x2F;44.1&#x2F;48&#x2F;96 kHz。但是，可以通过使用“提示”位模式之一来指定奇数采样率，指示解码器在帧头的末尾找到确切的采样率。相同的方法用于指定块大小和每个样本的位数。通过这种方式，对于所有最常见的音频数据形式，帧头大小保持较小。<br>Individual subframes (one for each channel) are coded separately within a frame, and appear serially in the stream. In other words, the encoded audio data is NOT channel-interleaved. This reduces decoder complexity at the cost of requiring larger decode buffers. Each subframe has its own header specifying the attributes of the subframe, like prediction method and order, residual coding parameters, etc. The header is followed by the encoded audio data for that channel.<br>单个子帧（每个通道一个）在一个帧内单独编码，并连续出现在流中。换句话说，编码的音频数据不是通道交错的。这以需要更大的解码缓冲器为代价降低了解码器的复杂性。每个子帧都有自己的标头，指定子帧的属性，如预测方法和顺序、残差编码参数等。标头后面是该通道的编码音频数据。</p>
+<p>FLAC specifies a subset of itself as the Subset format. The purpose of this is to ensure that any streams encoded according to the Subset are truly “streamable”, meaning that a decoder that cannot seek within the stream can still pick up in the middle of the stream and start decoding. It also makes hardware decoder implementations more practical by limiting the encoding parameters such that decoder buffer sizes and other resource requirements can be easily determined. flac generates Subset streams by default unless the “–lax” command-line option is used. The Subset makes the following limitations on what may be used in the stream:<br>FLAC 将自身的子集指定为子集格式。这样做的目的是确保根据子集编码的任何流都是真正“可流式传输的”，这意味着无法在流中查找的解码器仍然可以在流中间拾取并开始解码。它还通过限制编码参数使硬件解码器实现更加实用，以便可以轻松确定解码器缓冲区大小和其他资源要求。除非使用“–lax”命令行选项，否则flac默认生成子集流。子集对流中可能使用的内容进行了以下限制：</p>
+<p>The blocksize bits in the frame header must be 0001-1110. The blocksize must be &lt;&#x3D;16384; if the sample rate is &lt;&#x3D; 48000Hz, the blocksize must be &lt;&#x3D;4608.<br>The sample rate bits in the frame header must be 0001-1110.<br>The bits-per-sample bits in the frame header must be 001-111.<br>If the sample rate is &lt;&#x3D; 48000Hz, the filter order in LPC subframes must be less than or equal to 12, i.e. the subframe type bits in the subframe header may not be 101100-111111.<br>The Rice partition order in a Rice-coded residual section must be less than or equal to 8.<br>The following tables constitute a formal description of the FLAC format. Numbers in angle brackets indicate how many bits are used for a given field.</p>
+<h4 id="ref："><a href="#ref：" class="headerlink" title="ref："></a>ref：</h4><p><a target="_blank" rel="noopener" href="https://xiph.org/flac/format.html#acknowledgments">https://xiph.org/flac/format.html#acknowledgments</a><br><a target="_blank" rel="noopener" href="https://xiph.org/flac/format.html">https://xiph.org/flac/format.html</a><br>rfc：<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/draft-ietf-cellar-flac">https://datatracker.ietf.org/doc/html/draft-ietf-cellar-flac</a><br>见文档来查更多的格式和位数：<a target="_blank" rel="noopener" href="https://xiph.org/flac/format.html#acknowledgments">https://xiph.org/flac/format.html#acknowledgments</a><br>对应开源库的位置：<a target="_blank" rel="noopener" href="https://ftp.osuosl.org/pub/xiph/releases/flac/">https://ftp.osuosl.org/pub/xiph/releases/flac/</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/audio/" rel="tag"># audio</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/26/video-encode-format/" rel="prev" title="video_encode_format">
+      <i class="fa fa-chevron-left"></i> video_encode_format
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/27/audio-oggs/" rel="next" title="audio_ogg">
+      audio_ogg <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Flac"><span class="nav-number">1.</span> <span class="nav-text">Flac:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Table-of-Contents"><span class="nav-number">1.1.</span> <span class="nav-text">Table of Contents</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Acknowledgments"><span class="nav-number">1.2.</span> <span class="nav-text">Acknowledgments</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Scope"><span class="nav-number">1.3.</span> <span class="nav-text">Scope</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Architecture"><span class="nav-number">1.4.</span> <span class="nav-text">Architecture</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Blocking"><span class="nav-number">1.5.</span> <span class="nav-text">Blocking</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Interchannel-Decorrelation"><span class="nav-number">1.6.</span> <span class="nav-text">Interchannel Decorrelation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Prediction"><span class="nav-number">1.7.</span> <span class="nav-text">Prediction</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Residual-Coding"><span class="nav-number">1.8.</span> <span class="nav-text">Residual Coding</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Format"><span class="nav-number">1.9.</span> <span class="nav-text">Format</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E6%95%B0%E6%8D%AE%EF%BC%9A"><span class="nav-number">1.10.</span> <span class="nav-text">音频数据：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ref%EF%BC%9A"><span class="nav-number">1.11.</span> <span class="nav-text">ref：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'd27a61abf9f44a30d58b6650a9b5120d',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="gdb介绍：gdb是一个c&#x2F;c++ 语言在gnu编译器下的debugger调试器，它支持单步调试，查看运行时内存，core-dump文件等功能；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gdb_more">
+<meta property="og:url" content="https://xdksx.github.io/2022/03/27/gdb-more/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="gdb介绍：gdb是一个c&#x2F;c++ 语言在gnu编译器下的debugger调试器，它支持单步调试，查看运行时内存，core-dump文件等功能；">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-27T13:13:12.000Z">
+<meta property="article:modified_time" content="2022-03-27T13:21:42.190Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="gdb">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/03/27/gdb-more/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>gdb_more | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/03/27/gdb-more/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          gdb_more
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-27 21:13:12 / 修改时间：21:21:42" itemprop="dateCreated datePublished" datetime="2022-03-27T21:13:12+08:00">2022-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/gdb/" itemprop="url" rel="index"><span itemprop="name">gdb</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="gdb介绍："><a href="#gdb介绍：" class="headerlink" title="gdb介绍："></a>gdb介绍：</h3><p>gdb是一个c&#x2F;c++ 语言在gnu编译器下的debugger调试器，它支持单步调试，查看运行时内存，core-dump文件等功能；  <span id="more"></span><br>它可以做很多事情来发现程序的bug,通过以下步骤：<br>a  Start your program, specifying anything that might affect its behavior.<br>b  Make your program stop on specified conditions.<br>c  Examine what has happened, when your program has stopped.<br>d  Change things in your program, so you can experiment with correcting the effects of one bug and go on to learn about another.<br>它还支持其他语言，具体见文档；<a target="_blank" rel="noopener" href="https://sourceware.org/gdb/download/onlinedocs/gdb/index.html">https://sourceware.org/gdb/download/onlinedocs/gdb/index.html</a>  </p>
+<h3 id="一个简单的例子："><a href="#一个简单的例子：" class="headerlink" title="一个简单的例子："></a>一个简单的例子：</h3><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/download/onlinedocs/gdb/Sample-Session.html#Sample-Session">https://sourceware.org/gdb/download/onlinedocs/gdb/Sample-Session.html#Sample-Session</a><br>在gcc编译时，带上-g </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">(gdb) set width <span class="number">70</span> 设置gdb屏幕显示宽度为<span class="number">70</span>列；</span><br><span class="line">(gdb) <span class="keyword">break</span> m4_changequote  设置一个断点，m4_changequote 这个是源文件中的一个函数名</span><br><span class="line">Breakpoint <span class="number">1</span> at <span class="number">0x62f4</span>: file builtin.c, line <span class="number">879.</span></span><br><span class="line">开始运行：</span><br><span class="line">(gdb) run</span><br><span class="line">Starting program: /work/Editorial/gdb/gnu/m4/m4</span><br><span class="line">会在断点停住，并展示上下文信息：</span><br><span class="line">Breakpoint <span class="number">1</span>, <span class="built_in">m4_changequote</span> (argc=<span class="number">3</span>, argv=<span class="number">0x33c70</span>)</span><br><span class="line">    at builtin.c:<span class="number">879</span></span><br><span class="line"><span class="number">879</span>         <span class="keyword">if</span> (<span class="built_in">bad_argc</span>(<span class="built_in">TOKEN_DATA_TEXT</span>(argv[<span class="number">0</span>]),argc,<span class="number">1</span>,<span class="number">3</span>))</span><br><span class="line">于是我们可以接着执行下一行：</span><br><span class="line">(gdb) n  <span class="meta">#next，会执行下一行，但是碰到子函数不会进去；</span></span><br><span class="line"><span class="number">882</span>         <span class="built_in">set_quotes</span>((argc &gt;= <span class="number">2</span>) ? <span class="built_in">TOKEN_DATA_TEXT</span>(argv[<span class="number">1</span>])\</span><br><span class="line"> : nil,</span><br><span class="line">(gdb) s  <span class="meta">#step 真正的单步调试，碰到子函数会进去一步一步执行</span></span><br><span class="line">(gdb) finish  会将正在调试的函数执行完然后打印返回值，等待接下来的指令；简写：<span class="built_in">fin</span></span><br><span class="line">(gdb) bt <span class="meta"># backtrace 可以看到当前执行的backtrace</span></span><br><span class="line">(gdb) p var #打印当前上下文 var变量的值 <span class="meta">#print</span></span><br><span class="line">(gdb) l 列出当前的代码  <span class="meta">#list</span></span><br><span class="line">(gdb) c  <span class="meta">#continue 继续执行直到结束</span></span><br><span class="line">(gdb) Ctrl-d / quit 结束和退出gdb </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="常见指令："><a href="#常见指令：" class="headerlink" title="常见指令："></a>常见指令：</h3><h3 id="系统教程："><a href="#系统教程：" class="headerlink" title="系统教程："></a>系统教程：</h3><h4 id="如何进入和退出gdb"><a href="#如何进入和退出gdb" class="headerlink" title="如何进入和退出gdb"></a>如何进入和退出gdb</h4><ul>
+<li>简单的进入和出来<br>type ‘gdb’ to start GDB.<br>type quit or Ctrl-d to exit.</li>
+</ul>
+<h4 id="GDB指令"><a href="#GDB指令" class="headerlink" title="GDB指令"></a>GDB指令</h4><p>可以缩写gdb的指令，用指令名字前面的几个字母，如果这个缩写是明确的;<br>您可以只输入回车来重复某些GDB命令，您还可以使用TAB键来让GDB填写命令中的剩余单词(或者向您显示可用的替代，如果有不止一种可能)。</p>
+<h5 id="指令语法"><a href="#指令语法" class="headerlink" title="指令语法"></a>指令语法</h5><p>如何给定指令给gdb</p>
+<p>关于指令语法： 指令名+参数<br>gdb的指令是单行输入，但是没有限制多长。起于一个指令名字，接着是一些参数，依赖于具体的指令；<br>例如：<br>step 接收一个参数，用来表示单步几次，如<br>step 5 ,会执行5次step<br>也可以不指定参数，有些指令不允许任何参数；</p>
+<p>关于简写：<br>step的指令可以缩减为s，其他类似</p>
+<p>关于回车的使用：<br>1）空白行回车会重复之前的指令<br>2）当使用回车重复list和x命令时，会构造新的参数，而不是完全按类型重复。这允许很容易地扫描源或存储器。<br>3）GDB还可以以另一种方式使用RET:以类似于常用实用程序more的方式对冗长的输出进行分区(参见屏幕大小)。<br>因为在这种情况下很容易多次按下RET，所以GDB会在生成这种显示的任何命令之后禁用命令重复。</p>
+<p>关于注释：<br>从#到行尾的任何文本都是注释;它什么都不做。这主要在命令文件中有用(参见命令文件)。</p>
+<p>Ctrl-o绑定对于重复一个复杂的命令序列非常有用。这个命令接受当前行，就像RET一样，然后从历史记录中获取相对于当前行的下一行，以便进行编辑。？？</p>
+<h5 id="指令设置"><a href="#指令设置" class="headerlink" title="指令设置"></a>指令设置</h5><p>如何改变指令的默认行为<br>通过set等，可以改变一些指令的行为：如</p>
+<ol>
+<li>一个简单的例子：<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gdb)<span class="built_in">set</span> <span class="built_in">print</span> elements 10</span><br><span class="line">gdb)<span class="built_in">print</span> some_array</span><br><span class="line"><span class="variable">$1</span> = &#123;0, 10, 20, 30, 40, 50, 60, 70, 80, 90<span class="built_in">..</span>.&#125; #只会输出10个，默认是200</span><br><span class="line">也可以这样指定，这样会覆盖之前set的设置：</span><br><span class="line">(GDB) <span class="built_in">print</span> -elements 10 -- some_array</span><br><span class="line"><span class="variable">$1</span> = &#123;0, 10, 20, 30, 40, 50, 60, 70, 80, 90<span class="built_in">..</span>.&#125;</span><br></pre></td></tr></table></figure></li>
+<li>临时的设置：<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">语法;</span><br><span class="line">with setting [value] [-- command]</span><br><span class="line">w setting [value] [-- command]</span><br><span class="line">临时设置是在指令执行的期间生效，如果command未指定，则是作用的上个指令的重复；</span><br><span class="line">eg:</span><br><span class="line">(GDB) with print<span class="built_in"> array </span>on -- print some_array</span><br><span class="line">is equivalent to the following 3 commands:</span><br><span class="line"></span><br><span class="line">(GDB) set print<span class="built_in"> array </span>on</span><br><span class="line">(GDB) print some_array</span><br><span class="line">(GDB) set print<span class="built_in"> array </span>off</span><br><span class="line">也可以作用到用户设置的指令：</span><br><span class="line">(GDB) with print pretty on -- my_complex_command</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h5 id="指令的补全："><a href="#指令的补全：" class="headerlink" title="指令的补全："></a>指令的补全：</h5><p>如果只有一种可能，GDB可以在命令中为您填写单词的其余部分;<br>它还可以在任何时候向您显示命令中下一个单词的有效可能性。这适用于GDB命令、GDB子命令、命令选项和程序中符号的名称。<br>当您想让GDB填写单词的剩余部分时，请按TAB键。如果只有一种可能，GDB填充这个单词，并等待您完成命令(或按RET输入)。例如，如果你输入</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info bre TAB</span><br><span class="line">GDB fills <span class="keyword">in</span> <span class="keyword">the</span> <span class="built_in">rest</span> <span class="keyword">of</span> <span class="keyword">the</span> <span class="built_in">word</span> ‘breakpoints’, <span class="keyword">since</span> <span class="keyword">that</span> <span class="keyword">is</span> <span class="keyword">the</span> only info subcommand <span class="keyword">beginning</span> <span class="keyword">with</span> ‘bre’:</span><br><span class="line"></span><br><span class="line">(gdb) info breakpoints</span><br><span class="line">接着你可以按回车键来执行，如果不是它，则删除重写，当然也可以info bre后回车，利用缩写功能；</span><br><span class="line"></span><br><span class="line">如果有多个选项：会展示出来让你选</span><br><span class="line">(gdb) b make_ TAB</span><br><span class="line">GDB sounds bell; press TAB again, <span class="keyword">to</span> see:</span><br><span class="line">make_a_section_from_file     make_environ</span><br><span class="line">make_abs_section             make_function_type</span><br><span class="line">make_blockvector             make_pointer_type</span><br><span class="line">make_cleanup                 make_reference_type</span><br><span class="line">make_command                 make_symbol_completion_list</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">如果嫌打印的太多了：</span><br><span class="line">可以设置：</span><br><span class="line"><span class="keyword">set</span> max-completions limit</span><br><span class="line"><span class="keyword">set</span> max-completions unlimited</span><br><span class="line">Set <span class="keyword">the</span> maximum <span class="built_in">number</span> <span class="keyword">of</span> completion candidates. GDB will stop looking <span class="keyword">for</span> more completions once <span class="keyword">it</span> collects this many candidates. This <span class="keyword">is</span> useful when completing <span class="keyword">on</span> things like function names <span class="keyword">as</span> collecting all <span class="keyword">the</span> possible candidates can be <span class="built_in">time</span> consuming. The default value <span class="keyword">is</span> <span class="number">200.</span> A value <span class="keyword">of</span> zero disables <span class="literal">tab</span>-completion. Note <span class="keyword">that</span> setting either no limit <span class="keyword">or</span> a very large limit can make completion slow.</span><br><span class="line"></span><br><span class="line">show max-completions</span><br></pre></td></tr></table></figure>
+<p>或者其他办法：<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Completion.html#Completion">https://sourceware.org/gdb/current/onlinedocs/gdb/Completion.html#Completion</a></p>
+<h5 id="指令选项"><a href="#指令选项" class="headerlink" title="指令选项"></a>指令选项</h5><dl><dt>有些命令接受以破折号开头的选项，例如 print -pretty,类似于命令名称,您可以使用缩写词GDB选项选项名的前几个字母,<br>如果这个缩写是明确的,您还可以使用TAB键让GDB填写剩下的一个字一个选项(或向你们展示可用的替代品,如果有一个以上的可能性)。<br>有时候加上缩写时，会混淆，如print -p是意思是 print -pretty还是打印的-p? ,所以这个时候可以用–</dt><dd>print –p </dd></dl><p>有些选项被描述为接受一个既可以是开的也可以是关的参数。这些被称为布尔选项。与布尔设置命令类似，on和off是典型的值，但是1、yes和enable中的任何一个也可以用作“true”值，<br>0、no和disable中的任何一个也可以用作“false”值。您也可以忽略“true”值，因为默认情况下它是隐含的。<br>例如，下面两个指令相同：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">(gdb) print -<span class="keyword">object</span> <span class="keyword">on</span> -pretty <span class="keyword">off</span> -element unlimited <span class="comment">-- *myptr</span></span><br><span class="line">(gdb) p -o -p <span class="number">0</span> -e u <span class="comment">-- *myptr</span></span><br><span class="line"></span><br><span class="line">当你不知道指令的可选项时：</span><br><span class="line">(gdb) print -TABTAB</span><br><span class="line">-address         -max-depth       -raw-<span class="keyword">values</span>      -<span class="keyword">union</span></span><br><span class="line">-<span class="keyword">array</span>           -<span class="keyword">null</span>-stop       -repeats         -vtbl</span><br><span class="line">-<span class="keyword">array</span>-indexes   -<span class="keyword">object</span>          -static-members</span><br><span class="line">-elements        -pretty          -symbol</span><br><span class="line"></span><br><span class="line">完成在某些情况下会给你一个选项期望的参数的建议。例如:</span><br><span class="line">(gdb) print -elements TABTAB</span><br><span class="line">NUMBER     unlimited</span><br></pre></td></tr></table></figure>
+
+<h5 id="指令的帮助"><a href="#指令的帮助" class="headerlink" title="指令的帮助"></a>指令的帮助</h5><p>gdb) help<br>List of classes of commands:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">aliases <span class="comment">-- User-defined aliases of other commands</span></span><br><span class="line">breakpoints <span class="comment">-- Making program stop at certain points</span></span><br><span class="line">data <span class="comment">-- Examining data</span></span><br><span class="line"><span class="built_in">files</span> <span class="comment">-- Specifying and examining files</span></span><br><span class="line">internals <span class="comment">-- Maintenance commands</span></span><br><span class="line">obscure <span class="comment">-- Obscure features</span></span><br><span class="line">running <span class="comment">-- Running the program</span></span><br><span class="line">stack <span class="comment">-- Examining the stack</span></span><br><span class="line">status <span class="comment">-- Status inquiries</span></span><br><span class="line">support <span class="comment">-- Support facilities</span></span><br><span class="line">tracepoints <span class="comment">-- Tracing of program execution without</span></span><br><span class="line">               stopping <span class="keyword">the</span> program</span><br><span class="line">user-defined <span class="comment">-- User-defined commands</span></span><br><span class="line"></span><br><span class="line">Type <span class="string">&quot;help&quot;</span> followed <span class="keyword">by</span> <span class="keyword">a</span> class name <span class="keyword">for</span> <span class="keyword">a</span> list <span class="keyword">of</span></span><br><span class="line">commands <span class="keyword">in</span> that class.</span><br><span class="line">Type <span class="string">&quot;help&quot;</span> followed <span class="keyword">by</span> <span class="keyword">command</span> <span class="title">name</span> <span class="title">for</span> <span class="title">full</span></span><br><span class="line">documentation.</span><br><span class="line">Command name abbreviations are allowed <span class="keyword">if</span> unambiguous.</span><br><span class="line">(gdb)</span><br><span class="line"></span><br><span class="line">使用一个通用帮助类作为参数，您可以获得该类中各个命令的列表。如果命令有别名，</span><br><span class="line">别名将在命令名之后，用逗号分隔。如果别名具有默认参数，则在第一行之后给出别名的完整定义。例如，下面是类状态的帮助显示:</span><br><span class="line">(gdb) help status</span><br><span class="line">Status inquiries.</span><br><span class="line"></span><br><span class="line">List <span class="keyword">of</span> commands:</span><br><span class="line"></span><br><span class="line">info, inf, i <span class="comment">-- Generic command for showing things</span></span><br><span class="line">        about <span class="keyword">the</span> program being debugged</span><br><span class="line">info address, iamain  <span class="comment">-- Describe where symbol SYM is stored.</span></span><br><span class="line">  <span class="built_in">alias</span> iamain = info address main</span><br><span class="line">info all-registers <span class="comment">-- List of all registers and their contents,</span></span><br><span class="line">        <span class="keyword">for</span> selected stack frame.</span><br><span class="line">...</span><br><span class="line">show, info <span class="built_in">set</span> <span class="comment">-- Generic command for showing things</span></span><br><span class="line">        about <span class="keyword">the</span> debugger</span><br><span class="line"></span><br><span class="line">Type <span class="string">&quot;help&quot;</span> followed <span class="keyword">by</span> <span class="keyword">command</span> <span class="title">name</span> <span class="title">for</span> <span class="title">full</span></span><br><span class="line">documentation.</span><br><span class="line">Command name abbreviations are allowed <span class="keyword">if</span> unambiguous.</span><br><span class="line">(gdb)</span><br><span class="line"></span><br><span class="line">还有指令的帮助：</span><br><span class="line">gdb) help <span class="keyword">command</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="用gdb运行程序"><a href="#用gdb运行程序" class="headerlink" title="用gdb运行程序"></a>用gdb运行程序</h4><h5 id="如何编译才能用gdb-g"><a href="#如何编译才能用gdb-g" class="headerlink" title="如何编译才能用gdb  -g"></a>如何编译才能用gdb  -g</h5><p>这样调试信息会存储在对象文件中，它描述了每个变量或函数的数据类型以及可执行代码中源行号和地址之间的对应关系。</p>
+<p>使用’ -O ‘编译器选项，将发送给客户的程序进行了优化编译。然而，有些编译器无法同时处理’ -g ‘和’ -O ‘选项。使用这些编译器，<br>您无法生成包含调试信息的优化的可执行文件。</p>
+<h5 id="如何通过gdb启动你的程序"><a href="#如何通过gdb启动你的程序" class="headerlink" title="如何通过gdb启动你的程序"></a>如何通过gdb启动你的程序</h5><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gdb) <span class="keyword">run</span> / r</span><br><span class="line">几种指定可执行程序的方式：</span><br><span class="line">1） gdb <span class="keyword">program</span></span><br><span class="line">2)  gdb</span><br><span class="line">gdb) <span class="keyword">file</span> <span class="keyword">program</span></span><br></pre></td></tr></table></figure>
+<p>如果您在支持进程的执行环境中运行程序，则run将创建一个较差的进程，并让该进程运行您的程序。<br>在某些没有进程的环境中，run跳转到程序的开头。其他目标，比如“remote”，总是在运行。如果你得到这样的错误消息:<br>The “remote” target does not support “run”.<br>Try “help target” or “continue”.</p>
+<p>then use continue to run your program. You may need load first<br>运行的时候，一些预先的动作环境等，可能需要指定，如下，在接下来的几节会体现：</p>
+<ol>
+<li>The arguments.<br>如果shell是可用的，那可以通过shell传入，可以通过SHELL环境变量来指定使用哪种shell,如果不指定，gdb默认用&#x2F;bin&#x2F;sh ,<br>You can disable use of any shell with the set startup-with-shell command</li>
+</ol>
+<p>2)The environment.<br>you can use the GDB commands set environment and unset environment to change parts of the environment<br>3）The working directory.<br>You can set your program’s working directory with the command set cwd<br>4）The standard input and output.</p>
+<p>gdb中程序的运行可以看上面介绍，对停止：一旦您的程序停止，您可以调用程序中的函数，使用打印或调用命令。(print&#x2F;call)</p>
+<p>关于start命令：<br>‘ start ‘命令相当于在主过程(main)开始处设置一个临时断点，然后调用’ run ‘命令。</p>
+<p>关于starti命令：<br>‘ starti ‘命令相当于在程序执行的第一个指令处设置一个临时断点，然后调用’ run ‘命令。对于包含精化阶段的程序，starti命令将在精化阶段开始时停止执行。<br>关于精细阶段，是指如c++一些全局变量会在main之前就执行了，所以为了细化断点，在全局变量初始化前停，需用starti</p>
+<p>关于运行的控制：<br>还可以包裹在exec函数执行，还可以set startup-with-shell on&#x2F;off开启关闭shell执行，以及set exec-wrapper env ‘LD_PRELOAD&#x3D;libtest.so’<br>控制执行的环境，等等，更多见：<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Starting.html#Starting">https://sourceware.org/gdb/current/onlinedocs/gdb/Starting.html#Starting</a></p>
+<h5 id="你的程序的参数如何传入gdb中"><a href="#你的程序的参数如何传入gdb中" class="headerlink" title="你的程序的参数如何传入gdb中"></a>你的程序的参数如何传入gdb中</h5><p>程序的参数可以通过run命令的参数指定。它们被传递给shell, shell展开通配符并执行I&#x2F;O的重定向，从而指向您的程序。<br>您的SHELL环境变量(如果存在的话)指定了SHELL GDB使用什么。如果没有定义SHELL, GDB使用默认的SHELL (Unix上的&#x2F;bin&#x2F;sh)。</p>
+<p>run 不带参数将使用与前一次运行相同的参数，或由set args命令设置的参数。<br>set args来设置：<br>gdb) set -p 192.3.2.1<br>指定下次运行程序时要使用的参数。如果set args没有参数，<br>run将不带参数执行程序。一旦你运行了带参数的程序，在下次运行之前使用set args是再次运行它而不带参数的唯一方法。</p>
+<p>show args<br>用来显示设置的参数；</p>
+<h5 id="你的程序的执行环境和gdb"><a href="#你的程序的执行环境和gdb" class="headerlink" title="你的程序的执行环境和gdb"></a>你的程序的执行环境和gdb</h5><p>环境由一组环境变量及其值组成。环境变量通常会记录诸如用户名、主目录、终端类型和要运行程序的搜索路径等内容。通常您使用shell设置环境变量，它们被您运行的所有其他程序所继承。<br>在调试时，尝试在修改过的环境中运行程序，而不必重新启动GDB，这可能很有用。<br>几个指令：<br>1）path directory eg: path &#x2F;bin&#x2F;sh<br>将directory添加到PATH环境变量(可执行文件的搜索路径)的前面，这个环境变量将被传递给您的程序。<br>2）show paths<br>3）show environment [varname]<br>4）set environment varname [&#x3D;value]<br>eg:set env USER &#x3D; foo<br>5) unset environment varname</p>
+<h5 id="gdb下，你的程序的执行目录"><a href="#gdb下，你的程序的执行目录" class="headerlink" title="gdb下，你的程序的执行目录"></a>gdb下，你的程序的执行目录</h5><p>几个命令：</p>
+<ol>
+<li>set cwd [directory]<br>Set the inferior’s working directory to directory</li>
+<li>show cwd</li>
+</ol>
+<p>3)cd [directory]<br>Set the GDB working directory to directory. If not given, directory uses ‘~’.<br>4) pwd<br>Print the GDB working directory.</p>
+<h5 id="gdb下，你的程序的输入和输出"><a href="#gdb下，你的程序的输入和输出" class="headerlink" title="gdb下，你的程序的输入和输出"></a>gdb下，你的程序的输入和输出</h5><p>默认情况下，在GDB下运行的程序向GDB使用的同一个终端进行输入和输出。<br>GDB将终端切换到它自己的终端模式以与您交互，但它会记录您的程序正在使用的终端模式，并在您继续运行程序时切换回它们。</p>
+<p>几个指令：<br>1）info terminal<br>Displays information recorded by GDB about the terminal modes your program is using.<br>2）重定向运行输出：<br>run &gt; outfile<br>3） tty &#x2F;dev&#x2F;ttyb 重定向tty<br>4) set inferior-tty [ tty ]<br>5) show inferior-tty</p>
+<h5 id="如何用gdb-attach一个正在运行的程序"><a href="#如何用gdb-attach一个正在运行的程序" class="headerlink" title="如何用gdb attach一个正在运行的程序"></a>如何用gdb attach一个正在运行的程序</h5><p>指令：<br>gdb attach process-id<br>这个命令附加到一个正在运行的进程—一个在GDB外部启动的进程<br>detach<br>release gdb control</p>
+<h5 id="gdb下如何杀死子进程"><a href="#gdb下如何杀死子进程" class="headerlink" title="gdb下如何杀死子进程"></a>gdb下如何杀死子进程</h5><p>gdb) kill<br>终止您的程序在GDB下运行的子进程。<br>如果希望调试核心转储core而不是正在运行的进程，则此命令很有用。当程序运行时，GDB会忽略任何核心转储文件core。</p>
+<p>在某些操作系统上，如果在GDB内部设置了断点，则程序不能在GDB外部执行。在这种情况下，可以使用kill命令允许在调试器外部运行程序。<br>如果您希望重新编译和重新链接程序，kill命令也很有用，因为在许多系统上，当可执行文件在进程中运行时，是不可能修改它的。在这种情况下，当您下一次输入run时，GDB会注意到文件已经更改，并再次读取符号表(同时试图保留当前的断点设置)。</p>
+<h5 id="调试多个下级连接和程序"><a href="#调试多个下级连接和程序" class="headerlink" title="调试多个下级连接和程序"></a>调试多个下级连接和程序</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Inferiors-Connections-and-Programs.html#Inferiors-Connections-and-Programs">https://sourceware.org/gdb/current/onlinedocs/gdb/Inferiors-Connections-and-Programs.html#Inferiors-Connections-and-Programs</a></p>
+<h5 id="调试多线程的程序"><a href="#调试多线程的程序" class="headerlink" title="调试多线程的程序"></a>调试多线程的程序</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Threads.html#Threads">https://sourceware.org/gdb/current/onlinedocs/gdb/Threads.html#Threads</a></p>
+<h5 id="调试forks"><a href="#调试forks" class="headerlink" title="调试forks"></a>调试forks</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Forks.html#Forks">https://sourceware.org/gdb/current/onlinedocs/gdb/Forks.html#Forks</a></p>
+<h5 id="设置书签以便之后返回；"><a href="#设置书签以便之后返回；" class="headerlink" title="设置书签以便之后返回；"></a>设置书签以便之后返回；</h5><p>checkpoint： 用于保存程序的快照，然后可以返回；<br>checkpoint是程序在那一刻的快照，当我们发现错过了某个调试机会时，可以再次回到checkpoint保存的那个程序状态。<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Checkpoint_002fRestart.html#Checkpoint_002fRestart">https://sourceware.org/gdb/current/onlinedocs/gdb/Checkpoint_002fRestart.html#Checkpoint_002fRestart</a><br>eg:<a target="_blank" rel="noopener" href="http://blog.chinaunix.net/uid-23629988-id-2943273.html">http://blog.chinaunix.net/uid-23629988-id-2943273.html</a></p>
+<h4 id="停止和继续"><a href="#停止和继续" class="headerlink" title="停止和继续"></a>停止和继续</h4><h5 id="断点：监控点和catch-points"><a href="#断点：监控点和catch-points" class="headerlink" title="断点：监控点和catch points"></a>断点：监控点和catch points</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Breakpoints.html#Breakpoints">https://sourceware.org/gdb/current/onlinedocs/gdb/Breakpoints.html#Breakpoints</a></p>
+<ol>
+<li>设置断点<br>2）设置观察点<br>3）设置捕获点：catchpoints<br>4）删除断点<br>5）禁用断点</li>
+<li>断点加条件控制<br>7）动态打印<br>8）保存断点到文件<br>9）静态的probe point<br>10）error in breakpoints</li>
+<li>Breakpoint-related Warnings:</li>
+</ol>
+<h5 id="continue和step指令"><a href="#continue和step指令" class="headerlink" title="continue和step指令"></a>continue和step指令</h5><h5 id="skip函数和文件"><a href="#skip函数和文件" class="headerlink" title="skip函数和文件"></a>skip函数和文件</h5><h5 id="信号"><a href="#信号" class="headerlink" title="信号"></a>信号</h5><h5 id="停止和启动多线程程序"><a href="#停止和启动多线程程序" class="headerlink" title="停止和启动多线程程序"></a>停止和启动多线程程序</h5><h4 id="回退运行"><a href="#回退运行" class="headerlink" title="回退运行"></a>回退运行</h4><h4 id="进程记录和重放"><a href="#进程记录和重放" class="headerlink" title="进程记录和重放"></a>进程记录和重放</h4><h4 id="测试栈"><a href="#测试栈" class="headerlink" title="测试栈"></a>测试栈</h4><h5 id="栈帧的概念"><a href="#栈帧的概念" class="headerlink" title="栈帧的概念"></a>栈帧的概念</h5><p>调用堆栈被分成若干连续的块，称为堆栈帧，或简称帧;每一帧是与一个函数调用相关联的数据。<br>框架包含给出给函数的参数、函数的局部变量和函数执行的地址。</p>
+<p>当程序启动时，堆栈只有一个帧，即main函数的帧。这叫做初始坐标系或者最外层的坐标系。每次调用一个函数，就会产生一个新的框架。每次函数返回时，用于该函数调用的帧就会被消除。如果一个函数是递归的，那么同一个函数可以有多个框架。<br>执行实际发生的函数的框架称为最内层框架。这是所有仍然存在的堆栈帧中最近创建的。</p>
+<p>在程序中，堆栈帧通过它们的地址来标识。堆栈帧由许多字节组成，每个字节都有自己的地址;每一种计算机都有一个约定，即选择一个字节的地址作为帧的地址。<br>通常这个地址被保存在一个叫做帧指针寄存器(参见$fp)的寄存器中，而在这个帧中执行。</p>
+<p>GDB给每个现有的堆栈帧标上一个级别，最里面的帧为0，调用它的帧为1，以此类推。这些级别数字为您提供了一种在GDB命令中指定堆栈帧的方法。<br>术语帧数和帧级可以互换地用来描述这个数字。</p>
+<p>有些编译器提供了一种方法来编译函数，使它们在不使用堆栈帧的情况下运行。(例如，GCC选项<br>“-fomit-frame-pointer”<br>生成没有框架的函数。)为了节省帧设置时间，我们偶尔会使用大量的库函数。GDB只有有限的工具来处理这些函数调用。如果最内层的函数调用没有堆栈帧，<br>GDB仍然认为它有一个单独的帧，它通常被编号为零，允许正确地跟踪函数调用链。然而，GDB没有在栈的其他地方提供无框架函数。</p>
+<h5 id="backtraces调用链"><a href="#backtraces调用链" class="headerlink" title="backtraces调用链"></a>backtraces调用链</h5><p>回溯是程序如何到达当前位置的摘要。它显示了每帧一行，对于许多帧，从当前执行的帧(帧0)开始，接着是它的调用者(帧1)，一直到堆栈。</p>
+<p>要打印整个堆栈的回溯信息，可以使用backtrace命令或它的别名bt。该命令将为堆栈中的每帧打印一行。<br>默认情况下，将打印所有堆栈帧。您可以在任何时候通过输入系统中断字符(通常是Ctrl-c)来停止回溯。</p>
+<p>语法：<br>backtrace [option]… [qualifier]… [count]<br>bt [option]… [qualifier]… [count]<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Backtrace.html#Backtrace">https://sourceware.org/gdb/current/onlinedocs/gdb/Backtrace.html#Backtrace</a></p>
+<h5 id="选择一个栈帧："><a href="#选择一个栈帧：" class="headerlink" title="选择一个栈帧："></a>选择一个栈帧：</h5><p>大多数用于检查程序中堆栈和其他数据的命令都在此时选择的任何堆栈帧上工作。<br>下面是选择堆栈帧的命令;所有这些都通过打印刚刚选择的堆栈帧的简要描述来完成。</p>
+<p>1）指令1：<br>语法：<br>frame [ frame-selection-spec ]<br>f [ frame-selection-spec ]<br>frame命令允许选择不同的堆栈帧。帧选择规范可以是以下任意一种:<br>num<br>level num<br>选择帧级别num，回想一下，帧0是最内层(当前正在执行)的帧，帧1是调用最内层的帧，以此类推。最高层次的框架通常是主框架。<br>由于这是在帧堆栈中导航最常用的方法，所以可以省略字符串级别。例如，下面两个命令是等价的:<br>(gdb) frame 3<br>(gdb) frame level 3</p>
+<p>2）指令2：<br>address stack-address<br>选择堆栈地址为stack-address的帧。例如，一个帧的堆栈地址可以在信息帧的输出中看到<br>(gdb) info frame<br>Stack level 1, frame at 0x7fffffffda30:<br> rip &#x3D; 0x40066d in b (amd64-entry-value.cc:59); saved rip 0x4004c5<br> tail call frame, caller of frame at 0x7fffffffda30<br> source language c++.<br> Arglist at unknown address.<br> Locals at unknown address, Previous frame’s sp is 0x7fffffffda30</p>
+<p>The stack-address for this frame is 0x7fffffffda30 as indicated by the line:<br>Stack level 1, frame at 0x7fffffffda30:</p>
+<p>3)指令3：<br>function function-name<br>选择函数function-name的堆栈帧。如果function function-name有多个堆栈帧，则选择最内部的堆栈帧。</p>
+<p>4)指令4：<br>view stack-address [ pc-addr ]<br>查看一个不属于GDB回溯的帧。被查看的帧有堆栈地址stack-addr，也可以选择pc-addr的程序计数器地址</p>
+<p>5）指令5:<br>up n<br>向上移动n帧堆栈;N默认为1。对于正数n，它向最外层的帧移动，向更高的帧移动，向存在时间更长的帧移动。</p>
+<p>6)指令6：<br>down n<br>向下移动n帧堆栈;N默认为1。对于正数n，它向最里面的帧推进，向更低的帧数推进，向最近创建的帧推进。<br>eg:<br>(gdb) up<br>#1  0x22f0 in main (argc&#x3D;1, argv&#x3D;0xf7fffbf4, env&#x3D;0xf7fffbfc)<br>    at env.c:10<br>10              read_input_file (argv[i]);</p>
+<h5 id="栈帧的相关信息："><a href="#栈帧的相关信息：" class="headerlink" title="栈帧的相关信息："></a>栈帧的相关信息：</h5><p>有一些指令可以打印选定的栈帧的相关信息：</p>
+<ol>
+<li>frame&#x2F;f<br>当不带任何参数使用时，这个命令不会改变所选择的帧，而是打印当前所选择的堆栈帧的简要描述。它可以缩写为f。该命令用于选择一个堆栈帧，带参数。</li>
+</ol>
+<p>2)info frame<br>info f<br>该命令打印所选堆栈帧的详细描述，包括:<br>the address of the frame<br>the address of the next frame down (called by this frame)<br>the address of the next frame up (caller of this frame)<br>the language in which the source code corresponding to this frame is written<br>the address of the frame’s arguments<br>the address of the frame’s local variables<br>the program counter saved in it (the address of execution in the caller frame)<br>which registers were saved in the frame</p>
+<ol start="3">
+<li><p>info frame [ frame-selection-spec ]<br>info f [ frame-selection-spec ]<br>Print a verbose description of the frame selected by frame-selection-spec</p>
+</li>
+<li><p>info args [-q]<br>Print the arguments of the selected frame</p>
+</li>
+<li><p>info args [-q] [-t type_regexp] [regexp]</p>
+</li>
+</ol>
+<p>6)info locals [-q]<br>Print the local variables of the selected frame, each on a separate line.<br>7)info locals [-q] [-t type_regexp] [regexp]</p>
+<h5 id="Applying-a-Command-to-Several-Frames"><a href="#Applying-a-Command-to-Several-Frames" class="headerlink" title="Applying a Command to Several Frames."></a>Applying a Command to Several Frames.</h5><h5 id="Management-of-Frame-Filters"><a href="#Management-of-Frame-Filters" class="headerlink" title="Management of Frame Filters."></a>Management of Frame Filters.</h5><h4 id="测试源文件"><a href="#测试源文件" class="headerlink" title="测试源文件"></a>测试源文件</h4><h5 id="打印源行"><a href="#打印源行" class="headerlink" title="打印源行"></a>打印源行</h5><p>list 的各种用法：<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/List.html#List">https://sourceware.org/gdb/current/onlinedocs/gdb/List.html#List</a></p>
+<h5 id="具体化位置："><a href="#具体化位置：" class="headerlink" title="具体化位置："></a>具体化位置：</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Specify-Location.html#Specify-Location">https://sourceware.org/gdb/current/onlinedocs/gdb/Specify-Location.html#Specify-Location</a></p>
+<h5 id="编辑源文件以及选择编辑器"><a href="#编辑源文件以及选择编辑器" class="headerlink" title="编辑源文件以及选择编辑器"></a>编辑源文件以及选择编辑器</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Edit.html#Edit">https://sourceware.org/gdb/current/onlinedocs/gdb/Edit.html#Edit</a></p>
+<h5 id="查找源文件：如何利用正则查找"><a href="#查找源文件：如何利用正则查找" class="headerlink" title="查找源文件：如何利用正则查找"></a>查找源文件：如何利用正则查找</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Search.html#Search">https://sourceware.org/gdb/current/onlinedocs/gdb/Search.html#Search</a></p>
+<h5 id="具体化源目录"><a href="#具体化源目录" class="headerlink" title="具体化源目录"></a>具体化源目录</h5><p>可执行程序有时不记录源文件的目录，而只记录其名称。即使是这样，也可以在编译会话和调试会话之间移动目录。GDB有一个目录列表来搜索源文件;<br>这称为源路径。每次GDB想要一个源文件时，它会按照目录在列表中出现的顺序尝试列表中的所有目录，直到找到一个具有所需名称的文件。</p>
+<p>例如，假设一个可执行文件引用&#x2F;usr&#x2F;src&#x2F;foo-1.0&#x2F;lib&#x2F;foo.c文件，没有记录编译目录，源路径是&#x2F;mnt&#x2F;cross。GDB将在以下位置查找源文件:<br>&#x2F;usr&#x2F;src&#x2F;foo-1.0&#x2F;lib&#x2F;foo.c<br>&#x2F;mnt&#x2F;cross&#x2F;usr&#x2F;src&#x2F;foo-1.0&#x2F;lib&#x2F;foo.c<br>&#x2F;mnt&#x2F;cross&#x2F;foo.c</p>
+<p>如果源文件不在上述任何位置，则会打印一个错误。GDB不查找源文件名的部分，例如&#x2F;mnt&#x2F;cross&#x2F;src&#x2F;foo-1.0&#x2F;lib&#x2F;foo.c。同样，也不会搜索源路径的子目录:如果源路径是&#x2F;mnt&#x2F;cross，<br>并且二进制文件指向foo.c, GDB将无法在&#x2F;mnt&#x2F;cross&#x2F;usr&#x2F;src&#x2F;foo-1.0&#x2F;lib下找到它。</p>
+<p>。。。<br>怎么设置目录呢？</p>
+<h5 id="源和机器码"><a href="#源和机器码" class="headerlink" title="源和机器码"></a>源和机器码</h5><p>可以使用命令信息行将源行映射到程序地址(反之亦然)，命令disassemble将地址范围作为机器指令显示。可以使用命令集disassemble-next-line设置在停止执行时是否反汇编下一个源行。<br>当在GNU Emacs模式下运行时，info line命令会使箭头指向指定的行。此外，信息行以符号形式和十六进制形式打印地址。</p>
+<h4 id="检查数据"><a href="#检查数据" class="headerlink" title="检查数据"></a>检查数据</h4><p>常规的检查数据是使用print指令，或者缩写为p,或者它的替代者 inspect. 它能求值和打印你的程序中表达式写入的值；它也能利用python来做格式化打印，如果你的gdb配置了正确的python;</p>
+<p>print 举例：</p>
+<p>语法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span> [[option] --] <span class="built_in">expr</span> </span><br><span class="line"><span class="built_in">print</span> [[option] --] /f  <span class="built_in">expr</span></span><br><span class="line">    <span class="built_in">expr</span>是一个表达式(在语言中)。默认的，表达式打印值的格式取决于数据的类型；你也可以选择一个不同的格式，通过使用/f,</span><br><span class="line">    f是一个具体的格式：如</span><br><span class="line">    x:将该值的位视为整数，以16进制方式输出。</span><br><span class="line">    d:以带符号的十进制形式打印整数。</span><br><span class="line">    u:无符号十进制整数</span><br><span class="line">    o:打印为八进制整数。</span><br><span class="line">    t:以二进制形式打印整数。字母“t”代表“二”。11</span><br><span class="line">    a:以地址的形式打印，十六进制的绝对地址和从最近的前面符号的偏移量。你可以使用这种格式来发现未知地址的位置(在什么函数中):</span><br><span class="line">    (gdb) p/a 0x54320</span><br><span class="line">    <span class="variable">$3</span> = 0x54320 &lt;_initialize_vx+396&gt;</span><br><span class="line">    和指令：info symbol 0x54320 类似</span><br><span class="line">    c:将其视为整数并将其打印为字符常量。这将打印数值及其字符表示形式。对于7位ASCII范围以外的字符，字符表示将被八进制转义<span class="string">&#x27; \nnn &#x27;</span>替换。</span><br><span class="line">    如果没有这种格式，GDB将char、unsigned char和signed char数据显示为字符常量。向量的单字节成员显示为整数数据。</span><br><span class="line">    f:将值的位视为浮点数并使用典型的浮点语法打印。</span><br><span class="line">    s:如果可能，将其视为字符串。使用这种格式，指向单字节数据的指针显示为以空结束的字符串，单字节数据的数组显示为固定长度的字符串。其他值以其自然类型显示。</span><br><span class="line">      如果没有这种格式，GDB将char、unsigned char和signed char的指针和数组显示为字符串。向量的单字节成员显示为整数数组。</span><br><span class="line">    z:与<span class="string">&#x27; x &#x27;</span>格式一样，该值被视为整数并打印为十六进制，但打印前导零以将值填充到整数类型的大小。</span><br><span class="line">    r:使用<span class="string">&#x27; raw &#x27;</span>格式打印。默认情况下，GDB将使用基于python的漂亮打印机，如果有的话(请参阅漂亮打印)。这通常会导致值内容的更高级别显示。<span class="string">&#x27; r &#x27;</span>格式绕过了任何可能存在的Python漂亮打印机。</span><br><span class="line">    例如，要以十六进制方式打印程序计数器(请参阅寄存器)，输入</span><br><span class="line">     p/x <span class="variable">$pc</span></span><br><span class="line">    注意斜杠前不需要空格;这是因为GDB中的命令名不能包含斜杠。</span><br><span class="line">    若要以不同的格式重新打印值历史中的最后一个值，可以使用只带格式而不带表达式的<span class="built_in">print</span>命令。例如，<span class="string">&#x27; p/x &#x27;</span>以十六进制重新打印最后一个值。</span><br><span class="line"></span><br><span class="line">    [option]可以有哪些值？ <span class="built_in">print</span>命令支持很多options来允许覆盖由<span class="built_in">set</span> <span class="built_in">print</span>子命令设置的相关全局打印设置:</span><br></pre></td></tr></table></figure>
+<h5 id="表达式："><a href="#表达式：" class="headerlink" title="表达式："></a>表达式：</h5><p>print和许多其他GDB命令接受一个表达式并计算它的值。您正在使用的编程语言定义的任何类型的常量、变量或操作符在GDB的表达式中都是有效的。这包括条件表达式、函数调用、强制转换和字符串常量。<br>它还包括预处理器宏，如果你编译你的程序包含这些信息;看到编译。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line">-address [on|off]</span><br><span class="line"><span class="built_in">Set</span> printing of addresses. Related setting: <span class="built_in">set</span> <span class="built_in">print</span> address.</span><br><span class="line">   打印设置：</span><br><span class="line">   GDB提供了以下方法来控制数组、结构和符号的打印方式</span><br><span class="line">   <span class="built_in">set</span> <span class="built_in">print</span><span class="built_in"> address</span></span><br><span class="line"><span class="built_in"></span>   <span class="built_in">set</span> <span class="built_in">print</span><span class="built_in"> address </span>on 默认是开启的：</span><br><span class="line">    (gdb) f</span><br><span class="line">    #0  set_quotes (<span class="attribute">lq</span>=0x34c78 <span class="string">&quot;&lt;&lt;&quot;</span>, <span class="attribute">rq</span>=0x34c88 <span class="string">&quot;&gt;&gt;&quot;</span>)</span><br><span class="line">        at input.c:530</span><br><span class="line">    530         <span class="keyword">if</span> (lquote != def_lquote)</span><br><span class="line">    <span class="built_in">set</span> <span class="built_in">print</span><span class="built_in"> address </span>off</span><br><span class="line">    <span class="keyword">Do</span> <span class="keyword">not</span> <span class="built_in">print</span> addresses when displaying their contents. <span class="keyword">For</span> example, this is the same stack frame displayed with <span class="built_in">set</span> <span class="built_in">print</span><span class="built_in"> address </span>off:</span><br><span class="line">    </span><br><span class="line">    (gdb) <span class="built_in">set</span> <span class="built_in">print</span> addr off</span><br><span class="line">    (gdb) f</span><br><span class="line">    #0  set_quotes (<span class="attribute">lq</span>=<span class="string">&quot;&lt;&lt;&quot;</span>, <span class="attribute">rq</span>=<span class="string">&quot;&gt;&gt;&quot;</span>) at input.c:530</span><br><span class="line">    530         <span class="keyword">if</span> (lquote != def_lquote)</span><br><span class="line"></span><br><span class="line">-array [on|off] 更漂亮的打印数组，默认关闭</span><br><span class="line">Pretty formatting of arrays. Related setting: <span class="built_in">set</span> <span class="built_in">print</span> array.</span><br><span class="line"></span><br><span class="line">-array-indexes [on|off] 设置数组索引是否打印，即在显示数组时打印每个元素的索引。，默认关闭</span><br><span class="line"><span class="built_in">Set</span> printing of array indexes. Related setting: <span class="built_in">set</span> <span class="built_in">print</span> array-indexes.</span><br><span class="line"></span><br><span class="line">-elements number-of-elements|unlimited 设置要打印的字符串字符或数组元素的限制。这个限制默认被设置为200</span><br><span class="line"><span class="built_in">Set</span> limit on string chars <span class="keyword">or</span> array elements <span class="keyword">to</span> print. The value unlimited causes there <span class="keyword">to</span> be <span class="literal">no</span> limit. Related setting: <span class="built_in">set</span> <span class="built_in">print</span> elements.</span><br><span class="line"></span><br><span class="line">-max-depth depth|unlimited  设置打印的结构化内容的最大深度，默认未知？</span><br><span class="line"><span class="built_in">Set</span> the threshold after which nested structures are replaced with ellipsis. Related setting: <span class="built_in">set</span> <span class="built_in">print</span> max-depth.</span><br><span class="line">举例：</span><br><span class="line"><span class="keyword">For</span> example, given this C code</span><br><span class="line"></span><br><span class="line">typedef struct s1 &#123; int a; &#125; s1;</span><br><span class="line">typedef struct s2 &#123; s1 b; &#125; s2;</span><br><span class="line">typedef struct s3 &#123; s2 c; &#125; s3;</span><br><span class="line">typedef struct s4 &#123; s3 d; &#125; s4;</span><br><span class="line"></span><br><span class="line">s4 var = &#123; &#123; &#123; &#123; 3 &#125; &#125; &#125; &#125;;</span><br><span class="line">The following table shows how different values of depth will effect how var is printed by GDB:</span><br><span class="line"></span><br><span class="line">depth setting	Result of ‘p var’</span><br><span class="line">unlimited	<span class="variable">$1</span> = &#123;d = &#123;c = &#123;b = &#123;a = 3&#125;&#125;&#125;&#125;</span><br><span class="line">0	<span class="variable">$1</span> = &#123;<span class="built_in">..</span>.&#125;</span><br><span class="line">1	<span class="variable">$1</span> = &#123;d = &#123;<span class="built_in">..</span>.&#125;&#125;</span><br><span class="line">2	<span class="variable">$1</span> = &#123;d = &#123;c = &#123;<span class="built_in">..</span>.&#125;&#125;&#125;</span><br><span class="line">3	<span class="variable">$1</span> = &#123;d = &#123;c = &#123;b = &#123;<span class="built_in">..</span>.&#125;&#125;&#125;&#125;</span><br><span class="line">4	<span class="variable">$1</span> = &#123;d = &#123;c = &#123;b = &#123;a = 3&#125;&#125;&#125;&#125;</span><br><span class="line"><span class="keyword">To</span> see the contents of structures that have been hidden the<span class="built_in"> user </span>can either increase the <span class="built_in">print</span> max-depth, <span class="keyword">or</span> they can <span class="built_in">print</span> the elements of the structure that are visible, <span class="keyword">for</span> example</span><br><span class="line"></span><br><span class="line">(gdb) <span class="built_in">set</span> <span class="built_in">print</span> max-depth 2</span><br><span class="line">(gdb) p var</span><br><span class="line"><span class="variable">$1</span> = &#123;d = &#123;c = &#123;<span class="built_in">..</span>.&#125;&#125;&#125;</span><br><span class="line">(gdb) p var.d</span><br><span class="line"><span class="variable">$2</span> = &#123;c = &#123;b = &#123;<span class="built_in">..</span>.&#125;&#125;&#125;</span><br><span class="line">(gdb) p var.d.c</span><br><span class="line"><span class="variable">$3</span> = &#123;b = &#123;a = 3&#125;&#125;</span><br><span class="line"></span><br><span class="line">-null-stop [on|off]  将字符数组的打印设置为在第一个空字符处停止。</span><br><span class="line"><span class="built_in">Set</span> printing of char arrays <span class="keyword">to</span> stop at first <span class="literal">null</span> char</span><br><span class="line"></span><br><span class="line">-object [on|off] 设置是否打印虚函数表；</span><br><span class="line"><span class="built_in">Set</span> printing C++ virtual function tables.</span><br><span class="line"></span><br><span class="line">-pretty [on|off] 设置是否以比较好看的格式打印；</span><br><span class="line"><span class="built_in">Set</span> pretty formatting of structures.</span><br><span class="line"></span><br><span class="line">-raw-values [on|off] 设置是否以原始值打印，绕过好看的打印格式；</span><br><span class="line"><span class="built_in">Set</span> whether <span class="keyword">to</span> <span class="built_in">print</span> values <span class="keyword">in</span><span class="built_in"> raw </span>form, bypassing any pretty-printers <span class="keyword">for</span> that value</span><br><span class="line"></span><br><span class="line">-repeats number-of-repeats|unlimited</span><br><span class="line"><span class="built_in">Set</span> threshold <span class="keyword">for</span> repeated <span class="built_in">print</span> elements. unlimited causes all elements <span class="keyword">to</span> be individually printed. </span><br><span class="line"></span><br><span class="line">-static-members [on|off] 设置是否打印c++的静态成员；</span><br><span class="line"><span class="built_in">Set</span> printing C++ static members.</span><br><span class="line"></span><br><span class="line">-symbol [on|off] 打印指针时设置符号名打印；这个符号和地址关联，默认关闭；！！！这个挺好的，可以打开；</span><br><span class="line"><span class="built_in">Set</span> printing of symbol names when printing pointers</span><br><span class="line"></span><br><span class="line">-union [on|off]</span><br><span class="line"><span class="built_in">Set</span> printing of unions interior <span class="keyword">to</span> structures. </span><br><span class="line"></span><br><span class="line">-vtbl [on|off]</span><br><span class="line"><span class="built_in">Set</span> printing of C++ virtual function tables. </span><br><span class="line">因为print命令接受看起来像选项(包括缩写)的任意表达式，如果指定任何命令选项，则必须使用双破折号(——)来标记选项处理的结束。</span><br><span class="line">如果单纯的p 会打印之前的值；</span><br><span class="line">双破折号举例：注意空格：</span><br><span class="line">(gdb) <span class="built_in">print</span> -pretty -- *myptr</span><br><span class="line"><span class="variable">$1</span> = &#123;</span><br><span class="line">  next = 0x0,</span><br><span class="line">  flags = &#123;</span><br><span class="line">    sweet = 1,</span><br><span class="line">    sour = 1</span><br><span class="line">  &#125;,</span><br><span class="line">  meat = 0x54 <span class="string">&quot;Pork&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span> [option]</span><br><span class="line"><span class="built_in">print</span> [option] /f </span><br></pre></td></tr></table></figure>
+<p>1)如果体系结构支持内存标记，如果打印的是指针或引用类型，print命令将显示指针&#x2F;内存标记不匹配。看到内存标签。<br>2)检查数据的一种更低级的方法是使用x命令。它检查内存中指定地址的数据，并以指定的格式打印。看到检查内存。<a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Memory.html#Memory">https://sourceware.org/gdb/current/onlinedocs/gdb/Memory.html#Memory</a><br>3)如果您对类型信息或结构或类的字段如何声明感兴趣，请使用ptype exp命令而不是print命令。<a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Symbols.html#Symbols">https://sourceware.org/gdb/current/onlinedocs/gdb/Symbols.html#Symbols</a><br>例如可以直接打印某个变量的类型结构：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">(gdb) whatis <span class="keyword">var</span></span><br><span class="line"><span class="keyword">type</span> = complex_t</span><br><span class="line">(gdb) ptype <span class="keyword">var</span></span><br><span class="line"><span class="keyword">type</span> = <span class="keyword">struct</span> <span class="built_in">complex</span> &#123;</span><br><span class="line">    real_t <span class="built_in">real</span>;</span><br><span class="line">    double <span class="built_in">imag</span>;</span><br><span class="line">&#125;</span><br><span class="line">再通过这个进一步打印：</span><br><span class="line">(gdb) ptype /o <span class="keyword">struct</span> <span class="built_in">complex</span></span><br><span class="line"><span class="comment">/* offset      |    size */</span>  <span class="keyword">type</span> = <span class="keyword">struct</span> tyu &#123;</span><br><span class="line"><span class="comment">/*      0:31   |       4 */</span>    <span class="type">int</span> a1 : <span class="number">1</span>;</span><br><span class="line"><span class="comment">/*      0:28   |       4 */</span>    <span class="type">int</span> a2 : <span class="number">3</span>;</span><br><span class="line"><span class="comment">/*      0: 5   |       4 */</span>    <span class="type">int</span> a3 : <span class="number">23</span>;</span><br><span class="line"><span class="comment">/*      3: 3   |       1 */</span>    signed char a4 : <span class="number">2</span>;</span><br><span class="line"><span class="comment">/* XXX  3-bit hole       */</span></span><br><span class="line"><span class="comment">/* XXX  4-byte hole      */</span></span><br><span class="line"><span class="comment">/*      8      |       8 */</span>    int64_t a5;</span><br><span class="line"><span class="comment">/*     16: 0   |       4 */</span>    <span class="type">int</span> a6 : <span class="number">5</span>;</span><br><span class="line"><span class="comment">/*     16: 5   |       8 */</span>    int64_t a7 : <span class="number">3</span>;</span><br><span class="line"><span class="comment">/* XXX  7-byte padding   */</span></span><br></pre></td></tr></table></figure>
+<p>或者可以用python的：我测试了下，效果不是很好，输入数字的时候卡住了；<br>(gdb) explore</p>
+<h5 id="表达式：-1"><a href="#表达式：-1" class="headerlink" title="表达式："></a>表达式：</h5><p>print和许多其他GDB命令接受一个表达式并计算它的值。<br>您所使用的编程语言定义的任何类型的常量、变量或运算符在GDB的表达式中都是有效的。<br>这包括条件表达式、函数调用、强制类型转换和字符串常量。它还包括预处理器宏，如果你编译你的程序包括这个信息<br>(gdb) p 123-3<br>120<br>(gdb) p func()</p>
+<p>GDB支持用户输入的表达式中的数组常量。语法是{element, element…}。例如，可以使用命令print{1, 2, 3}创建一个由三个整数组成的数组。<br>如果将数组传递给函数或将其赋值给程序变量，GDB会将数组复制到目标程序中错误定位的内存中。<br>除了编程语言中常见的操作符外，GDB还支持这些操作符:<br>＠<br>‘ @ ‘是一个二进制操作符，用于将部分内存作为数组处理。<br>：：<br>‘:: ‘允许你在定义变量的文件或函数中指定变量,类似作用域<br>{type} addr<br>指向存储在内存地址addr的类型为类型的对象。地址addr可以是值为整数或指针的任何表达式(但是在二进制操作符周围需要圆括号，就像在强制转换中一样)。<br>这种构造是允许的，无论什么类型的数据通常应该驻留在addr。</p>
+<h5 id="模糊的表达式："><a href="#模糊的表达式：" class="headerlink" title="模糊的表达式："></a>模糊的表达式：</h5><p>有些表达式有时候是模糊的，比如在c&#x2F;c++中，一个函数名可能被定义几次在不同的上下文(作用域，命名空间或类等)。它们叫重载；其他语言也类似；<br>可以调整表达式来使其意义明确。例如，在c++中，你可以具体化函数的签名，如 break 中break function(type).第一个选项总是’ [0]cancel ‘，输入0 RET将终止当前命令。<br>如果使用表达式的命令允许选择多个选项，则菜单中的下一个选项是’ [1]all ‘，输入1 RET将选择所有可能的选项。</p>
+<p>当检测到需要解决的歧义时，调试器能够为每种可能性显示一个有编号的选项菜单，然后使用提示符“&gt;”等待选择。<br>例如，下面的会话摘录显示了在重载符号String::after上设置断点的尝试。我们选择函数名的三种特定定义:<br>(gdb) b String::after<br>[0] cancel<br>[1] all<br>[2] file:String.cc; line number:867<br>[3] file:String.cc; line number:860<br>[4] file:String.cc; line number:875<br>[5] file:String.cc; line number:853<br>[6] file:String.cc; line number:846<br>[7] file:String.cc; line number:735</p>
+<blockquote>
+<p>2 4 6<br>Breakpoint 1 at 0xb26c: file String.cc, line 867.<br>Breakpoint 2 at 0xb344: file String.cc, line 875.<br>Breakpoint 3 at 0xafcc: file String.cc, line 846.<br>Multiple breakpoints were set.<br>Use the “delete” command to delete unwanted<br> breakpoints.<br>(gdb)<br>这里String可能是一个类或作用域，而after是一个函数；<br>set multiple-symbols mode<br>    此选项允许您在表达式不明确时调整调试器行为。缺省情况下，mode为all。如果使用表达式的命令允许多个选择，那么GDB会自动选择所有可能的选择。<br>    例如，使用二义性名称在函数上插入断点将导致在每个可能的匹配上插入一个断点。<br>    但是，如果必须做出唯一的选择，那么GDB将使用菜单来帮助您消除表达式的歧义。例如，打印重载函数的地址将导致使用菜单。</p>
+</blockquote>
+<pre><code>当mode设置为ask时，当检测到歧义时，调试器总是使用菜单。
+最后，当mode设置为cancel时，调试器会报告一个由于歧义而导致的错误，命令会终止。
+</code></pre>
+<p>show multiple-symbols<br>    Show the current value of the multiple-symbols setting.</p>
+<h5 id="程序的变量："><a href="#程序的变量：" class="headerlink" title="程序的变量："></a>程序的变量：</h5><p>最常用的表达式类型是程序中变量的名称。表达式中的变量在选定的堆栈帧中被理解(参见选择帧);它们必须是:<br>global (or file-static)<br>或<br>根据编程语言的作用域规则可见，从该框架的执行角度来看</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">eg:</span></span><br><span class="line">foo (a)</span><br><span class="line">     int a;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">bar </span>(a);</span><br><span class="line">  &#123;</span><br><span class="line">    int <span class="keyword">b </span>= test ();</span><br><span class="line">    <span class="keyword">bar </span>(<span class="keyword">b);</span></span><br><span class="line"><span class="keyword"></span>  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当程序在函数foo中执行时，您可以检查和使用变量a，但只有当程序在声明b的块中执行时，您才能使用或检查变量b。<br>当然，有一种例外，就是你可以打印或引用一个变量或函数，它的作用域是一个文件的范围，即使当前的执行点不在这个文件；<br>当然，可能出现不同文件或函数有相同的变量名或函数名，这个时候你需要用::符号，如下：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">file</span>::<span class="keyword">variable</span></span><br><span class="line">function::varibale</span><br><span class="line">Here <span class="comment">file or function is the name of the context for the static variable.</span> </span><br><span class="line">for <span class="comment">example, to print a global value of x defined in f2.c:</span></span><br><span class="line"></span><br><span class="line">(gdb) p <span class="comment">&#x27;f2.c&#x27;</span><span class="comment">::x</span></span><br><span class="line">::符号通常用于引用静态变量，因为通常通过选择适当的框架和使用变量的简单名称来消除函数中局部变量的使用的歧义。然而，你也可以使用这种表示法来引用包含选定帧的帧中的局部变量:</span><br><span class="line">void</span><br><span class="line">foo <span class="comment">(int a)</span></span><br><span class="line">&#123;</span><br><span class="line">  if <span class="comment">(a &lt; 10)</span></span><br><span class="line">    bar <span class="comment">(a)</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    process (a);    <span class="comment">/* Stop here */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int</span><br><span class="line">bar (int a)</span><br><span class="line">&#123;</span><br><span class="line">  foo (a + <span class="number">5</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">For</span> example, <span class="keyword">if</span> there is a breakpoint at the commented line, here is what you might see when the program stops after executing the call bar(<span class="number">0</span>):</span><br><span class="line"></span><br><span class="line">(gdb) p a</span><br><span class="line"><span class="meta"><span class="keyword">$1</span> = 10</span></span><br><span class="line">(gdb) p bar::a</span><br><span class="line"><span class="meta"><span class="keyword">$2</span> = 5</span></span><br><span class="line">(gdb) up <span class="number">2</span></span><br><span class="line">#<span class="number">2</span>  <span class="number">0x080483d0</span> in foo (a=<span class="number">5</span>) at foobar.c:<span class="number">12</span></span><br><span class="line">(gdb) p a</span><br><span class="line"><span class="meta"><span class="keyword">$3</span> = 5</span></span><br><span class="line">(gdb) p bar::a</span><br><span class="line"><span class="meta"><span class="keyword">$4</span> = 0</span></span><br></pre></td></tr></table></figure>
+<p>‘:: ‘的这些用法很少与c++中非常相似的相同表示法的用法发生冲突。当它们发生冲突时，c++的含义优先;但是，可以通过用单引号引用文件或函数名来覆盖这一点。<br>例如，假设程序在一个具有includefile字段的类的方法中停止，并且还有一个名为includefile的包含文件，该文件定义了一个变量，some_global.<br>(gdb) p includefile<br>$1 &#x3D; 23<br>(gdb) p includefile::some_global<br>A syntax error in expression, near &#96;’.<br>(gdb) p ‘includefile’::some_global<br>$2 &#x3D; 27<br>有时候并不能很顺利打印出来，比如：<br>编译器优化的另一个可能的效果是优化不存在的变量，或者将变量分配给寄存器(而不是内存地址)。<br>根据编译器使用的调试信息格式对这种情况的支持，GDB可能无法显示这些局部变量的值。如果发生这种情况，GDB将打印如下消息:No symbol “foo” in current context.<br>若出现这种情况，可以关闭编译优化，或者改变debug info format<br>如果你打印的类型是无法确认的，gdb会打印‘<incomplete type>’，或者做下类型强制转换：<br>(gdb) p var<br>  ‘var’ has unknown type; cast it to its declared type<br>  (gdb) p (float) var<br>  $1 &#x3D; 3.14</p>
+<p>其他： @entry ？</p>
+<h5 id="伪造数组"><a href="#伪造数组" class="headerlink" title="伪造数组"></a>伪造数组</h5><p>在内存中连续输出几个相同类型的对象通常是有用的;数组的一段，或大小动态确定的数组，在程序中只有指针。</p>
+<p>你可以通过使用二元运算符’ @ ‘引用一个连续的内存范围作为一个伪造数组来实现。’ @ ‘的左操作数应该是所需数组的第一个元素，并且是一个单独的对象。<br>正确的操作数应该是数组所需的长度。结果是一个数组值，其元素都是左参数的类型。第一个元素实际上是左参数;第二个元素来自存储第一个元素的字节之后的内存字节，依此类推。<br>下面是一个例子：<br>int *array &#x3D; (int *) malloc (len * sizeof (int));<br>you can print the contents of array with</p>
+<p>p *array@len</p>
+<p>‘ @ ‘的左操作数必须驻留在内存中。以这种方式使用’ @ ‘生成的数组值在下标方面的行为与其他数组类似，并且在表达式中使用时被强制转换为指针。<br>伪造数组通常通过值历史(参见值历史)出现在表达式中，在输出一个值之后。</p>
+<p>另一种创建伪造数组的方法是使用类型转换。这将重新解释一个值，就像它是一个数组。该值不需要在内存中:<br>(gdb) p&#x2F;x (short[2])0x12345678<br>$1 &#x3D; {0x1234, 0x5678}<br>为了方便起见，如果你将数组长度留出来(如’ (type[])value ‘)， GDB会计算大小来填充值(如’ sizeof(value)&#x2F;sizeof(type) ‘:<br>(gdb) p&#x2F;x (short[])0x12345678<br>$2 &#x3D; {0x1234, 0x5678}</p>
+<p>有时，伪造数组的方式是不够的;在中等复杂的数据结构中，感兴趣的元素实际上可能不是邻接的—例如，如果您感兴趣的是数组中的指针值。在这种情况下，<br>一个有用的解决办法是在一个表达式中使用一个方便变量(请参阅便利变量)作为计数器，该表达式打印第一个感兴趣的值，然后通过RET重复该表达式。你感兴趣的是每个结构中字段fv的值。<br>set $i &#x3D; 0<br>p dtab[$i++]-&gt;fv<br>RET<br>RET<br>…</p>
+<h5 id="输出的格式：进制"><a href="#输出的格式：进制" class="headerlink" title="输出的格式：进制"></a>输出的格式：进制</h5><p>见上”#### 检查数据”<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Output-Formats.html#Output-Formats">https://sourceware.org/gdb/current/onlinedocs/gdb/Output-Formats.html#Output-Formats</a></p>
+<h5 id="打印和检查内存"><a href="#打印和检查内存" class="headerlink" title="打印和检查内存"></a>打印和检查内存</h5><figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//sourceware.org/gdb/current/onlinedocs/gdb/Memory.html#Memory</span></span><br><span class="line">你可以使用指令 x来检查内存，并以各种格式打印出来，独立于你的程序数据类型；</span><br><span class="line">语法：</span><br><span class="line">x/nfu addr</span><br><span class="line">x addr</span><br><span class="line">x来检查内存，并以各种格式打印出来，独立于你的程序数据类型；</span><br><span class="line">n f和u是所有的可选参数，用来具体化多少内存展示出来，和什么格式。 addr是一个表达式，给定起始内存地址。如果你是用默认的nfu,</span><br><span class="line">你不需要打<span class="string">&#x27;/&#x27;</span>.有几个命令为addr设置了方便的缺省值。</span><br><span class="line">n, the repeat count是一个十进制整数;默认值是<span class="number">1</span>。它指定显示多少内存(以单位u计数)。如果指定了一个负数，则从addr开始向后检查内存。</span><br><span class="line">f, the display <span class="keyword">format</span> 是是<span class="keyword">print</span> (<span class="string">&#x27; x &#x27;</span>， <span class="string">&#x27; d &#x27;</span>， <span class="string">&#x27; u &#x27;</span>， <span class="string">&#x27; o &#x27;</span>， <span class="string">&#x27; t &#x27;</span>， <span class="string">&#x27; a &#x27;</span>， <span class="string">&#x27; c &#x27;</span>， <span class="string">&#x27; f &#x27;</span>， <span class="string">&#x27; s &#x27;</span>)，</span><br><span class="line"> <span class="string">&#x27; i &#x27;</span>(用于机器指令)和<span class="string">&#x27; m &#x27;</span>(用于显示内存标签)使用的格式之一。初始值是<span class="string">&#x27; x &#x27;</span>(十六进制)。每次使用x或<span class="keyword">print</span>时，默认值都会改变。</span><br><span class="line"></span><br><span class="line">u,the <span class="keyword">unit</span> <span class="keyword">size</span></span><br><span class="line">即单位内存大小：</span><br><span class="line">b</span><br><span class="line">Bytes.</span><br><span class="line"></span><br><span class="line">h</span><br><span class="line">Halfwords (two bytes).</span><br><span class="line"></span><br><span class="line">w</span><br><span class="line">Words (four bytes). This is the initial <span class="keyword">default</span>.</span><br><span class="line"></span><br><span class="line">g</span><br><span class="line">Giant words (eight bytes).</span><br><span class="line"></span><br><span class="line">每次你用x指定一个单位大小，下一次你使用x时，这个大小就会成为默认的单位。对于<span class="string">&#x27; i &#x27;</span>格式，单位大小会被忽略，通常不会被写入。对于<span class="string">&#x27; s &#x27;</span>格式，除非明确给出，否则单位大小默认为<span class="string">&#x27; b &#x27;</span>。使用x /hs显示<span class="number">16</span>位字符串，</span><br><span class="line">使用x /ws显示<span class="number">32</span>位字符串。下一次使用x /s将再次显示<span class="number">8</span>位字符串。注意，结果取决于当前编译单元的编程语言。如果语言是C， <span class="string">&#x27; s &#x27;</span>修饰符将使用UTF<span class="number">-16</span>编码，而<span class="string">&#x27; w &#x27;</span>将使用UTF<span class="number">-32</span></span><br><span class="line"></span><br><span class="line">addr:starting display address</span><br><span class="line">addr是你想要GDB开始显示内存的地址。表达式不需要有指针值(尽管可以);它总是被解释为内存的一个字节的整数地址。</span><br><span class="line">例如，<span class="string">&#x27; x/3uh 0x54320 &#x27;</span>是一个显示内存的三个半字(h)的请求，格式化为无符号十进制整数(<span class="string">&#x27; u &#x27;</span>)，从地址<span class="number">0x54320</span>开始。<span class="string">&#x27; x/4xw $sp &#x27;</span>打印堆栈指针上方的内存的四个单词(<span class="string">&#x27; w &#x27;</span>)</span><br><span class="line">您还可以指定一个负重复计数来从给定地址反向检查内存。例如，<span class="string">&#x27; x/-3uh 0x54320 &#x27;</span>打印三个半字(h)在<span class="number">0x54314</span>、<span class="number">0x54328</span>和<span class="number">0x5431c</span>。</span><br><span class="line"></span><br><span class="line">当检查机器指令时，当前程序计数器上的指令用=&gt;标记显示。例如:</span><br><span class="line">(gdb) x/<span class="number">5</span>i $pc<span class="number">-6</span></span><br><span class="line">   <span class="number">0x804837f</span> &lt;main+<span class="number">11</span>&gt;: mov    %esp,%ebp</span><br><span class="line">   <span class="number">0x8048381</span> &lt;main+<span class="number">13</span>&gt;: push   %ecx</span><br><span class="line">   <span class="number">0x8048382</span> &lt;main+<span class="number">14</span>&gt;: sub    $0x4,%esp</span><br><span class="line">=&gt; <span class="number">0x8048385</span> &lt;main+<span class="number">17</span>&gt;: movl   $0x8048460,(%esp)</span><br><span class="line">   <span class="number">0x804838c</span> &lt;main+<span class="number">24</span>&gt;: call   <span class="number">0x80482d4</span> &lt;puts@plt&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="内存标签"><a href="#内存标签" class="headerlink" title="内存标签"></a>内存标签</h5><p>不太理解，和架构支持有关，暂时不管；</p>
+<h5 id="自动显示"><a href="#自动显示" class="headerlink" title="自动显示"></a>自动显示</h5><p>当你发现你想频繁的打印一个表达式时，你可以添加它到自动打印，gdb会自动打印它每当你的程序stop时，每个添加进自动打印的表达式列表，都有个数字标识它。若要移除<br>需要指定对应的数字：<br>这个列表看起来是这样的：<br>2: foo &#x3D; 38<br>3: bar[5] &#x3D; (struct hack *) 0x3804<br>此显示显示项目编号、表达式和它们的当前值。与使用x或print手动显示请求一样，<br>您可以指定您喜欢的输出格式;事实上，display决定是使用print还是x，这取决于你的格式规范——如果你指定了’ i ‘或’ s ‘格式或单位大小，它会使用x;否则使用print。<br>display expr 添加表达式，display does not repeat if you press RET again after using it.<br>display&#x2F;fmt expr 上面的基础上指定格式<br>display&#x2F;fmt addr 打印内存；<br>例如，’ display&#x2F;i $pc ‘可能是有帮助的，可以在每次执行停止时看到将要执行的机器指令(‘ $pc ‘是程序计数器的通用名称;见寄存器)。<br>如何删除或暂停，使能<br>undisplay dnums…<br>delete display dnums…<br>disable display dnums…<br>enable display dnums…<br>display<br>显示列表中表达式的当前值，就像程序停止时所做的那样。<br>info display<br>打印先前设置为自动显示的表达式列表，每个表达式都带有项目编号，但不显示值。这包括被标记为禁用的表达式。它还包括一些表达式，这些表达式现在不会显示出来，因为它们引用了当前不可用的自动变量。</p>
+<h5 id="打印设置"><a href="#打印设置" class="headerlink" title="打印设置"></a>打印设置</h5><p>见上print相关内容</p>
+<h5 id="漂亮的打印："><a href="#漂亮的打印：" class="headerlink" title="漂亮的打印："></a>漂亮的打印：</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Pretty-Printing.html#Pretty-Printing">https://sourceware.org/gdb/current/onlinedocs/gdb/Pretty-Printing.html#Pretty-Printing</a></p>
+<h5 id="值的历史："><a href="#值的历史：" class="headerlink" title="值的历史："></a>值的历史：</h5><p>print命令打印的值保存在GDB的值历史中。这允许您在其他表达式中引用它们。值将一直保持，直到符号表被重新读取或丢弃(例如使用file或symbol-file命令)。<br>当符号表发生变化时，值的历史记录将被丢弃，因为值可能包含指向符号表中定义的类型的指针。</p>
+<p>打印的值是给定的历史数字，您可以通过这些历史数字来引用它们。它们是从1开始的连续整数。Print通过在值之前打印’ $num &#x3D; ‘来显示分配给某个值的历史编号;这里num是历史号码。</p>
+<p>要引用之前的任何值，请使用’ $ ‘后跟该值的历史编号。print标签的输出就是为了提醒您这一点。<br>只是$指的是历史上最近的值，而$$指的是在那之前的值。$$n表示倒数第n个值;$$2是$$之前的值，$$1等价于$$，$$0等价于$。<br>例如，假设您刚刚打印了一个指向结构的指针，并希望查看该结构的内容。<br>p *$<br>如果你有一个结构链，其中组件的下一个指向下一个，你可以用这个打印下一个的内容:p *$.next<br>您可以通过重复这个命令来打印链中的连续链接——只需输入RET即可完成此操作。</p>
+<p>注意，历史记录的是值，而不是表达式。如果x的值是4，你输入以下命令:<br>Print x<br>set x&#x3D;5<br>那么即使x的值发生了变化，Print命令记录在值历史中的值仍然保持为4。<br>show values<br>打印值历史中的最后10个值及其项目编号。这就像’ p $$9 ‘重复了10次，除了显示的值没有改变历史。<br>show values n<br>以历史项目号n为中心打印10个历史值。<br>show values +<br>在上次打印的值之后打印10个历史值。如果没有更多可用的值，则show values +不产生任何显示。<br>按RET重复show value n的效果与’ show values + ‘完全相同。</p>
+<h5 id="gdb的变量"><a href="#gdb的变量" class="headerlink" title="gdb的变量"></a>gdb的变量</h5><p>GDB提供了方便的变量，您可以在GDB中使用这些变量来保存一个值并在以后引用它。这些变量完全存在于GDB中;它们不是程序的一部分，设置方便变量对程序的进一步执行没有直接影响。<br>这就是为什么你可以自由地使用它们。</p>
+<p>使用$为开头，不过要避免和内置的冲突：<br>set $foo &#x3D; *object_ptr<br>将object_ptr指向的对象中包含的值保存在$foo中。<br>第一次使用方便变量创建它，但它的值是空的，直到您分配一个新值。您可以在任何时候使用另一个赋值来更改该值。<br>gdb变量没有固定的类型。您可以为方便变量指定任何类型的值，包括结构和数组，即使该变量已经具有不同类型的值。方便变量在用作表达式时，具有其当前值的类型。</p>
+<p>show convenience<br>打印到目前为止使用的便利变量列表及其值，以及便利函数列表。缩写展示conv。</p>
+<p>使用方便变量的一种方法是作为递增的计数器或前进的指针。例如，从结构数组的连续元素中打印字段:<br>set $i &#x3D; 0<br>print bar[$i++]-&gt;contents<br>还有一些自动变量，类似makefile;<br>如： $_thread<br>当前线程的线程号。<br>更多见手册；<a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Convenience-Vars.html#Convenience-Vars">https://sourceware.org/gdb/current/onlinedocs/gdb/Convenience-Vars.html#Convenience-Vars</a></p>
+<h5 id="gdb除了提供方便变量，还提供了函数；"><a href="#gdb除了提供方便变量，还提供了函数；" class="headerlink" title="gdb除了提供方便变量，还提供了函数；"></a>gdb除了提供方便变量，还提供了函数；</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Convenience-Funs.html#Convenience-Funs">https://sourceware.org/gdb/current/onlinedocs/gdb/Convenience-Funs.html#Convenience-Funs</a></p>
+<h5 id="gdb中的寄存器使用"><a href="#gdb中的寄存器使用" class="headerlink" title="gdb中的寄存器使用"></a>gdb中的寄存器使用</h5><h5 id="gdb中内存区域的属性"><a href="#gdb中内存区域的属性" class="headerlink" title="gdb中内存区域的属性"></a>gdb中内存区域的属性</h5><h5 id="如何dump指定内存区域内容到文件，或反向，即文件中读取到内存；"><a href="#如何dump指定内存区域内容到文件，或反向，即文件中读取到内存；" class="headerlink" title="如何dump指定内存区域内容到文件，或反向，即文件中读取到内存；"></a>如何dump指定内存区域内容到文件，或反向，即文件中读取到内存；</h5><p>dump指令</p>
+<h5 id="如何产生一份core文件："><a href="#如何产生一份core文件：" class="headerlink" title="如何产生一份core文件："></a>如何产生一份core文件：</h5><p>有时候需要一份程序执行的内存快照：<br>generate-core-file [file]<br>(gdb) gcore [file]</p>
+<h5 id="通过find指令在指定内存中查找字符或其他值"><a href="#通过find指令在指定内存中查找字符或其他值" class="headerlink" title="通过find指令在指定内存中查找字符或其他值"></a>通过find指令在指定内存中查找字符或其他值</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Searching-Memory.html#Searching-Memory">https://sourceware.org/gdb/current/onlinedocs/gdb/Searching-Memory.html#Searching-Memory</a></p>
+<h4 id="调试优化后的代码-–"><a href="#调试优化后的代码-–" class="headerlink" title="调试优化后的代码  –"></a>调试优化后的代码  –</h4><h4 id="c预处理宏-–"><a href="#c预处理宏-–" class="headerlink" title="c预处理宏 –"></a>c预处理宏 –</h4><h4 id="追踪点，无干扰的调试"><a href="#追踪点，无干扰的调试" class="headerlink" title="追踪点，无干扰的调试"></a>追踪点，无干扰的调试</h4><p>在某些应用程序中，调试器中断程序执行的时间不够长，以至于开发人员无法了解有关程序行为的任何有用信息。<br>如果程序的正确性取决于它的实时行为，那么调试器引入的延迟可能会导致程序彻底改变其行为，甚至可能会失败，即使代码本身是正确的。能够在不中断的情况下观察程序的行为是很有用的。<br>在服务器或网络程序中的调试经常遇到；</p>
+<p>使用GDB的跟踪和收集命令，您可以在程序中指定位置、调用跟踪点以及在到达这些跟踪点时计算的任意表达式。稍后，使用tfind命令，您可以检查程序到达跟踪点时那些表达式的值。<br>表达式还可以表示内存结构或数组中的对象，例如GDB应该记录哪些对象的值;当访问一个特定的跟踪点时，您可以检查那些对象，就像它们当时在内存中一样。<br>由于GDB不需要与您交互就可以记录这些值，所以它可以快速而不引人注目地记录这些值，希望不会干扰程序的行为。</p>
+<p>使用这种方式，需要gdb以类似attach的方式，这里是用的remote方式：<br>举例一个进程：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">test</span>.c:编译后为<span class="keyword">test</span> gcc -g <span class="keyword">test</span>.c -o <span class="keyword">test</span> </span><br><span class="line">先启动进程：进程会进入等待：</span><br><span class="line">gdbserver attach进程：</span><br><span class="line">gdbserver --attach <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">1234</span> `pidof <span class="keyword">test</span>` /直接填进程号</span><br><span class="line">另一个窗口使用：</span><br><span class="line">gdb --<span class="keyword">command</span>=<span class="keyword">command</span> </span><br><span class="line"><span class="keyword">command</span>文件示例：</span><br><span class="line"><span class="keyword">file</span> <span class="keyword">test</span></span><br><span class="line"><span class="keyword">target</span> remote <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">1234</span></span><br><span class="line">trace <span class="keyword">test</span>.c:<span class="number">15</span></span><br><span class="line">actions</span><br><span class="line">collect vara </span><br><span class="line">end</span><br><span class="line">tstart</span><br><span class="line"><span class="keyword">break</span> <span class="keyword">test</span>.c:<span class="number">14</span></span><br><span class="line">bt</span><br><span class="line"><span class="keyword">continue</span></span><br><span class="line">tstop</span><br><span class="line">tstatus</span><br><span class="line">tfind start</span><br><span class="line"><span class="keyword">while</span>($trace_frame != -<span class="number">1</span>)</span><br><span class="line">printf <span class="string">&quot;Frame %d : indx = %d\n&quot;</span>, $trace_frame, indx</span><br><span class="line">tfind</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/DeveloperTools/gdb/gdb/gdb_11.html">https://developer.apple.com/library/archive/documentation/DeveloperTools/gdb/gdb/gdb_11.html</a></p>
+<h4 id="调试使用覆盖的程序-–暂时不用"><a href="#调试使用覆盖的程序-–暂时不用" class="headerlink" title="调试使用覆盖的程序 –暂时不用"></a>调试使用覆盖的程序 –暂时不用</h4><p>如果您的程序太大，无法完全装入目标系统的内存，有时可以使用覆盖来解决这个问题。GDB为调试使用覆盖的程序提供了一些支持。</p>
+<h4 id="用在不同的语言上-–"><a href="#用在不同的语言上-–" class="headerlink" title="用在不同的语言上 –"></a>用在不同的语言上 –</h4><h4 id="测试符号表"><a href="#测试符号表" class="headerlink" title="测试符号表"></a>测试符号表</h4><p>支持打印变量，打印变量的类型，打印类中的成员和函数，打印变量所在地址等；<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Symbols.html#Symbols">https://sourceware.org/gdb/current/onlinedocs/gdb/Symbols.html#Symbols</a></p>
+<h4 id="修改可执行程序"><a href="#修改可执行程序" class="headerlink" title="修改可执行程序"></a>修改可执行程序</h4><p>一旦您认为在程序中发现了错误，您可能希望确定纠正明显的错误是否会导致在其余的运行中得到正确的结果。您可以通过实验找到答案，使用GDB特性更改程序的执行。<br>例如，您可以将新值存储到变量或内存位置，给您的程序一个信号，在不同的地址重新启动它，甚至从函数提前返回。</p>
+<p>• Assignment:          Assignment to variables<br>• Jumping:          Continuing at a different address<br>• Signaling:          Giving your program a signal<br>• Returning:          Returning from a function<br>• Calling:          Calling your program’s functions<br>• Patching:          Patching your program<br>• Compiling and Injecting Code:          Compiling and injecting code in GDB</p>
+<h4 id="gdb和相关文件"><a href="#gdb和相关文件" class="headerlink" title="gdb和相关文件"></a>gdb和相关文件</h4><p>GDB需要知道要调试的程序的文件名，这既是为了读取它的符号表，也是为了启动程序。要调试上一次运行的核心转储，还必须告诉GDB核心转储文件的名称。</p>
+<p>• Files:          Commands to specify files<br>您可能需要指定可执行文件和核心转储文件的名称。通常的方法是在启动时使用GDB的启动命令的参数，或者在启动gdb后，再进行指定；<br>在GDB会话期间，偶尔需要更改到不同的文件。或者您可能在运行GDB时忘记指定要使用的文件。或者您正在通过gdbserver调试远程目标(请参阅使用gdbserver程序)。在这些情况下，指定新文件的GDB命令很有用。</p>
+<p>file filename:<br>使用文件名作为要调试的程序。读它是为了它的符号和纯粹记忆的内容。它也是使用run命令时执行的程序。如果没有指定目录，并且在GDB工作目录中没有找到该文件，<br>那么GDB将使用环境变量PATH作为要搜索的目录列表，就像shell在寻找要运行的程序时所做的那样。您可以使用path命令为GDB和您的程序更改这个变量的值。</p>
+<p>可以使用file命令将未链接的对象.o文件加载到GDB中。你将不能“运行”一个目标文件，但你可以反汇编函数和检查变量。此外，如果底层的BFD功能支持它，<br>您可以使用gdb -write使用这种技术来修补对象文件。<br>注意，在这种情况下，GDB既不能解释也不能修改重定位，因此分支和一些初始化的变量似乎会移到错误的位置。但是这个功能还是很方便的。</p>
+<p>file<br>file with no argument makes GDB discard any information it has on both executable file and the symbol table.</p>
+<p>exec-file [ filename ]<br>指定在文件名中找到要运行的程序(而不是符号表)。如果需要的话，GDB会搜索环境变量PATH来定位您的程序。省略文件名意味着丢弃可执行文件上的信息。</p>
+<p>symbol-file [ filename [ -o offset ]]<br>从文件文件名读取符号表信息。必要时搜索PATH。使用file命令从同一个文件获取符号表和要运行的程序。<br>如果指定了可选的偏移量，它将被添加到符号文件中每个部分的起始地址中。如果程序在运行时被重新定位，例如启用了kASLR的Linux内核，这将非常有用。<br>…</p>
+<p>core-file [filename]<br>core<br>指定要用作“内存内容”的核心转储文件的下落。传统上，核心文件只包含生成它们的进程的地址空间的一部分;GDB可以为其他部分访问可执行文件本身。<br>core-file with no argument specifies that no core file is to be used.<br>注意，当您的程序在GDB下实际运行时，核心文件将被忽略。因此，如果您一直在运行您的程序，而您希望调试核心文件，则必须杀死程序正在其中运行的子进程。为此，可以使用kill命令(参见杀死子进程)。</p>
+<p>其他:<br>add-symbol-file filename [ -readnow | -readnever ] [ -o offset ] [ textaddress ] [ -s section address … ]<br>remove-symbol-file filename<br>remove-symbol-file -a address</p>
+<p>info files<br>info target<br>两个都是打印当前的目标；</p>
+<p>• File Caching:          Information about GDB’s file caching<br>为了加快文件加载速度，减少内存占用，GDB会重用用于跟踪打开文件的bfd对象。请参见二进制文件描述符库中的BFD。下面的命令允许缓存行为的可见性和控制。<br>maint info bfds<br>输出GDB已知的每个bfd对象的信息<br>maint set bfd-sharing<br>maint show bfd-sharing<br>控制是否可以共享bfd对象。当启用共享时，GDB将重用已经打开的bfd对象，而不是重新打开相同的文件。关闭共享不会导致已经共享的bfd对象被取消共享，<br>但所有未来打开的文件将创建一个新的bfd对象。同样，重新启用共享功能不会导致多个现有的bfd对象坍缩为一个共享的bfd对象。<br>set debug bfd-cache level<br>Turns on debugging of the bfd cache, setting the level to level.</p>
+<p>show debug bfd-cache<br>Show the current debugging level of the bfd cache.<br>• Separate Debug Files:          Debugging information in separate files<br>GDB允许您将程序的调试信息放在与可执行文件本身分离的文件中，以一种允许GDB自动查找和加载调试信息的方式。<br>由于调试信息可能非常大——有时比可执行代码本身还要大——一些系统将可执行文件的调试信息分发到单独的文件中，用户只能在需要调试问题时安装这些文件。<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/Separate-Debug-Files.html#Separate-Debug-Files">https://sourceware.org/gdb/current/onlinedocs/gdb/Separate-Debug-Files.html#Separate-Debug-Files</a><br>• MiniDebugInfo:          Debugging information in a special section<br>一些系统提供预构建的可执行文件和具有特殊’的库。gnu_debugdata”部分。这个特性被称为MiniDebugInfo。这个部分保存一个lzma压缩的对象，用于为回溯提供额外的符号。</p>
+<p>• Index Files:          Index files speed up GDB<br>当GDB发现一个符号文件时，它会扫描文件中的符号，以构造一个内部符号表。这使得大多数GDB操作能够快速工作—但要以早期的延迟为代价。对于大型程序，这种延迟可能相当长，因此GDB提供了一种构建索引的方法，这可以加快启动速度。</p>
+<p>• Symbol Errors:          Errors reading symbol files<br>在读取符号文件时，GDB偶尔会遇到一些问题，比如它不能识别的符号类型，或者编译器输出中的已知错误。默认情况下，GDB不会通知您此类问题，<br>因为它们是相对常见的，主要是调试编译器的人感兴趣的问题。如果您对查看有关构造不良的符号表的信息感兴趣，您可以要求GDB对每种类型的问题只打印一条消息，<br>不管问题发生了多少次;或者您可以使用set compl命令请求GDB打印更多消息，以查看问题发生的次数<br>• Data Files:          GDB data files<br>GDB有时会读取辅助数据文件。这些文件保存在一个称为数据目录的目录中。<br>您可以设置数据目录的名称，并查看GDB当前使用的名称。</p>
+<h4 id="具体化一个调试目标"><a href="#具体化一个调试目标" class="headerlink" title="具体化一个调试目标"></a>具体化一个调试目标</h4><p>目标是程序所占用的执行环境。通常，GDB运行在与程序相同的主机环境中;在这种情况下，当您使用file或core命令时，调试目标被指定为副作用。<br>当你需要更多的灵活性,在物理上独立的主机上运行GDB或控制一个独立的系统通过串口或实时系统在一个TCP &#x2F; IP连接可以使用目标命令来指定一个目标类型配置为GDB(见命令来管理目标)。</p>
+<h4 id="调试远程程序"><a href="#调试远程程序" class="headerlink" title="调试远程程序"></a>调试远程程序</h4><h4 id="配置具体的信息-—-和体系结构相关，暂时不看"><a href="#配置具体的信息-—-和体系结构相关，暂时不看" class="headerlink" title="配置具体的信息 — 和体系结构相关，暂时不看"></a>配置具体的信息 — 和体系结构相关，暂时不看</h4><p>尽管几乎所有的GDB命令都可以用于所有本机和跨版本的调试器，但也有一些例外。本章描述仅在某些配置中可用的东西。<br>有三种主要的配置类型:本机配置，其中主机和目标是相同的;嵌入式操作系统配置，这对于几个不同的处理器体系结构通常是相同的;裸嵌入式处理器，它们彼此之间差别很大。</p>
+<h4 id="控制gdb"><a href="#控制gdb" class="headerlink" title="控制gdb"></a>控制gdb</h4><h4 id="扩展GDB"><a href="#扩展GDB" class="headerlink" title="扩展GDB"></a>扩展GDB</h4><p>GDB提供了几种扩展机制。GDB还提供了在读取文件进行调试时自动加载扩展名的能力。这允许用户为正在调试的程序自动定制GDB。<br>为了方便使用扩展语言，GDB能够评估文件的内容。这样做时，GDB可以通过查看文件名扩展名来识别正在使用的扩展语言。带有无法识别的文件名扩展名的文件总是被视为GDB命令文件。</p>
+<h4 id="命令解释器"><a href="#命令解释器" class="headerlink" title="命令解释器"></a>命令解释器</h4><h4 id="gdb用户界面接口-TUI"><a href="#gdb用户界面接口-TUI" class="headerlink" title="gdb用户界面接口 TUI"></a>gdb用户界面接口 TUI</h4><p>​TUI（TextUser Interface）为GDB调试的文本用户界面，可以方便地显示源代码、汇编和寄存器文本窗口，支持类似ide中的源码级单步调试；</p>
+<h5 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h5><p>在TUI模式中，可以显示以下几个窗口：<br>命令窗口：用于 GDB调试时的命令输入和命令结果输出显示，与普通 GDB窗口无异。<br>源代码窗口：用于显示程序源代码，包括当前运行行、中断以中断标识等。<br>汇编窗口：显示当前程序的汇编代码。<br>寄存器窗口：显示处理器的寄存器内容，当寄存器内容发生改变时会高亮显示。<br>源代码窗口和汇编窗口会高亮显示程序运行位置并以’&gt;’符号标记。有两个特殊标记用于标识断点，第一个标记用于标识断点类型：<br>B<br>程序至少有一次运行到了该断点<br>b<br>程序没有运行到过该断点<br>H<br>程序至少有一次运行到了该硬件断点<br>h<br>程序没有运行到过该硬件断点<br>第二个标记用于标识断点使能与否:<br>+<br>断点使能 Breakpointis enabled.<br>-<br>断点被禁用 Breakpointis disabled.<br>当调试程序时，源代码窗口、汇编窗口和寄存器窗口的内容会自动更新。<br>在命令窗口上方有一行状态栏，显示效果如下图所示，主要显示内容有：目标，函数，进程，行号，pc指针等</p>
+<h5 id="TUI快捷键："><a href="#TUI快捷键：" class="headerlink" title="TUI快捷键："></a>TUI快捷键：</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">C<span class="operator">-</span>x C<span class="operator">-</span>a</span><br><span class="line">C<span class="operator">-</span>x a</span><br><span class="line">C<span class="operator">-</span>x A</span><br><span class="line">Enter <span class="keyword">or</span> leave the TUI mode.</span><br><span class="line">C<span class="operator">-</span>x <span class="number">1</span></span><br><span class="line">Use a TUI layout <span class="keyword">with</span> <span class="keyword">only</span> <span class="keyword">one</span> <span class="keyword">window</span></span><br><span class="line">C<span class="operator">-</span>x <span class="number">2</span></span><br><span class="line">Use a TUI layout <span class="keyword">with</span> <span class="keyword">at</span> least two windows. </span><br><span class="line">C<span class="operator">-</span>x o</span><br><span class="line">Change the active window. </span><br><span class="line">C<span class="operator">-</span>x s</span><br><span class="line">Switch <span class="keyword">in</span> <span class="keyword">and</span> <span class="keyword">out</span> <span class="keyword">of</span> the TUI SingleKey mode </span><br><span class="line">在TUI模式下： </span><br><span class="line">The following key bindings <span class="keyword">only</span> work <span class="keyword">in</span> the TUI mode:</span><br><span class="line"></span><br><span class="line">PgUp</span><br><span class="line"><span class="keyword">Scroll</span> the active <span class="keyword">window</span> <span class="keyword">one</span> page up.</span><br><span class="line"></span><br><span class="line">PgDn</span><br><span class="line"><span class="keyword">Scroll</span> the active <span class="keyword">window</span> <span class="keyword">one</span> page down.</span><br><span class="line"></span><br><span class="line">Up</span><br><span class="line"><span class="keyword">Scroll</span> the active <span class="keyword">window</span> <span class="keyword">one</span> line up.</span><br><span class="line"></span><br><span class="line">Down</span><br><span class="line"><span class="keyword">Scroll</span> the active <span class="keyword">window</span> <span class="keyword">one</span> line down.</span><br><span class="line"></span><br><span class="line"><span class="keyword">Left</span></span><br><span class="line"><span class="keyword">Scroll</span> the active <span class="keyword">window</span> <span class="keyword">one</span> <span class="keyword">column</span> left.</span><br><span class="line"></span><br><span class="line"><span class="keyword">Right</span></span><br><span class="line"><span class="keyword">Scroll</span> the active <span class="keyword">window</span> <span class="keyword">one</span> <span class="keyword">column</span> right.</span><br><span class="line"></span><br><span class="line">C<span class="operator">-</span>L</span><br><span class="line">Refresh the screen.</span><br><span class="line"></span><br><span class="line">##### tui 的single key模式</span><br><span class="line">tui也提供single key模式，这个模式一个字母绑定一个指令，type C<span class="operator">-</span>x s进入退出这个模式；</span><br><span class="line">c</span><br><span class="line">continue</span><br><span class="line"></span><br><span class="line">d</span><br><span class="line">down</span><br><span class="line"></span><br><span class="line">f</span><br><span class="line">finish</span><br><span class="line"></span><br><span class="line">n</span><br><span class="line">next</span><br><span class="line"></span><br><span class="line">o</span><br><span class="line">nexti. The shortcut letter ‘o’ stands <span class="keyword">for</span> “step <span class="keyword">Over</span>”.</span><br><span class="line"></span><br><span class="line">q</span><br><span class="line">exit the SingleKey mode.</span><br><span class="line"></span><br><span class="line">r</span><br><span class="line">run</span><br><span class="line"></span><br><span class="line">s</span><br><span class="line">step</span><br><span class="line"></span><br><span class="line">i</span><br><span class="line">stepi. The shortcut letter ‘i’ stands <span class="keyword">for</span> “step <span class="keyword">Into</span>”.</span><br><span class="line"></span><br><span class="line">u</span><br><span class="line">up</span><br><span class="line"></span><br><span class="line">v</span><br><span class="line">info locals</span><br><span class="line"></span><br><span class="line">w</span><br><span class="line"><span class="keyword">where</span></span><br></pre></td></tr></table></figure>
+<h5 id="tui鼠标支持："><a href="#tui鼠标支持：" class="headerlink" title="tui鼠标支持："></a>tui鼠标支持：</h5><p>If the curses library supports the mouse, the TUI supports mouse actions.</p>
+<p>The mouse wheel scrolls the appropriate window under the mouse cursor.</p>
+<p>The TUI itself does not directly support copying&#x2F;pasting with the mouse. However, on Unix terminals, you can typically press and<br> hold the SHIFT key on your keyboard to temporarily bypass GDB’s TUI and access the terminal’s native mouse copy&#x2F;paste functionality<br> (commonly, click-drag-release or double-click to select text, middle-click to paste).<br>This copy&#x2F;paste works with the terminal’s selection buffer, as opposed to the TUI’s buffer.</p>
+<h5 id="tui的具体指令："><a href="#tui的具体指令：" class="headerlink" title="tui的具体指令："></a>tui的具体指令：</h5><p>(gdb)tui enable<br>…<br><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/onlinedocs/gdb/TUI-Commands.html#TUI-Commands">https://sourceware.org/gdb/onlinedocs/gdb/TUI-Commands.html#TUI-Commands</a></p>
+<h5 id="tui的可变配置："><a href="#tui的可变配置：" class="headerlink" title="tui的可变配置："></a>tui的可变配置：</h5><p><a target="_blank" rel="noopener" href="https://sourceware.org/gdb/onlinedocs/gdb/TUI-Configuration.html#TUI-Configuration">https://sourceware.org/gdb/onlinedocs/gdb/TUI-Configuration.html#TUI-Configuration</a></p>
+<h4 id="GDB-x2F-MI-接口-–"><a href="#GDB-x2F-MI-接口-–" class="headerlink" title="GDB&#x2F;MI 接口 –"></a>GDB&#x2F;MI 接口 –</h4><p>GDB&#x2F;MI是一个基于行的面向GDB的机器文本接口，通过指定使用——interpreter命令行选项来激活(参见模式选项)。它专门用于支持将调试器作为更大系统的一个小组件使用的系统的开发。</p>
+<h4 id="gdb注释-–"><a href="#gdb注释-–" class="headerlink" title="gdb注释  –"></a>gdb注释  –</h4><p>本章描述GDB中的注释。注解的设计目的是将GDB与图形用户界面或其他希望在相对较高的层次上与GDB交互的类似程序连接起来。注释机制在很大程度上已经被GDB&#x2F;MI所取代</p>
+<h4 id="JIT编译接口-–"><a href="#JIT编译接口-–" class="headerlink" title="JIT编译接口  –"></a>JIT编译接口  –</h4><p>本章描述了GDB的JIT (just-in-time)编译接口。JIT编译器是在运行时生成本机可执行代码并执行它的程序或库，通常是为了在保持平台独立性的同时获得良好的性能。–java?</p>
+<h4 id="进程代理"><a href="#进程代理" class="headerlink" title="进程代理"></a>进程代理</h4><p>传统的调试模型在概念上是低速的，但工作得很好，因为大多数错误都可以在调试模式执行中复制。然而，随着多核或多核处理器成为主流，多线程程序越来越流行，<br>应该会有越来越多的错误只在正常模式执行时出现，例如线程竞争，因为调试器对程序时间的干扰可能会隐藏这些错误。另一方面，在某些应用程序中，调试器中断程序执行的时间不够长，<br>以至于开发人员无法了解到有关程序行为的任何有用信息，<br>这是不可行的。如果程序的正确性取决于它的实时行为，那么调试器引入的延迟可能会导致程序失败，即使代码本身是正确的。能够在不中断的情况下观察程序的行为是很有用的。</p>
+<p>因此，传统的调试模型干扰太大，无法重现一些bug。为了减少对程序的干扰，我们可以减少调试器执行的操作次数。进程内代理(In-Process Agent)是一个共享库，它运行在同一个进程中，<br>并且可以自己执行一些调试操作。因此，只在必要时使用调试器，从而提高调试性能。请注意，可以减少对程序的干扰，但不能完全消除，因为进程内代理仍然会停止或减慢程序。</p>
+<p>进程内代理可以在执行调试操作时解释并执行agent表达式(参见agent表达式)。代理表达式可以用于不同的目的，例如在跟踪点中收集数据，以及在断点中计算条件。</p>
+<p>可以使用以下命令控制进程内代理是否用于辅助调试:<br>set agent on<br>设置代理<br>使进程内代理代表调试器执行某些操作。用户所请求的操作将由进程内代理执行，这取决于它的能力。<br>例如，如果您请求在进程内代理中评估断点条件，并且进程内代理也具有这样的功能，那么将在进程内代理中评估断点条件。</p>
+<p>set agent off<br>Disables execution of debugging operations by the in-process agent. All of the operations will be performed by GDB.</p>
+<p>show agent<br>Display the current setting of execution of debugging operations by the in-process agent.</p>
+<h4 id="交互式使用历史记录"><a href="#交互式使用历史记录" class="headerlink" title="交互式使用历史记录"></a>交互式使用历史记录</h4><h4 id="命令行交互指令"><a href="#命令行交互指令" class="headerlink" title="命令行交互指令"></a>命令行交互指令</h4><h4 id="如何保存历史指令和加载历史指令；"><a href="#如何保存历史指令和加载历史指令；" class="headerlink" title="如何保存历史指令和加载历史指令；"></a>如何保存历史指令和加载历史指令；</h4><p>常规的如果在一个session中，通过上下箭头键可以找到历史指令，但是退出就没了，如何使用上个session的指令？<br>echo ‘set history save on’ &gt;&gt; ~&#x2F;.gdbinit &amp;&amp; chmod 600 ~&#x2F;.gdbinit<br>set history size 1000<br>set history remove-duplicates <count> &#x2F;&#x2F;删除重复指令；<br>set history filename ~&#x2F;.gdb_history<br>这样就可以了；</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/gdb/" rel="tag"># gdb</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/27/linux-netfilter/" rel="prev" title="linux_netfilter">
+      <i class="fa fa-chevron-left"></i> linux_netfilter
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#gdb%E4%BB%8B%E7%BB%8D%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">gdb介绍：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">一个简单的例子：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%8C%87%E4%BB%A4%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">常见指令：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%95%99%E7%A8%8B%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">系统教程：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%BF%9B%E5%85%A5%E5%92%8C%E9%80%80%E5%87%BAgdb"><span class="nav-number">4.1.</span> <span class="nav-text">如何进入和退出gdb</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GDB%E6%8C%87%E4%BB%A4"><span class="nav-number">4.2.</span> <span class="nav-text">GDB指令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E8%AF%AD%E6%B3%95"><span class="nav-number">4.2.1.</span> <span class="nav-text">指令语法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E8%AE%BE%E7%BD%AE"><span class="nav-number">4.2.2.</span> <span class="nav-text">指令设置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E7%9A%84%E8%A1%A5%E5%85%A8%EF%BC%9A"><span class="nav-number">4.2.3.</span> <span class="nav-text">指令的补全：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%80%89%E9%A1%B9"><span class="nav-number">4.2.4.</span> <span class="nav-text">指令选项</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E7%9A%84%E5%B8%AE%E5%8A%A9"><span class="nav-number">4.2.5.</span> <span class="nav-text">指令的帮助</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8gdb%E8%BF%90%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.3.</span> <span class="nav-text">用gdb运行程序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E7%BC%96%E8%AF%91%E6%89%8D%E8%83%BD%E7%94%A8gdb-g"><span class="nav-number">4.3.1.</span> <span class="nav-text">如何编译才能用gdb  -g</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87gdb%E5%90%AF%E5%8A%A8%E4%BD%A0%E7%9A%84%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.3.2.</span> <span class="nav-text">如何通过gdb启动你的程序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%A0%E7%9A%84%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%8F%82%E6%95%B0%E5%A6%82%E4%BD%95%E4%BC%A0%E5%85%A5gdb%E4%B8%AD"><span class="nav-number">4.3.3.</span> <span class="nav-text">你的程序的参数如何传入gdb中</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%A0%E7%9A%84%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E5%92%8Cgdb"><span class="nav-number">4.3.4.</span> <span class="nav-text">你的程序的执行环境和gdb</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#gdb%E4%B8%8B%EF%BC%8C%E4%BD%A0%E7%9A%84%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E7%9B%AE%E5%BD%95"><span class="nav-number">4.3.5.</span> <span class="nav-text">gdb下，你的程序的执行目录</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#gdb%E4%B8%8B%EF%BC%8C%E4%BD%A0%E7%9A%84%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BE%93%E5%85%A5%E5%92%8C%E8%BE%93%E5%87%BA"><span class="nav-number">4.3.6.</span> <span class="nav-text">gdb下，你的程序的输入和输出</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E7%94%A8gdb-attach%E4%B8%80%E4%B8%AA%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.3.7.</span> <span class="nav-text">如何用gdb attach一个正在运行的程序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#gdb%E4%B8%8B%E5%A6%82%E4%BD%95%E6%9D%80%E6%AD%BB%E5%AD%90%E8%BF%9B%E7%A8%8B"><span class="nav-number">4.3.8.</span> <span class="nav-text">gdb下如何杀死子进程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E5%A4%9A%E4%B8%AA%E4%B8%8B%E7%BA%A7%E8%BF%9E%E6%8E%A5%E5%92%8C%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.3.9.</span> <span class="nav-text">调试多个下级连接和程序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.3.10.</span> <span class="nav-text">调试多线程的程序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B0%83%E8%AF%95forks"><span class="nav-number">4.3.11.</span> <span class="nav-text">调试forks</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E4%B9%A6%E7%AD%BE%E4%BB%A5%E4%BE%BF%E4%B9%8B%E5%90%8E%E8%BF%94%E5%9B%9E%EF%BC%9B"><span class="nav-number">4.3.12.</span> <span class="nav-text">设置书签以便之后返回；</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%81%9C%E6%AD%A2%E5%92%8C%E7%BB%A7%E7%BB%AD"><span class="nav-number">4.4.</span> <span class="nav-text">停止和继续</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%AD%E7%82%B9%EF%BC%9A%E7%9B%91%E6%8E%A7%E7%82%B9%E5%92%8Ccatch-points"><span class="nav-number">4.4.1.</span> <span class="nav-text">断点：监控点和catch points</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#continue%E5%92%8Cstep%E6%8C%87%E4%BB%A4"><span class="nav-number">4.4.2.</span> <span class="nav-text">continue和step指令</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#skip%E5%87%BD%E6%95%B0%E5%92%8C%E6%96%87%E4%BB%B6"><span class="nav-number">4.4.3.</span> <span class="nav-text">skip函数和文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BF%A1%E5%8F%B7"><span class="nav-number">4.4.4.</span> <span class="nav-text">信号</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%81%9C%E6%AD%A2%E5%92%8C%E5%90%AF%E5%8A%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.4.5.</span> <span class="nav-text">停止和启动多线程程序</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9E%E9%80%80%E8%BF%90%E8%A1%8C"><span class="nav-number">4.5.</span> <span class="nav-text">回退运行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E8%AE%B0%E5%BD%95%E5%92%8C%E9%87%8D%E6%94%BE"><span class="nav-number">4.6.</span> <span class="nav-text">进程记录和重放</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%A0%88"><span class="nav-number">4.7.</span> <span class="nav-text">测试栈</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%88%E5%B8%A7%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">4.7.1.</span> <span class="nav-text">栈帧的概念</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#backtraces%E8%B0%83%E7%94%A8%E9%93%BE"><span class="nav-number">4.7.2.</span> <span class="nav-text">backtraces调用链</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E4%B8%80%E4%B8%AA%E6%A0%88%E5%B8%A7%EF%BC%9A"><span class="nav-number">4.7.3.</span> <span class="nav-text">选择一个栈帧：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%88%E5%B8%A7%E7%9A%84%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF%EF%BC%9A"><span class="nav-number">4.7.4.</span> <span class="nav-text">栈帧的相关信息：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Applying-a-Command-to-Several-Frames"><span class="nav-number">4.7.5.</span> <span class="nav-text">Applying a Command to Several Frames.</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Management-of-Frame-Filters"><span class="nav-number">4.7.6.</span> <span class="nav-text">Management of Frame Filters.</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%BA%90%E6%96%87%E4%BB%B6"><span class="nav-number">4.8.</span> <span class="nav-text">测试源文件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%93%E5%8D%B0%E6%BA%90%E8%A1%8C"><span class="nav-number">4.8.1.</span> <span class="nav-text">打印源行</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%8C%96%E4%BD%8D%E7%BD%AE%EF%BC%9A"><span class="nav-number">4.8.2.</span> <span class="nav-text">具体化位置：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%96%E8%BE%91%E6%BA%90%E6%96%87%E4%BB%B6%E4%BB%A5%E5%8F%8A%E9%80%89%E6%8B%A9%E7%BC%96%E8%BE%91%E5%99%A8"><span class="nav-number">4.8.3.</span> <span class="nav-text">编辑源文件以及选择编辑器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E6%BA%90%E6%96%87%E4%BB%B6%EF%BC%9A%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%AD%A3%E5%88%99%E6%9F%A5%E6%89%BE"><span class="nav-number">4.8.4.</span> <span class="nav-text">查找源文件：如何利用正则查找</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%8C%96%E6%BA%90%E7%9B%AE%E5%BD%95"><span class="nav-number">4.8.5.</span> <span class="nav-text">具体化源目录</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%BA%90%E5%92%8C%E6%9C%BA%E5%99%A8%E7%A0%81"><span class="nav-number">4.8.6.</span> <span class="nav-text">源和机器码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E6%95%B0%E6%8D%AE"><span class="nav-number">4.9.</span> <span class="nav-text">检查数据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%9A"><span class="nav-number">4.9.1.</span> <span class="nav-text">表达式：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%9A-1"><span class="nav-number">4.9.2.</span> <span class="nav-text">表达式：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A8%A1%E7%B3%8A%E7%9A%84%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%9A"><span class="nav-number">4.9.3.</span> <span class="nav-text">模糊的表达式：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%8F%98%E9%87%8F%EF%BC%9A"><span class="nav-number">4.9.4.</span> <span class="nav-text">程序的变量：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%AA%E9%80%A0%E6%95%B0%E7%BB%84"><span class="nav-number">4.9.5.</span> <span class="nav-text">伪造数组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E7%9A%84%E6%A0%BC%E5%BC%8F%EF%BC%9A%E8%BF%9B%E5%88%B6"><span class="nav-number">4.9.6.</span> <span class="nav-text">输出的格式：进制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%93%E5%8D%B0%E5%92%8C%E6%A3%80%E6%9F%A5%E5%86%85%E5%AD%98"><span class="nav-number">4.9.7.</span> <span class="nav-text">打印和检查内存</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%A0%87%E7%AD%BE"><span class="nav-number">4.9.8.</span> <span class="nav-text">内存标签</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%98%BE%E7%A4%BA"><span class="nav-number">4.9.9.</span> <span class="nav-text">自动显示</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%93%E5%8D%B0%E8%AE%BE%E7%BD%AE"><span class="nav-number">4.9.10.</span> <span class="nav-text">打印设置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%BC%82%E4%BA%AE%E7%9A%84%E6%89%93%E5%8D%B0%EF%BC%9A"><span class="nav-number">4.9.11.</span> <span class="nav-text">漂亮的打印：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%80%BC%E7%9A%84%E5%8E%86%E5%8F%B2%EF%BC%9A"><span class="nav-number">4.9.12.</span> <span class="nav-text">值的历史：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#gdb%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-number">4.9.13.</span> <span class="nav-text">gdb的变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#gdb%E9%99%A4%E4%BA%86%E6%8F%90%E4%BE%9B%E6%96%B9%E4%BE%BF%E5%8F%98%E9%87%8F%EF%BC%8C%E8%BF%98%E6%8F%90%E4%BE%9B%E4%BA%86%E5%87%BD%E6%95%B0%EF%BC%9B"><span class="nav-number">4.9.14.</span> <span class="nav-text">gdb除了提供方便变量，还提供了函数；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#gdb%E4%B8%AD%E7%9A%84%E5%AF%84%E5%AD%98%E5%99%A8%E4%BD%BF%E7%94%A8"><span class="nav-number">4.9.15.</span> <span class="nav-text">gdb中的寄存器使用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#gdb%E4%B8%AD%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">4.9.16.</span> <span class="nav-text">gdb中内存区域的属性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95dump%E6%8C%87%E5%AE%9A%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%86%85%E5%AE%B9%E5%88%B0%E6%96%87%E4%BB%B6%EF%BC%8C%E6%88%96%E5%8F%8D%E5%90%91%EF%BC%8C%E5%8D%B3%E6%96%87%E4%BB%B6%E4%B8%AD%E8%AF%BB%E5%8F%96%E5%88%B0%E5%86%85%E5%AD%98%EF%BC%9B"><span class="nav-number">4.9.17.</span> <span class="nav-text">如何dump指定内存区域内容到文件，或反向，即文件中读取到内存；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BA%A7%E7%94%9F%E4%B8%80%E4%BB%BDcore%E6%96%87%E4%BB%B6%EF%BC%9A"><span class="nav-number">4.9.18.</span> <span class="nav-text">如何产生一份core文件：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E8%BF%87find%E6%8C%87%E4%BB%A4%E5%9C%A8%E6%8C%87%E5%AE%9A%E5%86%85%E5%AD%98%E4%B8%AD%E6%9F%A5%E6%89%BE%E5%AD%97%E7%AC%A6%E6%88%96%E5%85%B6%E4%BB%96%E5%80%BC"><span class="nav-number">4.9.19.</span> <span class="nav-text">通过find指令在指定内存中查找字符或其他值</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E4%BC%98%E5%8C%96%E5%90%8E%E7%9A%84%E4%BB%A3%E7%A0%81-%E2%80%93"><span class="nav-number">4.10.</span> <span class="nav-text">调试优化后的代码  –</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c%E9%A2%84%E5%A4%84%E7%90%86%E5%AE%8F-%E2%80%93"><span class="nav-number">4.11.</span> <span class="nav-text">c预处理宏 –</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%BD%E8%B8%AA%E7%82%B9%EF%BC%8C%E6%97%A0%E5%B9%B2%E6%89%B0%E7%9A%84%E8%B0%83%E8%AF%95"><span class="nav-number">4.12.</span> <span class="nav-text">追踪点，无干扰的调试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E4%BD%BF%E7%94%A8%E8%A6%86%E7%9B%96%E7%9A%84%E7%A8%8B%E5%BA%8F-%E2%80%93%E6%9A%82%E6%97%B6%E4%B8%8D%E7%94%A8"><span class="nav-number">4.13.</span> <span class="nav-text">调试使用覆盖的程序 –暂时不用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E5%9C%A8%E4%B8%8D%E5%90%8C%E7%9A%84%E8%AF%AD%E8%A8%80%E4%B8%8A-%E2%80%93"><span class="nav-number">4.14.</span> <span class="nav-text">用在不同的语言上 –</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%AC%A6%E5%8F%B7%E8%A1%A8"><span class="nav-number">4.15.</span> <span class="nav-text">测试符号表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.16.</span> <span class="nav-text">修改可执行程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#gdb%E5%92%8C%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">4.17.</span> <span class="nav-text">gdb和相关文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%8C%96%E4%B8%80%E4%B8%AA%E8%B0%83%E8%AF%95%E7%9B%AE%E6%A0%87"><span class="nav-number">4.18.</span> <span class="nav-text">具体化一个调试目标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E8%BF%9C%E7%A8%8B%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.19.</span> <span class="nav-text">调试远程程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%85%B7%E4%BD%93%E7%9A%84%E4%BF%A1%E6%81%AF-%E2%80%94-%E5%92%8C%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%EF%BC%8C%E6%9A%82%E6%97%B6%E4%B8%8D%E7%9C%8B"><span class="nav-number">4.20.</span> <span class="nav-text">配置具体的信息 — 和体系结构相关，暂时不看</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6gdb"><span class="nav-number">4.21.</span> <span class="nav-text">控制gdb</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%B1%95GDB"><span class="nav-number">4.22.</span> <span class="nav-text">扩展GDB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A7%A3%E9%87%8A%E5%99%A8"><span class="nav-number">4.23.</span> <span class="nav-text">命令解释器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#gdb%E7%94%A8%E6%88%B7%E7%95%8C%E9%9D%A2%E6%8E%A5%E5%8F%A3-TUI"><span class="nav-number">4.24.</span> <span class="nav-text">gdb用户界面接口 TUI</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.24.1.</span> <span class="nav-text">基本介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TUI%E5%BF%AB%E6%8D%B7%E9%94%AE%EF%BC%9A"><span class="nav-number">4.24.2.</span> <span class="nav-text">TUI快捷键：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#tui%E9%BC%A0%E6%A0%87%E6%94%AF%E6%8C%81%EF%BC%9A"><span class="nav-number">4.24.3.</span> <span class="nav-text">tui鼠标支持：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#tui%E7%9A%84%E5%85%B7%E4%BD%93%E6%8C%87%E4%BB%A4%EF%BC%9A"><span class="nav-number">4.24.4.</span> <span class="nav-text">tui的具体指令：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#tui%E7%9A%84%E5%8F%AF%E5%8F%98%E9%85%8D%E7%BD%AE%EF%BC%9A"><span class="nav-number">4.24.5.</span> <span class="nav-text">tui的可变配置：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GDB-x2F-MI-%E6%8E%A5%E5%8F%A3-%E2%80%93"><span class="nav-number">4.25.</span> <span class="nav-text">GDB&#x2F;MI 接口 –</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#gdb%E6%B3%A8%E9%87%8A-%E2%80%93"><span class="nav-number">4.26.</span> <span class="nav-text">gdb注释  –</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JIT%E7%BC%96%E8%AF%91%E6%8E%A5%E5%8F%A3-%E2%80%93"><span class="nav-number">4.27.</span> <span class="nav-text">JIT编译接口  –</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E4%BB%A3%E7%90%86"><span class="nav-number">4.28.</span> <span class="nav-text">进程代理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92%E5%BC%8F%E4%BD%BF%E7%94%A8%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95"><span class="nav-number">4.29.</span> <span class="nav-text">交互式使用历史记录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%BA%A4%E4%BA%92%E6%8C%87%E4%BB%A4"><span class="nav-number">4.30.</span> <span class="nav-text">命令行交互指令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E5%AD%98%E5%8E%86%E5%8F%B2%E6%8C%87%E4%BB%A4%E5%92%8C%E5%8A%A0%E8%BD%BD%E5%8E%86%E5%8F%B2%E6%8C%87%E4%BB%A4%EF%BC%9B"><span class="nav-number">4.31.</span> <span class="nav-text">如何保存历史指令和加载历史指令；</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'b98c318a9faaebe347b822bdfc817504',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

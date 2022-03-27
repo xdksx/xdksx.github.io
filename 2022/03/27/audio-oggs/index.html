@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Ogg简述rfc: https:&#x2F;&#x2F;datatracker.ietf.org&#x2F;doc&#x2F;html&#x2F;rfc3533  Ogg是一种音频的容器格式，常见的音频容器格式还有：mp3,aac,wav等等； “Ogg”意指一种文件格式，可以纳入各式各样自由和开放源代码的编解码器，包含音效、视频、文字（像字幕）与元数据的处理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="audio_ogg">
+<meta property="og:url" content="https://xdksx.github.io/2022/03/27/audio-oggs/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="Ogg简述rfc: https:&#x2F;&#x2F;datatracker.ietf.org&#x2F;doc&#x2F;html&#x2F;rfc3533  Ogg是一种音频的容器格式，常见的音频容器格式还有：mp3,aac,wav等等； “Ogg”意指一种文件格式，可以纳入各式各样自由和开放源代码的编解码器，包含音效、视频、文字（像字幕）与元数据的处理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-27T03:00:10.000Z">
+<meta property="article:modified_time" content="2022-03-27T06:54:16.313Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="audio">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/03/27/audio-oggs/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>audio_ogg | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/03/27/audio-oggs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          audio_ogg
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-27 11:00:10 / 修改时间：14:54:16" itemprop="dateCreated datePublished" datetime="2022-03-27T11:00:10+08:00">2022-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/audio/" itemprop="url" rel="index"><span itemprop="name">audio</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="Ogg简述"><a href="#Ogg简述" class="headerlink" title="Ogg简述"></a>Ogg简述</h4><p>rfc: <a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc3533">https://datatracker.ietf.org/doc/html/rfc3533</a><br>  Ogg是一种音频的容器格式，常见的音频容器格式还有：mp3,aac,wav等等；<br> “Ogg”意指一种文件格式，可以纳入各式各样自由和开放源代码的编解码器，包含音效、视频、文字（像字幕）与元数据的处理。  <span id="more"></span><br> OGGVobis(oggVorbis)是一种新的音频压缩格式，类似于MP3等的音乐格式。<br> OggVobis是完全免费、开放和没有专利限制的。OggVorbis文件的扩展名是.OGG。<br> Ogg文件格式可以不断地进行大小和音质的改良，而不影响旧有的编码器或播放器。OGG Vorbis有一个特点是支持多声道。  </p>
+<h4 id="Ogg的特点"><a href="#Ogg的特点" class="headerlink" title="Ogg的特点"></a>Ogg的特点</h4><ul>
+<li>Ogg封装多种格式的二进制数据，它可以封装任何类型的： video, audio,image, text, or, generally speaking, any time-continuously sampled data.  </li>
+<li>Ogg可以被那些能提供自己的帧分离机制的传输协议如(UDP,RTP)直接使用；OggS是一个基于流式存储(如文件)和传输(如tcp&#x2F;管道)的方案；而传输时需要指明其承载的是哪种编码协议；</li>
+<li>Ogg可以封装多种类型的编码格式，并以逻辑流来呈现区分，Ogg传输比特流被设计用来提供帧式的，具备错误校验和包含未封装的数据包组成的高层次编码流，例如<br>作为Vorbis音频编解码器或即将到来的Tarkin和Theora视频</li>
+<li>它能够交错不同的二进制媒体和其他时间连续的数据流，这些数据流由编码器准备成一个数据包序列。Ogg提供了足够的信息来正确地将数据分离回这种编码器在原始数据包边界处创建的数据包中，而不需要依赖解码来寻找数据包边界。</li>
+</ul>
+<h4 id="Ogg的物理流和逻辑流的概念"><a href="#Ogg的物理流和逻辑流的概念" class="headerlink" title="Ogg的物理流和逻辑流的概念"></a>Ogg的物理流和逻辑流的概念</h4><ul>
+<li>Ogg的实际文件称为物理流，而其中封装的一个或多个的不同编码流，称为逻辑流；一个逻辑流提供给ogg的封装过程，有一个结构，<br>例如，它被分离成一系列称为包的东西；包由该逻辑位流的编码器创建，仅代表该编码器的有意义的实体(例如，未压缩的流可以使用<br>视频帧作为信息包)。它们不包含边界信息——它们串在一起就像是没有标志的随机字节流。(注意这里的包和网络的包不同)</li>
+<li>Ogg背后的设计理念是提供一种通用的线性媒体传输格式支持基于文件的存储和基于流的存储独立的一个或几个交叉媒体流的传输<br>媒体数据的编码格式。这样一个封装格式需要提供: 其实就是Ogg本身支持的特性： <ul>
+<li>framing for logical bitstreams  逻辑位流的帧</li>
+<li>interleaving(交错) of different logical bitstreams.</li>
+<li>detection of corruption. 校验差错</li>
+<li>recapture after a parsing error 解析错误重新捕获</li>
+<li>position landmarks for direct random access of arbitrary positions in the bitstream.</li>
+<li>streaming capability (i.e., no seeking is needed to build a 100% complete bitstream)small overhead (i.e., use no more than approximately 1-2% of bitstream bandwidth for packet boundary marking, high-level framing, sync and seeking).     </li>
+<li>simplicity to enable fast parsing.</li>
+<li>simple concatenation mechanism of several physical bitstreams.<br>Ogg支持逻辑流，可以封装多个逻辑流，每个逻辑流有自己的头和数据页；</li>
+</ul>
+</li>
+</ul>
+<h4 id="Ogg物理流和逻辑流的封装，bos-eos等"><a href="#Ogg物理流和逻辑流的封装，bos-eos等" class="headerlink" title="Ogg物理流和逻辑流的封装，bos,eos等"></a>Ogg物理流和逻辑流的封装，bos,eos等</h4><ul>
+<li><p>物理流包含了多个逻辑流，由页交错组成；并在页的级别上有序；<br>每个逻辑流被一个唯一的序列号标识，在物理页的头部中；这个号是随机的，和内容和编码器没有任何关系；<br>多个逻辑流是共存的，他们不需要有序，仅需要在自己的逻辑流上有序就行；在重组时，会依赖头部的相关字段进行有序的重组<br>恢复每个逻辑流；  </p>
+</li>
+<li><p>每个逻辑流只能包含一种类型的数据，但是页是变长的，并且有一个页头部包含封装信息和错误恢复信息；每个逻辑流都以bos页<br>（begining of stream）开头，并以eos页(end of stream)结尾  </p>
+</li>
+<li><p>bos页需要包含的内容，对音频：采样率，通道数等解码需要的字段，而在最前面的多个字节往往是编码的标识魔数，bos也支持第二个辅助头，<br>因为不知道这个头什么时候结束，或者有多大；它也不包含任何实际的载荷数据，所以一个物理流开始于bos页，接着是辅助头，接着实际数据</p>
+</li>
+<li><p>封装一个或多个逻辑流被称为媒体映射，一个例子是Ogg Vorbis,即使用了Ogg封装了Vorbis编码的音频流，并进行tcp传输</p>
+</li>
+<li><p>Ogg提供了两种混合的方式，grouping和chaining,前者是交错的，不同的编码逻辑流交错一起，用于需要类似音画同步的多编码同步中；而chaining是一种简单的有序形式，一个逻辑流之后才是下一个逻辑流</p>
+</li>
+<li><p>在grouping方式下的基本特点，即bos连在一起，接着是secondary header辅助头连在一起，接着是数据，最后是eos,eos不用全都连在一起，见下面的例子，且每个逻辑流有唯一的id，在实际封装的物理流中</p>
+</li>
+<li><p>这两种方式可以共存，但是得保持他们各自的特点,grouped和chained可以共存，如上，在grouped结束后紧跟着chained的</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">            physical bitstream with pages of</span><br><span class="line">    different logical bitstreams grouped and chained</span><br><span class="line">-------------------------------------------------------------</span><br><span class="line">|<span class="string">*A*</span>|<span class="string">*B*</span>|<span class="string">*C*</span>|<span class="string">A</span>|<span class="string">A</span>|<span class="string">C</span>|<span class="string">B</span>|<span class="string">A</span>|<span class="string">B</span>|<span class="string">#A#</span>|<span class="string">C</span>|<span class="string">...</span>|<span class="string">B</span>|<span class="string">C</span>|<span class="string">#B#</span>|<span class="string">#C#</span>|<span class="string">*D*</span>|<span class="string">D</span>|<span class="string">...</span>|<span class="string">#D#</span>|</span><br><span class="line">-------------------------------------------------------------</span><br><span class="line"> bos bos bos             eos           eos eos bos       eos</span><br></pre></td></tr></table></figure>
+<p>  解释：<br>A B C是三个不同的逻辑流，被封装在一个物理流中； <em>A</em>为流A的bos,以此类推，#A# 是流A的eos，<br>ABC逻辑流是grouping的方式，而D是chaining的方式，以为是放在ABC之后的（不一定有辅助头）</p>
+</li>
+<li><p>ogg不知道时间只知道需要，依赖上层给出来和位置等,无音画时间同步等<br>Ogg does not know any specifics about the codec data except that each</p>
+</li>
+<li><p>logical bitstream belongs to a different codec,ogg 不知道数据更具体的细节，除了每个逻辑流属于不同的编码， 编码的数按序写入，并带了位置标记Granule position.)<br> Ogg不知道时间，它只知道顺序增长。以及无单位的位置标记。app只能通过更高层的拿到时间信息，那些能调用编解码API,来分配和转换granule positions or time.</p>
+</li>
+</ul>
+<h4 id="Ogg如何封装一个编码的逻辑流：-一个Packet可能跨页，或者包含多个包"><a href="#Ogg如何封装一个编码的逻辑流：-一个Packet可能跨页，或者包含多个包" class="headerlink" title="Ogg如何封装一个编码的逻辑流： 一个Packet可能跨页，或者包含多个包"></a>Ogg如何封装一个编码的逻辑流： 一个Packet可能跨页，或者包含多个包</h4><ul>
+<li>包packet是从编码器编码后的数据，它依赖于编码的格式；</li>
+<li>从Ogg角度看，包可以是任意size,一个具体的媒体映射将定义如何组装和分拆包，从一个媒体编码器；Ogg有最大64KB的限制，为了简化，Ogg分割每个包成255B长的chunks 加最后一个比较短的chunk（即packet size%255后剩下的）这些chunk称为 Ogg Segments, 它们只是逻辑上的构建，并且自己没有header；</li>
+<li>一组连续的seg 被封装在长度可变的page中，并在page前插入一个header; page header中的seg table告诉关于每个seg的长度；页头中有个字段Header_type ，表示是否是和上个页属于同个packet(即同个packet的连续页的下一页); 可以通过判断255这个数字，来判断是否是packet的最后一个page</li>
+<li>编码是比较快的，并且期望每个包大小在20-200bytes之间的大小；这个是设计上的调整而不是建议；极端的2字节小，则每个都加header，则开销很大，而若分的大，则有分两段的情况；<br>下面是一个实际的例子：<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">    logical bitstream with packet boundaries</span><br><span class="line"> -----------------------------------------------------------------</span><br><span class="line"> &gt; |<span class="string">       packet_1             </span>|<span class="string"> packet_2         </span>|<span class="string"> packet_3 </span>|<span class="string">  &lt;</span></span><br><span class="line"><span class="string"> -----------------------------------------------------------------</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                     </span>|<span class="string">segmentation (logically only)</span></span><br><span class="line"><span class="string">                     v</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      packet_1 (5 segments)          packet_2 (4 segs)    p_3 (2 segs)</span></span><br><span class="line"><span class="string">     ------------------------------ -------------------- ------------</span></span><br><span class="line"><span class="string"> .. </span>|<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string">seg_4</span>|<span class="string">s_5 </span>|<span class="string"> </span>|<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string">s_4</span>|<span class="string"> </span>|<span class="string">seg_1</span>|<span class="string">s_2 </span>|<span class="string"> ..</span></span><br><span class="line"><span class="string">     ------------------------------ -------------------- ------------</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                     </span>|<span class="string"> page encapsulation</span></span><br><span class="line"><span class="string">                     v</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> page_1 (packet_1 data)   page_2 (pket_1 data)   page_3 (packet_2 data)</span></span><br><span class="line"><span class="string">------------------------  ----------------  ------------------------</span></span><br><span class="line"><span class="string"></span>|<span class="string">H</span>|<span class="string">------------------- </span>|<span class="string">  </span>|<span class="string">H</span>|<span class="string">----------- </span>|<span class="string">  </span>|<span class="string">H</span>|<span class="string">------------------- </span>|</span><br><span class="line">|<span class="string">D</span>||<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string"> </span>|<span class="string">  </span>|<span class="string">D</span>|<span class="string">seg_4</span>|<span class="string">s_5 </span>|<span class="string"> </span>|<span class="string">  </span>|<span class="string">D</span>||<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string"> </span>|<span class="string"> ...</span></span><br><span class="line"><span class="string"></span>|<span class="string">R</span>|<span class="string">------------------- </span>|<span class="string">  </span>|<span class="string">R</span>|<span class="string">----------- </span>|<span class="string">  </span>|<span class="string">R</span>|<span class="string">------------------- </span>|</span><br><span class="line">------------------------  ----------------  ------------------------</span><br><span class="line"></span><br><span class="line">                    |<span class="string"></span></span><br><span class="line"><span class="string">pages of            </span>|</span><br><span class="line">other    --------|<span class="string">  </span>|</span><br><span class="line">logical         -------</span><br><span class="line">bitstreams      |<span class="string"> MUX </span>|</span><br><span class="line">                -------</span><br><span class="line">                   |<span class="string"></span></span><br><span class="line"><span class="string">                   v</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">              page_1  page_2          page_3</span></span><br><span class="line"><span class="string">      ------  ------  -------  -----  -------</span></span><br><span class="line"><span class="string"> ...  </span>||<span class="string">   </span>|<span class="string">  </span>||<span class="string">   </span>|<span class="string">  </span>||<span class="string">    </span>|<span class="string">  </span>||<span class="string">  </span>|<span class="string">  </span>||<span class="string">    </span>|<span class="string">  ...</span></span><br><span class="line"><span class="string">      ------  ------  -------  -----  -------</span></span><br><span class="line"><span class="string">              physical Ogg bitstream</span></span><br></pre></td></tr></table></figure>
+<h4 id="Ogg的页头部封装格式："><a href="#Ogg的页头部封装格式：" class="headerlink" title="Ogg的页头部封装格式："></a>Ogg的页头部封装格式：</h4>&#x2F;&#x2F; ogg格式<br>&#x2F;&#x2F;    ——————————————————————————–<br>&#x2F;&#x2F;    域名称　　　　　　占用字节　　描述<br>&#x2F;&#x2F;    ——————————————————————————–<br>&#x2F;&#x2F;    capture_pattern　　　 4　　页标识，”OggS”的ASCII字符 4F 67 67 53<br>&#x2F;&#x2F;    structure_version　　 1　　版本ID，当前版本默认＝0<br>&#x2F;&#x2F;    Header_type_flag　　　1　　页头部类型<br>&#x2F;&#x2F;    Granule_position　　　8　　区段位置<br>&#x2F;&#x2F;    Serial_number　　　　 4　　逻辑流的序列号<br>&#x2F;&#x2F;    Page_seguence_number　4　　本页在逻辑流的序号，OGG解码器据此识别有无页丢失。<br>&#x2F;&#x2F;    CRC_cbecksum　　　　　4　　循环冗余校验码校验和<br>&#x2F;&#x2F;    Number_page_segments　1　　本页的区段数量，指明区段表中有多少个区段长度，≤<br>&#x2F;&#x2F;    Segment_table　　　　≤255 区段长度表，每个字节表示一个区段的长度<br>&#x2F;&#x2F;    ——————————————————————————–<br>详细说明：<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="code">  The Ogg page header has the following format:</span></span><br><span class="line"></span><br><span class="line"><span class="code"> 0                   1                   2                   3</span></span><br><span class="line"><span class="section"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1| Byte</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">| capture_pattern: Magic number for page start &quot;OggS&quot;           | 0-3</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">| version       | header_type   | granule_position     8B       | 4-7</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                                                               | 8-11</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                               | bitstream_serial_number       | 12-15</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                               | page_sequence_number          | 16-19</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                               | CRC_checksum                  | 20-23</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                               |page_segments  | segment_table | 24-27</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">| ...                                                           | 28-</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="code">   The fields in the page header have the following meaning:</span></span><br><span class="line"></span><br><span class="line"><span class="code">   1. capture_pattern: a 4 Byte field that signifies the beginning of a</span></span><br><span class="line"><span class="code">      page.  It contains the magic numbers:魔数</span></span><br><span class="line"></span><br><span class="line"><span class="code">            0x4f &#x27;O&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="code">            0x67 &#x27;g&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="code">            0x67 &#x27;g&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="code">            0x53 &#x27;S&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="code">      It helps a decoder to find the page boundaries and regain</span></span><br><span class="line"><span class="code">      synchronisation after parsing a corrupted stream.  Once the</span></span><br><span class="line"><span class="code">      capture pattern is found, the decoder verifies page sync and</span></span><br><span class="line"><span class="code">      integrity by computing and comparing the checksum.</span></span><br><span class="line"></span><br><span class="line"><span class="code">   2. stream_structure_version: 1 Byte signifying the version number of</span></span><br><span class="line"><span class="code">      the Ogg file format used in this stream (this document specifies</span></span><br><span class="line"><span class="code">      version 0). 版本号</span></span><br><span class="line"></span><br><span class="line"><span class="code">   3. header_type_flag: the bits in this 1 Byte field identify the</span></span><br><span class="line"><span class="code">      specific type of this page. 头标记</span></span><br><span class="line"></span><br><span class="line"><span class="code">      *  bit 0x01</span></span><br><span class="line"></span><br><span class="line"><span class="code">         set: page contains data of a packet continued from the previous</span></span><br><span class="line"><span class="code">            page 和前一个page属于同个packet</span></span><br><span class="line"></span><br><span class="line"><span class="code">         unset: page contains a fresh packet 新packet中的page</span></span><br><span class="line"></span><br><span class="line"><span class="code">      *  bit 0x02</span></span><br><span class="line"></span><br><span class="line"><span class="code">         set: this is the first page of a logical bitstream (bos)</span></span><br><span class="line"></span><br><span class="line"><span class="code">         unset: this page is not a first page 逻辑流的第一个包bos</span></span><br><span class="line"></span><br><span class="line"><span class="code">      *  bit 0x04</span></span><br><span class="line"></span><br><span class="line"><span class="code">         set: this is the last page of a logical bitstream (eos)</span></span><br><span class="line"></span><br><span class="line"><span class="code">         unset: this page is not a last page</span></span><br><span class="line"></span><br><span class="line"><span class="code">   4. granule_position: an 8 Byte field containing position information.</span></span><br><span class="line"><span class="code">      For example, for an audio stream, it MAY contain the total number</span></span><br><span class="line"><span class="code">      of PCM samples encoded after including all frames finished on this</span></span><br><span class="line"><span class="code">      page.  For a video stream it MAY contain the total number of video</span></span><br><span class="line"></span><br><span class="line"><span class="code">      frames encoded after this page.  This is a hint for the decoder</span></span><br><span class="line"><span class="code">      and gives it some timing and position information.  Its meaning is</span></span><br><span class="line"><span class="code">      dependent on the codec for that logical bitstream and specified in</span></span><br><span class="line"><span class="code">      a specific media mapping.  A special value of -1 (in two&#x27;s</span></span><br><span class="line"><span class="code">      complement) indicates that no packets finish on this page.  比较复杂</span></span><br><span class="line"><span class="code">      </span></span><br><span class="line"><span class="code">   5. bitstream_serial_number: a 4 Byte field containing the unique</span></span><br><span class="line"><span class="code">      serial number by which the logical bitstream is identified. 逻辑流id</span></span><br><span class="line"></span><br><span class="line"><span class="code">   6. page_sequence_number: a 4 Byte field containing the sequence</span></span><br><span class="line"><span class="code">      number of the page so the decoder can identify page loss.  This</span></span><br><span class="line"><span class="code">      sequence number is increasing on each logical bitstream </span></span><br><span class="line"><span class="code">      separately.逻辑流中的页id,每个逻辑流中增加</span></span><br><span class="line"></span><br><span class="line"><span class="code">   7. CRC_checksum: a 4 Byte field containing a 32 bit CRC checksum of</span></span><br><span class="line"><span class="code">      the page (including header with zero CRC field and page content).</span></span><br><span class="line"><span class="code">      The generator polynomial is 0x04c11db7. CRC 校验</span></span><br><span class="line"></span><br><span class="line"><span class="code">   8. number_page_segments: 1 Byte giving the number of segment entries</span></span><br><span class="line"><span class="code">      encoded in the segment table.seg的数量 ，一个页由多个seg构成，一个packet可能包含多个页；其实是packet分为多个seg后封装到page中；见上；</span></span><br><span class="line"></span><br><span class="line"><span class="code">   9. segment_table: number_page_segments Bytes containing the lacing</span></span><br><span class="line"><span class="code">      values of all segments in this page.  Each Byte contains one</span></span><br><span class="line"><span class="code">      lacing value.     number_page_segments个字节，包含页中所有segments的lacing values, 每个字节为一个lacing value</span></span><br><span class="line"></span><br><span class="line"><span class="code">   The total header size in bytes is given by:</span></span><br><span class="line"><span class="code">   header_size = number_page_segments + 27 [Byte]</span></span><br><span class="line"></span><br><span class="line"><span class="code">   The total page size in Bytes is given by: 一个完整页的大小：</span></span><br><span class="line"><span class="code">   page_size = header_size + sum(lacing_values: 1..number_page_segments)</span></span><br><span class="line"><span class="code">   [Byte]</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="ogg格式文件和例子："><a href="#ogg格式文件和例子：" class="headerlink" title="ogg格式文件和例子："></a>ogg格式文件和例子：</h4><p>见附件有一个ogg格式的音频：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">4f<span class="number"> 67 </span>67<span class="number"> 53 </span>00<span class="number"> 02 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>5c<span class="number"> 59 </span></span><br><span class="line">48 bg<span class="number"> 00 </span>00<span class="number"> 00 </span>00 e1 8f c5 fe<span class="number"> 01 </span>1e<span class="number"> 01 </span>76 6f<span class="number"> 72 </span>62<span class="number"> 69 </span>73  </span><br><span class="line"> </span><br><span class="line">4f<span class="number"> 67 </span>67<span class="number"> 53 </span>: 4字节的页标识：字符 OggS</span><br><span class="line">00：1B的版本号，0</span><br><span class="line">02：1B的header_type,这里表示是一个bos</span><br><span class="line">00<span class="number"> 00 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>00 00:8B的Granule_position区段位置为0</span><br><span class="line">5c<span class="number"> 59 </span>48 bg：4B的逻辑流ID</span><br><span class="line">00<span class="number"> 00 </span>00 00： 4B的页Id,本页在逻辑流中的序号为0</span><br><span class="line">e1 8f c5 fe: 4B的CRC循环冗余校验码校验和 </span><br><span class="line">01 :seg数量</span><br><span class="line">1e :第一个seg长度：1e</span><br><span class="line">76 6f<span class="number"> 72 </span>62<span class="number"> 69 </span>73:vorbis的Ascii码</span><br><span class="line">之后是vorbis协议的数据；见相关协议；</span><br><span class="line">当然还可以承载Opus 如OpusHeader这样的；详见Opus介绍</span><br></pre></td></tr></table></figure>
+
+<h4 id="ogg和它的媒体协议；"><a href="#ogg和它的媒体协议；" class="headerlink" title="ogg和它的媒体协议；"></a>ogg和它的媒体协议；</h4><p>首页数据的最开始的几个字节就是描述编码的标识的ascii码；<br>有：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">    Codec Identifier             | Codecs Parameter</span><br><span class="line"> <span class="comment">-----------------------------------------------------------</span></span><br><span class="line">  <span class="type">char</span>[<span class="number">5</span>]: <span class="string">&#x27;BBCD\0&#x27;</span>            | dirac</span><br><span class="line">  <span class="type">char</span>[<span class="number">5</span>]: <span class="string">&#x27;\177FLAC&#x27;</span>          | flac</span><br><span class="line">  <span class="type">char</span>[<span class="number">7</span>]: <span class="string">&#x27;\x80theora&#x27;</span>        | theora</span><br><span class="line">  <span class="type">char</span>[<span class="number">7</span>]: <span class="string">&#x27;\x01vorbis&#x27;</span>        | vorbis</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;CELT    &#x27;</span>          | celt</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;CMML\0\0\0\0&#x27;</span>      | cmml</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;\213JNG\r\n\032\n&#x27;</span> | jng</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;\x80kate\0\0\0&#x27;</span>    | kate</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;OggMIDI\0&#x27;</span>         | midi</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;\212MNG\r\n\032\n&#x27;</span> | mng</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;PCM     &#x27;</span>          | pcm</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;\211PNG\r\n\032\n&#x27;</span> | png</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;Speex   &#x27;</span>          | speex</span><br><span class="line">  <span class="type">char</span>[<span class="number">8</span>]: <span class="string">&#x27;YUV4MPEG&#x27;</span>          | yuv4mpeg</span><br><span class="line"></span><br><span class="line">  An up-<span class="keyword">to</span>-<span class="type">date</span> <span class="keyword">version</span> <span class="keyword">of</span> this <span class="keyword">table</span> <span class="keyword">is</span> kept at Xiph.org (see</span><br><span class="line">[Codecs]). </span><br><span class="line">  现在加了Opus，具体见opus编码rfc      https://datatracker.ietf.org/doc/html/rfc7845</span><br></pre></td></tr></table></figure>
+<h4 id="Ogg相关重要概念的解释："><a href="#Ogg相关重要概念的解释：" class="headerlink" title="Ogg相关重要概念的解释："></a>Ogg相关重要概念的解释：</h4><ul>
+<li>Granule Position<br>类似于dts，一些实现将dts填充到这个字段上。<br>   granule翻译为颗粒，在这里应该表示为单位时间的采样数，。在首页和comment header中，必须是0。即逻辑流的音频数据前的头都是0<br>   The granule position MUST be zero for the ID header page and the page<br>   where the comment header completes.  That is, the first page in the<br>   logical stream and the last header page before the first audio data<br>   page both have a granule position of zero.</li>
+</ul>
+<p>   在音频数据页中的granule position, encodes(表示）PCM采样的总数，在这个流直到这个页的最后一个可解码的采样，所以一般是大于0的 :所以可以用dts直接填充？<br>   The granule position of an audio data page encodes the total number<br>   of PCM samples in the stream up to and including the last fully<br>   decodable sample from the last packet completed on that page.  The<br>   granule position of the first audio data page will usually be larger<br>   than zero, as described in Section 4.5.</p>
+<p>   跨页的情况，中间的是-1<br>   A page that is entirely spanned by a single packet (that completes on<br>   a subsequent page) has no granule position, and the granule position<br>   field is set to the special value ‘-1’ in two’s complement.</p>
+<p>   在一个音频数据页中的采样颗粒位置是以PCM音频为单位采样频率固定为48千赫；但是可能运行Opus 解码是不同的采样率，但所有的Opus包编码的采样是在一个采样率48Khz下； 因此，granule position还是总是count samples假设是48KHz<br>   The granule position of an audio data page is in units of PCM audio<br>   samples at a fixed rate of 48 kHz (per channel; a stereo stream’s<br>   granule position does not increment at twice the speed of a mono<br>   stream).  It is possible to run an Opus decoder at other sampling<br>   rates, but all Opus packets encode samples at a sampling rate that<br>   evenly divides 48 kHz.  Therefore, the value in the granule position<br>   field always counts samples assuming a 48 kHz decoding rate, and the<br>   rest of this specification makes the same assumption.</p>
+<pre><code>一个Opus包的时长，可以是任意2.5ms的倍数，最大是120ms.duration被编码在TOC sequence，在每个包开始地方；采样数被解码器返回，根据这个duration,即使是头几个包
+例如：一个20ms的包 喂到一个解码器，以48KHz的，将返回960个采样；一个demuxer分流器可能在每个ogg包的开始解析TOC sequence，从一个已知的包根据一个已知的granule position向后或向前工作
+为了分配一个granule位置给每个包；或设置每个单独的采样
+</code></pre>
+<p>   The duration of an Opus packet as defined in [RFC6716] can be any<br>   multiple of 2.5 ms, up to a maximum of 120 ms.  This duration is<br>   encoded in the TOC sequence at the beginning of each packet.  The<br>   number of samples returned by a decoder corresponds to this duration<br>   exactly, even for the first few packets.  For example, a 20 ms packet<br>   fed to a decoder running at 48 kHz will always return 960 samples.  A<br>   demuxer can parse the TOC sequence at the beginning of each Ogg<br>   packet to work backwards or forwards from a packet with a known<br>   granule position (i.e., the last packet completed on some page) in<br>   order to assign granule positions to every packet, or even every<br>   individual sample.  The one exception is the last page in the stream,<br>   as described below.唯一的例外是流的最后一页，</p>
+<p>   如下所述。<br>   所有其他有带完整包的页，在第一个之后， 必须有一个等于该页中完整的packets中包含的采样数量的granule position，加上最近的带完整包的页的granule position<br>   All other pages with completed packets after the first MUST have a<br>   granule position equal to the number of samples contained in packets<br>   that complete on that page plus the granule position of the most<br>   recent page with completed packets.<br>   这个保证了一个分流器能分配独立的包相同的granule position，当向前或向后工作。对这个情况，没有任何的gap<br>    This guarantees that a demuxer<br>   can assign individual packets the same granule position when working<br>   forwards as when working backwards.  For this to work, there cannot<br>   be any gaps.</p>
+<pre><code> 更多解释：https://wiki.xiph.org/OggOpus
+ 
+</code></pre>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">This</span> is packed in the same way the rest of Ogg data is packed<span class="comment">; LSb of LSB first. Note that the &#x27;position&#x27; data specifies a &#x27;sample&#x27; number (eg, in a CD quality sample is four octets, 16 bits for left and 16 bits for right; in video it would likely be the frame number. It is up to the specific codec in use to define the semantic meaning of the granule position value). The position specified is the total samples encoded after including all packets finished on this page (packets begun on this page but continuing on to the next page do not count). The rationale here is that the position specified in the frame header of the last page tells how long the data coded by the bitstream is. A truncated stream will still return the proper number of samples that can be decoded fully.</span></span><br><span class="line">A special value of <span class="symbol">&#x27;-1</span>&#x27; (<span class="name">in</span> two<span class="symbol">&#x27;s</span> complement) indicates that no packets finish on this page.</span><br><span class="line">这个打包和之后的ogg数据的打包方式一样。LSb of LSB first.注意到这个位置数据具体化采样的数量。(<span class="name">例如，在一个CD中采样是4B</span>,<span class="number">16</span>bit左声 <span class="number">16</span>bit右声。就像在视频中的frame number,如何具体定义取决于具体的编解码器）。</span><br><span class="line">位置的具体值是在这个page包含了所有完成的packet后的所有的采样值；(<span class="name">注意若packet在这个page开始，但下个page还持续，则不统计到这个page的granule</span> position上）。这里的基本原理是，</span><br><span class="line">在最后一页的帧头中指定的位置告诉了由位流编码的数据的长度。被截断的流仍然会返回适当数量的可以被完全解码的样本。</span><br><span class="line">一个特殊值<span class="symbol">&#x27;-1</span>&#x27;(在2的补码中)表示该页上没有包完成。</span><br><span class="line"> byte value</span><br><span class="line"></span><br><span class="line">  <span class="number">6</span>  <span class="number">0</span>xXX LSB</span><br><span class="line">  <span class="number">7</span>  <span class="number">0</span>xXX</span><br><span class="line">  <span class="number">8</span>  <span class="number">0</span>xXX</span><br><span class="line">  <span class="number">9</span>  <span class="number">0</span>xXX</span><br><span class="line"> <span class="number">10</span>  <span class="number">0</span>xXX</span><br><span class="line"> <span class="number">11</span>  <span class="number">0</span>xXX</span><br><span class="line"> <span class="number">12</span>  <span class="number">0</span>xXX</span><br><span class="line"> <span class="number">13</span>  <span class="number">0</span>xXX MSB</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">https://www.xiph.org/ogg/doc/framing.html</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Ogg封包成帧的过程："><a href="#Ogg封包成帧的过程：" class="headerlink" title="Ogg封包成帧的过程："></a>Ogg封包成帧的过程：</h4><ul>
+<li><p>1 PCM采集原始音频：<br>sample: 即采样，单位，一般说48Khz则是1s有48000个采样； 即48000samples per second;<br>对48khz而言，PCM 1s采样 48000个samples;<br>音频帧： 对50fps而言，1s有50帧，则1帧是20ms，对48Khz而言，则1帧有 20ms&#x2F;1000ms * 48000 个samples</p>
+</li>
+<li><p>2 将帧打包进入opus编码<br>一个Opus包的时长，可以是任意2.5ms的倍数，最大是120ms.duration被编码在TOC sequence，在每个包开始地方；采样数被解码器返回，根据这个duration,即使是头几个包<br>例如：一个20ms的包 喂到一个解码器，以48KHz的，将返回960个采样；<br>Opus包的格式可以是：<a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc6716#section-3">https://datatracker.ietf.org/doc/html/rfc6716#section-3</a><br>每个Opus包以TOC或类似的头开始，有几种方式：1帧一包，2帧一包，多帧一包；注意这里的toc中的config配置的对应的ms是对应的packet中的compressed frame对应的，若一个packet有多个frame，计算这个packet的总<br>samples时，要乘以 packet中的frames的数量；以此来判断&lt;120ms,否则异常：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">   +-----------------------+-----------+-----------+-------------------+</span><br><span class="line">   |<span class="string"> Configuration         </span>|<span class="string"> Mode      </span>|<span class="string"> Bandwidth </span>|<span class="string"> Frame Sizes       </span>|</span><br><span class="line">   |<span class="string"> Number(s)             </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   +-----------------------+-----------+-----------+-------------------+</span><br><span class="line">   |<span class="string"> 0...3                 </span>|<span class="string"> SILK-only </span>|<span class="string"> NB        </span>|<span class="string"> 10, 20, 40, 60 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 4...7                 </span>|<span class="string"> SILK-only </span>|<span class="string"> MB        </span>|<span class="string"> 10, 20, 40, 60 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 8...11                </span>|<span class="string"> SILK-only </span>|<span class="string"> WB        </span>|<span class="string"> 10, 20, 40, 60 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 12...13               </span>|<span class="string"> Hybrid    </span>|<span class="string"> SWB       </span>|<span class="string"> 10, 20 ms         </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 14...15               </span>|<span class="string"> Hybrid    </span>|<span class="string"> FB        </span>|<span class="string"> 10, 20 ms         </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 16...19               </span>|<span class="string"> CELT-only </span>|<span class="string"> NB        </span>|<span class="string"> 2.5, 5, 10, 20 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 20...23               </span>|<span class="string"> CELT-only </span>|<span class="string"> WB        </span>|<span class="string"> 2.5, 5, 10, 20 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 24...27               </span>|<span class="string"> CELT-only </span>|<span class="string"> SWB       </span>|<span class="string"> 2.5, 5, 10, 20 ms </span>|</span><br><span class="line">   |<span class="string">                       </span>|<span class="string">           </span>|<span class="string">           </span>|<span class="string">                   </span>|</span><br><span class="line">   |<span class="string"> 28...31               </span>|<span class="string"> CELT-only </span>|<span class="string"> FB        </span>|<span class="string"> 2.5, 5, 10, 20 ms </span>|</span><br><span class="line">   +-----------------------+-----------+-----------+-------------------+</span><br><span class="line"> eg:</span><br><span class="line">  0                   1                   2                   3</span><br><span class="line">      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string"> config  </span>|<span class="string">s</span>|<span class="string">1</span>|<span class="string">0</span>|<span class="string"> N1 (1-2 bytes):                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               :</span><br><span class="line">     |<span class="string">               Compressed frame 1 (N1 bytes)...                </span>|</span><br><span class="line">     :                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">     |<span class="string">                               </span>|<span class="string">                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               |<span class="string"></span></span><br><span class="line"><span class="string">     </span>|<span class="string">                     Compressed frame 2...                     :</span></span><br><span class="line"><span class="string">     :                                                               </span>|</span><br><span class="line">     |<span class="string">                                                               </span>|</span><br><span class="line">     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">/<span class="symbol">*</span>Returns the duration of the packet (in samples at 48 kHz), or a negative</span><br><span class="line">   value on error.<span class="symbol">*</span>/</span><br><span class="line">static int op_get_packet_duration(const unsigned char <span class="symbol">*</span>_data,int _len)&#123;</span><br><span class="line">  int nframes;</span><br><span class="line">  int frame_size;</span><br><span class="line">  int nsamples;</span><br><span class="line">  nframes=opus_packet_get_nb_frames(_data,_len);</span><br><span class="line">  if(OP_UNLIKELY(nframes<span class="variable">&lt;0))return OP_EBADPACKET;</span></span><br><span class="line"><span class="variable">  frame_size=opus_packet_get_samples_per_frame(_data,48000);</span></span><br><span class="line"><span class="variable">  nsamples=nframes*frame_size;</span></span><br><span class="line"><span class="variable">  if(OP_UNLIKELY(nsamples&gt;</span>120<span class="symbol">*</span>48))return OP_EBADPACKET;</span><br><span class="line">  return nsamples;</span><br><span class="line">&#125;</span><br><span class="line">更多打包方式见opus协议</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>3 将opus编码打包到Ogg</p>
+</li>
+</ul>
+<p>oggs从 opus编码器拿到packet后，因为oggs本身的封装是最大255个segtable,每个seg的最大值是255Byte，所以oggs页最大是64K;但是因为网络等问题，需要分段，即将opus传递进来的packet分成255byte的chunk,和<br>packet分完最后的小的：如</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">raw packet:</span><br><span class="line">  <span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">__<span class="emphasis">_</span></span></span><br><span class="line"><span class="emphasis"><span class="strong"> |_</span>__</span><span class="strong">____</span><span class="strong">____</span><span class="strong">__<span class="emphasis">_packet data_</span>__</span><span class="strong">____</span><span class="strong">____</span><span class="strong">____</span><span class="strong">__<span class="emphasis">_| 753 bytes</span></span></span><br><span class="line"><span class="emphasis"><span class="strong"></span></span></span><br><span class="line"><span class="emphasis"><span class="strong">lacing values for page header segment table: 255,255,243</span></span></span><br></pre></td></tr></table></figure>
+<p>From Ogg’s perspective, packets can be of any arbitrary size.  A<br>   specific media mapping will define how to group or break up packets<br>   from a specific media encoder.  As Ogg pages have a maximum size of<br>   about 64 kBytes, sometimes a packet has to be distributed over<br>   several pages.  To simplify that process, Ogg divides each packet<br>   into 255 byte long chunks plus a final shorter chunk.  These chunks<br>   are called “Ogg Segments”.  They are only a logical construct and do<br>   not have a header for themselves.<br>所以这里可以理解：下图中packet是opus封包后的一个packet对应一个toc头，可能压缩了多个frame; 一个packet被拆为多个seg，装到page中；带头下发；</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">    logical bitstream with packet boundaries</span><br><span class="line"> -----------------------------------------------------------------</span><br><span class="line"> &gt; |<span class="string">       packet_1             </span>|<span class="string"> packet_2         </span>|<span class="string"> packet_3 </span>|<span class="string">  &lt;</span></span><br><span class="line"><span class="string"> -----------------------------------------------------------------</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                     </span>|<span class="string">segmentation (logically only)</span></span><br><span class="line"><span class="string">                     v</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      packet_1 (5 segments)          packet_2 (4 segs)    p_3 (2 segs)</span></span><br><span class="line"><span class="string">     ------------------------------ -------------------- ------------</span></span><br><span class="line"><span class="string"> .. </span>|<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string">seg_4</span>|<span class="string">s_5 </span>|<span class="string"> </span>|<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string">s_4</span>|<span class="string"> </span>|<span class="string">seg_1</span>|<span class="string">s_2 </span>|<span class="string"> ..</span></span><br><span class="line"><span class="string">     ------------------------------ -------------------- ------------</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                     </span>|<span class="string"> page encapsulation</span></span><br><span class="line"><span class="string">                     v</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> page_1 (packet_1 data)   page_2 (pket_1 data)   page_3 (packet_2 data)</span></span><br><span class="line"><span class="string">------------------------  ----------------  ------------------------</span></span><br><span class="line"><span class="string"></span>|<span class="string">H</span>|<span class="string">------------------- </span>|<span class="string">  </span>|<span class="string">H</span>|<span class="string">----------- </span>|<span class="string">  </span>|<span class="string">H</span>|<span class="string">------------------- </span>|</span><br><span class="line">|<span class="string">D</span>||<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string"> </span>|<span class="string">  </span>|<span class="string">D</span>|<span class="string">seg_4</span>|<span class="string">s_5 </span>|<span class="string"> </span>|<span class="string">  </span>|<span class="string">D</span>||<span class="string">seg_1</span>|<span class="string">seg_2</span>|<span class="string">seg_3</span>|<span class="string"> </span>|<span class="string"> ...</span></span><br><span class="line"><span class="string"></span>|<span class="string">R</span>|<span class="string">------------------- </span>|<span class="string">  </span>|<span class="string">R</span>|<span class="string">----------- </span>|<span class="string">  </span>|<span class="string">R</span>|<span class="string">------------------- </span>|</span><br><span class="line">------------------------  ----------------  ------------------------</span><br><span class="line"></span><br><span class="line">                    |<span class="string"></span></span><br><span class="line"><span class="string">pages of            </span>|</span><br><span class="line">other    --------|<span class="string">  </span>|</span><br><span class="line">logical         -------</span><br><span class="line">bitstreams      |<span class="string"> MUX </span>|</span><br><span class="line">                -------</span><br><span class="line">                   |<span class="string"></span></span><br><span class="line"><span class="string">                   v</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">              page_1  page_2          page_3</span></span><br><span class="line"><span class="string">      ------  ------  -------  -----  -------</span></span><br><span class="line"><span class="string"> ...  </span>||<span class="string">   </span>|<span class="string">  </span>||<span class="string">   </span>|<span class="string">  </span>||<span class="string">    </span>|<span class="string">  </span>||<span class="string">  </span>|<span class="string">  </span>||<span class="string">    </span>|<span class="string">  ...</span></span><br><span class="line"><span class="string">      ------  ------  -------  -----  -------</span></span><br><span class="line"><span class="string">              physical Ogg bitstream</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>  + 一个Ogg页，若不限制，可以封装&lt;=255个segment,一个seg是一个帧，根据oggopus rfc，opus packet 是2.5ms的倍数，最大是120ms；故若一个Oggs页最多可以包255个音频帧：
+    This is allowed to be up to 32 bits to support the maximum duration of a single Ogg page (255 packets * 120 ms per
+   packet == 1,468,800 samples at 48 kHz).  255*120/1000 *48000 =1468800  这里的packet，就是上面提到的音频帧
+  + 常见的是一个page有一个segment
+  + 协议里的lacing value，是segment的大小，在segment table中有多个lacing value，每个表示每个seg的大小；
+  + lacing value的大小推荐： &lt;=255Bytes, 即一个seg的大小，:https://www.xiph.org/ogg/doc/framing.html
+</code></pre>
+<ul>
+<li>4 将原始音频进行封装：<br> 1）在网络传输中，以包的形式传输，包的大小和网络协议等有关，对udp而言，包的大小受udp包的大小影响，又进一步被MTU影响；<br> 2）根据包和帧的关系，将帧打包到包中，可以是一帧一包，或者一帧多包，或者多帧一包；</li>
+</ul>
+<h4 id="其他：libopus中对ganule-posiontion的检查"><a href="#其他：libopus中对ganule-posiontion的检查" class="headerlink" title="其他：libopus中对ganule posiontion的检查"></a>其他：libopus中对ganule posiontion的检查</h4><p>因为在使用库的过程中，踩过坑，这个字段填充的不太对导致解码失败：<br>下面看看源码对这个字段怎么检查：<br>前言：<br>对ganule posiontion的解释： 是至今到此page 时，已完成的packet的采样数量：<br>若对于20ms每帧来说，第一帧完成时的ganule posiontion是20&#x2F;1000 *48000 &#x3D; 960,所以对于1page1seg1frame下来说，第一个page音频数据页中的ganule postion是960，以此类推；<br>相关库：<br>opusfile-0.11<br>opus-1.3<br>libopusenc-0.2.1<br>…  </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*Starting from current cursor position, get the initial PCM offset of the next</span></span><br><span class="line"><span class="comment">   page.</span></span><br><span class="line"><span class="comment">  This also validates the granule position on the first page with a completed</span></span><br><span class="line"><span class="comment">   audio data packet, as required by the spec.</span></span><br><span class="line"><span class="comment">  If this link is completely empty (no pages with completed packets), then this</span></span><br><span class="line"><span class="comment">   function sets pcm_start=pcm_end=0 and returns the BOS page of the next link</span></span><br><span class="line"><span class="comment">   (if any).</span></span><br><span class="line"><span class="comment">  In the seekable case, we initialize pcm_end=-1 before calling this function,</span></span><br><span class="line"><span class="comment">   so that later we can detect that the link was empty before calling</span></span><br><span class="line"><span class="comment">   op_find_final_pcm_offset().</span></span><br><span class="line"><span class="comment">  [inout] _link: The link for which to find pcm_start.</span></span><br><span class="line"><span class="comment">  [out] _og:     Returns the BOS page of the next link if this link was empty.</span></span><br><span class="line"><span class="comment">                 In the unseekable case, we can then feed this to</span></span><br><span class="line"><span class="comment">                  op_fetch_headers() to start the next link.</span></span><br><span class="line"><span class="comment">                 The caller may pass NULL (e.g., for seekable streams), in</span></span><br><span class="line"><span class="comment">                  which case this page will be discarded.</span></span><br><span class="line"><span class="comment">  Return: 0 on success, 1 if there is a buffered BOS page available, or a</span></span><br><span class="line"><span class="comment">           negative value on unrecoverable error.*/</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">op_find_initial_pcm_offset</span><span class="params">(OggOpusFile *_of,</span></span></span><br><span class="line"><span class="params"><span class="function"> OggOpusLink *_link,ogg_page *_og)</span></span>&#123;</span><br><span class="line">  ogg_page     og;</span><br><span class="line">  opus_int64   page_offset;</span><br><span class="line">  <span class="type">ogg_int64_t</span>  pcm_start;</span><br><span class="line">  <span class="type">ogg_int64_t</span>  prev_packet_gp;</span><br><span class="line">  <span class="type">ogg_int64_t</span>  cur_page_gp;</span><br><span class="line">  <span class="type">ogg_uint32_t</span> serialno;</span><br><span class="line">  opus_int32   total_duration;</span><br><span class="line">  <span class="type">int</span>          durations[<span class="number">255</span>];</span><br><span class="line">  <span class="type">int</span>          cur_page_eos;</span><br><span class="line">  <span class="type">int</span>          op_count;</span><br><span class="line">  <span class="type">int</span>          pi;</span><br><span class="line">  <span class="keyword">if</span>(_og==<span class="literal">NULL</span>)_og=&amp;og;</span><br><span class="line">  serialno=_of-&gt;os.serialno;</span><br><span class="line">  op_count=<span class="number">0</span>;</span><br><span class="line">  <span class="comment">/*We shouldn&#x27;t have to initialize total_duration, but gcc is too dumb to</span></span><br><span class="line"><span class="comment">     figure out that op_count&gt;0 implies we&#x27;ve been through the whole loop at</span></span><br><span class="line"><span class="comment">     least once.*/</span></span><br><span class="line">  total_duration=<span class="number">0</span>;</span><br><span class="line">  <span class="keyword">do</span>&#123;</span><br><span class="line">    page_offset=<span class="built_in">op_get_next_page</span>(_of,_og,_of-&gt;end);</span><br><span class="line">    <span class="comment">/*We should get a page unless the file is truncated or mangled.</span></span><br><span class="line"><span class="comment">      Otherwise there are no audio data packets in the whole logical stream.*/</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">OP_UNLIKELY</span>(page_offset&lt;<span class="number">0</span>))&#123;</span><br><span class="line">      <span class="comment">/*Fail if there was a read error.*/</span></span><br><span class="line">      <span class="keyword">if</span>(page_offset&lt;OP_FALSE)<span class="keyword">return</span> (<span class="type">int</span>)page_offset;</span><br><span class="line">      <span class="comment">/*Fail if the pre-skip is non-zero, since it&#x27;s asking us to skip more</span></span><br><span class="line"><span class="comment">         samples than exist.*/</span></span><br><span class="line">      <span class="keyword">if</span>(_link-&gt;head.pre_skip&gt;<span class="number">0</span>)<span class="keyword">return</span> OP_EBADTIMESTAMP;</span><br><span class="line">      _link-&gt;pcm_file_offset=<span class="number">0</span>;</span><br><span class="line">      <span class="comment">/*Set pcm_end and end_offset so we can skip the call to</span></span><br><span class="line"><span class="comment">         op_find_final_pcm_offset().*/</span></span><br><span class="line">      _link-&gt;pcm_start=_link-&gt;pcm_end=<span class="number">0</span>;</span><br><span class="line">      _link-&gt;end_offset=_link-&gt;data_offset;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*Similarly, if we hit the next link in the chain, we&#x27;ve gone too far.*/</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">OP_UNLIKELY</span>(<span class="built_in">ogg_page_bos</span>(_og)))&#123;</span><br><span class="line">      <span class="keyword">if</span>(_link-&gt;head.pre_skip&gt;<span class="number">0</span>)<span class="keyword">return</span> OP_EBADTIMESTAMP;</span><br><span class="line">      <span class="comment">/*Set pcm_end and end_offset so we can skip the call to</span></span><br><span class="line"><span class="comment">         op_find_final_pcm_offset().*/</span></span><br><span class="line">      _link-&gt;pcm_file_offset=<span class="number">0</span>;</span><br><span class="line">      _link-&gt;pcm_start=_link-&gt;pcm_end=<span class="number">0</span>;</span><br><span class="line">      _link-&gt;end_offset=_link-&gt;data_offset;</span><br><span class="line">      <span class="comment">/*Tell the caller we&#x27;ve got a buffered page for them.*/</span></span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*Ignore pages from other streams (not strictly necessary, because of the</span></span><br><span class="line"><span class="comment">       checks in ogg_stream_pagein(), but saves some work).*/</span></span><br><span class="line">    <span class="keyword">if</span>(serialno!=(<span class="type">ogg_uint32_t</span>)<span class="built_in">ogg_page_serialno</span>(_og))<span class="keyword">continue</span>;</span><br><span class="line">    <span class="built_in">ogg_stream_pagein</span>(&amp;_of-&gt;os,_og);</span><br><span class="line">    <span class="comment">/*Bitrate tracking: add the header&#x27;s bytes here.</span></span><br><span class="line"><span class="comment">      The body bytes are counted when we consume the packets.*/</span></span><br><span class="line">    _of-&gt;bytes_tracked+=_og-&gt;header_len;</span><br><span class="line">    <span class="comment">/*Count the durations of all packets in the page.*/</span></span><br><span class="line">    <span class="keyword">do</span> total_duration=<span class="built_in">op_collect_audio_packets</span>(_of,durations);</span><br><span class="line">    <span class="comment">/*Ignore holes.*/</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">OP_UNLIKELY</span>(total_duration&lt;<span class="number">0</span>));</span><br><span class="line">    op_count=_of-&gt;op_count;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">while</span>(op_count&lt;=<span class="number">0</span>);</span><br><span class="line">  <span class="comment">/*We found the first page with a completed audio data packet: actually look</span></span><br><span class="line"><span class="comment">     at the granule position.</span></span><br><span class="line"><span class="comment">    RFC 3533 says, &quot;A special value of -1 (in two&#x27;s complement) indicates that</span></span><br><span class="line"><span class="comment">     no packets finish on this page,&quot; which does not say that a granule</span></span><br><span class="line"><span class="comment">     position that is NOT -1 indicates that some packets DO finish on that page</span></span><br><span class="line"><span class="comment">     (even though this was the intention, libogg itself violated this intention</span></span><br><span class="line"><span class="comment">     for years before we fixed it).</span></span><br><span class="line"><span class="comment">    The Ogg Opus specification only imposes its start-time requirements</span></span><br><span class="line"><span class="comment">     on the granule position of the first page with completed packets,</span></span><br><span class="line"><span class="comment">     so we ignore any set granule positions until then.*/</span></span><br><span class="line">  cur_page_gp=_of-&gt;op[op_count<span class="number">-1</span>].granulepos;</span><br><span class="line">  <span class="comment">/*But getting a packet without a valid granule position on the page is not</span></span><br><span class="line"><span class="comment">     okay.*/</span></span><br><span class="line">  <span class="keyword">if</span>(cur_page_gp==<span class="number">-1</span>)<span class="keyword">return</span> OP_EBADTIMESTAMP;</span><br><span class="line">  cur_page_eos=_of-&gt;op[op_count<span class="number">-1</span>].e_o_s;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">OP_LIKELY</span>(!cur_page_eos))&#123;</span><br><span class="line">    <span class="comment">/*The EOS flag wasn&#x27;t set.</span></span><br><span class="line"><span class="comment">      Work backwards from the provided granule position to get the starting PCM</span></span><br><span class="line"><span class="comment">       offset.*/</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">OP_UNLIKELY</span>(<span class="built_in">op_granpos_add</span>(&amp;pcm_start,cur_page_gp,-total_duration)&lt;<span class="number">0</span>))&#123;</span><br><span class="line">      <span class="comment">/*The starting granule position MUST not be smaller than the amount of</span></span><br><span class="line"><span class="comment">         audio on the first page with completed packets.*/</span></span><br><span class="line">      <span class="keyword">return</span> OP_EBADTIMESTAMP;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="comment">/*The first page with completed packets was also the last.*/</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">OP_LIKELY</span>(<span class="built_in">op_granpos_add</span>(&amp;pcm_start,cur_page_gp,-total_duration)&lt;<span class="number">0</span>))&#123; <span class="comment">//这里会拿当前的ganule_pos和算出来的duration的应该有的sample来对比，若小，则返回异常；</span></span><br><span class="line">      <span class="comment">/*If there&#x27;s less audio on the page than indicated by the granule</span></span><br><span class="line"><span class="comment">         position, then we&#x27;re doing end-trimming, and the starting PCM offset</span></span><br><span class="line"><span class="comment">         is zero by spec mandate.*/</span></span><br><span class="line">      pcm_start=<span class="number">0</span>;</span><br><span class="line">      <span class="comment">/*However, the end-trimming MUST not ask us to trim more samples than</span></span><br><span class="line"><span class="comment">         exist after applying the pre-skip.*/</span></span><br><span class="line">      <span class="keyword">if</span>(<span class="built_in">OP_UNLIKELY</span>(<span class="built_in">op_granpos_cmp</span>(cur_page_gp,_link-&gt;head.pre_skip)&lt;<span class="number">0</span>))&#123;</span><br><span class="line">        <span class="keyword">return</span> OP_EBADTIMESTAMP;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/*Timestamp the individual packets.*/</span></span><br><span class="line">  prev_packet_gp=pcm_start;</span><br><span class="line">  <span class="keyword">for</span>(pi=<span class="number">0</span>;pi&lt;op_count;pi++)&#123;</span><br><span class="line">    <span class="keyword">if</span>(cur_page_eos)&#123;</span><br><span class="line">      <span class="type">ogg_int64_t</span> diff;</span><br><span class="line">      <span class="built_in">OP_ALWAYS_TRUE</span>(!<span class="built_in">op_granpos_diff</span>(&amp;diff,cur_page_gp,prev_packet_gp));</span><br><span class="line">      diff=durations[pi]-diff;</span><br><span class="line">      <span class="comment">/*If we have samples to trim...*/</span></span><br><span class="line">      <span class="keyword">if</span>(diff&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">/*If we trimmed the entire packet, stop (the spec says encoders</span></span><br><span class="line"><span class="comment">           shouldn&#x27;t do this, but we support it anyway).*/</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">OP_UNLIKELY</span>(diff&gt;durations[pi]))<span class="keyword">break</span>;</span><br><span class="line">        _of-&gt;op[pi].granulepos=prev_packet_gp=cur_page_gp;</span><br><span class="line">        <span class="comment">/*Move the EOS flag to this packet, if necessary, so we&#x27;ll trim the</span></span><br><span class="line"><span class="comment">           samples.*/</span></span><br><span class="line">        _of-&gt;op[pi].e_o_s=<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*Update the granule position as normal.*/</span></span><br><span class="line">    <span class="built_in">OP_ALWAYS_TRUE</span>(!<span class="built_in">op_granpos_add</span>(&amp;_of-&gt;op[pi].granulepos,</span><br><span class="line">     prev_packet_gp,durations[pi]));</span><br><span class="line">    prev_packet_gp=_of-&gt;op[pi].granulepos;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/*Update the packet count after end-trimming.*/</span></span><br><span class="line">  _of-&gt;op_count=pi;</span><br><span class="line">  _of-&gt;cur_discard_count=_link-&gt;head.pre_skip;</span><br><span class="line">  _link-&gt;pcm_file_offset=<span class="number">0</span>;</span><br><span class="line">  _of-&gt;prev_packet_gp=_link-&gt;pcm_start=pcm_start;</span><br><span class="line">  _of-&gt;prev_page_offset=page_offset;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//收集所有包的duration：</span></span><br><span class="line"><span class="comment">/*Grab all the packets currently in the stream state, and compute their</span></span><br><span class="line"><span class="comment">   durations.</span></span><br><span class="line"><span class="comment">  _of-&gt;op_count is set to the number of packets collected.</span></span><br><span class="line"><span class="comment">  [out] _durations: Returns the durations of the individual packets.</span></span><br><span class="line"><span class="comment">  Return: The total duration of all packets, or OP_HOLE if there was a hole.*/</span></span><br><span class="line"><span class="function"><span class="type">static</span> opus_int32 <span class="title">op_collect_audio_packets</span><span class="params">(OggOpusFile *_of,</span></span></span><br><span class="line"><span class="params"><span class="function"> <span class="type">int</span> _durations[<span class="number">255</span>])</span></span>&#123;</span><br><span class="line">  opus_int32 total_duration;</span><br><span class="line">  <span class="type">int</span>        op_count;</span><br><span class="line">  <span class="comment">/*Count the durations of all packets in the page.*/</span></span><br><span class="line">  op_count=<span class="number">0</span>;</span><br><span class="line">  total_duration=<span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span>(;;)&#123;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line">    <span class="comment">/*This takes advantage of undocumented libogg behavior that returned</span></span><br><span class="line"><span class="comment">       ogg_packet buffers are valid at least until the next page is</span></span><br><span class="line"><span class="comment">       submitted.</span></span><br><span class="line"><span class="comment">      Relying on this is not too terrible, as _none_ of the Ogg memory</span></span><br><span class="line"><span class="comment">       ownership/lifetime rules are well-documented.</span></span><br><span class="line"><span class="comment">      But I can read its code and know this will work.*/</span></span><br><span class="line">    ret=<span class="built_in">ogg_stream_packetout</span>(&amp;_of-&gt;os,_of-&gt;op+op_count);</span><br><span class="line">    <span class="keyword">if</span>(!ret)<span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">OP_UNLIKELY</span>(ret&lt;<span class="number">0</span>))&#123;</span><br><span class="line">      <span class="comment">/*We shouldn&#x27;t get holes in the middle of pages.*/</span></span><br><span class="line">      <span class="built_in">OP_ASSERT</span>(op_count==<span class="number">0</span>);</span><br><span class="line">      <span class="comment">/*Set the return value and break out of the loop.</span></span><br><span class="line"><span class="comment">        We want to make sure op_count gets set to 0, because we&#x27;ve ingested a</span></span><br><span class="line"><span class="comment">         page, so any previously loaded packets are now invalid.*/</span></span><br><span class="line">      total_duration=OP_HOLE;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*Unless libogg is broken, we can&#x27;t get more than 255 packets from a</span></span><br><span class="line"><span class="comment">       single page.*/</span></span><br><span class="line">    <span class="built_in">OP_ASSERT</span>(op_count&lt;<span class="number">255</span>);</span><br><span class="line">    _durations[op_count]=<span class="built_in">op_get_packet_duration</span>(_of-&gt;op[op_count].packet,<span class="comment">//返回的duration是packet的duration,若一个packet多个frame，要按照*来算；</span></span><br><span class="line">     _of-&gt;op[op_count].bytes);</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">OP_LIKELY</span>(_durations[op_count]&gt;<span class="number">0</span>))&#123;</span><br><span class="line">      <span class="comment">/*With at most 255 packets on a page, this can&#x27;t overflow.*/</span></span><br><span class="line">      total_duration+=_durations[op_count++];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*Ignore packets with an invalid TOC sequence.*/</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(op_count&gt;<span class="number">0</span>)&#123;</span><br><span class="line">      <span class="comment">/*But save the granule position, if there was one.*/</span></span><br><span class="line">      _of-&gt;op[op_count<span class="number">-1</span>].granulepos=_of-&gt;op[op_count].granulepos;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  _of-&gt;op_pos=<span class="number">0</span>;</span><br><span class="line">  _of-&gt;op_count=op_count;</span><br><span class="line">  <span class="keyword">return</span> total_duration;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">解析toc:</span><br><span class="line"><span class="comment">/*Returns the duration of the packet (in samples at 48 kHz), or a negative</span></span><br><span class="line"><span class="comment">   value on error.*/</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">op_get_packet_duration</span><span class="params">(<span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span> *_data,<span class="type">int</span> _len)</span></span>&#123;</span><br><span class="line">  <span class="type">int</span> nframes;</span><br><span class="line">  <span class="type">int</span> frame_size;</span><br><span class="line">  <span class="type">int</span> nsamples;</span><br><span class="line">  nframes=<span class="built_in">opus_packet_get_nb_frames</span>(_data,_len);</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">OP_UNLIKELY</span>(nframes&lt;<span class="number">0</span>))<span class="keyword">return</span> OP_EBADPACKET;</span><br><span class="line">  frame_size=<span class="built_in">opus_packet_get_samples_per_frame</span>(_data,<span class="number">48000</span>);</span><br><span class="line">  nsamples=nframes*frame_size; <span class="comment">//一个packet的采样大小等于 toc的config中解析出来的每frame samples * 一个packet中的frames数量，</span></span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">OP_UNLIKELY</span>(nsamples&gt;<span class="number">120</span>*<span class="number">48</span>))<span class="keyword">return</span> OP_EBADPACKET; <span class="comment">//一packet不能大于120ms</span></span><br><span class="line">  <span class="keyword">return</span> nsamples;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//解析toc中的count:看是1packet封了几个frame</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">opus_packet_get_nb_frames</span><span class="params">(<span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span> packet[], opus_int32 len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="type">int</span> count;</span><br><span class="line">   <span class="keyword">if</span> (len&lt;<span class="number">1</span>)</span><br><span class="line">      <span class="keyword">return</span> OPUS_BAD_ARG;</span><br><span class="line">   count = packet[<span class="number">0</span>]&amp;<span class="number">0x3</span>;</span><br><span class="line">   <span class="keyword">if</span> (count==<span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">   <span class="keyword">else</span> <span class="keyword">if</span> (count!=<span class="number">3</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">   <span class="keyword">else</span> <span class="keyword">if</span> (len&lt;<span class="number">2</span>)</span><br><span class="line">      <span class="keyword">return</span> OPUS_INVALID_PACKET;</span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">      <span class="keyword">return</span> packet[<span class="number">1</span>]&amp;<span class="number">0x3F</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//解析toc中的config，拿到具体的ms，即一帧是多少ms--&gt;一帧多少sample</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">opus_packet_get_samples_per_frame</span><span class="params">(<span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span> *data,</span></span></span><br><span class="line"><span class="params"><span class="function">      opus_int32 Fs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="type">int</span> audiosize;</span><br><span class="line">   <span class="keyword">if</span> (data[<span class="number">0</span>]&amp;<span class="number">0x80</span>)</span><br><span class="line">   &#123;</span><br><span class="line">      audiosize = ((data[<span class="number">0</span>]&gt;&gt;<span class="number">3</span>)&amp;<span class="number">0x3</span>);</span><br><span class="line">      audiosize = (Fs&lt;&lt;audiosize)/<span class="number">400</span>;</span><br><span class="line">   &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((data[<span class="number">0</span>]&amp;<span class="number">0x60</span>) == <span class="number">0x60</span>)</span><br><span class="line">   &#123;</span><br><span class="line">      audiosize = (data[<span class="number">0</span>]&amp;<span class="number">0x08</span>) ? Fs/<span class="number">50</span> : Fs/<span class="number">100</span>;</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      audiosize = ((data[<span class="number">0</span>]&gt;&gt;<span class="number">3</span>)&amp;<span class="number">0x3</span>);</span><br><span class="line">      <span class="keyword">if</span> (audiosize == <span class="number">3</span>)</span><br><span class="line">         audiosize = Fs*<span class="number">60</span>/<span class="number">1000</span>;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">         audiosize = (Fs&lt;&lt;audiosize)/<span class="number">100</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> audiosize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ogg文件实践"><a href="#ogg文件实践" class="headerlink" title="ogg文件实践:"></a>ogg文件实践:</h4><p>在网上暂时没有找到相关parse,可以用Audacity打开；或者自己写</p>
+<h4 id="ogg相关库和官网，ref"><a href="#ogg相关库和官网，ref" class="headerlink" title="ogg相关库和官网，ref"></a>ogg相关库和官网，ref</h4><p><a target="_blank" rel="noopener" href="https://www.xiph.org/ogg/doc/rfc3533.txt">https://www.xiph.org/ogg/doc/rfc3533.txt</a><br><a target="_blank" rel="noopener" href="https://www.xiph.org/ogg/doc/libogg/datastructures.html">https://www.xiph.org/ogg/doc/libogg/datastructures.html</a><br><a target="_blank" rel="noopener" href="https://rfc2cn.com/rfc3533.html">https://rfc2cn.com/rfc3533.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/audio/" rel="tag"># audio</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/26/audio-flac/" rel="prev" title="audio_flac">
+      <i class="fa fa-chevron-left"></i> audio_flac
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/27/audio-opus/" rel="next" title="audio_opus">
+      audio_opus <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Ogg%E7%AE%80%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">Ogg简述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ogg%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">Ogg的特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ogg%E7%9A%84%E7%89%A9%E7%90%86%E6%B5%81%E5%92%8C%E9%80%BB%E8%BE%91%E6%B5%81%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">3.</span> <span class="nav-text">Ogg的物理流和逻辑流的概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ogg%E7%89%A9%E7%90%86%E6%B5%81%E5%92%8C%E9%80%BB%E8%BE%91%E6%B5%81%E7%9A%84%E5%B0%81%E8%A3%85%EF%BC%8Cbos-eos%E7%AD%89"><span class="nav-number">4.</span> <span class="nav-text">Ogg物理流和逻辑流的封装，bos,eos等</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ogg%E5%A6%82%E4%BD%95%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%BC%96%E7%A0%81%E7%9A%84%E9%80%BB%E8%BE%91%E6%B5%81%EF%BC%9A-%E4%B8%80%E4%B8%AAPacket%E5%8F%AF%E8%83%BD%E8%B7%A8%E9%A1%B5%EF%BC%8C%E6%88%96%E8%80%85%E5%8C%85%E5%90%AB%E5%A4%9A%E4%B8%AA%E5%8C%85"><span class="nav-number">5.</span> <span class="nav-text">Ogg如何封装一个编码的逻辑流： 一个Packet可能跨页，或者包含多个包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ogg%E7%9A%84%E9%A1%B5%E5%A4%B4%E9%83%A8%E5%B0%81%E8%A3%85%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">Ogg的页头部封装格式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ogg%E6%A0%BC%E5%BC%8F%E6%96%87%E4%BB%B6%E5%92%8C%E4%BE%8B%E5%AD%90%EF%BC%9A"><span class="nav-number">7.</span> <span class="nav-text">ogg格式文件和例子：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ogg%E5%92%8C%E5%AE%83%E7%9A%84%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE%EF%BC%9B"><span class="nav-number">8.</span> <span class="nav-text">ogg和它的媒体协议；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ogg%E7%9B%B8%E5%85%B3%E9%87%8D%E8%A6%81%E6%A6%82%E5%BF%B5%E7%9A%84%E8%A7%A3%E9%87%8A%EF%BC%9A"><span class="nav-number">9.</span> <span class="nav-text">Ogg相关重要概念的解释：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ogg%E5%B0%81%E5%8C%85%E6%88%90%E5%B8%A7%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9A"><span class="nav-number">10.</span> <span class="nav-text">Ogg封包成帧的过程：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%EF%BC%9Alibopus%E4%B8%AD%E5%AF%B9ganule-posiontion%E7%9A%84%E6%A3%80%E6%9F%A5"><span class="nav-number">11.</span> <span class="nav-text">其他：libopus中对ganule posiontion的检查</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ogg%E6%96%87%E4%BB%B6%E5%AE%9E%E8%B7%B5"><span class="nav-number">12.</span> <span class="nav-text">ogg文件实践:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ogg%E7%9B%B8%E5%85%B3%E5%BA%93%E5%92%8C%E5%AE%98%E7%BD%91%EF%BC%8Cref"><span class="nav-number">13.</span> <span class="nav-text">ogg相关库和官网，ref</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'd1cf30499e91c74e4785d80c2dccaf99',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

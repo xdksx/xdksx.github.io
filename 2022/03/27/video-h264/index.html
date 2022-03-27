@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="AnnexB,AVCC,RBSP,等概念1 AnnexB,AVCC,HVCC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="video_h264">
+<meta property="og:url" content="https://xdksx.github.io/2022/03/27/video-h264/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="AnnexB,AVCC,RBSP,等概念1 AnnexB,AVCC,HVCC">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/video-h264/table7-1.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/video-h264/rbsp.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/video-h264/sps.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/video-h264/pps.png">
+<meta property="article:published_time" content="2022-03-27T09:14:08.000Z">
+<meta property="article:modified_time" content="2022-03-27T12:21:56.738Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="video">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2022/03/27/video-h264/table7-1.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/03/27/video-h264/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>video_h264 | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/03/27/video-h264/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          video_h264
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-27 17:14:08 / 修改时间：20:21:56" itemprop="dateCreated datePublished" datetime="2022-03-27T17:14:08+08:00">2022-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/video/" itemprop="url" rel="index"><span itemprop="name">video</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="AnnexB-AVCC-RBSP-等概念"><a href="#AnnexB-AVCC-RBSP-等概念" class="headerlink" title="AnnexB,AVCC,RBSP,等概念"></a>AnnexB,AVCC,RBSP,等概念</h4><p>1 AnnexB,AVCC,HVCC  <span id="more"></span><br>H.264码流分Annex-B和AVCC两种格式<br>H.265码流是Annex-B和HVCC格式。</p>
+<ul>
+<li>AVCC格式 也叫AVC1格式，MPEG-4格式，字节对齐，因此也叫Byte-Stream Format。用于mp4&#x2F;flv&#x2F;mkv, VideoToolbox。</li>
+<li>Annex-B格式 也叫MPEG-2 transport stream format格式（ts格式）, ElementaryStream格式。<br>2 AnnexB和AVCC的区别：<br>区别有两点：一个是参数集(SPS, PPS)组织格式；一个是分隔。</li>
+</ul>
+<ul>
+<li>Annex-B：使用start code分隔NAL(start code为三字节或四字节，0x000001或0x00000001，一般是四字节)；SPS和PPS按流的方式写在头部。</li>
+<li>AVCC：使用NALU长度（固定字节，通常为4字节）分隔NAL；在头部包含extradata(或sequence header)的结构体。（extradata包含分隔的字节数、SPS和PPS，具体结构见下）</li>
+</ul>
+<ul>
+<li>AnnexB:</li>
+</ul>
+<ol>
+<li><p>AnnexB格式—-用于实时播放<br>处于H264文档附录B（Annex-B Byte stream format）中<br>开始前缀start code（00000001或000001）＋NALU数据　　绝大部分编码器的默认输出格式<br>　　一共有两种起始码start_code<br>　　　①3字节0x000001　　单帧多slice（即单帧多个NALU）之间间隔<br>　　　②4字节0x00000001　帧之间，或者SPS等之前<br>4字节类型的开始码在在连续的数据传输中非常有用，因为用字节来对齐、分割流数据，比如：用连续的31个bit0后接一个bit1来分割流数据，是很容易的。  </p>
+</li>
+<li><p>格式：<br>AnnexB格式每个NALU都包含起始码，且通常会周期性的在关键帧之前重复SPS和PPS，所以解码器可以从视频流随机点开始进行解码，实时的流格式<br>AnnexB format:  In annexb, [start code] may be 0x000001 or 0x00000001.<br>([start code] NALU) | ( [start code] NALU) |   more detail:  ([start code] SPS NALU) | ( [start code] PPS NALU)  ([start code] NALU) | ( [start code] NALU)</p>
+</li>
+<li><p>FLV可能封装形式：<br>对AnnexB:<br>AVCC头，塞两个NALU sps pps<br>AVC数据：起始码 nalu   </p>
+</li>
+<li><p>关于RBSP和AnnexB如何处理竞争码：<br>RBSP:是没有竞争码字节的NALU即RBSP:A NALU representation without emulation prevention bytes is called a Raw Byte Sequence Payload, or RBSP<br>为啥需要竞争码？<br>我们知道，AnnexB是通过start code(上述)来分割Nalu的，但如果Nalu数据中就有start_code，这个时候分割就会出现问题，如何处理？<br>spec这样处理，认为四字节序列0x00000000、0x00000001、0x00000002和0x00000003在非rbsp NALU中是非法的，因此进行字节填充：<br>为了将RBSP转换为具有开始代码的NALU，字节填充是通过在两个连续的0x00字节之后插入一个预防字节0x03(竞争码)来实现的。所以，要反转这种情况，在读取流时，删除两个连续的0x00字节之后的任何0x03。<br>才能还原原始的RBSP.<br>要确定NALU的长度，从一个字节流开始(它将有一个开始代码)，跳到下一个开始代码，并计算中间的字节数。</p>
+</li>
+</ol>
+<ul>
+<li>AVCC:</li>
+</ul>
+<ol>
+<li>AVCC—用于存储<br>解码器配置参数在一开始就配置好了，系统可以很容易的识别NALU的边界，不需要额外的起始码，减少了资源的浪费，同时可以在播放时调到视频的中间位置。这种格式通常被用于可以被随机访问的多媒体数据，如存储在硬盘的文件。MP4、MKV通常用AVCC格式来存储。</li>
+</ol>
+<p>AVCC格式不使用起始码作为NALU的分界，这种格式在每个NALU前都加上一个大端格式的前缀（1、2、4字节，代表NALU长度）<br>所以在解析AVCC格式的时候需要将指定的前缀字节数的值保存在一个头部对象中，这个都通常称为extradata或者sequence header。同时，SPS和PPS数据也需要保存在extradata或者叫’sequence header’中。<br>H.264 extradata &#x2F; sequence header</p>
+<ol start="2">
+<li>AVCC format:<br>([extradata]) | ([length] NALU) | ([length] NALU) |</li>
+</ol>
+<p>In avcc, the bytes of [length] depends on NALULengthSizeMinusOne in avcc extradata, the value of [length] depends on the size of following NALU and in both annexb and avcc format, the NALUs are no different.</p>
+<p>AVCC中的extradata格式：</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">An AVCC stream always starts with a specific header</span><br><span class="line">     - <span class="number">8</span> bits = <span class="number">0x01</span> (this <span class="built_in">is</span> illegal <span class="keyword">in</span> Annex B)</span><br><span class="line">     - <span class="number">8</span> bits of avc profile (from sps[<span class="number">0</span>][<span class="number">1</span>])</span><br><span class="line">     - <span class="number">8</span> bits of avc compatibility (from sps[<span class="number">0</span>][<span class="number">2</span>])</span><br><span class="line">     - <span class="number">8</span> bits of avc level (from sps[<span class="number">0</span>][<span class="number">3</span>])</span><br><span class="line">     - <span class="number">6</span> bits = <span class="number">0b111111</span></span><br><span class="line">     - <span class="number">2</span> bits of NALULengthSizeMinusOne (typically <span class="number">3</span>)</span><br><span class="line">     - <span class="number">3</span> bits of <span class="number">0b111</span></span><br><span class="line">     - <span class="number">5</span> bits of number of SPS NALU (usually <span class="number">1</span>)</span><br><span class="line">     - Repeated per SPS</span><br><span class="line">           - <span class="number">16</span> bits of SPS size - </span><br><span class="line">           - Variable SPS NALU data</span><br><span class="line">     - <span class="number">8</span> bits of number of PPS NALU (usually <span class="number">1</span>)</span><br><span class="line">     - Repeated once per PPS</span><br><span class="line">           - <span class="number">16</span> bits of PPS size</span><br><span class="line">           - Variable PPS NALU data</span><br><span class="line">           </span><br><span class="line">ref:http://neurocline.github.io/dev/<span class="number">2016</span>/<span class="number">07</span>/<span class="number">28</span>/video-<span class="keyword">and</span>-containers.html</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>FLV streams must be written as AVCC.<br>AVCC封装到flv:<br>对AVCC:<br>AVC 头： flvtag + flvvideotag + extradata + pretagsize<br>AVC 数据： flvtag + flvvideotag + 长度 + nalu  长度+nalu ,..+ pretagsize ,一个tag可能有多个nalu,但是不会跨</li>
+</ol>
+<p>RTP封装：转换为rtp:  去掉起始码，带nalu长度，头和数据，如果是IDR，需要在前面加sps pps nalu  </p>
+<ul>
+<li>H264的流，封装nalu的方式常见分为两种，Annex B和 AVCC ，其实还有Annex A。。。</li>
+</ul>
+<h4 id="nalu"><a href="#nalu" class="headerlink" title="nalu"></a>nalu</h4><h5 id="字段描述规定："><a href="#字段描述规定：" class="headerlink" title="字段描述规定："></a>字段描述规定：</h5><p>The following descriptors specify the parsing process of each syntax element. For some syntax elements, two descriptors, separated by a vertical bar, are used. In these cases, the left descriptors apply when entropy_coding_mode_flag is equal to 0 and the right descriptor applies when entropy_coding_mode_flag is equal to 1.以下描述符指定了每个语法元素的解析过程。对于某些语法元素，使用两个描述符，用竖线分隔。在这些情况下，当 entropy_coding_mode_flag 等于 0 时应用左描述符，当 entropy_coding_mode_flag 等于 1 时应用右描述符。<br>– ae(v): context-adaptive arithmetic entropy-coded syntax element. The parsing process for this descriptor is specified in clause 9.3.上下文自适应算术熵编码语法元素。该描述符的解析过程在第 9.3 节中规定<br>– b(8): byte having any pattern of bit string (8 bits). The parsing process for this descriptor is specified by the return value of the function read_bits( 8 ).具有任何位串模式（8 位）的字节。该描述符的解析过程由函数 read_bits(8) 的返回值指定。<br>– ce(v): context-adaptive variable-length entropy-coded syntax element with the left bit first. The parsing process for this descriptor is specified in clause 9.2.上下文自适应可变长度熵编码语法元素，左位在前。该描述符的解析过程在第 9.2 节中规定。<br>– f(n): fixed-pattern bit string using n bits written (from left to right) with the left bit first. The parsing process for this descriptor is specified by the return value of the function read_bits( n ).固定模式位串使用 n 位写入（从左到右），左位在前。该描述符的解析过程由函数 read_bits( n ) 的返回值指定。<br>– i(n): signed integer using n bits. When n is “v” in the syntax table, the number of bits varies in a manner dependent on the value of other syntax elements. The parsing process for this descriptor is specified by the return value of the function read_bits( n ) interpreted as a two’s complement integer representation with most significant bit written first.使用 n 位的有符号整数。当语法表中的n为“v”时，比特数以依赖于其他语法元素的值的方式变化。该描述符的解析过程由函数 read_bits( n ) 的返回值指定，解释为二进制补码整数表示，最高有效位首先写入。<br>– me(v): mapped Exp-Golomb-coded syntax element with the left bit first. The parsing process for this descriptor is specified in clause 9.1.映射 Exp-Golomb 编码的语法元素，左位在前。该描述符的解析过程在第 9.1 节中规定。<br>– se(v): signed integer Exp-Golomb-coded syntax element with the left bit first. The parsing process for this descriptor is specified in clause 9.1.左位在前的有符号整数 Exp-Golomb 编码语法元素。该描述符的解析过程在第 9.1 节中规定。<br>– te(v): truncated Exp-Golomb-coded syntax element with left bit first. The parsing process for this descriptor is specified in clause 9.1.截断的 Exp-Golomb 编码语法元素，左位在前。该描述符的解析过程在第 9.1 节中规定。<br>– u(n): unsigned integer using n bits. When n is “v” in the syntax table, the number of bits varies in a manner dependent on the value of other syntax elements. The parsing process for this descriptor is specified by the return value of the function read_bits( n ) interpreted as a binary representation of an unsigned integer with most significant bit written first.使用 n 位的无符号整数。当语法表中的n为“v”时，比特数以依赖于其他语法元素的值的方式变化。该描述符的解析过程由函数 read_bits( n ) 的返回值指定，该函数解释为无符号整数的二进制表示，最高有效位首先写入。<br>– ue(v): unsigned integer Exp-Golomb-coded syntax element with the left bit first. The parsing process for this descriptor is specified in clause 9.1.无符号整数 Exp-Golomb 编码的语法元素，左位在前。该描述符的解析过程在第 9.1 节中规定。 </p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="selector-tag">b</span>(<span class="number">8</span>),<span class="built_in">f</span>(n), 基于read_bits,讲究顺序性。后者可以读取多个bit,  </span><br><span class="line"><span class="number">2</span>. <span class="selector-tag">i</span>(n), <span class="built_in">u</span>(n)，两者的区别是一个是有符号的整数，一个是无符号的。 两个都是基于read_bits，但是支持可变的长度，长度由另一个字段决定；  </span><br><span class="line">在 <span class="built_in">seq_parameter_set_data</span>( ) 中获得的一对语法元素 log2_max_frame_num_minus4 <span class="selector-attr">[ue(v)]</span> 和在 <span class="built_in">slice_header</span>( ) 中获得的 frame_num <span class="selector-attr">[u(v)]</span> 就是一个很好的例子，其中 frame_num = log2_max_frame_num_minus4 + <span class="number">4</span>。</span><br><span class="line">假设 log2_max_frame_num_minus4 = <span class="number">4</span>（参考下一节关于解析 <span class="built_in">ue</span>(v)），那么 frame_num = <span class="number">4</span> + <span class="number">4</span> = <span class="number">8</span>。所以，为了得到 frame_num 的值，你可以用 <span class="built_in">u</span>(<span class="number">8</span>) = <span class="selector-tag">b</span>(<span class="number">8</span>)= <span class="built_in">f</span>(<span class="number">8</span>) = <span class="built_in">read_bits</span>( <span class="number">8</span> ) 解析比特流。</span><br><span class="line"><span class="number">3</span>. <span class="built_in">ue</span>(v), <span class="built_in">te</span>(v), <span class="built_in">se</span>(v), <span class="built_in">me</span>(v)  </span><br><span class="line">这些都是 Exp-Golomb 编码。要解码，您需要一个可以通过以下方式计算的 codeNum：  </span><br></pre></td></tr></table></figure>
+<p>ref:<br><a target="_blank" rel="noopener" href="https://yumichan.net/video-processing/video-compression/explanation-of-descriptors-in-itu-t-publication-on-h-264-coding-standardrecommendation-with-example/">https://yumichan.net/video-processing/video-compression/explanation-of-descriptors-in-itu-t-publication-on-h-264-coding-standardrecommendation-with-example/</a></p>
+<p>rfc: file:&#x2F;&#x2F;&#x2F;C:&#x2F;Users&#x2F;Administrator&#x2F;Downloads&#x2F;T-REC-H.264-200503-S!!PDF-E.pdf</p>
+<h5 id="nalu-格式："><a href="#nalu-格式：" class="headerlink" title="nalu 格式："></a>nalu 格式：</h5><p>ref: <a target="_blank" rel="noopener" href="https://yumichan.net/video-processing/video-compression/introduction-to-h264-2-sodb-vs-rbsp-vs-ebsp/">https://yumichan.net/video-processing/video-compression/introduction-to-h264-2-sodb-vs-rbsp-vs-ebsp/</a></p>
+<ul>
+<li>整体格式：<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">nalu <span class="keyword">header</span> <span class="keyword">format</span>:  F(<span class="number">1</span>) NRI(<span class="number">2</span>) <span class="keyword">TYPE</span>(<span class="number">5</span>)</span><br><span class="line">nal_unit( NumBytesInNALunit ) &#123; C Descriptor</span><br><span class="line">    // NAL Unit <span class="keyword">Header</span> <span class="number">1</span>Byte</span><br><span class="line">    forbidden_zero_bit <span class="keyword">All</span> f(<span class="number">1</span>)   第一位</span><br><span class="line">    nal_ref_idc <span class="keyword">All</span> u(<span class="number">2</span>)  <span class="number">2</span>bit</span><br><span class="line">    nal_unit_type <span class="keyword">All</span> u(<span class="number">5</span>)   <span class="number">5</span>bit</span><br><span class="line">    NumBytesInRBSP = <span class="number">0</span></span><br><span class="line">     //下面的过程是为了去掉 <span class="number">0x03</span> ,因为编码时会加入</span><br><span class="line">      <span class="keyword">for</span>( i = <span class="number">1</span>; i &lt; NumBytesInNALunit; i++ ) &#123;</span><br><span class="line">          <span class="keyword">if</span>( i + <span class="number">2</span> &lt; NumBytesInNALunit &amp;&amp; next_bits( <span class="number">24</span> ) = = <span class="number">0x000003</span> ) &#123;</span><br><span class="line">               rbsp_byte[ NumBytesInRBSP++ ] <span class="keyword">All</span> b(<span class="number">8</span>)</span><br><span class="line">               rbsp_byte[ NumBytesInRBSP++ ] <span class="keyword">All</span> b(<span class="number">8</span>)</span><br><span class="line">                i += <span class="number">2</span></span><br><span class="line">           emulation_prevention_three_byte <span class="comment">/* equal to 0x03 */</span> <span class="keyword">All</span> f(<span class="number">8</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span></span><br><span class="line">          rbsp_byte[ NumBytesInRBSP++ ] <span class="keyword">All</span> b(<span class="number">8</span>)</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line">SODB + RBSP Stop <span class="type">bit</span> + <span class="number">0</span> <span class="type">bit</span>(s) =&gt; RBSP</span><br></pre></td></tr></table></figure>
+对AnnexB:<br>RBSP part 1 + 0x03 + RBSP part 2 + 0x03 + … + RBSP part n &#x3D;&gt; EBSP<br>NALU Header + EBSP &#x3D;&gt; NALU</li>
+</ul>
+<p>In Byte Stream Format (Annex B),<br>Start Code + NALU + … + Start Code + NALU &#x3D;&gt; H.264 Byte Stream</p>
+<p>对AVCC 略，参考上面</p>
+<ul>
+<li><p>example:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">eg</span>:</span><br><span class="line"><span class="attribute">Hex</span>	Binary</span><br><span class="line"><span class="attribute">0x67</span>	<span class="number">0110</span> <span class="number">0111</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">So</span>, for <span class="number">0</span>x67, we have:</span><br><span class="line"><span class="attribute">forbidden_zero_bit</span> = <span class="number">0</span>,</span><br><span class="line"><span class="attribute">nal_ref_idc</span> = <span class="number">3</span>,</span><br><span class="line"><span class="attribute">nal_unit_type</span> = <span class="number">7</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>字段解释：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">forbidden_zero_bit: <span class="number">1</span>bit</span><br><span class="line">The <span class="number">1</span>st bit <span class="keyword">is</span> forbidden_zero_bit which <span class="keyword">is</span> used <span class="keyword">to</span> check whether there <span class="keyword">is</span> any <span class="keyword">error</span> occurred during <span class="keyword">the</span> transmission. <span class="number">0</span> means <span class="keyword">that</span> <span class="keyword">it</span> <span class="keyword">is</span> normal <span class="keyword">while</span> <span class="number">1</span> indicates a syntax violation. So, we should always find <span class="keyword">that</span> forbidden_zero_bit <span class="keyword">equals</span> <span class="number">0.</span> 检查是否传输错误，<span class="number">0</span>表示没有，<span class="number">1</span>表示有错误。</span><br><span class="line"></span><br><span class="line">nal_ref_idc: <span class="number">2</span>bit</span><br><span class="line">nal_ref_idc <span class="keyword">not</span> <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">0</span> specifies <span class="keyword">that</span> <span class="keyword">the</span> content <span class="keyword">of</span> <span class="keyword">the</span> NAL unit <span class="keyword">contains</span> a sequence parameter <span class="keyword">set</span> <span class="keyword">or</span> a picture parameter <span class="keyword">set</span> <span class="keyword">or</span> a slice <span class="keyword">of</span> <span class="keyword">a reference</span> picture <span class="keyword">or</span> a slice data partition <span class="keyword">of</span> <span class="keyword">a reference</span> picture.  不为<span class="number">0</span>表示包含一个sps或pps，或一个参考帧slice或一个参考帧的一部分slice数据</span><br><span class="line">nal_ref_idc <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">0</span> <span class="keyword">for</span> a NAL unit containing a slice <span class="keyword">or</span> slice data partition indicates <span class="keyword">that</span> <span class="keyword">the</span> slice <span class="keyword">or</span> slice data partition <span class="keyword">is</span> part <span class="keyword">of</span> a non-<span class="keyword">reference</span> picture. 为<span class="number">0</span>表示，在NALU单元中，表示包含一个slice或slice data部分，不是参考帧</span><br><span class="line">nal_ref_idc shall <span class="keyword">not</span> be <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">0</span> <span class="keyword">for</span> sequence parameter <span class="keyword">set</span> <span class="keyword">or</span> sequence parameter <span class="keyword">set</span> extension <span class="keyword">or</span> picture parameter <span class="keyword">set</span> NAL units. When nal_ref_idc <span class="keyword">is</span> <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">0</span> <span class="keyword">for</span> one slice <span class="keyword">or</span> slice data partition NAL unit <span class="keyword">of</span> a particular picture, <span class="keyword">it</span> shall be <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">0</span> <span class="keyword">for</span> all slice <span class="keyword">and</span> slice data partition NAL units <span class="keyword">of</span> <span class="keyword">the</span> picture. </span><br><span class="line">nal_ref_idc shall <span class="keyword">not</span> be <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">0</span> <span class="keyword">for</span> IDR NAL units, i.e., NAL units <span class="keyword">with</span> nal_unit_type <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">5.</span> </span><br><span class="line">nal_ref_idc shall be <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">0</span> <span class="keyword">for</span> all NAL units having nal_unit_type <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">6</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="keyword">or</span> <span class="number">12.</span> </span><br><span class="line">总结：</span><br><span class="line">nal_ref_idc indicating whether this NAL unit <span class="keyword">is</span> <span class="keyword">a reference</span> field / frame / picture. 是否是一个参考帧或图片</span><br><span class="line">On one hand, <span class="keyword">if</span> <span class="keyword">it</span> <span class="keyword">is</span> <span class="keyword">a reference</span> field / frame / picture, nal_ref_idc <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">equal</span> <span class="keyword">to</span> <span class="number">0.</span> 若是，则不为<span class="number">0</span></span><br><span class="line">根据建议，非<span class="number">0</span>，则表示nalu单元的内容包含一个sps,一个sps扩展，一个sps子集，一个PPS,一个参考帧的slice,一个参考帧中的一个slice部分，或一个在参考图像的切片之前的一种前缀NAL单元。</span><br><span class="line">另一方面，若不是一个参考帧，则这个值是<span class="number">0</span> </span><br><span class="line">对任何非<span class="number">0</span> 的值，值越大，则越重要。 在这里 它是<span class="number">0x11</span>,实际上它是一个sps</span><br><span class="line"></span><br><span class="line">nal_unit_type</span><br><span class="line">nalu 单元类型：</span><br><span class="line">指定NAL单元中包含的RBSP数据结构的类型，如表所示。VCL NAL单位被指定为nal_unit_type等于<span class="number">1</span>到<span class="number">5</span>的NAL单位。所有剩余的NAL单位称为非vcl NAL单位。</span><br><span class="line"><span class="number">1</span> 非IDR slice</span><br><span class="line"><span class="number">2</span> <span class="number">-4</span>  parg <span class="keyword">of</span> slice</span><br><span class="line"><span class="number">5</span> IDR slice</span><br><span class="line"><span class="number">6</span> sei</span><br><span class="line"><span class="number">7</span> sps</span><br><span class="line"><span class="number">8</span> pps</span><br><span class="line"><span class="number">9</span>: access unit delimiter: 访问单元分隔符可用于指示主编码图像中出现的片的类型，并简化对访问单元之间边界的检测。没有与访问单元分隔符关联的规范解码过程</span><br><span class="line">&#123;</span><br><span class="line">       语法：</span><br><span class="line">       access_unit_delimiter_rbsp( ) &#123; C Descriptor</span><br><span class="line">            primary_pic_type <span class="number">6</span> u(<span class="number">3</span>) <span class="number">3</span>bit</span><br><span class="line">            rbsp_trailing_bits( ) <span class="number">6</span></span><br><span class="line">       &#125; </span><br><span class="line">       primary_pic_type表示主代码图片的所有切片的slice_type值都是给定primary_pic_type值的表<span class="number">7</span><span class="number">-5</span>中列出的集合的成员。</span><br><span class="line">       </span><br><span class="line">       primary_pic_type slice_type values <span class="keyword">that</span> may be present <span class="keyword">in</span> <span class="keyword">the</span> primary coded picture</span><br><span class="line">       <span class="number">0</span> I</span><br><span class="line">       <span class="number">1</span> I, P</span><br><span class="line">       <span class="number">2</span> I, P, B</span><br><span class="line">       <span class="number">3</span> SI</span><br><span class="line">       <span class="number">4</span> SI, SP</span><br><span class="line">       <span class="number">5</span> I, SI</span><br><span class="line">       <span class="number">6</span> I, SI, P, SP</span><br><span class="line">       <span class="number">7</span> I, SI, P, SP, B</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">10</span> End <span class="keyword">of</span> sequence RBSP semantics;</span><br><span class="line">序列结束RBSP指定在解码顺序位流中(如果有)下一个后续访问单元为IDR访问单元。序列RBSP结尾的SODB和RBSP语法内容为空。没有为序列RBSP的结束指定规范的解码过程。</span><br><span class="line"></span><br><span class="line"><span class="number">11</span> End <span class="keyword">of</span> Stream:</span><br><span class="line">流RBSP结束表示在解码顺序上，流RBSP结束后的位流中不应出现任何额外的NAL单元。流RBSP结束时的SODB和RBSP语法内容为空。没有为流RBSP的结束指定标准解码过程。</span><br><span class="line">...</span><br><span class="line">more: spec:</span><br><span class="line">Table <span class="number">7</span><span class="number">-1</span> – NAL unit type codes, syntax element categories, <span class="keyword">and</span> NAL unit type classes</span><br></pre></td></tr></table></figure></li>
+</ul>
+<img src="/2022/03/27/video-h264/table7-1.png" class="" title="tes">
+<p> 标记为C的列列出了NAL单元中可能存在的语法元素的类别。此外，还可能存在语法类别为All的语法元素，这是由RBSP数据结构的语法和语义决定的。具体列出的类别中是否存在任何语法元素，取决于相关RBSP数据结构的语法和语义。nal_unit_type不应该等于3或4，除非在RBSP数据结构中存在至少一个语法元素，其语法元素类别值等于nal_unit_type的值，而不是分类为All。<br>具有nal_unit_type等于13和19的NAL单元可能被解码器丢弃，而不影响对具有nal_unit_type不等于13或19的NAL单元的解码过程，且不影响符合此国际标准</p>
+<p>对应的NRI 值</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Nal Unit Type                             Possible nal_ref_idc <span class="built_in">value</span></span><br><span class="line"><span class="number">1</span> – <span class="number">4</span>                                     If <span class="literal">one</span> <span class="keyword">of</span> <span class="keyword">the</span> NALU is <span class="number">0</span>, all NAL units <span class="keyword">with</span> Type <span class="keyword">in</span> <span class="keyword">the</span> tang <span class="keyword">of</span> <span class="number">1</span> – <span class="number">4</span>, inclusive, <span class="keyword">of</span> <span class="keyword">the</span> picture are <span class="number">0</span></span><br><span class="line"><span class="number">5</span> Coded slice <span class="keyword">of</span> <span class="keyword">an</span> IDR picture           non-<span class="literal">zero</span>   IDR picture</span><br><span class="line"><span class="number">7</span> Sequence parameter <span class="built_in">set</span>                  non-<span class="literal">zero</span>   sps</span><br><span class="line"><span class="number">8</span> Picture parameter <span class="built_in">set</span>                   non-<span class="literal">zero</span>   pps</span><br><span class="line"><span class="number">13</span> Sequence parameter <span class="built_in">set</span> <span class="built_in">extension</span>       non-<span class="literal">zero</span>   </span><br><span class="line"><span class="number">15</span> Subset sequence parameter <span class="built_in">set</span>          non-<span class="literal">zero</span></span><br><span class="line"><span class="number">6</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span> <span class="keyword">or</span> <span class="number">12</span>                        <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>rbsp构成：<br>rbsp_trailing_bits( ) 5  即在nalu中提到的，用来做stop和align的bits: 如下</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rbsp_stop_one_bit = <span class="number">1</span></span><br><span class="line">rbsp_alignment_zero_bit(s) = <span class="number">0</span>(s) <span class="string">[[Must make the SODB byte-aligned]]</span></span><br></pre></td></tr></table></figure>
+<img src="/2022/03/27/video-h264/rbsp.png" class="" title="tes"></li>
+<li><p>sps格式：</p>
+<img src="/2022/03/27/video-h264/sps.png" class="" title="tes"></li>
+<li><p>pps格式：</p>
+<img src="/2022/03/27/video-h264/pps.png" class="" title="tes"></li>
+<li><p>sei:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">sei_rbsp</span><span class="params">( )</span></span> &#123;                     C Descriptor</span><br><span class="line">do</span><br><span class="line"><span class="function"><span class="title">sei_message</span><span class="params">( )</span></span>                       <span class="number">5</span></span><br><span class="line"><span class="function"><span class="title">while</span><span class="params">( more_rbsp_data( )</span></span> )</span><br><span class="line"><span class="function"><span class="title">rbsp_trailing_bits</span><span class="params">( )</span></span>                <span class="number">5</span>  </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">sei_message</span><span class="params">( )</span></span> &#123; C Descriptor</span><br><span class="line">    payloadType = <span class="number">0</span></span><br><span class="line"><span class="function"><span class="title">while</span><span class="params">( next_bits( <span class="number">8</span> )</span></span> = = <span class="number">0</span>xFF ) &#123;</span><br><span class="line">    ff_byte <span class="comment">/* equal to 0xFF */</span> <span class="number">5</span> <span class="built_in">f</span>(<span class="number">8</span>)</span><br><span class="line">    payloadType += <span class="number">255</span></span><br><span class="line">&#125;</span><br><span class="line">last_payload_type_byte <span class="number">5</span> <span class="built_in">u</span>(<span class="number">8</span>)</span><br><span class="line">payloadType += last_payload_type_byte</span><br><span class="line">payloadSize = <span class="number">0</span></span><br><span class="line"><span class="function"><span class="title">while</span><span class="params">( next_bits( <span class="number">8</span> )</span></span> = = <span class="number">0</span>xFF ) &#123;</span><br><span class="line">    ff_byte <span class="comment">/* equal to 0xFF */</span> <span class="number">5</span> <span class="built_in">f</span>(<span class="number">8</span>)</span><br><span class="line">    payloadSize += <span class="number">255</span></span><br><span class="line">&#125;</span><br><span class="line">last_payload_size_byte <span class="number">5</span> <span class="built_in">u</span>(<span class="number">8</span>)</span><br><span class="line">payloadSize += last_payload_size_byte</span><br><span class="line"><span class="function"><span class="title">sei_payload</span><span class="params">( payloadType, payloadSize )</span></span> <span class="number">5</span></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+</li>
+<li><p>slice格式：一个Nalu一般是一个slice?</p>
+<figure class="highlight wren"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="title class_">Slice</span> <span class="variable">layer</span> <span class="variable">without</span> <span class="variable">partitioning</span> <span class="variable">RBSP</span> <span class="variable">syntax</span></span><br><span class="line">    <span class="title function_">slice_layer_without_partitioning_rbsp</span>( ) &#123;           <span class="variable">C</span> <span class="title class_">Descriptor</span></span><br><span class="line">    <span class="title function_">slice_header</span>( )                                              <span class="number">2</span></span><br><span class="line">    <span class="title function_">slice_data</span>( ) <span class="comment">/* all categories of slice_data( ) syntax */</span> <span class="number">2</span> <span class="operator">|</span> <span class="number">3</span> <span class="operator">|</span> <span class="number">4</span></span><br><span class="line">   <span class="title function_">rbsp_slice_trailing_bits</span>( )                                   <span class="number">2</span></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="title class_">Slice</span> <span class="variable">data</span> <span class="variable">partition</span> <span class="variable">RBSP</span> <span class="variable">syntax</span> </span><br><span class="line"><span class="number">1</span> <span class="title class_">Slice</span> <span class="variable">data</span> <span class="variable">partition</span> <span class="variable">A</span> <span class="variable">RBSP</span> <span class="variable">syntax</span></span><br><span class="line">     <span class="title function_">slice_data_partition_a_layer_rbsp</span>( ) &#123; <span class="variable">C</span> <span class="title class_">Descriptor</span></span><br><span class="line">     <span class="title function_">slice_header</span>( ) <span class="number">2</span></span><br><span class="line">     <span class="variable">slice_id</span> <span class="title class_">All</span> <span class="title function_">ue</span>(<span class="variable">v</span>)</span><br><span class="line">      <span class="title function_">slice_data</span>( ) <span class="comment">/* only category 2 parts of slice_data( ) syntax */</span> <span class="number">2</span></span><br><span class="line">      <span class="title function_">rbsp_slice_trailing_bits</span>( ) <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="title class_">Slice</span> <span class="variable">data</span> <span class="variable">partition</span> <span class="variable">B</span> <span class="variable">RBSP</span> <span class="variable">syntax</span></span><br><span class="line"><span class="title function_">slice_data_partition_b_layer_rbsp</span>( ) &#123; <span class="variable">C</span> <span class="title class_">Descriptor</span></span><br><span class="line"><span class="variable">slice_id</span> <span class="title class_">All</span> <span class="title function_">ue</span>(<span class="variable">v</span>)</span><br><span class="line"> <span class="keyword">if</span>( <span class="variable">redundant_pic_cnt_present_flag</span> )</span><br><span class="line"> <span class="variable">redundant_pic_cnt</span> <span class="title class_">All</span> <span class="title function_">ue</span>(<span class="variable">v</span>)</span><br><span class="line"> <span class="title function_">slice_data</span>( ) <span class="comment">/* only category 3 parts of slice_data( ) syntax */</span> <span class="number">3</span></span><br><span class="line"> <span class="title function_">rbsp_slice_trailing_bits</span>( ) <span class="number">3</span></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="title class_">Slice</span> <span class="variable">data</span> <span class="variable">partition</span> <span class="variable">C</span> <span class="variable">RBSP</span> <span class="variable">syntax</span></span><br><span class="line"><span class="title function_">slice_data_partition_c_layer_rbsp</span>( ) &#123; <span class="variable">C</span> <span class="title class_">Descriptor</span></span><br><span class="line"><span class="variable">slice_id</span> <span class="title class_">All</span> <span class="title function_">ue</span>(<span class="variable">v</span>)</span><br><span class="line"> <span class="keyword">if</span>( <span class="variable">redundant_pic_cnt_present_flag</span> )</span><br><span class="line"> <span class="variable">redundant_pic_cnt</span> <span class="title class_">All</span> <span class="title function_">ue</span>(<span class="variable">v</span>)</span><br><span class="line"> <span class="title function_">slice_data</span>( ) <span class="comment">/* only category 4 parts of slice_data( ) syntax */</span> <span class="number">4</span></span><br><span class="line"> <span class="title function_">rbsp_slice_trailing_bits</span>( ) <span class="number">4</span></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span></span><br><span class="line"><span class="variable">RBSP</span> <span class="variable">slice</span> <span class="variable">trailing</span> <span class="variable">bits</span> <span class="variable">syntax</span></span><br><span class="line"><span class="title function_">rbsp_slice_trailing_bits</span>( ) &#123; <span class="variable">C</span> <span class="title class_">Descriptor</span></span><br><span class="line"> <span class="title function_">rbsp_trailing_bits</span>( ) <span class="title class_">All</span></span><br><span class="line"> <span class="keyword">if</span>( <span class="variable">entropy_coding_mode_flag</span> )</span><br><span class="line"> <span class="keyword">while</span>( <span class="title function_">more_rbsp_trailing_data</span>( ) )</span><br><span class="line"> <span class="variable">cabac_zero_word</span> <span class="comment">/* equal to 0x0000 */</span> <span class="title class_">All</span> <span class="title function_">f</span>(<span class="number">16</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="variable">RBSP</span> <span class="variable">trailing</span> <span class="variable">bits</span> <span class="variable">syntax</span></span><br><span class="line"><span class="title function_">rbsp_trailing_bits</span>( ) &#123; <span class="variable">C</span> <span class="title class_">Descriptor</span></span><br><span class="line"><span class="variable">rbsp_stop_one_bit</span> <span class="comment">/* equal to 1 */</span> <span class="title class_">All</span> <span class="title function_">f</span>(<span class="number">1</span>)</span><br><span class="line"> <span class="keyword">while</span>( <span class="operator">!</span><span class="title function_">byte_aligned</span>( ) )</span><br><span class="line"> <span class="variable">rbsp_alignment_zero_bit</span> <span class="comment">/* equal to 0 */</span> <span class="title class_">All</span> <span class="title function_">f</span>(<span class="number">1</span>)</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">slice_header</span>( ) &#123;</span><br><span class="line"><span class="operator">...</span></span><br></pre></td></tr></table></figure>
+<h4 id="srs如何处理AnnexB和AVCC"><a href="#srs如何处理AnnexB和AVCC" class="headerlink" title="srs如何处理AnnexB和AVCC:"></a>srs如何处理AnnexB和AVCC:</h4><figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> 在收到rtmp包时，其实携带的是flv tag，所以会从flv tag入手解析：</span><br><span class="line">   若是avc header时，srs假定不管是avcc还是annexB都是把 sps,pps以 extradata形式放在avc header的，实际上annexB标准并不是extradata；</span><br><span class="line"></span><br><span class="line">   若不是avc header，srs解析 avcc和annexB的nalu ,这个时候前者通过长度来分离nalu到sample数组，后者通过起始码来分离nalu到数组；</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">代码如下：</span><br><span class="line">srs_error_t SrsFormat::on_video(int64_t timestamp, char* <span class="keyword">data</span>, int size)</span><br><span class="line">&#123;</span><br><span class="line">    srs_error_t err = srs_success;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">data</span> || size &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        srs_trace(<span class="string">&quot;no video present, ignore it.&quot;</span>);</span><br><span class="line">        return err;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    SrsBuffer* buffer = new SrsBuffer(<span class="keyword">data</span>, size);</span><br><span class="line">    SrsAutoFree(SrsBuffer, buffer);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// We already checked the size is positive and data is not NULL.</span></span><br><span class="line">    <span class="function"><span class="title">srs_assert</span>(buffer-&gt;</span>require(<span class="number">1</span>));</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// @see: E.4.3 Video Tags, video_file_format_spec_v10_1.pdf, page 78</span></span><br><span class="line">    <span class="function"><span class="title">int8_t</span> frame_type = buffer-&gt;</span>read_1bytes();</span><br><span class="line">    SrsVideoCodecId codec_id = (SrsVideoCodecId)(frame_type &amp; <span class="number">0</span>x0f);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> Support other codecs.</span></span><br><span class="line">    <span class="keyword">if</span> (codec_id != SrsVideoCodecIdAVC) &#123;</span><br><span class="line">        return err;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (!vcodec) &#123;</span><br><span class="line">        vcodec = new SrsVideoCodecConfig();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!video) &#123;</span><br><span class="line">        video = new SrsVideoFrame();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="title">if</span> ((err = video-&gt;</span>initialize(vcodec)) != srs_success) &#123;</span><br><span class="line">        return srs_error_wrap(err, <span class="string">&quot;init video&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="title">buffer</span>-&gt;</span><span class="function"><span class="title">skip</span>(-1 * buffer-&gt;</span>pos());</span><br><span class="line">    return video_avc_demux(buffer, timestamp);</span><br><span class="line">&#125;</span><br><span class="line">srs_error_t SrsFormat::video_avc_demux(SrsBuffer* stream, int64_t timestamp)</span><br><span class="line">&#123;</span><br><span class="line">    srs_error_t err = srs_success;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// @see: E.4.3 Video Tags, video_file_format_spec_v10_1.pdf, page 78</span></span><br><span class="line">    <span class="function"><span class="title">int8_t</span> frame_type = stream-&gt;</span>read_1bytes();</span><br><span class="line">    SrsVideoCodecId codec_id = (SrsVideoCodecId)(frame_type &amp; <span class="number">0</span>x0f);<span class="comment">//flvvideotagheader codecid: avc </span></span><br><span class="line">    frame_type = (frame_type &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0</span>x0f;<span class="comment">//frametype(UB[4]): avc  key frame or </span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="title">video</span>-&gt;</span>frame_type = (SrsVideoAvcFrameType)frame_type;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ignore info frame without error,</span></span><br><span class="line">    <span class="comment">// @see https://github.com/ossrs/srs/issues/288#issuecomment-69863909</span></span><br><span class="line">    <span class="function"><span class="title">if</span> (video-&gt;</span>frame_type == SrsVideoAvcFrameTypeVideoInfoFrame) &#123;</span><br><span class="line">        srs_warn(<span class="string">&quot;avc igone the info frame&quot;</span>);</span><br><span class="line">        return err;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// only support h.264/avc</span></span><br><span class="line">    <span class="keyword">if</span> (codec_id != SrsVideoCodecIdAVC) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;avc only support video h.264/avc, actual=%d&quot;</span>, codec_id);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">vcodec</span>-&gt;</span>id = codec_id;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(<span class="number">4</span>)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;avc decode avc_packet_type&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">int8_t</span> avc_packet_type = stream-&gt;</span>read_1bytes();<span class="comment">//avc sequence header or avc nalu</span></span><br><span class="line">    <span class="function"><span class="title">int32_t</span> composition_time = stream-&gt;</span>read_3bytes();<span class="comment">//compostion time cts</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// pts = dts + cts.</span></span><br><span class="line">    <span class="function"><span class="title">video</span>-&gt;</span>dts = timestamp;</span><br><span class="line">    <span class="function"><span class="title">video</span>-&gt;</span>cts = composition_time;</span><br><span class="line">    <span class="function"><span class="title">video</span>-&gt;</span>avc_packet_type = (SrsVideoAvcFrameTrait)avc_packet_type;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Update the RAW AVC data.</span></span><br><span class="line">    <span class="function"><span class="title">raw</span> = stream-&gt;</span><span class="function"><span class="title">data</span>() + stream-&gt;</span>pos();</span><br><span class="line">    <span class="function"><span class="title">nb_raw</span> = stream-&gt;</span><span class="function"><span class="title">size</span>() - stream-&gt;</span>pos();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (avc_packet_type == SrsVideoAvcFrameTraitSequenceHeader) &#123;<span class="comment">//如果是avc  头</span></span><br><span class="line">        <span class="comment">// <span class="doctag">TODO:</span> <span class="doctag">FIXME:</span> Maybe we should ignore any error for parsing sps/pps.</span></span><br><span class="line">        <span class="keyword">if</span> ((err = avc_demux_sps_pps(stream)) != srs_success) &#123;<span class="comment">//提取sps pps，后面遇到idr时要用</span></span><br><span class="line">            return srs_error_wrap(err, <span class="string">&quot;demux SPS/PPS&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (avc_packet_type == SrsVideoAvcFrameTraitNALU)&#123;<span class="comment">//是nalu数据，</span></span><br><span class="line">        <span class="keyword">if</span> ((err = video_nalu_demux(stream)) != srs_success) &#123;</span><br><span class="line">            return srs_error_wrap(err, <span class="string">&quot;demux NALU&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// ignored.</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return err;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//提取sps pps,以extradata方式来解析：</span></span><br><span class="line">srs_error_t SrsFormat::avc_demux_sps_pps(SrsBuffer* stream)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// AVCDecoderConfigurationRecord</span></span><br><span class="line">    <span class="comment">// 5.2.4.1.1 Syntax, ISO_IEC_14496-15-AVC-format-2012.pdf, page 16</span></span><br><span class="line">    <span class="function"><span class="title">int</span> avc_extra_size = stream-&gt;</span><span class="function"><span class="title">size</span>() - stream-&gt;</span>pos();</span><br><span class="line">    <span class="keyword">if</span> (avc_extra_size &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="function"><span class="title">char</span> *copy_stream_from = stream-&gt;</span><span class="function"><span class="title">data</span>() + stream-&gt;</span>pos();</span><br><span class="line">        <span class="function"><span class="title">vcodec</span>-&gt;</span>avc_extra_data = std::vector&lt;char&gt;(copy_stream_from, copy_stream_from + avc_extra_size);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(<span class="number">6</span>)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;avc decode sequence header&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//int8_t configurationVersion = stream-&gt;read_1bytes();</span></span><br><span class="line">    <span class="function"><span class="title">uint8_t</span> confversion = stream-&gt;</span>read_1bytes();</span><br><span class="line">	<span class="keyword">if</span>(confversion == <span class="number">0</span>)<span class="comment">//avcc version == 1 ,annexb huya = 0 start code</span></span><br><span class="line">	&#123;</span><br><span class="line">	    annexb_demux_sps_pps(stream);  <span class="comment">//因为主播网是在avc header带两个nalu表示sps pps，所以这里加了代码；</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//int8_t AVCProfileIndication = stream-&gt;read_1bytes();</span></span><br><span class="line">    <span class="function"><span class="title">vcodec</span>-&gt;</span><span class="function"><span class="title">avc_profile</span> = (SrsAvcProfile)stream-&gt;</span>read_1bytes();</span><br><span class="line">    <span class="comment">//int8_t profile_compatibility = stream-&gt;read_1bytes();</span></span><br><span class="line">    <span class="function"><span class="title">stream</span>-&gt;</span>read_1bytes();</span><br><span class="line">    <span class="comment">//int8_t AVCLevelIndication = stream-&gt;read_1bytes();</span></span><br><span class="line">    <span class="function"><span class="title">vcodec</span>-&gt;</span><span class="function"><span class="title">avc_level</span> = (SrsAvcLevel)stream-&gt;</span>read_1bytes();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// parse the NALU size.</span></span><br><span class="line">    <span class="function"><span class="title">int8_t</span> lengthSizeMinusOne = stream-&gt;</span>read_1bytes();</span><br><span class="line">    lengthSizeMinusOne &amp;= <span class="number">0</span>x03;</span><br><span class="line">    <span class="function"><span class="title">vcodec</span>-&gt;</span>NAL_unit_length = lengthSizeMinusOne;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 5.3.4.2.1 Syntax, ISO_IEC_14496-15-AVC-format-2012.pdf, page 16</span></span><br><span class="line">    <span class="comment">// 5.2.4.1 AVC decoder configuration record</span></span><br><span class="line">    <span class="comment">// 5.2.4.1.2 Semantics</span></span><br><span class="line">    <span class="comment">// The value of this field shall be one of 0, 1, or 3 corresponding to a</span></span><br><span class="line">    <span class="comment">// length encoded with 1, 2, or 4 bytes, respectively.</span></span><br><span class="line">    <span class="function"><span class="title">if</span> (vcodec-&gt;</span>NAL_unit_length == <span class="number">2</span>) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;sps lengthSizeMinusOne should never be 2&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 1 sps, 7.3.2.1 Sequence parameter set RBSP syntax</span></span><br><span class="line">    <span class="comment">// ISO_IEC_14496-10-AVC-2003.pdf, page 45.</span></span><br><span class="line">    <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(<span class="number">1</span>)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;decode SPS&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">int8_t</span> numOfSequenceParameterSets = stream-&gt;</span>read_1bytes();<span class="comment">//读取sps nalu数量，后5位</span></span><br><span class="line">    numOfSequenceParameterSets &amp;= <span class="number">0</span>x1f;</span><br><span class="line">    <span class="keyword">if</span> (numOfSequenceParameterSets != <span class="number">1</span>) &#123;<span class="comment">//只允许一个sps</span></span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;decode SPS&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(<span class="number">2</span>)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;decode SPS size&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">uint16_t</span> sequenceParameterSetLength = stream-&gt;</span>read_2bytes();<span class="comment">//读取sps nalu长度</span></span><br><span class="line">    <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(sequenceParameterSetLength)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;decode SPS data&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (sequenceParameterSetLength &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="function"><span class="title">vcodec</span>-&gt;</span>sequenceParameterSetNALUnit.resize(sequenceParameterSetLength);<span class="comment">//将存放sps的数组设置长度</span></span><br><span class="line">        <span class="function"><span class="title">stream</span>-&gt;</span><span class="function"><span class="title">read_bytes</span>(&amp;vcodec-&gt;</span><span class="function"><span class="title">sequenceParameterSetNALUnit</span>[0], sequenceParameterSetLength);//将sps nalu长度的数据填充到vcodec-&gt;</span>se..结构中</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 1 pps</span></span><br><span class="line">    <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(<span class="number">1</span>)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;decode PPS&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">int8_t</span> numOfPictureParameterSets = stream-&gt;</span>read_1bytes();<span class="comment">//读取pps数量</span></span><br><span class="line">    numOfPictureParameterSets &amp;= <span class="number">0</span>x1f;</span><br><span class="line">    <span class="keyword">if</span> (numOfPictureParameterSets != <span class="number">1</span>) &#123;<span class="comment">//只允许一个pps</span></span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;decode PPS&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(<span class="number">2</span>)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;decode PPS size&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">uint16_t</span> pictureParameterSetLength = stream-&gt;</span>read_2bytes();<span class="comment">//读取pps nalu长度</span></span><br><span class="line">    <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(pictureParameterSetLength)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;decode PPS data&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (pictureParameterSetLength &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="function"><span class="title">vcodec</span>-&gt;</span>pictureParameterSetNALUnit.resize(pictureParameterSetLength);</span><br><span class="line">        <span class="function"><span class="title">stream</span>-&gt;</span><span class="function"><span class="title">read_bytes</span>(&amp;vcodec-&gt;</span>pictureParameterSetNALUnit[<span class="number">0</span>], pictureParameterSetLength);<span class="comment">//同样的填充</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return avc_demux_sps();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面是对nalu的解析，分annexB和AVCC的：</span></span><br><span class="line">srs_error_t SrsFormat::video_nalu_demux(SrsBuffer* stream)</span><br><span class="line">&#123;</span><br><span class="line">    srs_error_t err = srs_success;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ensure the sequence header demuxed</span></span><br><span class="line">    <span class="function"><span class="title">if</span> (!vcodec-&gt;</span>is_avc_codec_ok()) &#123;</span><br><span class="line">        srs_warn(<span class="string">&quot;avc ignore type=%d for no sequence header&quot;</span>, SrsVideoAvcFrameTraitNALU);</span><br><span class="line">        return err;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// guess for the first time.</span></span><br><span class="line">    <span class="function"><span class="title">if</span> (vcodec-&gt;</span>payload_format == SrsAvcPayloadFormatGuess) &#123;</span><br><span class="line">        <span class="comment">// One or more NALUs (Full frames are required)</span></span><br><span class="line">        <span class="comment">// try  &quot;AnnexB&quot; from ISO_IEC_14496-10-AVC-2003.pdf, page 211.</span></span><br><span class="line">        <span class="keyword">if</span> ((err = avc_demux_annexb_format(stream)) != srs_success) &#123;</span><br><span class="line">            <span class="comment">// stop try when system error.</span></span><br><span class="line">            <span class="keyword">if</span> (srs_error_code(err) != ERROR_HLS_AVC_TRY_OTHERS) &#123;</span><br><span class="line">                return srs_error_wrap(err, <span class="string">&quot;avc demux for annexb&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            srs_freep(err);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// try &quot;ISO Base Media File Format&quot; from ISO_IEC_14496-15-AVC-format-2012.pdf, page 20</span></span><br><span class="line">            <span class="keyword">if</span> ((err = avc_demux_ibmf_format(stream)) != srs_success) &#123;</span><br><span class="line">                return srs_error_wrap(err, <span class="string">&quot;avc demux ibmf&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="function"><span class="title">vcodec</span>-&gt;</span>payload_format = SrsAvcPayloadFormatIbmf;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="function"><span class="title">vcodec</span>-&gt;</span>payload_format = SrsAvcPayloadFormatAnnexb;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="function"><span class="title">else</span> <span class="keyword">if</span> (vcodec-&gt;</span>payload_format == SrsAvcPayloadFormatIbmf) &#123;</span><br><span class="line">        <span class="comment">// try &quot;ISO Base Media File Format&quot; from ISO_IEC_14496-15-AVC-format-2012.pdf, page 20</span></span><br><span class="line">        <span class="keyword">if</span> ((err = avc_demux_ibmf_format(stream)) != srs_success) &#123;</span><br><span class="line">            return srs_error_wrap(err, <span class="string">&quot;avc demux ibmf&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// One or more NALUs (Full frames are required)</span></span><br><span class="line">        <span class="comment">// try  &quot;AnnexB&quot; from ISO_IEC_14496-10-AVC-2003.pdf, page 211.</span></span><br><span class="line">        <span class="keyword">if</span> ((err = avc_demux_annexb_format(stream)) != srs_success) &#123;</span><br><span class="line">            <span class="comment">// ok, we guess out the payload is annexb, but maybe changed to ibmf.</span></span><br><span class="line">            <span class="keyword">if</span> (srs_error_code(err) != ERROR_HLS_AVC_TRY_OTHERS) &#123;</span><br><span class="line">                return srs_error_wrap(err, <span class="string">&quot;avc demux annexb&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            srs_freep(err);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// try &quot;ISO Base Media File Format&quot; from ISO_IEC_14496-15-AVC-format-2012.pdf, page 20</span></span><br><span class="line">            <span class="keyword">if</span> ((err = avc_demux_ibmf_format(stream)) != srs_success) &#123;</span><br><span class="line">                return srs_error_wrap(err, <span class="string">&quot;avc demux ibmf&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="function"><span class="title">vcodec</span>-&gt;</span>payload_format = SrsAvcPayloadFormatIbmf;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">srs_error_t SrsFormat::avc_demux_annexb_format(SrsBuffer* stream)</span><br><span class="line">&#123;</span><br><span class="line">    srs_error_t err = srs_success;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// not annexb, try others</span></span><br><span class="line">    <span class="keyword">if</span> (!srs_avc_startswith_annexb(stream, NULL)) &#123;</span><br><span class="line">        return srs_error_new(ERROR_HLS_AVC_TRY_OTHERS, <span class="string">&quot;try others&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// AnnexB</span></span><br><span class="line">    <span class="comment">// B.1.1 Byte stream NAL unit syntax,</span></span><br><span class="line">    <span class="comment">// ISO_IEC_14496-10-AVC-2003.pdf, page 211.</span></span><br><span class="line">    <span class="function"><span class="title">while</span> (!stream-&gt;</span>empty()) &#123;</span><br><span class="line">        <span class="comment">// find start code</span></span><br><span class="line">        int nb_start_code = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!srs_avc_startswith_annexb(stream, &amp;nb_start_code)) &#123;</span><br><span class="line">            return err;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// skip the start code.</span></span><br><span class="line">        <span class="keyword">if</span> (nb_start_code &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="function"><span class="title">stream</span>-&gt;</span>skip(nb_start_code);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// the NALU start bytes.</span></span><br><span class="line">        <span class="function"><span class="title">char</span>* p = stream-&gt;</span><span class="function"><span class="title">data</span>() + stream-&gt;</span>pos();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// get the last matched NALU</span></span><br><span class="line">        <span class="function"><span class="title">while</span> (!stream-&gt;</span>empty()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (srs_avc_startswith_annexb(stream, NULL)) &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="function"><span class="title">stream</span>-&gt;</span>skip(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="title">char</span>* pp = stream-&gt;</span><span class="function"><span class="title">data</span>() + stream-&gt;</span>pos();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// skip the empty.</span></span><br><span class="line">        <span class="keyword">if</span> (pp - p &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            continue;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// got the NALU.</span></span><br><span class="line">        <span class="function"><span class="title">if</span> ((err = video-&gt;</span>add_sample(p, (int)(pp - p))) != srs_success) &#123;<span class="comment">//可能有多个nalu，这个区间可能包含多个</span></span><br><span class="line">            return srs_error_wrap(err, <span class="string">&quot;add video frame&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">srs_error_t SrsFormat::avc_demux_ibmf_format(SrsBuffer* stream)</span><br><span class="line">&#123;</span><br><span class="line">    srs_error_t err = srs_success;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="title">int</span> PictureLength = stream-&gt;</span><span class="function"><span class="title">size</span>() - stream-&gt;</span>pos();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 5.3.4.2.1 Syntax, ISO_IEC_14496-15-AVC-format-2012.pdf, page 16</span></span><br><span class="line">    <span class="comment">// 5.2.4.1 AVC decoder configuration record</span></span><br><span class="line">    <span class="comment">// 5.2.4.1.2 Semantics</span></span><br><span class="line">    <span class="comment">// The value of this field shall be one of 0, 1, or 3 corresponding to a</span></span><br><span class="line">    <span class="comment">// length encoded with 1, 2, or 4 bytes, respectively.</span></span><br><span class="line">    <span class="function"><span class="title">srs_assert</span>(vcodec-&gt;</span>NAL_unit_length != <span class="number">2</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 5.3.4.2.1 Syntax, ISO_IEC_14496-15-AVC-format-2012.pdf, page 20</span></span><br><span class="line">    <span class="keyword">for</span> (int i = <span class="number">0</span>; i &lt; PictureLength;) &#123;</span><br><span class="line">        <span class="comment">// unsigned int((NAL_unit_length+1)*8) NALUnitLength;</span></span><br><span class="line">        <span class="function"><span class="title">if</span> (!stream-&gt;</span><span class="function"><span class="title">require</span>(vcodec-&gt;</span>NAL_unit_length + <span class="number">1</span>)) &#123;</span><br><span class="line">            return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;avc decode NALU size&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        int32_t NALUnitLength = <span class="number">0</span>;</span><br><span class="line">        <span class="function"><span class="title">if</span> (vcodec-&gt;</span>NAL_unit_length == <span class="number">3</span>) &#123;</span><br><span class="line">            NALU<span class="function"><span class="title">nitLength</span> = stream-&gt;</span>read_4bytes();</span><br><span class="line">        &#125; <span class="function"><span class="title">else</span> <span class="keyword">if</span> (vcodec-&gt;</span>NAL_unit_length == <span class="number">1</span>) &#123;</span><br><span class="line">            NALU<span class="function"><span class="title">nitLength</span> = stream-&gt;</span>read_2bytes();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            NALU<span class="function"><span class="title">nitLength</span> = stream-&gt;</span>read_1bytes();</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// maybe stream is invalid format.</span></span><br><span class="line">        <span class="comment">// see: https://github.com/ossrs/srs/issues/183</span></span><br><span class="line">        <span class="keyword">if</span> (NALUnitLength &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;maybe stream is AnnexB format&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// NALUnit</span></span><br><span class="line">        <span class="function"><span class="title">if</span> (!stream-&gt;</span>require(NALUnitLength)) &#123;</span><br><span class="line">            return srs_error_new(ERROR_HLS_DECODE_ERROR, <span class="string">&quot;avc decode NALU data&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 7.3.1 NAL unit syntax, ISO_IEC_14496-10-AVC-2003.pdf, page 44.</span></span><br><span class="line">        <span class="function"><span class="title">if</span> ((err = video-&gt;</span><span class="function"><span class="title">add_sample</span>(stream-&gt;</span><span class="function"><span class="title">data</span>() + stream-&gt;</span>pos(), NALUnitLength)) != srs_success) &#123;</span><br><span class="line">            return srs_error_wrap(err, <span class="string">&quot;avc add video frame&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="title">stream</span>-&gt;</span>skip(NALUnitLength);</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="title">i</span> += vcodec-&gt;</span>NAL_unit_length + <span class="number">1</span> + NALUnitLength;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="其他debug"><a href="#其他debug" class="headerlink" title="其他debug:"></a>其他debug:</h5><p>1  可能是视频头和视频数据不匹配<br>2  出现一例： pts和dts对不上，导致将帧丢弃所以花<br>3 绿屏问题：一般是头错了，比如sps,pps错误导致解析不出来视频，全部都是0，绿色</p>
+</li>
+</ul>
+<p>ref：T-REC-H.264.pdf</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/video/" rel="tag"># video</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/27/audio-aac-adts/" rel="prev" title="audio_aac_adts">
+      <i class="fa fa-chevron-left"></i> audio_aac_adts
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/27/protocol-hls/" rel="next" title="protocol_hls">
+      protocol_hls <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#AnnexB-AVCC-RBSP-%E7%AD%89%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">AnnexB,AVCC,RBSP,等概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nalu"><span class="nav-number">2.</span> <span class="nav-text">nalu</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E6%8F%8F%E8%BF%B0%E8%A7%84%E5%AE%9A%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">字段描述规定：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#nalu-%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">nalu 格式：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#srs%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86AnnexB%E5%92%8CAVCC"><span class="nav-number">3.</span> <span class="nav-text">srs如何处理AnnexB和AVCC:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B6%E4%BB%96debug"><span class="nav-number">3.1.</span> <span class="nav-text">其他debug:</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '8d32bba6a315df1a9780b574de96cb3f',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

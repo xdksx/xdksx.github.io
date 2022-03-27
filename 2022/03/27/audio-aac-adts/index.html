@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="AAC简介：MPEG家族：AAC是MPEG家族中的音频算法之一；其实AAC分了很多种：&#x2F;&#x2F;关于MPEG家族，可以看视频编码和容器流媒体概念；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="audio_aac_adts">
+<meta property="og:url" content="https://xdksx.github.io/2022/03/27/audio-aac-adts/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="AAC简介：MPEG家族：AAC是MPEG家族中的音频算法之一；其实AAC分了很多种：&#x2F;&#x2F;关于MPEG家族，可以看视频编码和容器流媒体概念；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/audio-aac-adts/1.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/audio-aac-adts/2.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/audio-aac-adts/3.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/audio-aac-adts/4.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/03/27/audio-aac-adts/5.png">
+<meta property="article:published_time" content="2022-03-27T08:18:16.000Z">
+<meta property="article:modified_time" content="2022-03-27T08:54:10.462Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="audio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2022/03/27/audio-aac-adts/1.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/03/27/audio-aac-adts/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>audio_aac_adts | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/03/27/audio-aac-adts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          audio_aac_adts
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-27 16:18:16 / 修改时间：16:54:10" itemprop="dateCreated datePublished" datetime="2022-03-27T16:18:16+08:00">2022-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/audio/" itemprop="url" rel="index"><span itemprop="name">audio</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="AAC简介："><a href="#AAC简介：" class="headerlink" title="AAC简介："></a>AAC简介：</h4><h5 id="MPEG家族："><a href="#MPEG家族：" class="headerlink" title="MPEG家族："></a>MPEG家族：</h5><p>AAC是MPEG家族中的音频算法之一；其实AAC分了很多种：&#x2F;&#x2F;关于MPEG家族，可以看视频编码和容器流媒体概念；<span id="more"></span></p>
+<ul>
+<li><p>1991 MPEG-1 or MPEG-2 Audio Layer III,由位于德国埃尔朗根的研究组织弗劳恩霍夫协会的一组工程师发明和标准化的，它被设计来大幅降低音频数据量，通过舍弃PCM音频资料中对人类听觉不重要的部分   –MP3</p>
+</li>
+<li><p>1997 基于MPEG-2的有损数字音频压缩的专利音频编码标准；由Fraunhofer IIS、杜比实验室、AT&amp;T、Sony、Nokia等公司共同开发  –MPEG-2 AAC</p>
+</li>
+<li><p>2000  MPEG-4标准在原本的基础上加上了PNS（Perceptual Noise Substitution）等技术，并提供了多种扩展工具。 –MPEG-4 AAC</p>
+</li>
+<li><p>2003  HE-AAC  v1 (aac+)  </p>
+</li>
+<li><p>2006  HE-AAC v2 (eaac+)<br>于是总共有：<!--more--></p>
+</li>
+<li><p>MPEG-2 AAC LC低复杂度规格（Low Complexity）</p>
+</li>
+<li><p>MPEG-2 AAC Main主规格</p>
+</li>
+<li><p>MPEG-2 AAC SSR可变采样率规格（Scaleable Sample Rate）</p>
+</li>
+<li><p>MPEG-4 AAC LC低复杂度规格（Low Complexity），现在的手机比较常见的MP4文件中的音频部分就包括了该规格音频档案</p>
+</li>
+<li><p>MPEG-4 AAC Main主规格</p>
+</li>
+<li><p>MPEG-4 AAC SSR可变采样率规格（Scaleable Sample Rate）</p>
+</li>
+<li><p>MPEG-4 AAC LTP长时期预测规格（Long Term Predicition）</p>
+</li>
+<li><p>MPEG-4 AAC LD低延迟规格（Low Delay）</p>
+</li>
+<li><p>MPEG-4 AAC HE高效率规格（High Efficiency）<br>常见：MPEG-4 AAC LC（Low Complexity）是最常用的规格，我们叫“低复杂度规格”，我们简称“LC-AAC”，</p>
+<h5 id="AAC-编码器："><a href="#AAC-编码器：" class="headerlink" title="AAC 编码器："></a>AAC 编码器：</h5></li>
+<li><p>FhG：Fraunhofer IIS研发的权威编码器。</p>
+</li>
+<li><p>Nero AAC：同时支持LC-AAC &#x2F; HE-AAC规格，由Nero公司免费发布的Nero AAC编码器。</p>
+</li>
+<li><p>QuickTime &#x2F; iTunes：Apple公司的两款软件都提供了AAC编码功能，其编码技术来自”Dolby Laboratories”（简写为Dolby Labs，杜比实验室）。</p>
+</li>
+<li><p>FAAC（Freeware Advanced Audio Coder）：也是一种很好的命令行编码器，支持LC&#x2F;Main&#x2F;LTP规格，而这个软件是免费的。FAAC是属于自由软件。</p>
+</li>
+<li><p>DivX AAC：2009年DivX开发出来的新AAC编码器，支持LC&#x2F;HE&#x2F;HEv2规格。目前正在测试中。</p>
+<h5 id="AAC常见的扩展名："><a href="#AAC常见的扩展名：" class="headerlink" title="AAC常见的扩展名："></a>AAC常见的扩展名：</h5><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">.aac</span></span><br><span class="line"><span class="title">.mp4</span></span><br><span class="line"><span class="title">.m4a</span></span><br></pre></td></tr></table></figure>
+<p>更多历史介绍：<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%80%B2%E9%9A%8E%E9%9F%B3%E8%A8%8A%E7%B7%A8%E7%A2%BC">https://zh.wikipedia.org/wiki/%E9%80%B2%E9%9A%8E%E9%9F%B3%E8%A8%8A%E7%B7%A8%E7%A2%BC</a></p>
+</li>
+</ul>
+<h4 id="ADTS和AAC"><a href="#ADTS和AAC" class="headerlink" title="ADTS和AAC:"></a>ADTS和AAC:</h4><p>经验中：ADTS是aac音频文件的封装，而纯aac则可以用于流媒体传输，比如放到flv中，当然流媒体也可以传输adts.</p>
+<h5 id="AAC文件的封装："><a href="#AAC文件的封装：" class="headerlink" title="AAC文件的封装："></a>AAC文件的封装：</h5><p>通过AAC协议和文件查看 AAC Audio ES Viewer，可以看到，AAC文件是这样封装的：<br>ADTS header + AAC raw data      ADTS header+AAC raw data   ….这样；<br>ADTS header: adts_fixed_header() + adts_variable_header() 后者可变在于有没有包含atdt_error_check()16bit<br>         adts_fixed_header()为固定头，是28bit,  adts_variable_header() 为前面固定的28bit,加可能有的16bit   tatdt_error_check()<br>         所以ADTS header: 7(28bit+28bit)&#x2F;9 Bytes(28+28+16);</p>
+<img src="/2022/03/27/audio-aac-adts/1.png" class="" title="tes">
+<img src="/2022/03/27/audio-aac-adts/2.png" class="" title="tes">
+
+<h5 id="ADTS头-的各个字段解释："><a href="#ADTS头-的各个字段解释：" class="headerlink" title="ADTS头 的各个字段解释："></a>ADTS头 的各个字段解释：</h5><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">  <span class="attribute">Header</span> consists of <span class="number">7</span> or <span class="number">9</span> bytes (without or with CRC).</span><br><span class="line"></span><br><span class="line"><span class="attribute">Letter</span>	Length (bits)	Description</span><br><span class="line"><span class="attribute">A</span>	<span class="number">12</span>	syncword <span class="number">0</span>xFFF, <span class="literal">all</span> bits must be <span class="number">1</span> 同步号，用来找帧</span><br><span class="line"><span class="attribute">B</span>	<span class="number">1</span>	MPEG Version: <span class="number">0</span> for MPEG-<span class="number">4</span>, <span class="number">1</span> for MPEG-<span class="number">2</span> 版本号</span><br><span class="line"><span class="attribute">C</span>	<span class="number">2</span>	Layer: always <span class="number">0</span> 总是<span class="number">0</span></span><br><span class="line"><span class="attribute">D</span>	<span class="number">1</span>	protection absent, Warning, set to <span class="number">1</span> if there is no CRC and <span class="number">0</span> if there is CRC   决定是否有额外<span class="number">16</span>bit</span><br><span class="line"><span class="attribute">E</span>	<span class="number">2</span>	profile, the MPEG-<span class="number">4</span> Audio Object Type minus <span class="number">1</span></span><br><span class="line"><span class="attribute">F</span>	<span class="number">4</span>	MPEG-<span class="number">4</span> Sampling Frequency Index (<span class="number">15</span> is forbidden)  idx来表示采样，<span class="number">4</span>为<span class="number">44100</span></span><br><span class="line"><span class="attribute">G</span>	<span class="number">1</span>	private bit, guaranteed never to be used by MPEG, set to <span class="number">0</span> when encoding, ignore when decoding</span><br><span class="line"><span class="attribute">H</span>	<span class="number">3</span>	MPEG-<span class="number">4</span> Channel Configuration (in the case of <span class="number">0</span>, the channel configuration is sent via an inband PCE) channel数</span><br><span class="line"><span class="attribute">I</span>	<span class="number">1</span>	originality, set to <span class="number">0</span> when encoding, ignore when decoding</span><br><span class="line"><span class="attribute">J</span>	<span class="number">1</span>	home, set to <span class="number">0</span> when encoding, ignore when decoding 编码时设置为<span class="number">0</span>，解码数据时忽略</span><br><span class="line"><span class="attribute">K</span>	<span class="number">1</span>	copyrighted id bit, the next bit of a centrally registered copyright identifier, set to <span class="number">0</span> when encoding, ignore when decoding</span><br><span class="line"><span class="attribute">L</span>	<span class="number">1</span>	copyright id start, signals that this frame&#x27;s copyright id bit is the first bit of the copyright id, set to <span class="number">0</span> when encoding, ignore when decoding</span><br><span class="line"><span class="attribute">M</span>	<span class="number">13</span>	frame length, this value must include <span class="number">7</span> or <span class="number">9</span> bytes of header length: FrameLength = (ProtectionAbsent == <span class="number">1</span> ? <span class="number">7</span> : <span class="number">9</span>) + size(AACFrame)  --帧长</span><br><span class="line"><span class="attribute">O</span>	<span class="number">11</span>	Buffer fullness</span><br><span class="line"><span class="attribute">P</span>	<span class="number">2</span>	Number of AAC frames (RDBs) in ADTS frame minus <span class="number">1</span>, for maximum compatibility always use <span class="number">1</span> AAC frame per ADTS frame --一个adts帧中的aac原始数据块数量，一般为一个</span><br><span class="line"><span class="attribute">Q</span>	<span class="number">16</span>	CRC if protection absent is <span class="number">0</span> </span><br><span class="line"></span><br><span class="line"> <span class="attribute">ADTS</span> packet must be a content of PES packet. Pack AAC data inside ADTS frame, than pack inside PES packet, then mux by TS packetizer.</span><br></pre></td></tr></table></figure>
+
+<h5 id="aac-rowdatablock"><a href="#aac-rowdatablock" class="headerlink" title="aac rowdatablock:"></a>aac rowdatablock:</h5><p>一个典型的aac音频文件编码是这样一串：<br>Adts header aac rawdatablock  adts header aac rawdatablock<br>但是首帧，可能是某种类型的rawdatablock;<br>关于rawdatablock<br>Raw_data_block格式如下，id_syn_ele:3位标志位，指示后面所跟着的数据流的类型。  </p>
+<p>在AAC中，原始数据块的组成可能有六种不同的元素：<br>     + SCE: Single Channel Element单通道元素。单通道元素基本上只由一个ICS组成。一个原始数据块最可能由16个SCE组成。<br>     + CPE: Channel Pair Element 双通道元素，由两个可能共享边信息的ICS和一些联合立体声编码信息组成。一个原始数据块最多可能由16个SCE组成。<br>     + CCE: Coupling Channel Element 藕合通道元素。代表一个块的多通道联合立体声信息或者多语种程序的对话信息。<br>     + LFE: Low Frequency Element 低频元素。包含了一个加强低采样频率的通道。<br>     + DSE: Data Stream Element 数据流元素，包含了一些并不属于音频的附加信息。<br>     + PCE: Program Config Element 程序配置元素。包含了声道的配置信息。它可能出现在 ADIF 头部信息中。<br>     + FIL: Fill Element 填充元素。包含了一些扩展信息。如SBR，动态范围控制信息等。<br>id_syn_ele    数据流</p>
+<ul>
+<li>ID_SCE(0x0) single_channel_element()</li>
+<li>ID_CPE(0x1)channel_pair_element()</li>
+<li>ID_CCE(0x2)coupling_channel_element()</li>
+<li>ID_LFE(0x3)lfe_channel_element(</li>
+<li>ID_DSE(0x4)data_stream_element()</li>
+<li>ID_PCE(0x5)program_config_element()</li>
+<li>ID_FIL(0x6)fill_element()</li>
+</ul>
+<h5 id="ref"><a href="#ref" class="headerlink" title="ref:"></a>ref:</h5><p>more:<a target="_blank" rel="noopener" href="https://www.cnblogs.com/fellow1988/p/7291939.html">https://www.cnblogs.com/fellow1988/p/7291939.html</a><br><a target="_blank" rel="noopener" href="https://maxwellqi.github.io/ios-audio-format-decoder/">https://maxwellqi.github.io/ios-audio-format-decoder/</a><br><a target="_blank" rel="noopener" href="http://www.telemidia.puc-rio.br/~rafaeldiniz/public_files/normas/ISO-13818/ISO_IEC_13818-7_2006(E).pdf">http://www.telemidia.puc-rio.br/~rafaeldiniz/public_files/normas/ISO-13818/ISO_IEC_13818-7_2006(E).pdf</a>   </p>
+<p>关于buffer fullness:<a target="_blank" rel="noopener" href="http://blog.olivierlanglois.net/index.php/2008/09/12/aac_adts_header_buffer_fullness_field">http://blog.olivierlanglois.net/index.php/2008/09/12/aac_adts_header_buffer_fullness_field</a>   </p>
+<h5 id="FLV中AAC的封装："><a href="#FLV中AAC的封装：" class="headerlink" title="FLV中AAC的封装："></a>FLV中AAC的封装：</h5><p>FlV由tag构成，而音频的tag是：包含AAC头的tag+ 后面都是AAC 原始数据的tag<br>11B  tag header + 2B audio tag header + 一般是5B的AAC sequence header;<br>之后就都是数据：11B头+2B音频tag头+aac rawdata&#x3D;&#x3D;(adts中的aac rawdatablock)<br>通过flvAnalyser工具可以看到：</p>
+<img src="/2022/03/27/audio-aac-adts/3.png" class="" title="tes">
+<img src="/2022/03/27/audio-aac-adts/4.png" class="" title="tes">
+<img src="/2022/03/27/audio-aac-adts/5.png" class="" title="tes">
+
+
+<p> 更多见flv的封装；和<a target="_blank" rel="noopener" href="https://wiki.multimedia.cx/index.php/MPEG-4_Audio">https://wiki.multimedia.cx/index.php/MPEG-4_Audio</a></p>
+<h5 id="如何将flv-aac封装为流媒体：-举例："><a href="#如何将flv-aac封装为流媒体：-举例：" class="headerlink" title="如何将flv aac封装为流媒体： 举例："></a>如何将flv aac封装为流媒体： 举例：</h5><p> 一般来讲，流媒体传输需要使得最终接收方可以解码播放，所以需要传递解码信息，如音频必备的几个要素:channel,samplaterate,编码方式等等，而版权等根据需要放入metadata</p>
+<ul>
+<li><p>流媒体中AAC的一般封装： ADTS+aac raw data;</p>
+</li>
+<li><p>AAC 协议：查ADTS头： <a target="_blank" rel="noopener" href="http://read.pudn.com/downloads98/doc/comm/401153/14496/ISO_IEC_14496-3%20Part%203%20Audio/C036083E_SUB1.PDF">http://read.pudn.com/downloads98/doc/comm/401153/14496/ISO_IEC_14496-3%20Part%203%20Audio/C036083E_SUB1.PDF</a>  page 61-67</p>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="http://www.telemidia.puc-rio.br/~rafaeldiniz/public_files/normas/ISO-13818/ISO_IEC_13818-7_2006%28E%29.pdf">http://www.telemidia.puc-rio.br/~rafaeldiniz/public_files/normas/ISO-13818/ISO_IEC_13818-7_2006%28E%29.pdf</a><br>ISO_IEC_13818-7_2006(E).pdf MPEG-2的AAC<br>ISO14496-3-2009.pdf  MPEG-4的AAC<br>HE-AAC: trev_305-moser.pdf</p>
+<h5 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h5><p>一个解析aac文件的简单程序：</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3                                                                                                                                                                                     </span></span><br><span class="line">   <span class="number">2</span> <span class="keyword">import</span> sys</span><br><span class="line">   <span class="number">3</span> <span class="keyword">import</span> struct</span><br><span class="line">   <span class="number">4</span> </span><br><span class="line">   <span class="number">5</span> <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) &lt; <span class="number">2</span>:</span><br><span class="line">   <span class="number">6</span>   <span class="built_in">print</span>(<span class="string">&quot;Usage: aac_parer.py &lt;target.aac&gt;&quot;</span>)</span><br><span class="line">   <span class="number">7</span>   exit()</span><br><span class="line">   <span class="number">8</span> </span><br><span class="line">   <span class="number">9</span> aacfile = <span class="built_in">open</span>(sys.argv[<span class="number">1</span>], <span class="string">&#x27;rb&#x27;</span>)</span><br><span class="line">  <span class="number">10</span> frame_no = <span class="number">1</span></span><br><span class="line">  <span class="number">11</span> </span><br><span class="line">  <span class="number">12</span> <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">  <span class="number">13</span>   data = aacfile.read(<span class="number">7</span>)</span><br><span class="line">  <span class="number">14</span>   <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">- <span class="number">15</span>     exit()</span><br><span class="line">  <span class="number">16</span>   hdr = struct.unpack(<span class="string">&quot;&gt;7B&quot;</span>, data)</span><br><span class="line">  <span class="number">17</span> </span><br><span class="line">  <span class="number">18</span>   <span class="comment"># parse adts_fixed_header()</span></span><br><span class="line">  <span class="number">19</span>   syncword = (hdr[<span class="number">0</span>] &lt;&lt; <span class="number">4</span>) | (hdr[<span class="number">1</span>] &gt;&gt; <span class="number">4</span>)  <span class="comment"># bslbf(12)</span></span><br><span class="line">  <span class="number">20</span>   <span class="keyword">if</span> syncword != <span class="number">0b111111111111</span>:</span><br><span class="line">- <span class="number">21</span>     <span class="built_in">print</span>(<span class="string">&quot;Invalid `syncword` for &#123;&#125; frame&quot;</span>.<span class="built_in">format</span>(frame_no))</span><br><span class="line">| <span class="number">22</span>     exit()</span><br><span class="line">  <span class="number">23</span>   ID                 = (hdr[<span class="number">1</span>] &gt;&gt; <span class="number">3</span>) &amp; <span class="number">0b1</span>    <span class="comment"># bslbf(1)</span></span><br><span class="line">  <span class="number">24</span>   layer              = (hdr[<span class="number">1</span>] &gt;&gt; <span class="number">1</span>) &amp; <span class="number">0b11</span>   <span class="comment"># uimsbf(2)</span></span><br><span class="line">  <span class="number">25</span>   protection_absent  = (hdr[<span class="number">1</span>]     ) &amp; <span class="number">0b1</span>    <span class="comment"># bslbf(1)</span></span><br><span class="line">  <span class="number">26</span>   profile            = (hdr[<span class="number">2</span>] &gt;&gt; <span class="number">6</span>) &amp; <span class="number">0b11</span>   <span class="comment"># uimsbf(2)</span></span><br><span class="line">  <span class="number">27</span>   sampling_freq_idx  = (hdr[<span class="number">2</span>] &gt;&gt; <span class="number">2</span>) &amp; <span class="number">0b1111</span> <span class="comment"># uimsbf(4)</span></span><br><span class="line">  <span class="number">28</span>   private_bit        = (hdr[<span class="number">2</span>] &gt;&gt; <span class="number">1</span>) &amp; <span class="number">0b1</span>    <span class="comment"># bslbf(1)</span></span><br><span class="line">  <span class="number">29</span>   channel_cfg        = ((hdr[<span class="number">2</span>] &amp; <span class="number">0b1</span>) &lt;&lt; <span class="number">2</span>) | (hdr[<span class="number">3</span>] &gt;&gt; <span class="number">6</span>)  <span class="comment"># uimsbf(3)</span></span><br><span class="line">  <span class="number">30</span>   original_copy      = (hdr[<span class="number">3</span>] &gt;&gt; <span class="number">5</span>) &amp; <span class="number">0b1</span>    <span class="comment"># bslbf(1)</span></span><br><span class="line">  <span class="number">31</span>   home               = (hdr[<span class="number">3</span>] &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0b1</span>    <span class="comment"># bslbf(1)</span></span><br><span class="line">  <span class="number">32</span>   <span class="comment"># parse adts_variable_header()</span></span><br><span class="line">  <span class="number">33</span>   copyright_id_bit   = (hdr[<span class="number">3</span>] &gt;&gt; <span class="number">3</span>) &amp; <span class="number">0b1</span>    <span class="comment"># bslbf(1)</span></span><br><span class="line">  <span class="number">34</span>   copyright_id_start = (hdr[<span class="number">3</span>] &gt;&gt; <span class="number">2</span>) &amp; <span class="number">0b1</span>    <span class="comment"># bslbf(1)</span></span><br><span class="line">  <span class="number">35</span>   frame_length       = ((hdr[<span class="number">3</span>] &amp; <span class="number">0b11</span>) &lt;&lt; <span class="number">11</span>) | (hdr[<span class="number">4</span>] &lt;&lt; <span class="number">3</span>) | (hdr[<span class="number">5</span>] &gt;&gt; <span class="number">5</span>)  <span class="comment"># bslbf(13)</span></span><br><span class="line">  <span class="number">36</span>   adts_buf_fullness  = ((hdr[<span class="number">5</span>] &amp; <span class="number">0b11111</span>) &lt;&lt; <span class="number">6</span>) | (hdr[<span class="number">6</span>] &gt;&gt; <span class="number">2</span>)  <span class="comment"># bslbf(11)</span></span><br><span class="line">  <span class="number">37</span>   num_rawdata_blocks = (hdr[<span class="number">6</span>]     ) &amp; <span class="number">0b11</span>   <span class="comment"># uimsbf(2)</span></span><br><span class="line">  <span class="number">38</span> </span><br><span class="line">  <span class="number">39</span>   crc_check = <span class="number">0</span></span><br><span class="line">  <span class="number">40</span>   size = frame_length - <span class="number">7</span></span><br><span class="line">  <span class="number">41</span>   <span class="keyword">if</span> num_rawdata_blocks == <span class="number">0</span>:</span><br><span class="line">  <span class="number">42</span>     <span class="comment"># adts_error_check()</span></span><br><span class="line">  <span class="number">43</span>     <span class="keyword">if</span> protection_absent == <span class="number">0</span>:</span><br><span class="line">| <span class="number">44</span>     ¦ crc_check = struct.unpack(<span class="string">&quot;&gt;H&quot;</span>, aacfile.read(<span class="number">2</span>))[<span class="number">0</span>]  <span class="comment"># rpchof(16)</span></span><br><span class="line">| <span class="number">45</span>     ¦ size -= <span class="number">2</span></span><br><span class="line">| <span class="number">46</span>     <span class="comment"># raw_data_block()</span></span><br><span class="line">| <span class="number">47</span>     aacfile.read(size)</span><br><span class="line">  <span class="number">48</span>   <span class="keyword">else</span>:</span><br><span class="line">  <span class="number">49</span>     <span class="comment"># adts_header_error_check()</span></span><br><span class="line">- <span class="number">50</span>     <span class="keyword">if</span> protection_absent == <span class="number">0</span>:</span><br><span class="line">| <span class="number">51</span>     ¦ crc_check = struct.unpack(<span class="string">&quot;&gt;H&quot;</span>, aacfile.read(<span class="number">2</span>))[<span class="number">0</span>]  <span class="comment"># rpchof(16)</span></span><br><span class="line">| <span class="number">52</span>     ¦ size -= (<span class="number">2</span> * num_rawdata_blocks) + <span class="number">2</span></span><br><span class="line">| <span class="number">53</span>     <span class="comment"># &#123;raw_data_block() + adts_raw_data_block_error_check()&#125; x N</span></span><br><span class="line">| <span class="number">54</span>     aacfile.read(size)</span><br><span class="line">  <span class="number">55</span>   <span class="built_in">print</span>(<span class="string">&quot;raw size:&quot;</span>)</span><br><span class="line">  <span class="number">56</span>   <span class="built_in">print</span>(size)</span><br><span class="line">  <span class="number">57</span>   <span class="keyword">if</span> frame_no &gt;= <span class="number">1</span>:</span><br><span class="line">  <span class="number">58</span>     <span class="comment"># dump adts_fixed_header()</span></span><br><span class="line">- <span class="number">59</span>     <span class="built_in">print</span>(<span class="string">&quot;adts_fixed_header():&quot;</span>)</span><br><span class="line">| <span class="number">60</span>     <span class="built_in">print</span>(<span class="string">&quot;ID=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(ID))</span><br><span class="line">| <span class="number">61</span>     <span class="built_in">print</span>(<span class="string">&quot;layer=&#123;:02b&#125;&quot;</span>.<span class="built_in">format</span>(layer))</span><br><span class="line">| <span class="number">62</span>     <span class="built_in">print</span>(<span class="string">&quot;protection_absent=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(protection_absent))</span><br><span class="line">| <span class="number">63</span>     <span class="built_in">print</span>(<span class="string">&quot;profile=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(profile))</span><br><span class="line">| <span class="number">64</span>     <span class="built_in">print</span>(<span class="string">&quot;sampling_frequency_index=0x&#123;:x&#125;&quot;</span>.<span class="built_in">format</span>(sampling_freq_idx))</span><br><span class="line">| <span class="number">65</span>     <span class="built_in">print</span>(<span class="string">&quot;private_bit=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(private_bit))</span><br><span class="line">| <span class="number">66</span>     <span class="built_in">print</span>(<span class="string">&quot;channel_configuration=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(channel_cfg))</span><br><span class="line">| <span class="number">67</span>     <span class="built_in">print</span>(<span class="string">&quot;original/copy=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(original_copy))</span><br><span class="line">| <span class="number">68</span>     <span class="built_in">print</span>(<span class="string">&quot;home=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(home))</span><br><span class="line">| <span class="number">69</span>     <span class="built_in">print</span>(<span class="string">&quot;adts_variable_header():&quot;</span>)</span><br><span class="line">| <span class="number">70</span>   <span class="comment"># dump adts_variable_header()</span></span><br><span class="line">| <span class="number">71</span>     <span class="built_in">print</span>(<span class="string">&quot;#&#123;&#125;,&#123;&#125;,&#123;&#125;,&#123;&#125;,&#123;&#125;,&#123;&#125;,0x&#123;:04x&#125;&quot;</span>.<span class="built_in">format</span>(</span><br><span class="line">| <span class="number">72</span>     frame_no, copyright_id_bit, copyright_id_start, frame_length, adts_buf_fullness, num_rawdata_blocks, crc_check))</span><br><span class="line">  <span class="number">73</span>   frame_no += <span class="number">1</span>                                   </span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/audio/" rel="tag"># audio</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/27/audio-opus/" rel="prev" title="audio_opus">
+      <i class="fa fa-chevron-left"></i> audio_opus
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/27/video-h264/" rel="next" title="video_h264">
+      video_h264 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#AAC%E7%AE%80%E4%BB%8B%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">AAC简介：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#MPEG%E5%AE%B6%E6%97%8F%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">MPEG家族：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AAC-%E7%BC%96%E7%A0%81%E5%99%A8%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">AAC 编码器：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AAC%E5%B8%B8%E8%A7%81%E7%9A%84%E6%89%A9%E5%B1%95%E5%90%8D%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">AAC常见的扩展名：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ADTS%E5%92%8CAAC"><span class="nav-number">2.</span> <span class="nav-text">ADTS和AAC:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#AAC%E6%96%87%E4%BB%B6%E7%9A%84%E5%B0%81%E8%A3%85%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">AAC文件的封装：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ADTS%E5%A4%B4-%E7%9A%84%E5%90%84%E4%B8%AA%E5%AD%97%E6%AE%B5%E8%A7%A3%E9%87%8A%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">ADTS头 的各个字段解释：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#aac-rowdatablock"><span class="nav-number">2.3.</span> <span class="nav-text">aac rowdatablock:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ref"><span class="nav-number">2.4.</span> <span class="nav-text">ref:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#FLV%E4%B8%ADAAC%E7%9A%84%E5%B0%81%E8%A3%85%EF%BC%9A"><span class="nav-number">2.5.</span> <span class="nav-text">FLV中AAC的封装：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%B0%86flv-aac%E5%B0%81%E8%A3%85%E4%B8%BA%E6%B5%81%E5%AA%92%E4%BD%93%EF%BC%9A-%E4%B8%BE%E4%BE%8B%EF%BC%9A"><span class="nav-number">2.6.</span> <span class="nav-text">如何将flv aac封装为流媒体： 举例：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">2.7.</span> <span class="nav-text">代码：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '9075612812325016e93f7ce2c3233145',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

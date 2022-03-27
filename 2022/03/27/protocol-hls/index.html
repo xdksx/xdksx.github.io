@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="hls简介 hls是http live stream的简称，是通过http拉流的协议，由苹果开发。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="protocol_hls">
+<meta property="og:url" content="https://xdksx.github.io/2022/03/27/protocol-hls/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="hls简介 hls是http live stream的简称，是通过http拉流的协议，由苹果开发。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-27T12:23:50.000Z">
+<meta property="article:modified_time" content="2022-03-27T12:35:25.487Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="protocol">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/03/27/protocol-hls/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>protocol_hls | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/03/27/protocol-hls/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          protocol_hls
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-27 20:23:50 / 修改时间：20:35:25" itemprop="dateCreated datePublished" datetime="2022-03-27T20:23:50+08:00">2022-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/protocol/" itemprop="url" rel="index"><span itemprop="name">protocol</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="hls简介"><a href="#hls简介" class="headerlink" title="hls简介"></a>hls简介</h4><ul>
+<li>hls是http live stream的简称，是通过http拉流的协议，由苹果开发。<span id="more"></span></li>
+<li>hls，client通过web http拉流指定m3u8文件，该文件包含ts列表，ts为实际的媒体文件，而对直播，client需要实时获取动态更新的m3u8文件。<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/355136397">https://zhuanlan.zhihu.com/p/355136397</a></li>
+</ul>
+<p>rfc:</p>
+<h4 id="hls的优势："><a href="#hls的优势：" class="headerlink" title="hls的优势："></a>hls的优势：</h4><p>   It allows a receiver to adapt the bit rate of the media to the current<br>   network conditions in order to maintain uninterrupted playback at the<br>   best possible quality.  It supports interstitial content boundaries.<br>   It provides a flexible framework for media encryption.  It can<br>   efficiently offer multiple renditions of the same content, such as<br>   audio translations.  It offers compatibility with large-scale HTTP<br>   caching infrastructure to support delivery to large audiences.<br>概述,playlist相关：<br>一个多媒体介绍被具体化，通过一个指定到一个playlist的uri<br>如：<a target="_blank" rel="noopener" href="http://dlhls.cdn.zhanqi.tv/zqlive/30647_JIjP2.m3u8">http://dlhls.cdn.zhanqi.tv/zqlive/30647_JIjP2.m3u8</a><br>该拉取到的m3u8文件就是一个playlist.<br>播放列表的编码： A Playlist is either a Media Playlist or a Master Playlist.  Both are<br>   UTF-8 text files containing URIs and descriptive tags.</p>
+<h4 id="一个示例和解释："><a href="#一个示例和解释：" class="headerlink" title="一个示例和解释："></a>一个示例和解释：</h4><p>Here is an example of a Media Playlist:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">#EXTM3U</span></span><br><span class="line"> <span class="comment">#EXT-X-TARGETDURATION:10</span></span><br><span class="line"></span><br><span class="line"> <span class="comment">#EXTINF:9.009,</span></span><br><span class="line"> <span class="keyword">http</span>://media.example.com/<span class="keyword">first</span>.ts</span><br><span class="line"> <span class="comment">#EXTINF:9.009,</span></span><br><span class="line"> <span class="keyword">http</span>://media.example.com/<span class="keyword">second</span>.ts</span><br><span class="line"> <span class="comment">#EXTINF:3.003,</span></span><br><span class="line"> <span class="keyword">http</span>://media.example.com/<span class="keyword">third</span>.ts</span><br><span class="line"></span><br><span class="line"> The <span class="keyword">first</span> <span class="built_in">line</span> is <span class="keyword">the</span> <span class="built_in">format</span> identifier tag <span class="comment">#EXTM3U.  The line</span></span><br><span class="line"> containing <span class="comment">#EXT-X-TARGETDURATION says that all Media Segments will be</span></span><br><span class="line"> <span class="number">10</span> <span class="built_in">seconds</span> <span class="keyword">long</span> <span class="keyword">or</span> less.  </span><br><span class="line"> Then, <span class="literal">three</span> Media Segments are declared.</span><br><span class="line"> The <span class="keyword">first</span> <span class="keyword">and</span> <span class="keyword">second</span> are <span class="number">9.009</span> <span class="built_in">seconds</span> <span class="keyword">long</span>; <span class="keyword">the</span> <span class="keyword">third</span> is <span class="number">3.003</span></span><br><span class="line"> <span class="built_in">seconds</span>.</span><br><span class="line"></span><br><span class="line"> To play this Playlist, <span class="keyword">the</span> client <span class="keyword">first</span> downloads <span class="keyword">it</span> <span class="keyword">and</span> <span class="keyword">then</span></span><br><span class="line"> downloads <span class="keyword">and</span> plays <span class="keyword">each</span> Media Segment declared <span class="keyword">within</span> <span class="keyword">it</span>. </span><br><span class="line"></span><br><span class="line"> The client reloads <span class="keyword">the</span> Playlist <span class="keyword">as</span> described <span class="keyword">in</span> this document <span class="built_in">to</span> discover</span><br><span class="line"> <span class="keyword">any</span> added <span class="keyword">segments</span>.  Data SHOULD be carried over HTTP [RFC7230], but,</span><br><span class="line"> <span class="keyword">in</span> general, <span class="keyword">a</span> URI can specify <span class="keyword">any</span> protocol that can reliably transfer</span><br><span class="line"> <span class="keyword">the</span> specified resource <span class="keyword">on</span> <span class="title">demand</span>.</span><br><span class="line"></span><br><span class="line">关于master playlist: 在于复杂点，提供一个可变流的集合，client可以根据自己的网络条件进行选择切换。</span><br><span class="line">A more complex presentation can be described <span class="keyword">by</span> <span class="keyword">a</span> Master Playlist.  A</span><br><span class="line"> Master Playlist provides <span class="keyword">a</span> <span class="built_in">set</span> <span class="keyword">of</span> Variant Streams, <span class="keyword">each</span> <span class="keyword">of</span> which</span><br><span class="line"> describes <span class="keyword">a</span> different <span class="built_in">version</span> <span class="keyword">of</span> <span class="keyword">the</span> same content.</span><br><span class="line"></span><br><span class="line"> A Variant Stream includes <span class="keyword">a</span> Media Playlist that specifies media</span><br><span class="line"> encoded <span class="keyword">at</span> <span class="keyword">a</span> particular bit rate, <span class="keyword">in</span> <span class="keyword">a</span> particular <span class="built_in">format</span>, <span class="keyword">and</span> <span class="keyword">at</span> <span class="keyword">a</span></span><br><span class="line"> particular resolution <span class="keyword">for</span> media containing video.</span><br><span class="line"></span><br><span class="line"> A Variant Stream can also specify <span class="keyword">a</span> <span class="built_in">set</span> <span class="keyword">of</span> Renditions.  Renditions</span><br><span class="line"> are alternate versions <span class="keyword">of</span> <span class="keyword">the</span> content, such <span class="keyword">as</span> audio produced <span class="keyword">in</span></span><br><span class="line"> different languages <span class="keyword">or</span> video recorded <span class="built_in">from</span> different camera angles.</span><br><span class="line"></span><br><span class="line"> Clients should <span class="keyword">switch</span> between different Variant Streams <span class="built_in">to</span> adapt <span class="built_in">to</span></span><br><span class="line"> network conditions.  Clients should choose Renditions based <span class="keyword">on</span> <span class="title">user</span></span><br><span class="line"> preferences.</span><br></pre></td></tr></table></figure>
+
+<h4 id="媒体段：-media-segments即ts"><a href="#媒体段：-media-segments即ts" class="headerlink" title="媒体段： media segments即ts"></a>媒体段： media segments即ts</h4><h5 id="1-媒体段是什么："><a href="#1-媒体段是什么：" class="headerlink" title="1)媒体段是什么："></a>1)媒体段是什么：</h5><p>   A Media Playlist contains a series of Media Segments that make up the<br>   overall presentation.  A Media Segment is specified by a URI and<br>   optionally a byte range.<br>   playlist包含了一系列的媒体段，组成了整个presentation. 一个媒体段由一个URI和可选的一个字节范围指定。</p>
+<h5 id="2）媒体段时长指定："><a href="#2）媒体段时长指定：" class="headerlink" title="2）媒体段时长指定："></a>2）媒体段时长指定：</h5><p>The duration of each Media Segment is indicated in the Media Playlist<br>   by its EXTINF tag (Section 4.3.2.1).</p>
+<h5 id="3）媒体段的seq-num-每个seg-有一个唯一的seq-第一个为0或playlist指定，其他的都是前一个-1"><a href="#3）媒体段的seq-num-每个seg-有一个唯一的seq-第一个为0或playlist指定，其他的都是前一个-1" class="headerlink" title="3）媒体段的seq num: 每个seg 有一个唯一的seq,第一个为0或playlist指定，其他的都是前一个+1"></a>3）媒体段的seq num: 每个seg 有一个唯一的seq,第一个为0或playlist指定，其他的都是前一个+1</h5><p>Each segment in a Media Playlist has a unique integer Media Sequence Number.The Media Sequence Number of the first segment in the Media<br>   Playlist is either 0 or declared in the Playlist (Section 4.3.3.2).<br>   The Media Sequence Number of every other segment is equal to the<br>   Media Sequence Number of the segment that precedes it plus one.</p>
+<h5 id="4-媒体段和连续性（dts连续和不连续等"><a href="#4-媒体段和连续性（dts连续和不连续等" class="headerlink" title="4)媒体段和连续性（dts连续和不连续等)"></a>4)媒体段和连续性（dts连续和不连续等)</h5><p>每个媒体段必须携带编码的延续<br>与以前媒体的段结尾的比特流<br>序列号，其中诸如时间戳等系列中的值<br>连续性计数器必须不间断地继续。唯一的例外<br>是媒体播放列表中的第一个媒体段和<br>明确地称为不连续性的媒体段<br>（第4.3.2.3节）。无标记的媒体不连续性可以触发<br>播放错误。<br> Each Media Segment MUST carry the continuation of the encoded<br>   bitstream from the end of the segment with the previous Media<br>   Sequence Number, where values in a series such as timestamps and<br>   Continuity Counters MUST continue uninterrupted.  The only exceptions<br>   are the first Media Segment ever to appear in a Media Playlist and<br>   Media Segments that are explicitly signaled as discontinuities<br>   (Section 4.3.2.3).  Unmarked media discontinuities can trigger<br>   playback errors.</p>
+<h5 id="5-媒体段和IDR"><a href="#5-媒体段和IDR" class="headerlink" title="5) 媒体段和IDR:"></a>5) 媒体段和IDR:</h5><p>任何媒体段包含视频都应该包含足够信息来初始化解码器和解码一个连续的帧序列包含在段的最后一个帧。<br>网络有效性被优化如果有足够的解码全部帧的信息在段中。 例如，任何包含H.264视频的媒体段应该包含一个IDR帧。 在第一个IDR帧之前的帧可能会被下载但是可能会被丢弃。<br>Any Media Segment that contains video SHOULD include enough<br>   information to initialize a video decoder and decode a continuous set<br>   of frames that includes the final frame in the Segment; network<br>   efficiency is optimized if there is enough information in the Segment<br>   to decode all frames in the Segment.  For example, any Media Segment<br>   containing H.264 video SHOULD contain an Instantaneous Decoding<br>   Refresh (IDR); frames prior to the first IDR will be downloaded but<br>   possibly discarded.</p>
+<h5 id="6）支持的Media-segment-格式："><a href="#6）支持的Media-segment-格式：" class="headerlink" title="6）支持的Media segment 格式："></a>6）支持的Media segment 格式：</h5><p>All Media Segments MUST be in a format described in this section.<br>   Transport of other media file formats is not defined.</p>
+<p>   Some media formats require a common sequence of bytes to initialize a<br>   parser before a Media Segment can be parsed.  This format-specific<br>   sequence is called the Media Initialization Section.  The Media<br>   Initialization Section can be specified by an EXT-X-MAP tag<br>   (Section 4.3.2.5).  The Media Initialization Section MUST NOT contain<br>   sample data.</p>
+<h5 id="有哪些类型的媒体段打包方式？"><a href="#有哪些类型的媒体段打包方式？" class="headerlink" title="有哪些类型的媒体段打包方式？"></a>有哪些类型的媒体段打包方式？</h5><p>3.2.  MPEG-2 Transport Streams<br>3.3.  Fragmented MPEG-4<br>3.4.  Packed Audio<br>3.5.  WebVTT</p>
+<h4 id="关于playlist-以及它的语法："><a href="#关于playlist-以及它的语法：" class="headerlink" title="关于playlist:以及它的语法："></a>关于playlist:以及它的语法：</h4><p>本节介绍 HTTP Live 使用的播放列表文件<br>流媒体。在本节中，“MUST”和“MUST NOT”指定规则<br>用于合法播放列表文件的语法和结构。播放列表<br>违反这些规则无效；客户端必须无法解析它们。<br>请参见第 6.3.2 节。<br>播放列表文件的格式源自 M3U [M3U]<br>播放列表文件格式，并从该早期文件继承两个标签<br>格式：EXTM3U（第 4.3.1.1 节）和 EXTINF（第 4.3.2.1 节）</p>
+<p>在标签语法规范中，一个字符串由<br>标识标签参数；其具体格式在其<br>标签定义。如果一个参数进一步被 [] 包围，它是<br>可选的;否则，它是必需的。</p>
+<p>每个播放列表文件必须可以通过路径组件识别<br>其 URI 或 HTTP Content-Type。在第一种情况下，路径必须<br>以 .m3u8 或 .m3u 结尾。二、HTTP Content-Type<br>必须是“application&#x2F;vnd.apple.mpegurl”或“audio&#x2F;mpegurl”。客户<br>应该拒绝解析未被识别的播放列表。</p>
+<h5 id="1）定义一个playlist-如何写？"><a href="#1）定义一个playlist-如何写？" class="headerlink" title="1）定义一个playlist:如何写？"></a>1）定义一个playlist:如何写？</h5><h5 id="2）属性列表：Attribute-Lists"><a href="#2）属性列表：Attribute-Lists" class="headerlink" title="2）属性列表：Attribute Lists"></a>2）属性列表：Attribute Lists</h5><h5 id="3）-Playlist-Tags-有很多"><a href="#3）-Playlist-Tags-有很多" class="headerlink" title="3） Playlist Tags 有很多"></a>3） Playlist Tags 有很多</h5><p>A basic Tags:These tags are allowed in both Media Playlists and Master Playlists.<br>EXTM3U<br>EXT-X-VERSION<br>B  Media Segment Tags: 4.3.2<br>  EXTINF<br>  EXT-X-BYTERANGE<br>  …<br>C Media Playlist Tags 4.3.3<br>…<br>D Master Playlist Tags 4.3.4<br>E  Media or Master Playlist Tags 4.3.5</p>
+<h4 id="关于Key-FIles："><a href="#关于Key-FIles：" class="headerlink" title="关于Key FIles："></a>关于Key FIles：</h4><p>带有 URI 属性的 EXT-X-KEY 标记标识一个密钥文件(key file)。Key file 包含一个密钥，可以解密媒体段中的<br>播放列表。<br>…</p>
+<h4 id="客户端-x2F-服务器职责"><a href="#客户端-x2F-服务器职责" class="headerlink" title="客户端&#x2F;服务器职责"></a>客户端&#x2F;服务器职责</h4><h5 id="服务器的职责："><a href="#服务器的职责：" class="headerlink" title="服务器的职责："></a>服务器的职责：</h5><p>1）一般服务器职责<br>2）直播的playlists<br>3） Encrypting Media Segments<br>4） Providing Variant Streams</p>
+<h5 id="客户端的职责："><a href="#客户端的职责：" class="headerlink" title="客户端的职责："></a>客户端的职责：</h5><p>1）一般客户端职责<br>2）Loading the Media Playlist File<br>3）  Playing the Media Playlist File<br>4） Reloading the Media Playlist File<br>5） Determining the Next Segment to Load<br>6）Decrypting Encrypted Media Segments</p>
+<h4 id="协议版本兼容性"><a href="#协议版本兼容性" class="headerlink" title="协议版本兼容性"></a>协议版本兼容性</h4><p>协议兼容性由Ext-X-Version标记指定。一种<br>包含不兼容的标记或属性的播放列表<br>具有协议版本1必须包含ext-x-version标记。</p>
+<p>如果它不支持，客户端不得尝试播放<br>ext-x-version标记指定的协议版本或意外<br>可能发生行为。<br>更多说明见协议</p>
+<h4 id="playlist-实例："><a href="#playlist-实例：" class="headerlink" title="playlist 实例："></a>playlist 实例：</h4><p>1）简单的media playlist<br>2)直播媒体使用https<br>3) playlist使用加密的media segments<br>4) Master Playlist<br> #EXTM3U<br>   #EXT-X-STREAM-INF:BANDWIDTH&#x3D;1280000,AVERAGE-BANDWIDTH&#x3D;1000000<br>   <a target="_blank" rel="noopener" href="http://example.com/low.m3u8">http://example.com/low.m3u8</a><br>   #EXT-X-STREAM-INF:BANDWIDTH&#x3D;2560000,AVERAGE-BANDWIDTH&#x3D;2000000<br>   <a target="_blank" rel="noopener" href="http://example.com/mid.m3u8">http://example.com/mid.m3u8</a><br>   #EXT-X-STREAM-INF:BANDWIDTH&#x3D;7680000,AVERAGE-BANDWIDTH&#x3D;6000000<br>   <a target="_blank" rel="noopener" href="http://example.com/hi.m3u8">http://example.com/hi.m3u8</a><br>   #EXT-X-STREAM-INF:BANDWIDTH&#x3D;65000,CODECS&#x3D;”mp4a.40.5”<br>   <a target="_blank" rel="noopener" href="http://example.com/audio-only.m3u8">http://example.com/audio-only.m3u8</a><br>5) Master Playlist with I-Frames<br>6) Master Playlist with Alternative Audio<br>7) Master Playlist with Alternative Video<br>8) Session Data in a Master Playlist<br>9) CHARACTERISTICS Attribute Containing Multiple Characteristics<br>10)EXT-X-DATERANGE Carrying SCTE-35 Tags</p>
+<h4 id="IANA-考虑事项"><a href="#IANA-考虑事项" class="headerlink" title="IANA 考虑事项"></a>IANA 考虑事项</h4><p>Internet分配的号码权限（IANA）负责维护一系列注册管理机构，这对于确保DNS根域，IP地址和其他Internet协议资源的全球协调至关重要。自1997年以来，该作用是由ICANN进行的，根据美国商务部的国家电信和信息管理局（NTIA）授予的合同。<br>更多见协议</p>
+<h4 id="安全性考虑"><a href="#安全性考虑" class="headerlink" title="安全性考虑"></a>安全性考虑</h4><p>因为是http的，所以。。。<br>虽然可以对media seg加密解密，。加密密钥由 URI 指定。这些钥匙的交付<br>应该通过 HTTP Over TLS [RFC2818] 等机制来保护<br>（以前称为 SSL）与安全领域或会话令牌结合使用。<br>更多见协议</p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p>hls支持的媒体类型：<br>1）支持mp3&#x2F;aac&#x2F;mp4&#x2F;webvtt(字幕)&#x2F;广告等<br>2）支持嵌套子m3u8<br>关于怎么用webvtt:<a target="_blank" rel="noopener" href="https://aws.amazon.com/cn/blogs/china/encapsulation-of-hls-streaming-media-loaded-with-webvtt-subtitles-based-on-mediaconvert/">https://aws.amazon.com/cn/blogs/china/encapsulation-of-hls-streaming-media-loaded-with-webvtt-subtitles-based-on-mediaconvert/</a><br>hls是由apple开发的，所以更多资料：<a target="_blank" rel="noopener" href="https://developer.apple.com/streaming/">https://developer.apple.com/streaming/</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/protocol/" rel="tag"># protocol</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/27/video-h264/" rel="prev" title="video_h264">
+      <i class="fa fa-chevron-left"></i> video_h264
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/27/linux-netfilter/" rel="next" title="linux_netfilter">
+      linux_netfilter <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#hls%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">hls简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hls%E7%9A%84%E4%BC%98%E5%8A%BF%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">hls的优势：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E7%A4%BA%E4%BE%8B%E5%92%8C%E8%A7%A3%E9%87%8A%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">一个示例和解释：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AA%92%E4%BD%93%E6%AE%B5%EF%BC%9A-media-segments%E5%8D%B3ts"><span class="nav-number">4.</span> <span class="nav-text">媒体段： media segments即ts</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E5%AA%92%E4%BD%93%E6%AE%B5%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">1)媒体段是什么：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%EF%BC%89%E5%AA%92%E4%BD%93%E6%AE%B5%E6%97%B6%E9%95%BF%E6%8C%87%E5%AE%9A%EF%BC%9A"><span class="nav-number">4.2.</span> <span class="nav-text">2）媒体段时长指定：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%EF%BC%89%E5%AA%92%E4%BD%93%E6%AE%B5%E7%9A%84seq-num-%E6%AF%8F%E4%B8%AAseg-%E6%9C%89%E4%B8%80%E4%B8%AA%E5%94%AF%E4%B8%80%E7%9A%84seq-%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%BA0%E6%88%96playlist%E6%8C%87%E5%AE%9A%EF%BC%8C%E5%85%B6%E4%BB%96%E7%9A%84%E9%83%BD%E6%98%AF%E5%89%8D%E4%B8%80%E4%B8%AA-1"><span class="nav-number">4.3.</span> <span class="nav-text">3）媒体段的seq num: 每个seg 有一个唯一的seq,第一个为0或playlist指定，其他的都是前一个+1</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E5%AA%92%E4%BD%93%E6%AE%B5%E5%92%8C%E8%BF%9E%E7%BB%AD%E6%80%A7%EF%BC%88dts%E8%BF%9E%E7%BB%AD%E5%92%8C%E4%B8%8D%E8%BF%9E%E7%BB%AD%E7%AD%89"><span class="nav-number">4.4.</span> <span class="nav-text">4)媒体段和连续性（dts连续和不连续等)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-%E5%AA%92%E4%BD%93%E6%AE%B5%E5%92%8CIDR"><span class="nav-number">4.5.</span> <span class="nav-text">5) 媒体段和IDR:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6%EF%BC%89%E6%94%AF%E6%8C%81%E7%9A%84Media-segment-%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="nav-number">4.6.</span> <span class="nav-text">6）支持的Media segment 格式：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%89%E5%93%AA%E4%BA%9B%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%AA%92%E4%BD%93%E6%AE%B5%E6%89%93%E5%8C%85%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="nav-number">4.7.</span> <span class="nav-text">有哪些类型的媒体段打包方式？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eplaylist-%E4%BB%A5%E5%8F%8A%E5%AE%83%E7%9A%84%E8%AF%AD%E6%B3%95%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">关于playlist:以及它的语法：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%EF%BC%89%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AAplaylist-%E5%A6%82%E4%BD%95%E5%86%99%EF%BC%9F"><span class="nav-number">5.1.</span> <span class="nav-text">1）定义一个playlist:如何写？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%EF%BC%89%E5%B1%9E%E6%80%A7%E5%88%97%E8%A1%A8%EF%BC%9AAttribute-Lists"><span class="nav-number">5.2.</span> <span class="nav-text">2）属性列表：Attribute Lists</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%EF%BC%89-Playlist-Tags-%E6%9C%89%E5%BE%88%E5%A4%9A"><span class="nav-number">5.3.</span> <span class="nav-text">3） Playlist Tags 有很多</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EKey-FIles%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">关于Key FIles：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF-x2F-%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%81%8C%E8%B4%A3"><span class="nav-number">7.</span> <span class="nav-text">客户端&#x2F;服务器职责</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E8%81%8C%E8%B4%A3%EF%BC%9A"><span class="nav-number">7.1.</span> <span class="nav-text">服务器的职责：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E8%81%8C%E8%B4%A3%EF%BC%9A"><span class="nav-number">7.2.</span> <span class="nav-text">客户端的职责：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E7%89%88%E6%9C%AC%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-number">8.</span> <span class="nav-text">协议版本兼容性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#playlist-%E5%AE%9E%E4%BE%8B%EF%BC%9A"><span class="nav-number">9.</span> <span class="nav-text">playlist 实例：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IANA-%E8%80%83%E8%99%91%E4%BA%8B%E9%A1%B9"><span class="nav-number">10.</span> <span class="nav-text">IANA 考虑事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E8%80%83%E8%99%91"><span class="nav-number">11.</span> <span class="nav-text">安全性考虑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">12.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '0b171d0166a78320d84b0cde86d29851',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

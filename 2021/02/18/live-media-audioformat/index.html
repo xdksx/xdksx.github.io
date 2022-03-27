@@ -28,7 +28,7 @@
 <meta property="og:description" content="音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念 原始音频： 采集后得到的是音频的裸数据：在采集时需要指定采样率，量化位数(一般采样也会有几种协议，比如常见的PCM，里面会自带量化位数指定)，channle数，以及必要的大小端数据等">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-17T19:49:29.000Z">
-<meta property="article:modified_time" content="2021-02-18T03:50:26.000Z">
+<meta property="article:modified_time" content="2022-03-26T12:52:26.320Z">
 <meta property="article:author" content="小兴">
 <meta property="article:tag" content="audio">
 <meta name="twitter:card" content="summary">
@@ -228,10 +228,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-02-18 03:49:29 / 修改时间：11:50:26" itemprop="dateCreated datePublished" datetime="2021-02-18T03:49:29+08:00">2021-02-18</time>
+              <time title="创建时间：2021-02-18 03:49:29" itemprop="dateCreated datePublished" datetime="2021-02-18T03:49:29+08:00">2021-02-18</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-26 20:52:26" itemprop="dateModified" datetime="2022-03-26T20:52:26+08:00">2022-03-26</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -254,9 +260,14 @@
 
       
         <h3 id="音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念"><a href="#音频编码：-aac-adts-wav-mp3-等编码的意义和基本概念" class="headerlink" title="音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念"></a>音频编码： aac, adts, wav ,mp3 等编码的意义和基本概念</h3><ul>
-<li><p>原始音频： 采集后得到的是音频的裸数据：在采集时需要指定采样率，量化位数(一般采样也会有几种协议，比如常见的PCM，里面会自带量化位数指定)，channle数，以及必要的大小端数据等<span id="more"></span></p>
+<li>原始音频： 采集后得到的是音频的裸数据：在采集时需要指定采样率，量化位数(一般采样也会有几种协议，比如常见的PCM，里面会自带量化位数指定)，channle数，以及必要的大小端数据等<span id="more"></span></li>
+<li>音频的裸数据有以下特点，在用Audacity导入原始数据播放时，需要填写相关参数(采样率，量化协议，channel数，数据的大小端情况等)：<br>由此可以知道，在播放裸数据(解释)裸音频数据时，至少需要上面的几个参数；</li>
+</ul>
+<p>其实采集的数据和最原始的模拟信号数据也是有偏差的，在于采样频率，表示的位深都是有限的，无法完全还原，会有失真；</p>
+<ul>
+<li><p>为什么要音频编码：<br>原始音频往往比较大，不利于传输和存储，<br>所以为了更快更好的进行传输和存储等，一般会对原始音频进行压缩，<br>即编码；编码过程中往往会导致失真，即对编码后的数据进行解码不一定<br>能完全和编码前的数据一致，取决于<br>编码的算法，编码的方式；</p>
 </li>
-<li><p>音频的裸数据有以下特点，在用Audacity导入原始数据播放时，需要填写相关参数(采样率，量化协议，channel数，数据的大小端情况等)：<br>由此可以知道，在播放裸数据(解释)裸音频数据时，至少需要上面的几个参数；</p>
+<li><p>常见的音频编码：AAC,OPUS,FLAC,MP3,SBC,Vorbis等，更多可以看wiki:<br><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F%E7%9A%84%E6%AF%94%E8%BE%83">https://zh.wikipedia.org/wiki/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F%E7%9A%84%E6%AF%94%E8%BE%83</a><br>wav:Waveform Audio File Format：微软和IBM公司开发，未经压缩，音质相较于采集pcm未失真；体积较大<br>mp3：动态图像专家组-1或动态图像专家组-2 音频层III（英语：MPEG-1 or MPEG-2 Audio Layer III），一种流行的数字音频编码和有损压缩格式，<br>              与MP3相关的专利已于2017年4月16日全数过期。[6][7]MP3进入公有领域后，任何人使用皆无须付专利授权费。<br>              aac：高级音频编码（英语：Advanced Audio Coding，AAC） 为MPEG系列，有多个家族，是一种有损音频压缩的<br>              专利数字音频编码标准，由由Fraunhofer IIS、杜比实验室、贝尔实验室、Sony、Nokia等公司共同开发。<br>opus：Opus是一个有损音频压缩的数字音频编码格式，由Xiph.Org基金会开发，之后由互联网工程任务组（IETF）进行标准化，目标是希望用单一格式包含声音和语音，<br>              取代Speex和Vorbis，且适用于网络上低延迟的即时声音传输，标准格式定义于RFC 6716文件。Opus格式是一个开放格式，使用上没有任何专利或限制。<br>flac：Free Lossless Audio Codec：自由无损音频压缩编码。无专利限制<br>Vorbis：是一种有损音频压缩格式，由Xiph.Org基金会所领导并开放源代码的一个免费的开源软件项目。该项目为有损音频压缩产生音频编码格式和软件参考编码器╱解码器（编解码器）。Vorbis通常以Ogg作为容器格式，所以常合称为Ogg Vorbis。<br>               已被Opus替代</p>
 </li>
 <li><p>音频编码在音频裸数据的基础上做了什么？可以用来干嘛?<br>那么对于音频编码来说，主要是在裸数据上做了封装，带了以下几件事：<br>1）加上音频编码的头：主要内容是采样率，channel数，量化协议，大小端等，用来告诉解码器如何解释这个音频；</p>
 </li>
@@ -266,15 +277,15 @@
 <li>带上裸数据，长度size等，有的音频编码会对裸数据进行合理的压缩，去噪等等，减少文件大小等，如opus；</li>
 </ol>
 <ul>
-<li><p>常见的音频编码：AAC,OPUS,FLAC,MP3,SBC,Vorbis等，更多可以看wiki:<br><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F%E7%9A%84%E6%AF%94%E8%BE%83">https://zh.wikipedia.org/wiki/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F%E7%9A%84%E6%AF%94%E8%BE%83</a></p>
-</li>
 <li><p>如何查看音频编码：最直接的就是用notepad++ ,vim等二进制方式打开，然后对着协议标志看等；<br>或者根据文件名使用工具查看；用播放软件查看文件信息看编码格式；但是只能看元信息；</p>
 </li>
-<li><p>查看AAC:<br>AAC Audio ES Viewer </p>
-<h3 id="音频编码文件容器："><a href="#音频编码文件容器：" class="headerlink" title="音频编码文件容器："></a>音频编码文件容器：</h3></li>
-<li><p>音频为什么需要容器：<br>如果说编码主要是压缩和携带解析的元数据，那容器的出现，除了增加更多元数据信息外，还加了时间戳dts等信息，封装为容器，一个重要的因素是为了和视频封装在一起，音视频<br>做同步解码播放；</p>
+<li><p>查看AAC:<br>查看文件的格式来判断：如.wav,.mp3,.aac,.ogg等<br>使用一些软件查看，如VLC,PotPlay等查看，或者专用的AAC如AAC Audio ES Viewer；<br>直接用vim&#x2F;nodepad++等编辑软件打开，查看文件开头的字符串，一般如opus会有相应的opus&#x2F;ogg字符串标识</p>
 </li>
-<li><p>音频编码和容器的关系<br> 音频容器是在音频编码的基础上增加了一些信息，和编码格式不同，比如opus编码的容器格式是oggs，是在opus封装为一页一页，并且加了页头；<br> 大部分容器其实可以封装视频和音频；比如Oggs也可以封装视频，只是现在不流行；所以你看到的Oggs基本都是音频的；而纯音频容器：如wav,mp3等</p>
+</ul>
+<h3 id="音频编码文件容器："><a href="#音频编码文件容器：" class="headerlink" title="音频编码文件容器："></a>音频编码文件容器：</h3><ul>
+<li><p>音频容器是什么？<br>音频编码后，主要是音频头(包含如何解码的信息，如采用率，channel数，位深等)和压缩后的原始数据；其本身没有帧的概念，容器将音频流式化，帧化了，使得音频文件成段或者说成流；<br>能使的播放器能更好的控制音频的播放，比如1s内播放更多的帧达到倍速播放等；所以说<br>如果说编码主要是压缩和携带解析的元数据，那容器的出现，除了增加更多元数据信息外，还加了时间戳dts等信息，封装为容器，同时也更有利于传输<br>另一个重要的因素是为了和视频封装在一起，音视频做同步解码播放；</p>
+</li>
+<li><p>音频为什么需要容器，和音频编码的区别：<br>上文提到了容器能为播放和传输赋能，这个是需要容器的重要原因；<br>容器和音频的关系：音频容器是在音频编码的基础上增加了一些信息，和编码格式不同，比如opus编码的容器格式是oggs，是在opus封装为一页一页，并且加了页头；<br>大部分容器其实可以封装视频和音频；比如Oggs也可以封装视频，只是现在不流行；所以你看到的Oggs基本都是音频的；而纯音频容器：如wav,mp3等</p>
 </li>
 <li><p>音视频容器常见: flv，avi,mov,mp4,3gp等</p>
 <h3 id="音频编码流媒体-比如aac是怎么在直播系统中传输的；"><a href="#音频编码流媒体-比如aac是怎么在直播系统中传输的；" class="headerlink" title="音频编码流媒体: 比如aac是怎么在直播系统中传输的；"></a>音频编码流媒体: 比如aac是怎么在直播系统中传输的；</h3><p>流媒体是在网络传输中流式媒体数据，在网络中传输音视频数据时，也是主要是压缩的数据，比如音频，在网络上传输以opus的流格式，其实可以是oggs封装再加到其他传输协议中；<br>或者是Opus直接封装到完善的协议比如Rtp中；<br>而流媒体考虑到带宽利用率等，往往不会传输太多多余的东西，所以一些头带了的信息就不会重复封装头；<br>总的理解就是： 流媒体传输中，使用适合于音视频传输的(比如专门做了网络优化)的网络协议如Srt,Rtmp等，封装流媒体编码或容器进行传输；</p>
@@ -380,18 +391,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
