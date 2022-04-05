@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="RTP 全称是：Real-Time Applications               概述： 即实时程序协议，应用场景也是类似会议这种的，所以从这两点出发讨论它的设计原因：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="live_rtp">
+<meta property="og:url" content="https://xdksx.github.io/2022/04/02/live-rtp/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="RTP 全称是：Real-Time Applications               概述： 即实时程序协议，应用场景也是类似会议这种的，所以从这两点出发讨论它的设计原因：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-02T08:30:11.000Z">
+<meta property="article:modified_time" content="2022-04-02T09:46:12.755Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="rtp">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/04/02/live-rtp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>live_rtp | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/04/02/live-rtp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          live_rtp
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-02 16:30:11 / 修改时间：17:46:12" itemprop="dateCreated datePublished" datetime="2022-04-02T16:30:11+08:00">2022-04-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/live/" itemprop="url" rel="index"><span itemprop="name">live</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <pre><code>            RTP 全称是：Real-Time Applications
+            
+</code></pre>
+<h3 id="概述："><a href="#概述：" class="headerlink" title="概述："></a>概述：</h3><ul>
+<li><p>即实时程序协议，应用场景也是类似会议这种的，所以从这两点出发讨论它的设计原因： <span id="more"></span></p>
+<h4 id="端到端的传输功能。"><a href="#端到端的传输功能。" class="headerlink" title="端到端的传输功能。"></a>端到端的传输功能。</h4><p>RTP提供端到端网络传输功能，适用于通过多播或单播网络服务传输实时数据（如音频、视频或模拟数据）的应用程序。RTP不能解决资源预留问题，也不能保证实时服务的服务质量。数据传输通过控制协议（RTCP）进行扩展，以允许以可扩展到大型多播网络的方式监控数据传输，并提供最小的控制和识别功能。RTP和RTCP设计为独立于底层传输层和网络层。该协议支持使用RTP级转换器和混频器。</p>
+</li>
+<li><p>1） 既然说它提供了端到端的传输功能，那它提供了哪些交付服务，或者保障？<br>这些服务包括有效载荷类型识别、序列编号、时间戳和交付监控。应用程序通常在UDP之上运行RTP，以利用其多路复用和校验和服务；</p>
+</li>
+<li><p>2） RTP底层网络可以是什么？<br>UDP、其他如，如果底层网络提供，RTP支持使用多播分发将数据传输到多个目的地。</p>
+</li>
+<li><p>3）RTP传输质量如何保障：它需要依赖数据包的有序性吗？需要可靠性吗？<br>RTP本身并没有提供任何机制来确保及时交付或提供其他服务质量保证，而是依赖于较低层的服务来做到这一点。它不保证交付或防止无序交付，也不假设底层网络可靠并按顺序交付数据包。RTP中包括的序列号允许接收机重构发送方的分组序列，但是序列号也可以用于确定分组的适当位置，例如在视频解码中，而不必按顺序解码分组。</p>
+</li>
+</ul>
+<p>那rtp数据包的有序和可靠怎么弄的？<br>依赖rtcp,除此之外，rtcp还提供用于监控服务质量并在正在进行的会话中传递有关参与者的信息。</p>
+<ul>
+<li><p>4）rtp协议的功能等是否可以通过配置指定定制？是否很大限制？ sdp <a target="_blank" rel="noopener" href="https://rfc2cn.com/rfc3551.html">https://rfc2cn.com/rfc3551.html</a><br>有专门的配置规范： rfc3551<br>具体：<br> 配置文件规范文档，定义一组有效负载类型代码及其到有效负载格式的映射（例如，媒体编码）。概要文件还可以定义特定于特定应用程序类别的RTP扩展或修改。通常，应用程序将仅在一个配置文件下运行。音频和视频数据的配置文件可在配套的RFC 3551[1]中找到。<br> 有效负载格式规范文档，定义了特定有效负载（如音频或视频编码）在RTP中的传输方式。  </p>
+</li>
+<li><p>限制：RTP是一个故意不完整的协议框架。本文档指定了RTP适用于的所有应用程序的通用功能。与传统协议不同，在传统协议中，可以通过使协议更通用或添加需要解析的选项机制来容纳附加功能，RTP旨在根据需要通过修改和&#x2F;或添加报头来定制。第5.3节和第6.4.3节给出了示例。</p>
+</li>
+</ul>
+<h3 id="2-rtp的使用场景？"><a href="#2-rtp的使用场景？" class="headerlink" title="2.rtp的使用场景？"></a>2.rtp的使用场景？</h3><h4 id="2-1-简单多播音频会议："><a href="#2-1-简单多播音频会议：" class="headerlink" title="2.1 简单多播音频会议："></a>2.1 简单多播音频会议：</h4><ul>
+<li><p>a 利用互联网的IP多播服务(主要依赖多播ip地址和路由器转发时进行转发到多个主机)</p>
+</li>
+<li><p>b 通过某种分配机制，工作组主席获得一个多播组地址和一对端口。一个端口用于音频数据，另一个用于控制（RTCP）数据包。此地址和端口信息将分发给预期的参与者。</p>
+</li>
+<li><p>c 如需加密，必须生成并分发加密密钥</p>
+</li>
+<li><p>d 数据：每个会议参与者所使用的音频会议应用程序发送的音频数据为小块，例如，持续时间为20毫秒。每个音频数据块前面都有一个RTP头；RTP报头和数据依次包含在UDP数据包中。RTP报头指示每个分组中包含何种类型的音频编码（例如PCM、ADPCM或LPC），以便发送者可以在会议期间更改编码，例如，容纳通过低带宽链路连接的新参与者或对网络拥塞指示作出反应。</p>
+</li>
+<li><p>e 处理次序和丢包，以及jitterbuffer：RTP报头包含定时信息和序列号，该序列号允许接收机重构由源产生的定时，接收机还可以使用序列号来估计丢失了多少数据包。</p>
+</li>
+<li><p>f 自适应编码和随时离开：会议中音频应用程序的每个实例定期在RTCP（控制）端口上多播接收报告及其用户名称。接收报告指示当前扬声器的接收情况，并可用于控制自适应编码。除了用户名之外，根据控制带宽限制，还可以包括其他标识信息。站点在离开会议时发送RTCP BYE数据包</p>
+</li>
+</ul>
+<h4 id="2-2-音频和视频会议"><a href="#2-2-音频和视频会议" class="headerlink" title="2.2 音频和视频会议"></a>2.2 音频和视频会议</h4><ul>
+<li>a 注意音视频会话是分离的：如果在会议中同时使用音频和视频媒体，则它们将作为单独的RTP会话进行传输。也就是说，使用两个不同的UDP端口对和&#x2F;或多播地址为每个媒体传输单独的RTP和RTCP数据包。音频和视频会话之间在RTP级别没有直接耦合，除了参与两个会话的用户应在RTCP数据包中为这两个会话使用相同的可分辨（规范）名称，以便可以关联会话。</li>
+<li>b 为什么是分离：这种分离的一个动机是，如果会议的一些参与者愿意，他们只能接受一种媒介。第5.2节给出了进一步的解释。尽管分离，但是可以使用RTCP数据包中为两个会话携带的定时信息来实现源音频和视频的同步播放。</li>
+</ul>
+<h4 id="2-3混音器和翻译器"><a href="#2-3混音器和翻译器" class="headerlink" title="2.3混音器和翻译器"></a>2.3混音器和翻译器</h4><p>用来应对几种场景：</p>
+<ul>
+<li><p>a  一个区域的参与者是通过低速链路连接到大多数是享受高速网络接入的会议参与者的情况。则不能为照顾低速的而全用低速的。在低带宽区域附近放置一个称为混音器的RTP级中继。该混频器重新同步传入的音频分组以重构发送器生成的恒定20ms间隔，将这些重构的音频流混合成单个流，将音频编码转换为较低带宽编码，并通过低速链路转发较低带宽分组流。这些数据包可以单播到单个收件人，也可以在不同地址上多播到多个收件人。</p>
+</li>
+<li><p>b ip受限：防火墙等：<br>音频会议的一些预期参与者可能通过高带宽链路连接，但可能无法通过IP多播直接到达。例如，它们可能位于不允许任何IP数据包通过的应用程序级防火墙后面。对于这些站点，可能不需要混合，在这种情况下，可以使用另一种称为转换器的RTP级中继。安装了两个转换器，一个位于防火墙的两侧，另一个位于防火墙的外侧，通过与防火墙内的转换器的安全连接将接收到的所有多播数据包汇集在一起。防火墙内的转换器将它们作为多播数据包再次发送到仅限于站点内部网络的多播组。</p>
+</li>
+</ul>
+<h4 id="2-4-分层编码"><a href="#2-4-分层编码" class="headerlink" title="2.4 分层编码"></a>2.4 分层编码</h4><p>即能将源转换为多种速率的转换器，以方便支持多种异构接收器带宽要求。<br>通过将分层编码与分层传输系统相结合，可以将速率自适应的责任放在接收机上。在RTP-over-IP多播的上下文中，源可以在多个RTP会话（每个会话在其自己的多播组上进行）上对分层表示的信号的渐进层进行条带化。然后，接收机可以适应网络异构性，并通过只加入适当的多播组子集来控制其接收带宽。</p>
+<h3 id="3-rtp协议定义的元素：或者说组成元素"><a href="#3-rtp协议定义的元素：或者说组成元素" class="headerlink" title="3 rtp协议定义的元素：或者说组成元素"></a>3 rtp协议定义的元素：或者说组成元素</h3><ul>
+<li><p>rtp有效载荷：RTP在数据包中传输的数据，例如音频样本或压缩视频数据。</p>
+</li>
+<li><p>rtp数据包：<br>由固定RTP报头、可能为空的贡献源列表（见下文）和有效负载数据组成的数据包。一些底层协议可能需要定义RTP数据包的封装。<br>通常，基础协议的一个数据包包含一个RTP数据包，但是如果封装方法允许，可以包含多个RTP数据包（参见第11节）。</p>
+</li>
+<li><p>rtcp数据包：<br>一种控制数据包，由一个与RTP数据包类似的固定报头部分组成，后面是根据RTCP数据包类型而变化的结构化元素。格式在第6节中定义。<br>通常，多个RTCP数据包作为基础协议的单个数据包中的复合RTCP数据包一起发送；这由每个RTCP数据包的固定报头中的长度字段启用。</p>
+</li>
+<li><p>端口：<br>依赖的底层协议需要端口如udp，而对同一个udp链路，可以多路复用会话的RTP和RTCP数据包。<br>“传输协议用于区分给定主机内多个目的地的抽象。TCP&#x2F;IP协议使用小正整数识别端口。”[12]OSI传输层使用的传输选择器（TSEL）与端口等效。RTP依赖于较低层协议来提供一些机制，例如端口，以多路复用会话的RTP和RTCP数据包。</p>
+</li>
+<li><p>传输地址：<br>标识传输级端点的网络地址和端口的组合，例如IP地址和UDP端口。数据包从源传输地址传输到目标传输地址。</p>
+</li>
+<li><p>rtp媒体类型：<br>在单个rtp会话中可以使用的有效负载类型的集合，RTP配置文件将RTP介质类型分配给RTP有效负载类型。</p>
+</li>
+<li><p>多媒体会话：<br>一组共同参与者之间的一组并发RTP会话。例如，视频会议（是多媒体会话）可以包含音频RTP会话和视频RTP会话。</p>
+</li>
+<li><p>rtp会话：<br>一组与RTP通信的参与者之间的关联。参与者可能同时参与多个RTP会话。<br>注意和多媒体会话的不同：<br>在多媒体会话中，除非编码本身将多个媒体多路复用到单个数据流中，否则每个媒体通常在单独的RTP会话中携带其自己的RTCP数据包。参与者通过使用不同的目的地传输地址对接收不同会话来区分多个RTP会话，其中一对传输地址包括一个网络地址加上一对RTP和RTCP端口。RTP会话中的所有参与者可以共享一个公共目的地传输地址对，如在IP多播的情况下，或者对于每个参与者，该对可以不同，如在单个单播网络地址和端口对的情况下。在单播情况下，参与者可以使用相同的端口对从会话中的所有其他参与者接收，或者可以为每个端口使用不同的端口对。<br>RTP会话的显著特征是，每个会话都维护一个完整、独立的SSRC标识符空间（定义见下文）。一个RTP会话中包含的参与者集包括那些可以接收任何一个参与者在RTP中作为SSRC或CSC（定义见下文）或RTCP传输的SSRC标识符的参与者。例如，考虑使用单播UDP实现的三方会议，每个参与者在单独的端口对上从其他两个接收。如果每个参与者仅向该参与者发送关于从另一参与者收到的数据的RTCP反馈，则会议由三个独立的点对点RTP会话组成。如果每个参与者向其他两个参与者提供RTCP关于其接收另一个参与者的反馈，则会议由一个多方RTP会话组成。后一种情况模拟了三个参与者之间IP多播通信的行为。</p>
+</li>
+<li><p>同步源SSRC:RTP数据包流的源，由RTP报头中携带的32位数字SSRC标识符标识，以便不依赖于网络地址。来自同步源的所有数据包构成相同定时和序列号空间的一部分，因此接收器按同步源对数据包进行分组以进行回放。<br>同步源的示例包括从信号源（例如麦克风或照相机）或RTP混频器（参见下文）导出的数据包流的发送方。同步源可以随时间改变其数据格式，例如音频编码。SSRC标识符是随机选择的值，意味着在特定RTP会话中全局唯一（见第8节）。参与者不需要为多媒体会话中的所有RTP会话使用相同的SSRC标识符；SSRC标识符的绑定通过RTCP提供（见第6.5.1节）。如果参与者在一个RTP会话中生成多个流，例如从单独的摄像机生成多个流，则必须将每个流标识为不同的SSRC。</p>
+</li>
+<li><p>贡献源（CSRC）：<br>RTP数据包流的一个源，它对RTP混合器产生的组合流做出了贡献（见下文）。混合器将有助于生成特定分组的源的SSRC标识符的列表插入该分组的RTP报头中。该名单称为CSRC名单。一个示例应用是音频会议，其中混音器指示所有讲话人的语音..合并后生成传出数据包，允许接收器指示当前说话者，即使所有音频数据包包含相同的SSRC标识符（混音器的标识符）。</p>
+</li>
+<li><p>Mixer:混合器：<br>从一个或多个源接收RTP数据包的中间系统，可能会更改数据格式，以某种方式组合数据包，然后转发新的RTP数据包。类似混画混音服务节点。<br>由于多个输入源之间的定时通常不会同步，因此混频器将在流之间进行定时调整，并为组合流生成其自己的定时。因此，来自混频器的所有数据分组将被标识为具有混频器作为其同步源。</p>
+</li>
+<li><p>Translator：类似中间服务节点，用来转码，然后转发出去。<br>转发RTP数据包的中间系统，同步源标识符保持不变。转换器的示例包括在不混合的情况下转换编码的设备、从多播到单播的复制器以及防火墙中的应用程序级过滤器。</p>
+</li>
+<li><p>监视器：监控质量的，如chrome的webrtc internal<br>一种应用程序，用于接收RTP会话中参与者发送的RTCP数据包，尤其是接收报告，并估计当前的服务质量，以便进行分布监视、故障诊断和长期统计。监控功能可能内置于参与会话的应用程序中，但也可能是一个单独的应用程序，该应用程序不参与，也不发送或接收RTP数据包（因为它们位于单独的端口上）。这些被称为第三方监视器。第三方监视器也可以接收RTP数据包，但不发送RTCP数据包或在会话中计数。</p>
+</li>
+<li><p>其他：<br>非RTP意味着：除了RTP之外，还可能需要协议和机制来提供可用的服务。具体地，对于多媒体会议，控制协议可以分发用于加密的多播地址和密钥，协商要使用的加密算法，并定义RTP有效负载类型值和它们所表示的有效负载格式之间的动态映射，用于不具有预定义有效负载类型值的格式。此类协议的示例包括会话发起协议（SIP）（RFC 3261[13]）、ITU建议H.323[14]和使用SDP的应用（RFC 2327[15]），例如RTSP（RFC 2326[16]）。简单地说也可以使用应用程序、电子邮件或会议数据库。此类协议和机制的规范不在本文件的范围内。</p>
+</li>
+</ul>
+<h3 id="4-rtp协议的字节顺序，对齐方式和时间格式：这个是每个传输协议的避免不了的"><a href="#4-rtp协议的字节顺序，对齐方式和时间格式：这个是每个传输协议的避免不了的" class="headerlink" title="4 rtp协议的字节顺序，对齐方式和时间格式：这个是每个传输协议的避免不了的"></a>4 rtp协议的字节顺序，对齐方式和时间格式：这个是每个传输协议的避免不了的</h3><h4 id="a-字节序："><a href="#a-字节序：" class="headerlink" title="a 字节序："></a>a 字节序：</h4><p>所有整数字段都是按网络字节顺序进行的，也就是说，最高有效字节（八位字节）排在第一位。这种字节顺序通常称为big-endian。[3]中详细描述了传输顺序。除非另有说明，否则数值常量为十进制（以10为基数）。</p>
+<h4 id="对齐方式："><a href="#对齐方式：" class="headerlink" title="对齐方式："></a>对齐方式：</h4><p>所有报头数据都与其自然长度对齐，即16位字段按偶数偏移对齐，32位字段按可被4整除的偏移对齐，等等。指定为填充的八位字节的值为零。</p>
+<h4 id="时间格式："><a href="#时间格式：" class="headerlink" title="时间格式："></a>时间格式：</h4><p>Wallclock时间（绝对日期和时间）使用网络时间协议（NTP）的时间戳格式表示，相对于1900年1月1日0h UTC，以秒为单位[4]。全分辨率NTP时间戳是一个64位无符号定点数字，整数部分在前32位，小数部分在后32位。在一些更紧凑的表示法适用的字段中，仅使用中间的32位；即，整数部分的低16位和小数部分的高16位。整数部分的高16位必须独立确定。</p>
+<p>为了使用RTP，运行网络时间协议不需要实现。可使用其他时间源，或根本不使用（参见第6.4.1节中NTP时间戳字段的说明）。但是，运行NTP可能有助于同步从不同主机传输的流。</p>
+<p>NTP时间戳将在2036年的某个时间变为零，但出于RTP目的，仅使用NTP时间戳对之间的差异。只要可以假设时间戳对彼此之间的间隔在68年之内，那么使用模块化算法进行减法和比较会使概括变得无关紧要。</p>
+<h3 id="5-rtp数据传输协议：大致格式："><a href="#5-rtp数据传输协议：大致格式：" class="headerlink" title="5 rtp数据传输协议：大致格式："></a>5 rtp数据传输协议：大致格式：</h3><h4 id="5-1-RTP固定头字段"><a href="#5-1-RTP固定头字段" class="headerlink" title="5.1 RTP固定头字段"></a>5.1 RTP固定头字段</h4><p>RTP标头具有以下格式：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0                   1                   2                   3</span><br><span class="line"><span class="section"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|V=2|P|X|  CC   |M|     PT      |       sequence number         |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                           timestamp                           |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|           synchronization source (SSRC) identifier            |</span></span><br><span class="line"><span class="section">+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span></span><br><span class="line">|            contributing source (CSRC) identifiers             |</span><br><span class="line"><span class="section">|                             ....                              |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>以及各个字段意义：<br>前12个八位字节存在于每个RTP数据包中，而CSC标识符列表仅在通过混频器插入时才存在。这些字段具有以下含义：<br>版本（V）：2位此字段标识RTP的版本。本规范规定的版本为二（2）。（RTP初稿版本使用值1，最初在“vat”音频工具中实现的协议使用值0。）<br>padding（P）：1位如果设置了padding位，则数据包的末尾包含一个或多个额外的padding八位字节，它们不是有效负载的一部分。填充的最后一个八位字节包含应忽略的填充八位字节数，包括其本身。某些具有固定块大小的加密算法或在较低层协议数据单元中承载多个RTP数据包可能需要填充。<br>扩展（X）：1位如果设置了扩展位，则固定标题后面必须紧跟一个标题扩展，格式见第5.3.1节。<br>CSRC计数（CC）：4位CSC计数包含固定标头后面的CSRC标识符的数量。</li>
+</ul>
+<p>&#x2F;&#x2F;标记： 这个还不是很清晰的概念<br>标记（M）：1位标记的解释由profile定义。它旨在允许在分组流中标记诸如帧边界之类的重要事件。配置文件可以定义额外的标记位，或者通过更改有效负载类型字段中的位数来指定没有标记位（参见第5.3节）。<br>有效负载类型（PT）：7位该字段标识RTP有效负载的格式(类型)，并确定应用程序对其的解释。配置文件可以指定有效负载类型代码到有效负载格式的默认静态映射。其他有效载荷类型代码可通过非RTP方式动态定义（见第3节）。配套RFC 3551[1]中指定了一组音频和视频的默认映射。RTP源可以在会话期间更改有效负载类型，但此字段不应用于多路复用单独的媒体流（参见第5.2节）。<br>接收器必须忽略其不了解的有效负载类型的数据包。  </p>
+<p>序列号：16位序列号对于发送的每个RTP数据包，序列号递增1，接收器可使用序列号检测数据包丢失并恢复数据包序列。序列号的初始值应该是随机的（不可预测的），以使对加密的已知明文攻击更加困难，即使源本身没有按照第9.1节中的方法进行加密，因为数据包可能会通过进行加密的转换器。[17]中讨论了选择不可预测数字的技术。 </p>
+<p>时间戳：32位时间戳反映RTP数据包中第一个八位字节的采样瞬间。采样瞬间必须从时间上单调线性递增的时钟中得出，以允许同步和抖动计算（见第6.4.1节）。时钟的分辨率必须足以达到所需的同步精度和测量数据包到达抖动（每个视频帧一个刻度通常是不够的）。时钟频率取决于作为有效载荷承载的数据的格式，并且在定义该格式的概要文件或有效载荷格式规范中静态地指定，或者可以针对通过非RTP方式定义的有效载荷格式动态地指定。如果定期生成RTP数据包，则将使用从采样时钟确定的标称采样瞬间，而不是系统时钟的读数。例如，对于固定速率音频，时间戳时钟对于每个采样周期可能增加一个。如果音频应用程序读取块覆盖  </p>
+<p>关于时间戳应该注意的：<br>    + 160从输入设备的采样周期，对于每个这样的块，时间戳将增加160，而不管该块是在分组中传输还是作为静默丢弃。<br>    + 与序列号一样，时间戳的初始值应该是随机的。如果几个连续的RTP数据包（逻辑上）同时生成，例如，属于同一视频帧，则它们将具有相等的时间戳。如果数据没有按照采样顺序传输，则连续的RTP数据包可能包含非单调的时间戳，如在MPEG插值视频帧的情况下。（传输的数据包序列号仍然是单调的。）<br>    + 来自不同媒体流的RTP时间戳可能以不同的速率前进，并且通常具有独立的随机偏移。因此，尽管这些时间戳足以重建单个流的定时，但是直接比较来自不同媒体的RTP时间戳对于同步来说是无效的。相反，对于每个介质，RTP时间戳通过与表示与RTP时间戳对应的数据被采样的时间的参考时钟（wallcock）的时间戳配对而与采样时刻相关。参考时钟由所有要同步的介质共享。时间戳对并非在每个数据包中传输，而是在RTCP SR包中以较低的速率传输，如第6.4节所述。<br>    + 选择采样瞬间作为RTP时间戳的参考点，因为传输端点知道它，并且对所有媒体都有一个共同的定义，与编码延迟或其他处理无关。其目的是允许同步显示同时采样的所有媒体。<br>    + 传输存储数据而非实时采样数据的应用程序通常使用从wallclock time派生的虚拟表示时间线来确定何时应显示存储数据中每个介质的下一帧或其他单元。在这种情况下，RTP时间戳将反映每个单元的呈现时间。也就是说，每个单元的RTP时间戳将与该单元在虚拟表示时间线上成为当前单元的墙时钟时间相关。根据接收者的判断，实际的呈现会在一段时间后发生。<br>    + 一个描述预录视频的实时音频叙述的示例说明了选择采样瞬间作为参考点的重要性。在此场景中，视频将在本地呈现，供讲述人查看，并使用RTP同时传输。在RTP中传输的视频帧的“采样瞬间”将通过参考来建立<br>    + 它的时间戳是指视频帧呈现给讲述者时的挂钟时间。包含叙述者语音的音频RTP数据包的采样瞬间将通过引用音频采样时的相同挂钟时间来建立。如果两个主机上的参考时钟通过诸如NTP之类的某种方式同步，则音频和视频甚至可以由不同的主机传输。然后，接收机可以通过使用RTCP SR分组中的时间戳对关联其RTP时间戳来同步音频和视频分组的呈现。<br>SSRC:32位SSRC字段标识同步源。应随机选择该标识符，以确保同一RTP会话中的两个同步源不会具有相同的SSRC标识符。附录a.6中给出了生成随机标识符的示例算法。尽管多个源选择相同标识符的概率很低，但所有RTP实现都必须准备好检测和解决冲突。第8节描述了冲突的概率以及基于SSRC标识符的唯一性解决冲突和检测RTP级转发循环的机制。如果源更改其源传输地址，还必须选择新的SSRC标识符，以避免被解释为循环源（见第8.2节）。 </p>
+<p>CSRC列表：0到15个项目，每个项目32位。CSRC列表标识此数据包中包含的有效负载的贡献源。标识符的数量由CC字段给出。如果有15个以上的贡献来源，则只能确定15个。混合器使用贡献源的SSRC标识符插入CSRC标识符（见第7.1节）。例如，对于音频分组，列出了混合在一起以创建分组的所有源的SSRC标识符，从而允许在接收机处正确指示说话者。 </p>
+<h4 id="5-2-如何多路复用RTP会话：即和较低一层的协议单元是一对一还是一对多"><a href="#5-2-如何多路复用RTP会话：即和较低一层的协议单元是一对一还是一对多" class="headerlink" title="5.2 如何多路复用RTP会话：即和较低一层的协议单元是一对一还是一对多"></a>5.2 如何多路复用RTP会话：即和较低一层的协议单元是一对一还是一对多</h4><ul>
+<li>RTP会话和媒体类型：每个媒体在单独的RTP会话中承载，并具有自己的目的地传输地址。</li>
+<li>RTP会话和网络链路：对于有效的协议处理，应尽量减少复用点的数量，如集成层处理设计原则[10]所述。在RTP中，多路复用由目标传输地址（网络地址和端口号）提供，该地址对于每个RTP会话是不同的。</li>
+<li>RTP会话和SSRC:单独的音频和视频流不应在单个RTP会话中传输，并根据有效负载类型或SSRC字段进行解复用。交叉使用不同RTP媒体类型但使用相同SSRC的数据包会带来几个问题：<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">1.</span> 例如，如果两个音频流共享相同的RTP会话和相同的SSRC值，而其中一个要更改编码并因此获得不同的RTP有效负载类型，则没有通用的方法来识别哪个流更改了编码。</span><br><span class="line"><span class="bullet">2.</span> SSRC定义为识别单个定时和序列号空间。如果媒体时钟速率不同，则交错多个有效负载类型将需要不同的定时空间，并且将需要不同的序列号空间来告知哪种有效负载类型遭受了分组丢失。</span><br><span class="line"><span class="bullet">3.</span> RTCP发送方和接收方报告（见第6.4节）只能描述每个SSRC的一个定时和序列号空间，不包含有效负载类型字段。</span><br><span class="line"><span class="bullet">4.</span> RTP混频器将无法将不兼容媒体的交错流组合成一个流。</span><br><span class="line"><span class="bullet">5.</span> 在一个RTP会话中承载多个媒体会排除：使用不同的网络路径或网络资源分配（如果合适）；如果需要，接收媒体的子集，例如，如果视频将超过可用带宽，则仅接收音频；以及对不同媒体使用单独进程的接收器实现，而使用单独的RTP会话允许单个或多个进程实现。</span><br></pre></td></tr></table></figure></li>
+<li>对每种介质使用不同的SSRC，但在同一RTP会话中发送它们可以避免前三个问题，但不能避免后两个问题。</li>
+<li>在一些场景上可以复用介质：但需要不同的SSRC</li>
+<li>另一方面，在一个RTP会话中使用不同的SSRC值复用同一介质的多个相关源是多播会话的标准。上面列出的问题不适用：例如，RTP混音器可以组合多个音频源，并且相同的处理方法适用于所有音频源。在最后两个问题不适用的其他场景中，使用不同的SSRC值复用相同介质的流也可能是合适的。</li>
+</ul>
+<h4 id="5-3-如何通过配置来-定制化rtp协议头，以及使用到了rtp扩展头时，："><a href="#5-3-如何通过配置来-定制化rtp协议头，以及使用到了rtp扩展头时，：" class="headerlink" title="5.3 如何通过配置来 定制化rtp协议头，以及使用到了rtp扩展头时，："></a>5.3 如何通过配置来 定制化rtp协议头，以及使用到了rtp扩展头时，：</h4><p>rtp扩展头：</p>
+<ul>
+<li><p>有的RTP数据包报头被认为对于RTP可能支持的所有应用程序类通用所需的函数集是完整的。<br>然而，根据ALF设计原则，可通过配置中定义的修改或添加来定制头，同时仍允许配置独立的监测和记录工具发挥作用。</p>
+</li>
+<li><p>The marker bit and payload type field carry profile-specific information, but they are allocated in the fixed header since many applications are expected to need them and might otherwise have to add another 32-bit word just to hold them. </p>
+</li>
+<li><p>包含这些字段的八位字节可以通过配置文件重新定义，以适应不同的要求，</p>
+</li>
+<li><p>特定有效载荷格式所需的附加信息，例如视频编码，应在分组的有效载荷部分中携带。这可能位于始终存在于有效负载部分开头的头中，或者可能由数据模式中的保留值指示。</p>
+</li>
+<li><p>如果特定类别的应用程序需要独立于有效负载格式的附加功能，则这些应用程序运行的配置文件应定义附加的固定字段，以紧跟在现有固定报头的SSRC字段之后。这些应用程序将能够快速直接地访问附加字段，而独立于配置文件的监视器或记录器仍然可以通过仅解释前12个八位字节来处理RTP数据包。</p>
+</li>
+</ul>
+<p>RTP报头扩展：<br>提供了一种扩展机制，以允许单个实现试验新的有效负载格式独立的功能，这些功能需要在RTP数据包报头中携带附加信息。此机制的设计使得未扩展的其他互操作实现可以忽略标头扩展。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line"> <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"> |      defined by profile       |           length              |</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"> |                        header extension                       |</span><br><span class="line"> |                             ....                              |</span><br></pre></td></tr></table></figure>
+<p>如果RTP报头中的X位为1，则必须在RTP报头后附加可变长度报头扩展名，并遵循CSC列表（如果存在）。<br>标头扩展包含一个16位长度字段，该字段统计扩展中32位的字数，不包括四个八位扩展标头（因此，零是有效长度）。RTP数据头只能附加一个扩展名。为了允许多个互操作实现分别使用不同的头扩展进行试验，或者为了允许特定实现使用多种类型的头扩展进行试验，头扩展的前16位保持打开状态，以便区分标识符或参数。这16位的格式将由配置文件规范定义，在该规范下实现操作。此RTP规范本身不定义任何头扩展。</p>
+<h3 id="6-RTCP协议相关："><a href="#6-RTCP协议相关：" class="headerlink" title="6 RTCP协议相关："></a>6 RTCP协议相关：</h3><h4 id="关于RTCP控制协议的作用和功能："><a href="#关于RTCP控制协议的作用和功能：" class="headerlink" title="关于RTCP控制协议的作用和功能："></a>关于RTCP控制协议的作用和功能：</h4><p>RTP控制协议（RTCP）基于向会话中的所有参与者定期传输控制数据包，使用与数据包相同的分发机制。底层协议必须提供数据和控制数据包的多路复用，例如使用UDP的单独端口号。RTCP执行四项功能：</p>
+<ul>
+<li><p>(1) 数据分发质量反馈：<br>主要功能是提供有关数据分发质量的反馈。这是RTP作为传输协议的一个组成部分，与其他传输协议的流量和拥塞控制功能有关（参见第10节“拥塞控制要求”）。反馈可能直接用于自适应编码的控制[18,19]，但IP多播的实验表明，它也是有用的</p>
+</li>
+<li><p>(2) RTCP携带有RTP源的持久传输级标识符：<br>RTCP带有RTP源的持久传输级标识符，称为规范名称或CNAME，第6.5.1节。由于如果发现冲突或重新启动程序，SSRC标识符可能会更改，因此接收者需要CNAME跟踪每个参与者。接收机还可以要求CNAME在一组相关RTP会话中关联来自给定参与者的多个数据流，例如同步音频和视频。媒体间同步还需要数据发送方在RTCP数据包中包含NTP和RTP时间戳。</p>
+</li>
+<li><p>(3) 前两个功能要求所有参与者发送RTCP数据包，因此必须控制速率，以便RTP扩展到大量参与者。通过让每个参与者向所有其他参与者发送其控制数据包，每个参与者都可以独立地观察参与者的数量。该数字用于计算数据包的发送速率，如第6.2节所述。</p>
+</li>
+<li><p>(4)第四个可选功能是传递最小会话控制信息，例如要在用户界面中显示的参与者标识。<br>这在“松散控制”的会话中非常有用，参与者在没有成员控制或参数协商的情况下进出。RTCP是联系所有参与者的便捷渠道，但并不一定支持应用程序的所有控制通信要求。可能需要更高级别的会话控制协议，这超出了本文档的范围。</p>
+</li>
+<li><p>PS:功能1-3应在所有环境中使用，尤其是在IP多播环境中。RTP应用程序设计人员应该避免只能在单播模式下工作且不能扩展到更大数量的机制。如第6.2节所述，RTCP的传输可针对发送方和接收方分别进行控制，例如，在单向链路中，无法从接收方获得反馈。</p>
+</li>
+</ul>
+<h4 id="6-1-关于RTCP控制协议的包格式："><a href="#6-1-关于RTCP控制协议的包格式：" class="headerlink" title="6.1 关于RTCP控制协议的包格式："></a>6.1 关于RTCP控制协议的包格式：</h4><p>类型：</p>
+<ul>
+<li><p>(1) SR:Sender report, for transmission and reception statistics from participants that are active senders<br>发送端通过发送SR包告诉接收端发送端的信息，SR包分为三部分：头部header，发送者信息senderInfo和反馈块ReportBlock。如果发送端也作为接收端，那么才会存在ReportBlock，当存在多个码流的时候就会反馈多个ReportBlock。SR包的负载类型是200。</p>
+</li>
+<li><p>(2) RR: Receiver report, for reception statistics from participants that are not active senders and in combination with SR for active senders reporting on more than 31 sources<br>接收端通过发送RR包反馈接收端的接收情况，RR包分为两个部分：头部header和反馈块ReportBlock。参考SR包，RR包的负载类型是201。</p>
+</li>
+<li><p>(3)SDES：源描述项，包括CNAME</p>
+</li>
+<li><p>(4)BYE: Indicates end of participation</p>
+</li>
+<li><p>(5)APP: Application-specific functions</p>
+</li>
+</ul>
+<p>RTCP包头概述，关于复合RTCP包(即多个RTCP放在一个UDP数据报中)<br>每个RTCP数据包以一个类似于RTP数据包的固定部分开始，然后是根据数据包类型具有可变长度但必须在32位边界上结束的结构化元素。每个数据包的固定部分包含对齐要求和长度字段，以使RTCP数据包“可堆叠”。多个RTCP数据包可以在没有任何中间分隔符的情况下连接起来，以形成复合RTCP数据包，该复合RTCP数据包在较低层协议（例如UDP）的单个数据包中发送。复合数据包中没有单个RTCP数据包的明确计数，因为较低层协议预期提供总长度以确定复合数据包的结束。<br>复合分组中的每个单独RTCP分组可以独立处理，而不需要对分组的顺序或组合进行任何要求。然而，为了执行协议的功能，施加了以下约束：<br>    + a 接收统计数据（在SR或RR中）应尽可能频繁地发送，因为带宽限制将允许最大限度地提高统计数据的分辨率，因此每个周期性传输的复合RTCP数据包必须包括一个报告数据包。<br>    + b 新的接收者需要尽快接收某个源的CNAME，以识别该源，并开始关联媒体以实现lip-sync等目的，因此每个复合RTCP数据包还必须包括SDES CNAME，但如第9.1节所述，将复合RTCP数据包拆分为部分加密时除外。<br>    + c 需要限制可能首先出现在复合分组中的分组类型的数量，以增加第一字中恒定比特的数量以及针对错误寻址的RTP数据分组或其他不相关分组成功验证RTCP分组的概率。</p>
+<ul>
+<li>复合RTCP包的格式：<br>因此，所有RTCP数据包必须以至少两个单独数据包的复合数据包的形式发送，格式如下：<ul>
+<li>加密前缀：当且仅当根据第9.1节中的方法对复合数据包进行加密时，其前缀必须为每个传输的复合数据包重新绘制的随机32位数量。如果加密需要填充，则必须将其添加到复合数据包的最后一个数据包中。</li>
+<li>SR或RR：复合数据包中的第一个RTCP数据包必须始终是报告数据包，以便于进行附录a.2中所述的报头验证。即使未发送或接收任何数据（在这种情况下，必须发送空RR），并且即使复合数据包中唯一的其他RTCP数据包是BYE，情况也是如此。</li>
+<li>附加RRs：如果正在报告接收统计信息的源的数量超过31个，将适合一个SR或RR数据包的数量，则附加RR数据包应跟随初始报告数据包。</li>
+<li>SDES：包含CNAME项目的SDES数据包必须包含在每个复合RTCP数据包中，除非第9.1节另有说明。如果特定应用需要，根据带宽限制（见第6.3.9节），可以选择包括其他源描述项。</li>
+<li>BYE或APP：其他RTCP数据包类型，包括尚未定义的数据包类型，可按任何顺序跟随，但BYE应为使用给定SSRC&#x2F;CSC发送的最后一个数据包除外。数据包类型可能出现多次。</li>
+</ul>
+</li>
+<li>注意：<br>单个RTP参与者应在每个报告间隔内仅发送一个复合RTCP数据包，以便正确估计每个参与者的RTCP带宽（参见第6.2节），但如第9.1节所述将复合RTCP数据包拆分为部分加密时除外。如果源太多，无法在不超过网络路径的最大传输单位（MTU）的情况下将所有必要的RR数据包装入一个复合RTCP数据包，则每个间隔中只应包括将装入一个MTU的子集。子集应在多个时间间隔内循环选择，以便报告所有来源。<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">if</span> <span class="keyword">encrypted</span>: random <span class="number">32</span>-<span class="type">bit</span> <span class="type">integer</span></span><br><span class="line">   |</span><br><span class="line">   |[<span class="comment">--------- packet --------][---------- packet ----------][-packet-]</span></span><br><span class="line">   |</span><br><span class="line">   |                receiver            chunk        chunk</span><br><span class="line">   V                reports           item  item   item  item</span><br><span class="line">   <span class="comment">--------------------------------------------------------------------</span></span><br><span class="line">   R[SR #sendinfo #site1#site2][SDES #CNAME PHONE #CNAME LOC][BYE##why]</span><br><span class="line">   <span class="comment">--------------------------------------------------------------------</span></span><br><span class="line">   |                                                                  |</span><br><span class="line">   |&lt;<span class="comment">-----------------------  compound packet -----------------------&gt;|</span></span><br><span class="line">   |&lt;<span class="comment">--------------------------  UDP packet -------------------------&gt;|</span></span><br><span class="line">#: SSRC/CSRC identifier</span><br><span class="line">图<span class="number">1</span>:RTCP复合数据包示例</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="6-2-关于RTCP的传输间隔以及为什么需要传输间隔："><a href="#6-2-关于RTCP的传输间隔以及为什么需要传输间隔：" class="headerlink" title="6.2 关于RTCP的传输间隔以及为什么需要传输间隔："></a>6.2 关于RTCP的传输间隔以及为什么需要传输间隔：</h4><ul>
+<li>原因：<br>RTP的设计允许应用程序自动扩展会话大小，从几个参与者到数千人不等。例如，在音频会议中，数据流量本质上是自我限制的，因为一次只有一到两个人发言，因此通过多播分发，任何给定链路上的数据速率保持相对恒定，与参与者的数量无关。但是，控制流量不是自限的。如果来自每个参与者的接收报告以恒定速率发送，则控制流量将随参与者数量线性增长。因此，必须通过动态计算RTCP数据包传输之间的间隔来降低速率。<br>更多。会话带宽,  见协议 rfc3550</li>
+</ul>
+<h4 id="6-3-RTCP数据包发送和接收规则："><a href="#6-3-RTCP数据包发送和接收规则：" class="headerlink" title="6.3 RTCP数据包发送和接收规则："></a>6.3 RTCP数据包发送和接收规则：</h4><ul>
+<li>此处概述了如何发送以及接收RTCP数据包时应执行的操作规则。</li>
+<li>要执行这些规则，会话参与者必须维护多个状态：<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">tp</span>：上次传输RTCP数据包的时间；</span><br><span class="line"><span class="keyword">tc</span>：当前时间；</span><br><span class="line"><span class="keyword">tn</span>：RTCP数据包的下一个预定传输时间；</span><br><span class="line">pmembers：上次重新计算<span class="keyword">tn</span>时估计的会话成员数；</span><br><span class="line">成员：会议成员人数的最新估计数；</span><br><span class="line">发件人：会话中发件人数量的最新估计值；</span><br><span class="line">rtcp_bw：目标rtcp带宽，即此会话的所有成员将用于rtcp数据包的总带宽，以每秒八位字节为单位。这将是启动时提供给应用程序的“会话带宽”参数的指定部分。</span><br><span class="line">we_sent：如果应用程序自上次第二次RTCP报告传输后已发送数据，则该标志为真。</span><br><span class="line">avg_rtcp_size：此参与者发送和接收的所有rtcp数据包的平均复合rtcp数据包大小（以八位字节为单位）。如第<span class="number">6.2</span>节所述，大小包括较低层传输和网络协议头（如UDP和IP）。</span><br><span class="line">initial：如果应用程序尚未发送RTCP数据包，则为true的标志。</span><br></pre></td></tr></table></figure>
+这些规则中的许多都利用了数据包传输之间的“计算间隔”。下一节将介绍此间隔。</li>
+</ul>
+<h5 id="6-3-1-如何计算RTCP传输间隔"><a href="#6-3-1-如何计算RTCP传输间隔" class="headerlink" title="6.3.1 如何计算RTCP传输间隔"></a>6.3.1 如何计算RTCP传输间隔</h5><p>见rfc3550,区分参与者是否为发送方；</p>
+<h5 id="6-3-2-初始化"><a href="#6-3-2-初始化" class="headerlink" title="6.3.2 初始化"></a>6.3.2 初始化</h5><p>即关于最开始tp,tc,tn的置位</p>
+<h5 id="6-3-3-接收RTP或非BYE-RTCP数据包"><a href="#6-3-3-接收RTP或非BYE-RTCP数据包" class="headerlink" title="6.3.3 接收RTP或非BYE RTCP数据包"></a>6.3.3 接收RTP或非BYE RTCP数据包</h5><ul>
+<li>当从SSRC不在成员表中的参与者处收到RTP或RTCP数据包时，SSRC被添加到表中，并且一旦参与者按照第6.2.1节所述进行了验证，成员的值就会更新。对于已验证RTP数据包中的每个CSC，也会发生相同的处理。</li>
+<li>当从SSRC不在发送者表中的参与者接收RTP数据包时，SSRC将添加到表中，并且发送者的值将更新<br>对于接收到的每个复合RTCP数据包，将更新平均RTCP大小的值：avg_rtcp_size &#x3D; (1&#x2F;16) * packet_size + (15&#x2F;16) * avg_rtcp_size<br>其中，packet_size是刚接收到的RTCP数据包的大小。<h5 id="6-3-4-接收RTCP-BYE数据包"><a href="#6-3-4-接收RTCP-BYE数据包" class="headerlink" title="6.3.4 接收RTCP BYE数据包"></a>6.3.4 接收RTCP BYE数据包</h5>如果收到的数据包是RTCP BYE数据包，则根据成员表检查SSRC。如果存在，则从表中删除该条目，并更新成员的值。然后根据发送方表检查SSRC。如果存在，则从表中删除该条目，并更新发件人的值。<br>此外，为了使RTCP数据包的传输速率更适应组成员资格的变化，当接收到将成员减少到小于pmembers的值的BYE数据包时，应执行以下“反向重新考虑”算法：  <ul>
+<li>根据以下公式更新tn值：tn &#x3D; tc + (members&#x2F;pmembers) * (tn - tc)  </li>
+<li>tp的值根据以下公式更新：tp&#x3D;tc-（成员&#x2F;成员）*（tc-tp）</li>
+</ul>
+</li>
+</ul>
+<h5 id="6-3-5-为SSRC计时，即保活和超时机制："><a href="#6-3-5-为SSRC计时，即保活和超时机制：" class="headerlink" title="6.3.5 为SSRC计时，即保活和超时机制："></a>6.3.5 为SSRC计时，即保活和超时机制：</h5><p>偶尔，参与者必须检查其他参与者是否超时。为此，参与者计算接收机的确定性（不含随机化因子）计算间隔Td，即we_sent false。自时间tc-MTd（M是超时乘数，默认为5）超时后未发送RTP或RTCP数据包的任何其他会话成员。这意味着其SSRC将从成员列表中删除，并更新成员。对发件人列表执行类似的检查。自tc-2T（在最近两个RTCP报告间隔内）从发送者列表中删除并更新发送者后，发送者列表中未发送RTP数据包的任何成员。</p>
+<h5 id="6-3-6-传输计时器过期："><a href="#6-3-6-传输计时器过期：" class="headerlink" title="6.3.6 传输计时器过期："></a>6.3.6 传输计时器过期：</h5><p>即超时时传输RTCP包的策略：<br>当数据包传输计时器到期时，参与者执行以下操作：传输间隔T的计算如第6.3.1节所述，包括随机化因子。</p>
+<ul>
+<li>如果tp+T小于或等于tc，即说明此时已经超时了，则传输RTCP数据包。tp设置为tc，然后按照上一步计算T的另一个值，tn设置为tc+T。传输计时器设置为在tn时再次超时。</li>
+<li>如果tp+T大于tc，tn设置为tp+T。即说明此时时间还没到，此时不传输RTCP数据包。传输计时器设置为在时间tn时超时。</li>
+<li>如果传输RTCP数据包，则初始值设置为FALSE。此外，avg_rtcp_size的值更新为： avg_rtcp_size &#x3D; (1&#x2F;16) * packet_size + (15&#x2F;16) * avg_rtcp_size</li>
+</ul>
+<h5 id="6-3-7-发送BYE数据包"><a href="#6-3-7-发送BYE数据包" class="headerlink" title="6.3.7 发送BYE数据包"></a>6.3.7 发送BYE数据包</h5><ul>
+<li>当一个参与者希望离开一个会话时，会发送一个BYE数据包来通知其他参与者该事件。</li>
+<li>为了避免许多参与者离开系统时BYE数据包泛滥flood，如果参与者选择离开时成员数超过50，则参与者必须执行相关退避算法。此算法取代members变量的正常角色来计算BYE数据包：<br>略，见rfc3550</li>
+</ul>
+<h5 id="6-3-8-如何更新we-sent字段"><a href="#6-3-8-如何更新we-sent字段" class="headerlink" title="6.3.8 如何更新we_sent字段"></a>6.3.8 如何更新we_sent字段</h5><p>we_sent 变量包含true，若参与者最近发送了RTP数据包，否则为false.通过使用与管理senders表中列出的其他参与者集相同的机制进行确定。如果参与者在we_sent为false时发送RTP数据包，它会将自身添加到sender表中，并将we_sent设置为true。应执行第6.3.4节中描述的反向重新考虑算法，以尽可能减少发送SR数据包之前的延迟。每次发送另一个RTP数据包时，该数据包的传输时间保留在表中。<br>然后将正常的发送方超时算法应用于参与者——如果自时间tc-2T以来没有发送RTP数据包，则参与者将自己从发送方表中移除，减少发送方计数，并将we_sent设置为false。</p>
+<h5 id="6-3-9-源描述带宽的分配"><a href="#6-3-9-源描述带宽的分配" class="headerlink" title="6.3.9 源描述带宽的分配"></a>6.3.9 源描述带宽的分配</h5><ul>
+<li>除了强制的CNAME项目外，本规范还定义了几个源描述（SDES）项目，如姓名（个人姓名）和电子邮件（电子邮件地址）。它还提供了定义新的特定于应用程序的RTCP数据包类型的方法。</li>
+<li>应用程序在为这些附加信息分配控制带宽时应谨慎，因为这会降低接收报告和CNAME的发送速率，从而影响协议的性能。建议不超过分配给单个参与者的RTCP带宽的20%用于传输附加信息。此外，并非所有SDES项目都包含在每个应用程序中。根据它们的效用，应该为包含的那些分配一部分带宽。建议将百分比静态转换为基于项目典型长度的报告间隔计数，而不是动态估计这些分数。<br>…</li>
+</ul>
+<h4 id="6-4-发送方和接收方报告-RR-x2F-SR"><a href="#6-4-发送方和接收方报告-RR-x2F-SR" class="headerlink" title="6.4 发送方和接收方报告:RR&#x2F;SR"></a>6.4 发送方和接收方报告:RR&#x2F;SR</h4><ul>
+<li><p>RTP接收机使用RTCP报告包提供接收质量反馈，根据接收机是否也是发送方，RTCP报告包可能采用两种形式之一。</p>
+</li>
+<li><p>除了数据包类型代码之外，发送方报告（SR）和接收方报告（RR）表单之间的唯一区别在于，发送方报告包含一个20字节的发送方信息部分，供活动发送方使用。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">发送方                                          接收方：</span><br><span class="line">发送端通过发送SR包告诉接收端发送端的信息，SR包分为三部分：头部<span class="selector-tag">header</span>，发送者信息senderInfo和反馈块ReportBlock。</span><br><span class="line">      -<span class="attr">--SR</span>(<span class="selector-tag">header</span>+senderInfo)---&gt;</span><br><span class="line">发送方(也是接收方)</span><br><span class="line">      -<span class="attr">--SR</span>(<span class="selector-tag">header</span>+senderInfo+ReportBlock)---&gt;</span><br><span class="line">      </span><br><span class="line">接收端通过发送RR包反馈接收端的接收情况，RR包分为两个部分：头部<span class="selector-tag">header</span>和反馈块ReportBlock。</span><br><span class="line">      &lt;-<span class="attr">--RR</span>(<span class="selector-tag">header</span>+ReportBlock)---------------</span><br></pre></td></tr></table></figure></li>
+<li><p>SR和RR形式都包括零个或多个接收报告块，一个用于自上次报告以来该接收机从中接收RTP数据分组的每个同步源。报告不针对CSRC列表中列出的贡献来源发布。每个接收报告块提供关于从该块中指示的特定源接收的数据的统计信息。由于SR或RR数据包中最多可容纳31个接收报告块，因此应根据需要在初始SR或RR数据包之后堆叠额外的RR数据包，以包含自上次报告以来间隔期间听到的所有源的接收报告。</p>
+</li>
+<li><p>如果源太多，无法在不超过网络路径MTU的情况下将所有必要的RR数据包装入一个复合RTCP数据包，则每个间隔中只应包括将装入一个MTU的子集。子集应在多个时间间隔内循环选择，以便报告所有来源。</p>
+<h5 id="6-4-1-SR：发送方报告RTCP数据包"><a href="#6-4-1-SR：发送方报告RTCP数据包" class="headerlink" title="6.4.1 SR：发送方报告RTCP数据包"></a>6.4.1 SR：发送方报告RTCP数据包</h5><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">        0                   1                   2                   3</span><br><span class="line">        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">header |<span class="string">V=2</span>|<span class="string">P</span>|<span class="string">    RC   </span>|<span class="string">   PT=SR=200   </span>|<span class="string">             length            </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                         SSRC of sender                        </span>|</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">sender |<span class="string">              NTP timestamp, most significant word             </span>|</span><br><span class="line">info   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">             NTP timestamp, least significant word             </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                         RTP timestamp                         </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                     sender&#x27;s packet count                     </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                      sender&#x27;s octet count                     </span>|</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">report |<span class="string">                 SSRC_1 (SSRC of first source)                 </span>|</span><br><span class="line">block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  1    |<span class="string"> fraction lost </span>|<span class="string">       cumulative number of packets lost       </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">           extended highest sequence number received           </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                      interarrival jitter                      </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                         last SR (LSR)                         </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                   delay since last SR (DLSR)                  </span>|</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">report |<span class="string">                 SSRC_2 (SSRC of second source)                </span>|</span><br><span class="line">block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  2    :                               ...                             :</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">       |<span class="string">                  profile-specific extensions                  </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure></li>
+<li><p>版本（V）：2位标识RTP的版本，RTP数据包中的版本与RTP数据包中的版本相同。本规范规定的版本为二（2）。</p>
+</li>
+<li><p>padding（P）：1位如果设置了padding位，则此单个RTCP数据包的末尾包含一些额外的padding八位字节，这些八位字节不属于控制信息的一部分，但包含在长度字段中。填充的最后一个八位字节是应该忽略多少填充八位字节的计数，包括它本身（它将是四的倍数）。某些具有固定块大小的加密算法可能需要填充。在复合RTCP数据包中，只需要对一个单独的数据包进行填充，因为复合数据包按照第9.1节中的方法作为一个整体进行加密。因此，只能将填充添加到最后一个单独的数据包，如果将填充添加到该数据包，则必须仅在该数据包上设置填充位。该约定有助于附录A.2中所述的报头有效性检查，并允许检测来自一些早期实现的数据包，这些数据包错误地在第一个单独的数据包上设置了填充位，并在最后一个单独的数据包上添加了填充。  </p>
+</li>
+<li><p>reception report count (RC):   5 bits The number of reception report blocks接收报告块数 contained in this packet. A value of zero is valid.  </p>
+</li>
+<li><p>packet type (PT): 8 bits Contains the constant 200 to identify this as an RTCP SR packet.  </p>
+</li>
+<li><p>length: 16位此RTCP数据包的长度（32位字减去1），包括标头和任何填充。（偏移量为1使零成为有效长度，并避免扫描复合RTCP数据包时可能出现的无限循环，而计数32位字可避免对4的倍数进行有效性检查。）  </p>
+</li>
+<li><p>SSRC:32位此SR数据包的发起方的同步源标识符。  </p>
+</li>
+<li><p>sender info:<br>第二部分是发送方信息，长度为20个八位字节，存在于每个发送方报告包中。它总结了来自此发送方的数据传输。这些字段具有以下含义：  </p>
+<ul>
+<li>NTP timestamp：</li>
+<li>RTP时间戳：TODO: 阐述NTP时间戳和机制。</li>
+<li>sender’s packet count: 32位自开始传输到生成此SR数据包为止，发送方传输的RTP数据包总数。如果发送方更改其SSRC标识符，则应重置计数。</li>
+<li>sender’s octet count: 32位从开始传输到生成此SR数据包为止，发送方在RTP数据包中传输的有效负载八位字节总数Byte（即，不包括报头或填充）。如果发送方更改其SSRC标识符，则应重置计数。此字段可用于估计平均有效负载数据速率。</li>
+</ul>
+</li>
+<li><p>report block:<br>第三部分包含零个或多个接收报告块， depending on the number of other sources heard by this sender since the last report.即自从上次report后，此端点了解到的其他源的数量。<br>当源因冲突而更改其SSRC标识符时，接收方不应进行统计。这些统计数字如下：</p>
+</li>
+<li><p>SSRC_n（源标识符）：32位此接收报告块中的信息所属的源的SSRC标识符。</p>
+</li>
+<li><p>fraction lost: 8位自上一个SR或RR数据包发送以来，源SSRC_n的RTP数据包丢失的分数，表示为固定点数，二进制点位于字段左边缘。（这相当于将丢失分数乘以256后取整数部分。）该分数定义为丢失的数据包数除以预期数据包数，如下一段中所定义。</p>
+</li>
+<li><p>cumulative number of packets lost: 24 bits 自接收开始以来已丢失的来自源SSRC_n的RTP数据包总数。该数字被定义为预期的数据包数量减去实际接收的数据包数量，其中接收的数据包数量包括任何延迟或重复的数据包。</p>
+</li>
+<li><p>extended highest sequence number received: 32位低16位包含从源SSRC_n接收的RTP数据包中的最高序列号，最高有效16位使用相应的序列号周期计数扩展该序列号，可根据附录A.1中的算法进行维护。请注意，如果同一会话中的不同接收器的开始时间显著不同，则它们将生成序列号的不同扩展。</p>
+</li>
+<li><p>interarrival jitter: 到达间隔抖动：32位RTP数据包到达间隔时间的统计方差估计值，以时间戳单位测量，并表示为无符号整数。到达间抖动J被定义为一对分组的接收器处的分组间隔与发送器处的分组间隔之差D的平均偏差（平滑绝对值）。如下面的等式所示，这相当于两个数据包的“相对传输时间”之差；</p>
+</li>
+</ul>
+<p>相对传输时间是数据包的RTP时间戳和到达时接收器时钟之间的差值，以相同的单位测量。<br>If Si is the RTP timestamp from packet i, and Ri is the time of arrival in RTP timestamp units for packet i, then for two packets i and j, D may be expressed as<br>D(i,j) &#x3D; (Rj - Ri) - (Sj - Si) &#x3D; (Rj - Sj) - (Ri - Si)</p>
+<p>当从源SSRC_n接收到每个数据分组i时，应根据以下公式，使用该分组与前一分组i-1的差值D，按照到达顺序（不一定是顺序）连续计算到达间抖动<br>J(i) &#x3D; J(i-1) + (|D(i-1,i)| - J(i-1))&#x2F;16<br>每当发出接收报告时，对J的当前值进行采样。抖动计算必须符合此处指定的公式，以便允许独立于配置文件的监控器对来自不同实现的报告进行有效解释。该算法是最优的一阶估计器，增益参数1&#x2F;16在保持合理的收敛速度的同时提供了良好的降噪率[22]。附录A.8中显示了一个示例实现。有关传输前不同数据包持续时间和延迟的影响的讨论，请参见第6.4.4节。</p>
+<ul>
+<li>last SR timestamp (LSR):32 bits The middle 32 bits out of 64 in the NTP timestamp (as explained in Section 4) received as part of the most recent RTCP sender report (SR) packet from source SSRC_n. If no SR has been received yet, the field is set to zero.</li>
+<li>delay since last SR (DLSR):32位从源SSRC接收最后一个SR数据包到发送此接收报告块之间的延迟，以1&#x2F;65536秒为单位。如果尚未从SSRC_n接收到SR数据包，则DLSR字段设置为零。</li>
+</ul>
+<p>计算往返时间RTT：<br>让SSRC_r表示发出此接收方报告的接收方。源SSRC_n可以通过记录接收到该接收报告块的时间A来计算到SSRC_r的往返传播延迟。它使用最后一个SR时间戳（LSR）字段计算总往返时间A-LSR，然后减去该字段，将往返传播延迟保留为（A-LSR-DLSR）。这</p>
+<p>如图：时间以32位字段的十六进制表示形式和等效的浮点十进制表示形式显示。冒号表示分为16位整数部分和16位小数部分的32位字段。</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">10</span> Nov <span class="number">1995 11:33</span>:<span class="number">25</span>.<span class="number">125</span> UTC]       [<span class="number">10</span> Nov <span class="number">1995 11:33</span>:<span class="number">36</span>.<span class="number">5</span> UTC]</span><br><span class="line"> n                 SR(n)              <span class="keyword">A</span>=b<span class="number">710:8000</span> (<span class="number">46864.500</span> s)</span><br><span class="line"> ----------------------------------------------------------------&gt;</span><br><span class="line">                    v                 ^</span><br><span class="line"> ntp_sec =<span class="number">0</span>xb44db705 v               ^ dlsr=<span class="number">0</span>x<span class="number">0005:4000</span> (    <span class="number">5</span>.<span class="number">250</span>s)</span><br><span class="line"> ntp_frac=<span class="number">0x20000000</span>  v             ^  lsr =<span class="number">0</span>xb<span class="number">705:2000</span> (<span class="number">46853</span>.<span class="number">125</span>s)</span><br><span class="line">   (<span class="number">3024992005</span>.<span class="number">125</span> s)  v           ^</span><br><span class="line"> r                      v         ^ RR(n)</span><br><span class="line"> ----------------------------------------------------------------&gt;</span><br><span class="line">                        |&lt;-DLSR-&gt;|</span><br><span class="line">                         (<span class="number">5</span>.<span class="number">250</span> s)</span><br><span class="line">                         </span><br><span class="line"> <span class="keyword">A</span>     <span class="number">0</span>xb<span class="number">710:8000</span> (<span class="number">46864.500</span> s)</span><br><span class="line"> DLSR -<span class="number">0</span>x<span class="number">0005:4000</span> (    <span class="number">5</span>.<span class="number">250</span> s)</span><br><span class="line"> LSR  -<span class="number">0</span>xb<span class="number">705:2000</span> (<span class="number">46853.125</span> s)</span><br><span class="line"> -------------------------------</span><br><span class="line"> delay <span class="number">0</span>x<span class="number">0006:2000</span> (    <span class="number">6</span>.<span class="number">125</span> s)</span><br><span class="line"> </span><br><span class="line"> 往返时间计算示例</span><br></pre></td></tr></table></figure>
+<h5 id="6-4-2-RR：接收器报告RTCP数据包"><a href="#6-4-2-RR：接收器报告RTCP数据包" class="headerlink" title="6.4.2 RR：接收器报告RTCP数据包"></a>6.4.2 RR：接收器报告RTCP数据包</h5><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">        0                   1                   2                   3</span><br><span class="line">        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">header |<span class="string">V=2</span>|<span class="string">P</span>|<span class="string">    RC   </span>|<span class="string">   PT=RR=201   </span>|<span class="string">             length            </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                     SSRC of packet sender                     </span>|</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">report |<span class="string">                 SSRC_1 (SSRC of first source)                 </span>|</span><br><span class="line">block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  1    |<span class="string"> fraction lost </span>|<span class="string">       cumulative number of packets lost       </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">           extended highest sequence number received           </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                      interarrival jitter                      </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                         last SR (LSR)                         </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |<span class="string">                   delay since last SR (DLSR)                  </span>|</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">report |<span class="string">                 SSRC_2 (SSRC of second source)                </span>|</span><br><span class="line">block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  2    :                               ...                             :</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">       |<span class="string">                  profile-specific extensions                  </span>|</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+<p>接收机报告（RR）分组的格式与SR分组的格式相同，只是分组类型字段包含常数201，并且省略了发送方信息的五个字（它们是NTP和RTP时间戳以及发送方分组和八位字节计数）。其余字段的含义与SR数据包相同。<br>当没有要报告的数据传输或接收时，必须将空RR数据包（RC&#x3D;0）放在复合RTCP数据包的头部。</p>
+<h5 id="6-4-3-扩展发送方和接收方报告"><a href="#6-4-3-扩展发送方和接收方报告" class="headerlink" title="6.4.3 扩展发送方和接收方报告"></a>6.4.3 扩展发送方和接收方报告</h5><h5 id="6-4-4-分析发送方和接收方报告"><a href="#6-4-4-分析发送方和接收方报告" class="headerlink" title="6.4.4 分析发送方和接收方报告"></a>6.4.4 分析发送方和接收方报告</h5><p>有如下几点可以得到的信息：</p>
+<ul>
+<li>1)动态调整，判断问题大小：预计接收质量反馈不仅对发送者有用，而且对其他接收器和第三方监视器也有用。发送方可以基于反馈修改其传输；接收者可以确定问题是局部的、区域性的还是全球性的；网络管理器可以使用仅接收RTCP数据包而不接收相应RTP数据包的与配置文件无关的监控器来评估其多播分发网络的性能。</li>
+<li>2)在发送方信息和接收方报告块中使用累积计数，以便计算任意两个报告之间的差异，以便在短时间和长时间内进行测量，并提供针对报告丢失的恢复能力。最近收到的两份报告之间的差异可用于估计最近的分发质量。包括NTP时间戳，以便根据两份报告之间的时间间隔内的这些差异计算费率。由于时间戳与数据编码的时钟频率无关，因此可以实现编码和配置文件无关的质量监视器。</li>
+<li>3)计算丢包：</li>
+<li>4)计算吞吐量：根据发送方信息，第三方监视器可以在不接收数据的情况下计算一段时间间隔内的平均有效负载数据速率和平均分组速率</li>
+<li>5)到达间隔抖动字段提供了网络拥塞的第二个短期度量。数据包丢失跟踪持续拥塞，而抖动度量跟踪瞬时拥塞。</li>
+</ul>
+<h4 id="6-5-SDES：源描述RTCP数据包-即描述源的一些信息，如用户名，电子邮件等"><a href="#6-5-SDES：源描述RTCP数据包-即描述源的一些信息，如用户名，电子邮件等" class="headerlink" title="6.5 SDES：源描述RTCP数据包:即描述源的一些信息，如用户名，电子邮件等"></a>6.5 SDES：源描述RTCP数据包:即描述源的一些信息，如用户名，电子邮件等</h4><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">      <span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">       <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">header |V=2|P|    SC   |  PT=SDES=202  |             length            |</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">chunk  |                          SSRC/CSRC_1                          |</span><br><span class="line"> <span class="number"> 1 </span>   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                           SDES items                          |</span><br><span class="line">       |                              ...                              |</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">chunk  |                          SSRC/CSRC_2                          |</span><br><span class="line"> <span class="number"> 2 </span>   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                           SDES items                          |</span><br><span class="line">       |                              ...                              |</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">       </span><br></pre></td></tr></table></figure>
+<p>SDES数据包是一个三级结构，由一个头部和零个或多个数据块组成，每个数据块由描述该数据块中标识的源的项目组成。这些项目将在后续章节中单独描述。 </p>
+<ul>
+<li>版本（V）、填充（P）、长度：如SR数据包所述（见第6.4.1节）。</li>
+<li>数据包类型（PT）：8位包含常数202，用于将其标识为RTCP SDES数据包。</li>
+<li>源计数（SC）：5位此SDES数据包中包含的SSRC&#x2F;CSRC块数。值为零是有效的，但没有用处。</li>
+</ul>
+<p>Each chunk consists of an SSRC&#x2F;CSRC identifier followed by a list of zero or more items, which carry information about the SSRC&#x2F;CSRC.  Each chunk starts on a 32-bit boundary. Each item consists of an 8- bit type field, an 8-bit octet count describing the length of the text (thus, not including this two-octet header), and the text itself.<br>Note that the text can be no longer than 255 octets, but this is consistent with the need to limit RTCP bandwidth consumption.</p>
+<ul>
+<li>文本根据RFC 2279[5]中规定的UTF-8编码进行编码。US-ASCII是该编码的子集，不需要额外编码。通过将字符的最高有效位设置为值1来指示是否存在多个八位编码。</li>
+<li>Items are contiguous, i.e., items are not individually padded to a 32-bit boundary. Text is not null terminated because some multi-octet encodings include null octets. The list of items in each chunk MUST be terminated by one or more null octets, the first of which is interpreted as an item type of zero to denote the end of the list. No length octet follows the null item type octet, but additional null octets MUST be included if needed to pad until the next 32-bit boundary. Note that this padding is separate from that indicated by the P bit in the RTCP header. A chunk with zero items (four null octets) is valid but useless.</li>
+</ul>
+<p>下一节将介绍当前定义的SDES项目。只有CNAME项是必需的。此处显示的某些项目可能仅对特定概要文件有用，但项目类型都是从一个公共空间分配的，以促进共享使用并简化与概要文件无关的应用程序。如第15节所述，可通过向IANA注册型号，在配置文件中定义其他项目。</p>
+<h5 id="6-5-1-CNAME-Canonical-End-Point-Identifier-SDES-Item-CNAME-规范端点标识符SDES项"><a href="#6-5-1-CNAME-Canonical-End-Point-Identifier-SDES-Item-CNAME-规范端点标识符SDES项" class="headerlink" title="6.5.1 CNAME: Canonical End-Point Identifier SDES Item (CNAME:规范端点标识符SDES项)"></a>6.5.1 CNAME: Canonical End-Point Identifier SDES Item (CNAME:规范端点标识符SDES项)</h5><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">  <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |    CNAME=1    |     length    | user and domain name        ...</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+<p>CNAME标识符具有以下属性：</p>
+<ul>
+<li><p>由于如果发现冲突或程序重新启动，随机分配的SSRC标识符可能会更改，因此必须包含CNAME项，以提供从SSRC标识符到源（发送方或接收方）标识符的绑定，该绑定保持不变。</p>
+</li>
+<li><p>与SSRC标识符一样，CNAME标识符在一个RTP会话中的所有参与者中也应该是唯一的。</p>
+</li>
+<li><p>为了在一组相关RTP会话中一个参与者使用的多个媒体工具之间提供绑定，应该为该参与者固定CNAME。</p>
+</li>
+<li><p>为了便于第三方监控，CNAME应该适合程序或个人定位源。<br> 因此，在可能的情况下，CNAME应该通过算法导出，而不是手动输入。为了满足这些要求，除非概要文件指定了替代语法或语义，否则应使用以下格式。CNAME项的格式应为“user@host，或“主机”，如果用户名在单用户系统上不可用。对于这两种格式，“主机”是实时数据来源主机的完全限定域名，按照RFC 1034[6]、RFC 1035[7]和RFC 1123[8]第2.1节规定的规则进行格式化；或用于RTP通信的接口上主机数字地址的标准ASCII表示形式。例如，IP版本4地址的标准ASCII表示为“点十进制”，也称为点四进制，而对于IP版本6，地址以文本形式表示为以冒号分隔的十六进制数字组（其变化如RFC 3513[23]所述）。其他地址类型应具有相互唯一的ASCII表示。完全限定的域名对于人类观察者来说更方便，并且可以避免另外发送名称项的需要，但是在某些操作环境中可能难以或不可能可靠地获得。可能在此类环境中运行的应用程序应改为使用地址的ASCII表示形式。</p>
+</li>
+<li><p>例如:<a href="mailto:&#x64;&#x6f;&#x65;&#64;&#115;&#x6c;&#101;&#101;&#x70;&#121;&#46;&#101;&#120;&#97;&#109;&#112;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;">&#x64;&#x6f;&#x65;&#64;&#115;&#x6c;&#101;&#101;&#x70;&#121;&#46;&#101;&#120;&#97;&#109;&#112;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;</a>“, “<a href="mailto:&#100;&#111;&#x65;&#x40;&#x31;&#57;&#50;&#x2e;&#48;&#x2e;&#x32;&#46;&#x38;&#57;">&#100;&#111;&#x65;&#x40;&#x31;&#57;&#50;&#x2e;&#48;&#x2e;&#x32;&#46;&#x38;&#57;</a>“或”doe@2201：056D:：112E:144A:1E24“用于多用户系统。在没有用户名的系统上，示例为“sleepy.example.com”、“192.0.2.89”或“2201:056D:：112E:144A:1E24”。</p>
+<h5 id="6-5-2-名称：用户名SDES项目"><a href="#6-5-2-名称：用户名SDES项目" class="headerlink" title="6.5.2 名称：用户名SDES项目"></a>6.5.2 名称：用户名SDES项目</h5><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line"> <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"> |     NAME=2    |     length    | common name of source       ...</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+<p>这是用于描述来源的真实名称，例如，“John Doe，比特回收商”。它可以是用户想要的任何形式。对于会议等应用程序，这种形式的名称可能最适合显示在参与者列表中，因此可能是除CNAME之外最频繁发送的项目。档案可以确定这些优先事项。名称值至少在会话期间保持不变。它不应被认为是本届会议所有与会者中的独特之处。</p>
+</li>
+</ul>
+<h5 id="6-5-3-电子邮件：SDES项目的电子邮件地址"><a href="#6-5-3-电子邮件：SDES项目的电子邮件地址" class="headerlink" title="6.5.3 电子邮件：SDES项目的电子邮件地址"></a>6.5.3 电子邮件：SDES项目的电子邮件地址</h5><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line"> <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"> |    EMAIL=3    |     length    | email address of source     ...</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">      </span><br></pre></td></tr></table></figure>
+<p>电子邮件地址的格式符合RFC 2822[9]，例如，“John。<a href="mailto:&#x44;&#x6f;&#x65;&#x40;&#x65;&#120;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#109;">&#x44;&#x6f;&#x65;&#x40;&#x65;&#120;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#109;</a>“. 电子邮件值应在会话期间保持不变。</p>
+<h5 id="6-5-4-电话：SDES项目的电话号码"><a href="#6-5-4-电话：SDES项目的电话号码" class="headerlink" title="6.5.4 电话：SDES项目的电话号码"></a>6.5.4 电话：SDES项目的电话号码</h5><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">  <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |    PHONE=4    |     length    | phone number of source      ...</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  电话号码的格式应为加号，以取代国际接入码。例如，在美国，“+1<span class="number"> 908 </span>555 1212”表示一个数字。</span><br></pre></td></tr></table></figure>
+<h5 id="6-5-5-LOC：地理用户位置SDES项目"><a href="#6-5-5-LOC：地理用户位置SDES项目" class="headerlink" title="6.5.5 LOC：地理用户位置SDES项目"></a>6.5.5 LOC：地理用户位置SDES项目</h5><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line"> <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"> |     LOC=5     |     length    | geographic location of site ...</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+<p>根据应用情况，此项目适用不同的详细程度。对于会议应用程序，像“新泽西州默里山”这样的字符串可能就足够了，而对于活动徽章系统，像“AT&amp;T BL MH 2A244室”这样的字符串可能就足够了。详细程度由实现和&#x2F;或用户决定，但格式和内容可能由概要文件规定。LOC值预计在会话期间保持不变，移动主机除外。</p>
+<h4 id="6-5-6-工具：应用程序或工具名称SDES项目"><a href="#6-5-6-工具：应用程序或工具名称SDES项目" class="headerlink" title="6.5.6 工具：应用程序或工具名称SDES项目"></a>6.5.6 工具：应用程序或工具名称SDES项目</h4><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="code"> 0                   1                   2                   3</span></span><br><span class="line"><span class="section"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|     TOOL=6    |     length    |name/version of source appl. ...</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="code">     </span></span><br></pre></td></tr></table></figure>
+<p>一个字符串，给出生成流的应用程序的名称和可能的版本，例如“videotool 1.2”。此信息可能有助于调试，并与邮件程序或邮件系统版本SMTP标头类似。预计刀具值在会话期间保持不变。</p>
+<h5 id="6-5-7-NOTE-Notice-x2F-Status-SDES-Item"><a href="#6-5-7-NOTE-Notice-x2F-Status-SDES-Item" class="headerlink" title="6.5.7 NOTE: Notice&#x2F;Status SDES Item"></a>6.5.7 NOTE: Notice&#x2F;Status SDES Item</h5><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line"> <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"> |     NOTE=7    |     length    | note about the source       ...</span><br><span class="line"> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+<p>建议对此项使用以下语义，但这些语义或其他语义可以由概要文件显式定义。注释项用于描述源当前状态的瞬态消息，例如“在电话上，无法通话”。或者，在研讨会期间，此项目可能用于传达演讲的标题。它应仅用于携带特殊信息，不应被所有参与者例行纳入，因为这会减慢接收报告和CNAME的发送速度，从而影响协议的性能。特别是，它不应作为项目包含在用户的配置文件中，也不应作为当日报价自动生成。</p>
+<h5 id="6-5-8-PRIV：Private-Extensions-SDES-Item"><a href="#6-5-8-PRIV：Private-Extensions-SDES-Item" class="headerlink" title="6.5.8 PRIV：Private Extensions SDES Item"></a>6.5.8 PRIV：Private Extensions SDES Item</h5><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">   <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |     PRIV=8    |     length    | prefix length |prefix string...</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   ...             |                  value string               ...</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-</span><br></pre></td></tr></table></figure>
+<h4 id="6-6-BYE-Goodbye-RTCP-Packet："><a href="#6-6-BYE-Goodbye-RTCP-Packet：" class="headerlink" title="6.6 BYE: Goodbye RTCP Packet："></a>6.6 BYE: Goodbye RTCP Packet：</h4><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">      <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">      |V=2|P|    SC   |   PT=BYE=203  |             length            |</span><br><span class="line">      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">      |                           SSRC/CSRC                           |</span><br><span class="line">      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">      :                              ...                              :</span><br><span class="line">      +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">(opt) |     length    |               reason for leaving            ...</span><br><span class="line">      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+<p>BYE数据包表示一个或多个源不再处于活动状态。</p>
+<ul>
+<li>版本（V）、填充（P）、长度：如SR数据包所述（见第6.4.1节）。</li>
+<li>数据包类型（PT）：8位包含常数203，用于将其标识为RTCP BYE数据包。</li>
+<li>source count (SC): 5 bits The number of SSRC&#x2F;CSRC identifiers included in this BYE packet. A count value of zero is valid, but useless.<br>第6.3.7节和第8.2节规定了应发送BYE数据包的时间规则。</li>
+</ul>
+<h4 id="6-7-应用程序：应用程序定义的RTCP数据包"><a href="#6-7-应用程序：应用程序定义的RTCP数据包" class="headerlink" title="6.7 应用程序：应用程序定义的RTCP数据包"></a>6.7 应用程序：应用程序定义的RTCP数据包</h4><p>该应用程序包用于开发新应用程序和新功能时的实验性使用，无需包类型值注册。应忽略名称无法识别的应用程序包。测试后，如果有理由更广泛地使用，建议重新定义每个应用程序数据包，不使用子类型和名称字段，并使用RTCP数据包类型向IANA注册。</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0                   1                   2                   3</span><br><span class="line"><span class="section"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|V=2|P| subtype |   PT=APP=204  |             length            |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                           SSRC/CSRC                           |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                          name (ASCII)                         |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                   application-dependent data                ...</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="code">     </span></span><br></pre></td></tr></table></figure>
+<p>该应用程序包用于开发新应用程序和新功能时的实验性使用，无需包类型值注册。应忽略名称无法识别的应用程序包。测试后，如果有理由更广泛地使用，建议重新定义每个应用程序数据包，不使用子类型和名称字段，并使用RTCP数据包类型向IANA注册。</p>
+<ul>
+<li>子类型：5位可用作子类型，以允许在一个唯一名称下定义一组应用程序数据包，或为任何依赖于应用程序的数据定义一组应用程序数据包。</li>
+<li>数据包类型（PT）：8位包含常数204，用于将其标识为RTCP APP数据包。</li>
+<li>名称：4个八位字节定义应用程序数据包集合的人员选择的名称，该集合相对于此应用程序可能接收的其他应用程序数据包是唯一的。</li>
+</ul>
+<p>—————————-中间系统————————————–</p>
+<h3 id="7-RTP转换器和混频器"><a href="#7-RTP转换器和混频器" class="headerlink" title="7 RTP转换器和混频器"></a>7 RTP转换器和混频器</h3><p>除了终端系统外，RTP还支持“翻译器”和“混音器”的概念，在RTP级别可以将其视为“中间系统”。虽然这种支持增加了协议的复杂性，但通过在互联网上使用多播音频和视频应用程序的实验，已经清楚地确定了对这些功能的需求。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">      [E1]                                    [E6]</span><br><span class="line">       |<span class="string">                                       </span>|</span><br><span class="line"> E1:17 |<span class="string">                                 E6:15 </span>|</span><br><span class="line">       |<span class="string">                                       </span>|<span class="string">   E6:15</span></span><br><span class="line"><span class="string">       V  M1:48 (1,17)         M1:48 (1,17)    V   M1:48 (1,17)</span></span><br><span class="line"><span class="string">      (M1)-------------&gt;&lt;T1&gt;-----------------&gt;&lt;T2&gt;--------------&gt;[E7]</span></span><br><span class="line"><span class="string">       ^                 ^     E4:47           ^   E4:47</span></span><br><span class="line"><span class="string">  E2:1 </span>|<span class="string">           E4:47 </span>|<span class="string">                     </span>|<span class="string">   M3:89 (64,45)</span></span><br><span class="line"><span class="string">       </span>|<span class="string">                 </span>|<span class="string">                     </span>|</span><br><span class="line">      [E2]              [E4]     M3:89 (64,45) |<span class="string"></span></span><br><span class="line"><span class="string">                                               </span>|<span class="string">        legend:</span></span><br><span class="line"><span class="string">[E3] ---------&gt;(M2)-----------&gt;(M3)------------</span>|<span class="string">        [End system]</span></span><br><span class="line"><span class="string">       E3:64        M2:12 (64)  ^                       (Mixer)</span></span><br><span class="line"><span class="string">                                </span>|<span class="string"> E5:45                 &lt;Translator&gt;</span></span><br><span class="line"><span class="string">                                </span>|</span><br><span class="line">                               [E5]          source: SSRC (CSRCs)</span><br><span class="line">                                             -------------------&gt;</span><br><span class="line">     </span><br></pre></td></tr></table></figure>
+<p>图3：带有终端系统、混频器和转换器的RTP网络示例<br>图3显示了混频器和转换器的集合，以说明它们对SSRC和CSC标识符的影响。在图中，末端系统显示为矩形（命名为E），转换器显示为三角形（命名为T），混合器显示为椭圆形（命名为M）。符号“M1:48（1,17）”指定源自混合器M1的分组，由M1的（随机）SSRC值48和两个csc标识符1和17标识，从E1和E2的分组的SSRC标识符复制而来。</p>
+<h4 id="7-1-一般说明"><a href="#7-1-一般说明" class="headerlink" title="7.1 一般说明"></a>7.1 一般说明</h4><h4 id="7-2-RTCP-Processing-in-Translators"><a href="#7-2-RTCP-Processing-in-Translators" class="headerlink" title="7.2 RTCP Processing in Translators"></a>7.2 RTCP Processing in Translators</h4><h4 id="7-3-RTCP-Processing-in-Mixers"><a href="#7-3-RTCP-Processing-in-Mixers" class="headerlink" title="7.3 RTCP Processing in Mixers"></a>7.3 RTCP Processing in Mixers</h4><h4 id="7-4-Cascaded-Mixers-级联混频器"><a href="#7-4-Cascaded-Mixers-级联混频器" class="headerlink" title="7.4 Cascaded Mixers 级联混频器"></a>7.4 Cascaded Mixers 级联混频器</h4><hr>
+<h3 id="8-SSRC标识符分配和使用：因为也在网络上使用，需要避免同一网络上相同。"><a href="#8-SSRC标识符分配和使用：因为也在网络上使用，需要避免同一网络上相同。" class="headerlink" title="8 SSRC标识符分配和使用：因为也在网络上使用，需要避免同一网络上相同。"></a>8 SSRC标识符分配和使用：因为也在网络上使用，需要避免同一网络上相同。</h3><p>RTP报头和RTCP数据包的各个字段中携带的SSRC标识符是一个随机32位数字，要求在RTP会话中全局唯一。为避免同一网络上的参与者或同时开始的参与者选择相同的号码，谨慎选择号码至关重要。<br>–如何防止碰撞的一些算法；</p>
+<h3 id="9-安全相关主题"><a href="#9-安全相关主题" class="headerlink" title="9 安全相关主题"></a>9 安全相关主题</h3><ul>
+<li>依赖较低层的协议提供加密安全服务</li>
+<li>或者，将来可以为RTP定义其他服务、服务的其他实现和其他算法。具体而言，正在开发称为安全实时传输协议（SRTP）[28]的RTP配置文件，以提供RTP有效载荷的机密性，同时保持RTP报头处于透明状态，以便链路级报头压缩算法仍然可以运行。预计SRTP将是许多应用程序的正确选择。SRTP基于高级加密标准（AES）并提供比此处描述的服务更强的安全性。没有人声称此处提供的方法适用于特定的安全需求。概要文件可以指定应用程序应该提供哪些服务和算法，并可以提供关于其适当使用的指导。</li>
+<li>保密性：保密性意味着只有预期的接收器可以解码接收到的数据包；对于其他人来说，数据包不包含任何有用的信息。内容的机密性是通过加密实现的。略<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">             UDP packet                     UDP packet</span><br><span class="line">   <span class="params">-----------------------------</span>  <span class="params">------------------------------</span></span><br><span class="line">   [random][RR][SDES <span class="comment">#CNAME ...]  [SR #senderinfo #site1 #site2]</span></span><br><span class="line">   <span class="params">-----------------------------</span>  <span class="params">------------------------------</span></span><br><span class="line">             encrypted                     not encrypted</span><br><span class="line"></span><br><span class="line"><span class="comment">#：SSRC标识符</span></span><br></pre></td></tr></table></figure></li>
+<li>身份验证和消息完整性<h3 id="10-拥塞控制："><a href="#10-拥塞控制：" class="headerlink" title="10 拥塞控制："></a>10 拥塞控制：</h3></li>
+<li>rtp是非弹性的协议即：互联网上使用的所有传输协议都需要以某种方式解决拥塞控制问题[31]。RTP也不例外，但由于通过RTP传输的数据通常是非弹性的（以固定或受控速率生成），因此RTP中控制拥塞的方法可能与其他传输协议（如TCP）的方法大不相同。在某种意义上，非弹性降低了拥塞风险，因为RTP流不会像TCP流那样扩展到消耗所有可用带宽。然而，非弹性也意味着RTP流不能任意减少其在网络上的负载以消除拥塞。</li>
+<li>rtp拥塞控制算法的指定：<br>由于RTP可以在许多不同的环境中用于各种各样的应用，因此没有一种单一的拥塞控制机制可以适用于所有情况。因此，拥塞控制应该在每个RTP配置文件中定义。对于某些配置文件，包括一个适用性声明可能就足够了，该声明将该配置文件的使用限制在通过工程避免拥塞的环境中。对于其他配置文件，可能需要特定方法，例如基于RTCP反馈的数据速率自适应。</li>
+</ul>
+<hr>
+<h3 id="11-RTP-over-Network-and-Transport-Protocols上的一些注意事项："><a href="#11-RTP-over-Network-and-Transport-Protocols上的一些注意事项：" class="headerlink" title="11 RTP over Network and Transport Protocols上的一些注意事项："></a>11 RTP over Network and Transport Protocols上的一些注意事项：</h3><p>(1) 关于端口：<br>–  RTP应使用偶数目标端口号，而相应的RTCP流应使用下一个更高（奇数）的目标端口号。。。。<br>– 在单播会话中，两个参与者都需要标识用于接收RTP和RTCP数据包的端口对。两个参与者可以使用相同的端口对。参与者不得假设传入RTP或RTCP数据包的源端口可用作传出RTP或RTCP数据包的目标端口。</p>
+<h3 id="12-RTP和RTCP数据包类型的指定："><a href="#12-RTP和RTCP数据包类型的指定：" class="headerlink" title="12 RTP和RTCP数据包类型的指定："></a>12 RTP和RTCP数据包类型的指定：</h3><p>RTP有效负载类型（PT）常量在配置文件中定义，而不是在本文档中定义。 rfc 3551<br>RTCP数据包类型：</p>
+<h3 id="13-关于RTP配置文件和有效负载格式规范-rfc3551"><a href="#13-关于RTP配置文件和有效负载格式规范-rfc3551" class="headerlink" title="13 关于RTP配置文件和有效负载格式规范 rfc3551"></a>13 关于RTP配置文件和有效负载格式规范 rfc3551</h3><h3 id="rfc3530剩下的议题：安全考虑，IANA考虑，知识产权声明；"><a href="#rfc3530剩下的议题：安全考虑，IANA考虑，知识产权声明；" class="headerlink" title="rfc3530剩下的议题：安全考虑，IANA考虑，知识产权声明；"></a>rfc3530剩下的议题：安全考虑，IANA考虑，知识产权声明；</h3><h3 id="附录A-算法"><a href="#附录A-算法" class="headerlink" title="附录A-算法"></a>附录A-算法</h3><p>我们提供了RTP发送方和接收方算法方面的C代码示例。在特定的操作环境中，可能有其他更快的实现方法，或者具有其他优势。这些实施说明仅供参考，旨在澄清RTP规范。<br>所以设计时可以参考。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rtp/" rel="tag"># rtp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/27/gdb-more/" rel="prev" title="gdb_more">
+      <i class="fa fa-chevron-left"></i> gdb_more
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/02/live-rtmp/" rel="next" title="live_rtmp">
+      live_rtmp <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">概述：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E4%BC%A0%E8%BE%93%E5%8A%9F%E8%83%BD%E3%80%82"><span class="nav-number">1.1.</span> <span class="nav-text">端到端的传输功能。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-rtp%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">2.rtp的使用场景？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E7%AE%80%E5%8D%95%E5%A4%9A%E6%92%AD%E9%9F%B3%E9%A2%91%E4%BC%9A%E8%AE%AE%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 简单多播音频会议：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E9%9F%B3%E9%A2%91%E5%92%8C%E8%A7%86%E9%A2%91%E4%BC%9A%E8%AE%AE"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 音频和视频会议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3%E6%B7%B7%E9%9F%B3%E5%99%A8%E5%92%8C%E7%BF%BB%E8%AF%91%E5%99%A8"><span class="nav-number">2.3.</span> <span class="nav-text">2.3混音器和翻译器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-%E5%88%86%E5%B1%82%E7%BC%96%E7%A0%81"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 分层编码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-rtp%E5%8D%8F%E8%AE%AE%E5%AE%9A%E4%B9%89%E7%9A%84%E5%85%83%E7%B4%A0%EF%BC%9A%E6%88%96%E8%80%85%E8%AF%B4%E7%BB%84%E6%88%90%E5%85%83%E7%B4%A0"><span class="nav-number">3.</span> <span class="nav-text">3 rtp协议定义的元素：或者说组成元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-rtp%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%AD%97%E8%8A%82%E9%A1%BA%E5%BA%8F%EF%BC%8C%E5%AF%B9%E9%BD%90%E6%96%B9%E5%BC%8F%E5%92%8C%E6%97%B6%E9%97%B4%E6%A0%BC%E5%BC%8F%EF%BC%9A%E8%BF%99%E4%B8%AA%E6%98%AF%E6%AF%8F%E4%B8%AA%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE%E7%9A%84%E9%81%BF%E5%85%8D%E4%B8%8D%E4%BA%86%E7%9A%84"><span class="nav-number">4.</span> <span class="nav-text">4 rtp协议的字节顺序，对齐方式和时间格式：这个是每个传输协议的避免不了的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#a-%E5%AD%97%E8%8A%82%E5%BA%8F%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">a 字节序：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%BD%90%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">4.2.</span> <span class="nav-text">对齐方式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="nav-number">4.3.</span> <span class="nav-text">时间格式：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-rtp%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE%EF%BC%9A%E5%A4%A7%E8%87%B4%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">5 rtp数据传输协议：大致格式：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-RTP%E5%9B%BA%E5%AE%9A%E5%A4%B4%E5%AD%97%E6%AE%B5"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 RTP固定头字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E5%A6%82%E4%BD%95%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8RTP%E4%BC%9A%E8%AF%9D%EF%BC%9A%E5%8D%B3%E5%92%8C%E8%BE%83%E4%BD%8E%E4%B8%80%E5%B1%82%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%8D%95%E5%85%83%E6%98%AF%E4%B8%80%E5%AF%B9%E4%B8%80%E8%BF%98%E6%98%AF%E4%B8%80%E5%AF%B9%E5%A4%9A"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 如何多路复用RTP会话：即和较低一层的协议单元是一对一还是一对多</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E9%85%8D%E7%BD%AE%E6%9D%A5-%E5%AE%9A%E5%88%B6%E5%8C%96rtp%E5%8D%8F%E8%AE%AE%E5%A4%B4%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%88%B0%E4%BA%86rtp%E6%89%A9%E5%B1%95%E5%A4%B4%E6%97%B6%EF%BC%8C%EF%BC%9A"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 如何通过配置来 定制化rtp协议头，以及使用到了rtp扩展头时，：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-RTCP%E5%8D%8F%E8%AE%AE%E7%9B%B8%E5%85%B3%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">6 RTCP协议相关：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8ERTCP%E6%8E%A7%E5%88%B6%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E5%8A%9F%E8%83%BD%EF%BC%9A"><span class="nav-number">6.1.</span> <span class="nav-text">关于RTCP控制协议的作用和功能：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-%E5%85%B3%E4%BA%8ERTCP%E6%8E%A7%E5%88%B6%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%8C%85%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="nav-number">6.2.</span> <span class="nav-text">6.1 关于RTCP控制协议的包格式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-%E5%85%B3%E4%BA%8ERTCP%E7%9A%84%E4%BC%A0%E8%BE%93%E9%97%B4%E9%9A%94%E4%BB%A5%E5%8F%8A%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E4%BC%A0%E8%BE%93%E9%97%B4%E9%9A%94%EF%BC%9A"><span class="nav-number">6.3.</span> <span class="nav-text">6.2 关于RTCP的传输间隔以及为什么需要传输间隔：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-3-RTCP%E6%95%B0%E6%8D%AE%E5%8C%85%E5%8F%91%E9%80%81%E5%92%8C%E6%8E%A5%E6%94%B6%E8%A7%84%E5%88%99%EF%BC%9A"><span class="nav-number">6.4.</span> <span class="nav-text">6.3 RTCP数据包发送和接收规则：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-1-%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97RTCP%E4%BC%A0%E8%BE%93%E9%97%B4%E9%9A%94"><span class="nav-number">6.4.1.</span> <span class="nav-text">6.3.1 如何计算RTCP传输间隔</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-2-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">6.4.2.</span> <span class="nav-text">6.3.2 初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-3-%E6%8E%A5%E6%94%B6RTP%E6%88%96%E9%9D%9EBYE-RTCP%E6%95%B0%E6%8D%AE%E5%8C%85"><span class="nav-number">6.4.3.</span> <span class="nav-text">6.3.3 接收RTP或非BYE RTCP数据包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-4-%E6%8E%A5%E6%94%B6RTCP-BYE%E6%95%B0%E6%8D%AE%E5%8C%85"><span class="nav-number">6.4.4.</span> <span class="nav-text">6.3.4 接收RTCP BYE数据包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-5-%E4%B8%BASSRC%E8%AE%A1%E6%97%B6%EF%BC%8C%E5%8D%B3%E4%BF%9D%E6%B4%BB%E5%92%8C%E8%B6%85%E6%97%B6%E6%9C%BA%E5%88%B6%EF%BC%9A"><span class="nav-number">6.4.5.</span> <span class="nav-text">6.3.5 为SSRC计时，即保活和超时机制：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-6-%E4%BC%A0%E8%BE%93%E8%AE%A1%E6%97%B6%E5%99%A8%E8%BF%87%E6%9C%9F%EF%BC%9A"><span class="nav-number">6.4.6.</span> <span class="nav-text">6.3.6 传输计时器过期：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-7-%E5%8F%91%E9%80%81BYE%E6%95%B0%E6%8D%AE%E5%8C%85"><span class="nav-number">6.4.7.</span> <span class="nav-text">6.3.7 发送BYE数据包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-8-%E5%A6%82%E4%BD%95%E6%9B%B4%E6%96%B0we-sent%E5%AD%97%E6%AE%B5"><span class="nav-number">6.4.8.</span> <span class="nav-text">6.3.8 如何更新we_sent字段</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-3-9-%E6%BA%90%E6%8F%8F%E8%BF%B0%E5%B8%A6%E5%AE%BD%E7%9A%84%E5%88%86%E9%85%8D"><span class="nav-number">6.4.9.</span> <span class="nav-text">6.3.9 源描述带宽的分配</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-4-%E5%8F%91%E9%80%81%E6%96%B9%E5%92%8C%E6%8E%A5%E6%94%B6%E6%96%B9%E6%8A%A5%E5%91%8A-RR-x2F-SR"><span class="nav-number">6.5.</span> <span class="nav-text">6.4 发送方和接收方报告:RR&#x2F;SR</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#6-4-1-SR%EF%BC%9A%E5%8F%91%E9%80%81%E6%96%B9%E6%8A%A5%E5%91%8ARTCP%E6%95%B0%E6%8D%AE%E5%8C%85"><span class="nav-number">6.5.1.</span> <span class="nav-text">6.4.1 SR：发送方报告RTCP数据包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-4-2-RR%EF%BC%9A%E6%8E%A5%E6%94%B6%E5%99%A8%E6%8A%A5%E5%91%8ARTCP%E6%95%B0%E6%8D%AE%E5%8C%85"><span class="nav-number">6.5.2.</span> <span class="nav-text">6.4.2 RR：接收器报告RTCP数据包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-4-3-%E6%89%A9%E5%B1%95%E5%8F%91%E9%80%81%E6%96%B9%E5%92%8C%E6%8E%A5%E6%94%B6%E6%96%B9%E6%8A%A5%E5%91%8A"><span class="nav-number">6.5.3.</span> <span class="nav-text">6.4.3 扩展发送方和接收方报告</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-4-4-%E5%88%86%E6%9E%90%E5%8F%91%E9%80%81%E6%96%B9%E5%92%8C%E6%8E%A5%E6%94%B6%E6%96%B9%E6%8A%A5%E5%91%8A"><span class="nav-number">6.5.4.</span> <span class="nav-text">6.4.4 分析发送方和接收方报告</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-5-SDES%EF%BC%9A%E6%BA%90%E6%8F%8F%E8%BF%B0RTCP%E6%95%B0%E6%8D%AE%E5%8C%85-%E5%8D%B3%E6%8F%8F%E8%BF%B0%E6%BA%90%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BF%A1%E6%81%AF%EF%BC%8C%E5%A6%82%E7%94%A8%E6%88%B7%E5%90%8D%EF%BC%8C%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6%E7%AD%89"><span class="nav-number">6.6.</span> <span class="nav-text">6.5 SDES：源描述RTCP数据包:即描述源的一些信息，如用户名，电子邮件等</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#6-5-1-CNAME-Canonical-End-Point-Identifier-SDES-Item-CNAME-%E8%A7%84%E8%8C%83%E7%AB%AF%E7%82%B9%E6%A0%87%E8%AF%86%E7%AC%A6SDES%E9%A1%B9"><span class="nav-number">6.6.1.</span> <span class="nav-text">6.5.1 CNAME: Canonical End-Point Identifier SDES Item (CNAME:规范端点标识符SDES项)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-5-2-%E5%90%8D%E7%A7%B0%EF%BC%9A%E7%94%A8%E6%88%B7%E5%90%8DSDES%E9%A1%B9%E7%9B%AE"><span class="nav-number">6.6.2.</span> <span class="nav-text">6.5.2 名称：用户名SDES项目</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-5-3-%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6%EF%BC%9ASDES%E9%A1%B9%E7%9B%AE%E7%9A%84%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6%E5%9C%B0%E5%9D%80"><span class="nav-number">6.6.3.</span> <span class="nav-text">6.5.3 电子邮件：SDES项目的电子邮件地址</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-5-4-%E7%94%B5%E8%AF%9D%EF%BC%9ASDES%E9%A1%B9%E7%9B%AE%E7%9A%84%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81"><span class="nav-number">6.6.4.</span> <span class="nav-text">6.5.4 电话：SDES项目的电话号码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-5-5-LOC%EF%BC%9A%E5%9C%B0%E7%90%86%E7%94%A8%E6%88%B7%E4%BD%8D%E7%BD%AESDES%E9%A1%B9%E7%9B%AE"><span class="nav-number">6.6.5.</span> <span class="nav-text">6.5.5 LOC：地理用户位置SDES项目</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-5-6-%E5%B7%A5%E5%85%B7%EF%BC%9A%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%88%96%E5%B7%A5%E5%85%B7%E5%90%8D%E7%A7%B0SDES%E9%A1%B9%E7%9B%AE"><span class="nav-number">6.7.</span> <span class="nav-text">6.5.6 工具：应用程序或工具名称SDES项目</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#6-5-7-NOTE-Notice-x2F-Status-SDES-Item"><span class="nav-number">6.7.1.</span> <span class="nav-text">6.5.7 NOTE: Notice&#x2F;Status SDES Item</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-5-8-PRIV%EF%BC%9APrivate-Extensions-SDES-Item"><span class="nav-number">6.7.2.</span> <span class="nav-text">6.5.8 PRIV：Private Extensions SDES Item</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-6-BYE-Goodbye-RTCP-Packet%EF%BC%9A"><span class="nav-number">6.8.</span> <span class="nav-text">6.6 BYE: Goodbye RTCP Packet：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-7-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%EF%BC%9A%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%AE%9A%E4%B9%89%E7%9A%84RTCP%E6%95%B0%E6%8D%AE%E5%8C%85"><span class="nav-number">6.9.</span> <span class="nav-text">6.7 应用程序：应用程序定义的RTCP数据包</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-RTP%E8%BD%AC%E6%8D%A2%E5%99%A8%E5%92%8C%E6%B7%B7%E9%A2%91%E5%99%A8"><span class="nav-number">7.</span> <span class="nav-text">7 RTP转换器和混频器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#7-1-%E4%B8%80%E8%88%AC%E8%AF%B4%E6%98%8E"><span class="nav-number">7.1.</span> <span class="nav-text">7.1 一般说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-2-RTCP-Processing-in-Translators"><span class="nav-number">7.2.</span> <span class="nav-text">7.2 RTCP Processing in Translators</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-3-RTCP-Processing-in-Mixers"><span class="nav-number">7.3.</span> <span class="nav-text">7.3 RTCP Processing in Mixers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-4-Cascaded-Mixers-%E7%BA%A7%E8%81%94%E6%B7%B7%E9%A2%91%E5%99%A8"><span class="nav-number">7.4.</span> <span class="nav-text">7.4 Cascaded Mixers 级联混频器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-SSRC%E6%A0%87%E8%AF%86%E7%AC%A6%E5%88%86%E9%85%8D%E5%92%8C%E4%BD%BF%E7%94%A8%EF%BC%9A%E5%9B%A0%E4%B8%BA%E4%B9%9F%E5%9C%A8%E7%BD%91%E7%BB%9C%E4%B8%8A%E4%BD%BF%E7%94%A8%EF%BC%8C%E9%9C%80%E8%A6%81%E9%81%BF%E5%85%8D%E5%90%8C%E4%B8%80%E7%BD%91%E7%BB%9C%E4%B8%8A%E7%9B%B8%E5%90%8C%E3%80%82"><span class="nav-number">8.</span> <span class="nav-text">8 SSRC标识符分配和使用：因为也在网络上使用，需要避免同一网络上相同。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-%E5%AE%89%E5%85%A8%E7%9B%B8%E5%85%B3%E4%B8%BB%E9%A2%98"><span class="nav-number">9.</span> <span class="nav-text">9 安全相关主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%EF%BC%9A"><span class="nav-number">10.</span> <span class="nav-text">10 拥塞控制：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-RTP-over-Network-and-Transport-Protocols%E4%B8%8A%E7%9A%84%E4%B8%80%E4%BA%9B%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%9A"><span class="nav-number">11.</span> <span class="nav-text">11 RTP over Network and Transport Protocols上的一些注意事项：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-RTP%E5%92%8CRTCP%E6%95%B0%E6%8D%AE%E5%8C%85%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%8C%87%E5%AE%9A%EF%BC%9A"><span class="nav-number">12.</span> <span class="nav-text">12 RTP和RTCP数据包类型的指定：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13-%E5%85%B3%E4%BA%8ERTP%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%92%8C%E6%9C%89%E6%95%88%E8%B4%9F%E8%BD%BD%E6%A0%BC%E5%BC%8F%E8%A7%84%E8%8C%83-rfc3551"><span class="nav-number">13.</span> <span class="nav-text">13 关于RTP配置文件和有效负载格式规范 rfc3551</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rfc3530%E5%89%A9%E4%B8%8B%E7%9A%84%E8%AE%AE%E9%A2%98%EF%BC%9A%E5%AE%89%E5%85%A8%E8%80%83%E8%99%91%EF%BC%8CIANA%E8%80%83%E8%99%91%EF%BC%8C%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E5%A3%B0%E6%98%8E%EF%BC%9B"><span class="nav-number">14.</span> <span class="nav-text">rfc3530剩下的议题：安全考虑，IANA考虑，知识产权声明；</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95A-%E7%AE%97%E6%B3%95"><span class="nav-number">15.</span> <span class="nav-text">附录A-算法</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '0f6e96d4229c6242139442890d83354a',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

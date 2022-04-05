@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="chrome webrtc 源码架构分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webrtc_code">
+<meta property="og:url" content="https://xdksx.github.io/2022/04/04/webrtc-code/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="chrome webrtc 源码架构分析">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/webrtc-code/webrtc1.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/webrtc-code/webrtc0.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/webrtc-code/webrtc2.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/webrtc-code/webrtc3.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/webrtc-code/webrtc4.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/webrtc-code/webrtc5.png">
+<meta property="article:published_time" content="2022-04-04T07:03:08.000Z">
+<meta property="article:modified_time" content="2022-04-04T08:21:01.951Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="webrtc">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2022/04/04/webrtc-code/webrtc1.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/04/04/webrtc-code/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>webrtc_code | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/04/04/webrtc-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webrtc_code
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-04 15:03:08 / 修改时间：16:21:01" itemprop="dateCreated datePublished" datetime="2022-04-04T15:03:08+08:00">2022-04-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/webrtc/" itemprop="url" rel="index"><span itemprop="name">webrtc</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="chrome-webrtc-源码架构分析"><a href="#chrome-webrtc-源码架构分析" class="headerlink" title="chrome webrtc 源码架构分析"></a>chrome webrtc 源码架构分析</h4><span id="more"></span>
+<p>代码架构图：</p>
+<img src="/2022/04/04/webrtc-code/webrtc1.png" class="" title="This is an example image">
+
+<h4 id="代码流程图："><a href="#代码流程图：" class="headerlink" title="代码流程图："></a>代码流程图：</h4><p>流程图：</p>
+<img src="/2022/04/04/webrtc-code/webrtc0.png" class="" title="This is an example image">
+<h4 id="连接流程相关"><a href="#连接流程相关" class="headerlink" title="连接流程相关"></a>连接流程相关</h4><p>   1  各个peer和信令服务器建立连接，通过信令服务器进行sdp协商，发送offer ,回复answer<br>   2  各个peer和stun server(可以多个和独立), 获取各自对外IP, 通过stun收集自己的ice candidate,包括本机local地址，及对外ip等；<br>      这里用的是binding request 和 binding response success<br>   3  通过信令服务器交换各自的 candidate<br>   4  各个peer收到对应的ice candidate后，排序后向各个candidate发起stun请求，用stun协议进行连通性测试，通过后择优。<a target="_blank" rel="noopener" href="https://blog.csdn.net/MeRcy_PM/article/details/55806415">https://blog.csdn.net/MeRcy_PM/article/details/55806415</a><br>       这个时候即 建立好p2pchannel<br>   5  进行dtls握手，生成秘钥<br>   6  进行srtp 媒体传输</p>
+<img src="/2022/04/04/webrtc-code/webrtc2.png" class="" title="This is an example image">
+
+
+<h4 id="webrtc中的相关代码底层机制："><a href="#webrtc中的相关代码底层机制：" class="headerlink" title="webrtc中的相关代码底层机制："></a>webrtc中的相关代码底层机制：</h4><h5 id="SignalReadEvent机制分析："><a href="#SignalReadEvent机制分析：" class="headerlink" title="SignalReadEvent机制分析："></a>SignalReadEvent机制分析：</h5><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br></pre></td><td class="code"><pre><span class="line">本文分析signalReadEvent机制和rtp包如何从网络传递到rtp_transport</span><br><span class="line">在epoll收到包后，会触发socketDispatcher调用onEvent--&gt;<span class="built_in">signalReadEvent</span>(<span class="keyword">this</span>)，就结束了，那这里怎么触发去读数据呢？</span><br><span class="line">看下signalReadEvent的实现：</span><br><span class="line"><span class="comment">// SignalReadEvent and SignalWriteEvent use multi_threaded_local to allow</span></span><br><span class="line">  <span class="comment">// access concurrently from different thread.</span></span><br><span class="line">  <span class="comment">// For example SignalReadEvent::connect will be called in AsyncUDPSocket ctor</span></span><br><span class="line">  <span class="comment">// but at the same time the SocketDispatcher maybe signaling the read event.</span></span><br><span class="line">  <span class="comment">// ready to read</span></span><br><span class="line">  sigslot::signal1&lt;AsyncSocket*, sigslot::multi_threaded_local&gt; SignalReadEvent;</span><br><span class="line">  <span class="comment">// ready to write</span></span><br><span class="line">  sigslot::signal1&lt;AsyncSocket*, sigslot::multi_threaded_local&gt;</span><br><span class="line">      SignalWriteEvent;</span><br><span class="line">可以看到这两个都是类似的，write和read</span><br><span class="line"></span><br><span class="line">进一步回溯：</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> A1, <span class="keyword">typename</span> mt_policy = SIGSLOT_DEFAULT_MT_POLICY&gt;</span><br><span class="line"><span class="keyword">using</span> signal1 = signal_with_thread_policy&lt;mt_policy, A1&gt;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">mt_policy</span>, <span class="keyword">typename</span>... Args&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">signal_with_thread_policy</span> : <span class="keyword">public</span> _signal_base&lt;mt_policy&gt; &#123;</span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">typedef</span> _signal_base&lt;mt_policy&gt; base;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">protected</span>:</span><br><span class="line">  <span class="keyword">typedef</span> <span class="keyword">typename</span> base::connections_list connections_list;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">signal_with_thread_policy</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">desttype</span>&gt;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">connect</span><span class="params">(desttype* pclass, <span class="type">void</span> (desttype::*pmemfun)(Args...))</span> </span>&#123;</span><br><span class="line">    <span class="function">lock_block&lt;mt_policy&gt; <span class="title">lock</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">    <span class="keyword">this</span>-&gt;m_connected_slots.<span class="built_in">push_back</span>(_opaque_connection(pclass, pmemfun));<span class="comment">//这里赋值，将下面的onReadPacket为pmemfunc</span></span><br><span class="line">    pclass-&gt;<span class="built_in">signal_connect</span>(<span class="built_in">static_cast</span>&lt;_signal_base_interface*&gt;(<span class="keyword">this</span>)); <span class="comment">// 这里实际怎么走的？ 为什么要调用这个？</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">emit</span><span class="params">(Args... args)</span> </span>&#123;  <span class="comment">//接着调用这个 2</span></span><br><span class="line">    <span class="function">lock_block&lt;mt_policy&gt; <span class="title">lock</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">    <span class="keyword">this</span>-&gt;m_current_iterator = <span class="keyword">this</span>-&gt;m_connected_slots.<span class="built_in">begin</span>();</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">this</span>-&gt;m_current_iterator != <span class="keyword">this</span>-&gt;m_connected_slots.<span class="built_in">end</span>()) &#123;<span class="comment">//遍历调用每个connect上的；</span></span><br><span class="line">      _opaque_connection <span class="type">const</span>&amp; conn = *<span class="keyword">this</span>-&gt;m_current_iterator;</span><br><span class="line">      ++(<span class="keyword">this</span>-&gt;m_current_iterator);</span><br><span class="line">      conn.<span class="built_in">emit</span>&lt;Args...&gt;(args...); <span class="comment">//接着调用这个 3 --这个是什么？ 接着看：</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">(Args... args)</span> </span>&#123; <span class="built_in">emit</span>(args...); &#125; <span class="comment">//可以看到实际上调用的是这个函数 1，传入参数是this，就是SocketDispatcher</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">接上面的分析，conn.<span class="built_in">emit</span>&lt;Args...&gt;(args...);实际调用什么函数：</span><br><span class="line"> 先看这个结构：</span><br><span class="line"> <span class="keyword">protected</span>:</span><br><span class="line">  connections_list m_connected_slots;</span><br><span class="line"> 可以看到是在connect的时候push_back的：那实际上只需要知道什么时候调用connect就好了；</span><br><span class="line"> 这里的SignalReadEvent是属于AsyncSocket的成员，所以这里需要对应的具体的socket，以下为分析：</span><br><span class="line">AsyncUDPSocket::<span class="built_in">AsyncUDPSocket</span>(AsyncSocket* socket) : <span class="built_in">socket_</span>(socket) &#123;</span><br><span class="line">  size_ = BUF_SIZE;</span><br><span class="line">  buf_ = <span class="keyword">new</span> <span class="type">char</span>[size_];</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The socket should start out readable but not writable.</span></span><br><span class="line">  socket_-&gt;SignalReadEvent.<span class="built_in">connect</span>(<span class="keyword">this</span>, &amp;AsyncUDPSocket::OnReadEvent); <span class="comment">//可以看到在构造的时候就进行了connect,传入的OnReadEvent应该就是</span></span><br><span class="line"> <span class="comment">//在signalReadEvent(this)的时候调用的函数</span></span><br><span class="line">  socket_-&gt;SignalWriteEvent.<span class="built_in">connect</span>(<span class="keyword">this</span>, &amp;AsyncUDPSocket::OnWriteEvent);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//分析：</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">desttype</span>&gt;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">connect</span><span class="params">(desttype* pclass, <span class="type">void</span> (desttype::*pmemfun)(Args...))</span> </span>&#123;</span><br><span class="line">    <span class="function">lock_block&lt;mt_policy&gt; <span class="title">lock</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">    <span class="keyword">this</span>-&gt;m_connected_slots.<span class="built_in">push_back</span>(_opaque_connection(pclass, pmemfun));<span class="comment">//这里赋值，将下面的onReadPacket为pmemfunc</span></span><br><span class="line">    pclass-&gt;<span class="built_in">signal_connect</span>(<span class="built_in">static_cast</span>&lt;_signal_base_interface*&gt;(<span class="keyword">this</span>)); <span class="comment">// 将添加this-即signal1 到m_senders;</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">emit</span><span class="params">(Args... args)</span> </span>&#123;  <span class="comment">//接着调用这个 2</span></span><br><span class="line">    <span class="function">lock_block&lt;mt_policy&gt; <span class="title">lock</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">    <span class="keyword">this</span>-&gt;m_current_iterator = <span class="keyword">this</span>-&gt;m_connected_slots.<span class="built_in">begin</span>();</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">this</span>-&gt;m_current_iterator != <span class="keyword">this</span>-&gt;m_connected_slots.<span class="built_in">end</span>()) &#123;</span><br><span class="line">      _opaque_connection <span class="type">const</span>&amp; conn = *<span class="keyword">this</span>-&gt;m_current_iterator;</span><br><span class="line">      ++(<span class="keyword">this</span>-&gt;m_current_iterator);</span><br><span class="line">      conn.<span class="built_in">emit</span>&lt;Args...&gt;(args...); <span class="comment">//接着调用这个 3 --这个是什么？ 接着看：</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//几个结构；</span></span><br><span class="line"> <span class="keyword">protected</span>:</span><br><span class="line">  connections_list m_connected_slots;</span><br><span class="line"> <span class="keyword">protected</span>:</span><br><span class="line">  <span class="keyword">typedef</span> std::list&lt;_opaque_connection&gt; connections_list;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">_opaque_connection</span> &#123;</span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*<span class="type">emit_t</span>)</span><span class="params">(<span class="type">const</span> _opaque_connection*)</span></span>;</span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> FromT, <span class="keyword">typename</span> ToT&gt;</span><br><span class="line">  <span class="keyword">union</span> <span class="title class_">union_caster</span> &#123;</span><br><span class="line">    FromT from;</span><br><span class="line">    ToT to;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="type">emit_t</span> pemit;</span><br><span class="line">  has_slots_interface* pdest;</span><br><span class="line">  <span class="comment">// Pointers to member functions may be up to 16 bytes for virtual classes,</span></span><br><span class="line">  <span class="comment">// so make sure we have enough space to store it.</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">char</span> pmethod[<span class="number">16</span>];</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> DestT, <span class="keyword">typename</span>... Args&gt;  <span class="comment">//构造的传入的onReadPacket就是第二个，pm</span></span><br><span class="line">  _opaque_connection(DestT* pd, <span class="built_in">void</span> (DestT::*pm)(Args...)) : <span class="built_in">pdest</span>(pd) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(DestT::*<span class="type">pm_t</span>)</span><span class="params">(Args...)</span></span>;</span><br><span class="line">    <span class="built_in">static_assert</span>(<span class="built_in">sizeof</span>(<span class="type">pm_t</span>) &lt;= <span class="built_in">sizeof</span>(pmethod),</span><br><span class="line">                  <span class="string">&quot;Size of slot function pointer too large.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    std::<span class="built_in">memcpy</span>(pmethod, &amp;pm, <span class="built_in">sizeof</span>(<span class="type">pm_t</span>));<span class="comment">//pm被赋值到pmethod</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*<span class="type">em_t</span>)</span><span class="params">(<span class="type">const</span> _opaque_connection* self, Args...)</span></span>;</span><br><span class="line">    union_caster&lt;<span class="type">em_t</span>, <span class="type">emit_t</span>&gt; caster2;</span><br><span class="line">    caster2.from = &amp;_opaque_connection::emitter&lt;DestT, Args...&gt;; <span class="comment">//赋值，注意caster是union</span></span><br><span class="line">    pemit = caster2.to;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">has_slots_interface* <span class="title">getdest</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> pdest; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">_opaque_connection <span class="title">duplicate</span><span class="params">(has_slots_interface* newtarget)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">    _opaque_connection res = *<span class="keyword">this</span>;</span><br><span class="line">    res.pdest = newtarget;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Just calls the stored &quot;emitter&quot; function pointer stored at construction</span></span><br><span class="line">  <span class="comment">// time.</span></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">emit</span><span class="params">(Args... args)</span> <span class="type">const</span> </span>&#123; <span class="comment">//signalReadEvent最后会调用这个</span></span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*<span class="type">em_t</span>)</span><span class="params">(<span class="type">const</span> _opaque_connection*, Args...)</span></span>;</span><br><span class="line">    union_caster&lt;<span class="type">emit_t</span>, <span class="type">em_t</span>&gt; caster;</span><br><span class="line">    caster.from = pemit;</span><br><span class="line">    (caster.to)(<span class="keyword">this</span>, args...); <span class="comment">//这个实际上调用emtter</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> DestT, <span class="keyword">typename</span>... Args&gt;</span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">emitter</span><span class="params">(<span class="type">const</span> _opaque_connection* self, Args... args)</span> </span>&#123;<span class="comment">//实际调用这个</span></span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(DestT::*<span class="type">pm_t</span>)</span><span class="params">(Args...)</span></span>;</span><br><span class="line">    <span class="type">pm_t</span> pm;</span><br><span class="line">    std::<span class="built_in">memcpy</span>(&amp;pm, self-&gt;pmethod, <span class="built_in">sizeof</span>(<span class="type">pm_t</span>)); <span class="comment">//把之前存的onReadPacket地址存到pm</span></span><br><span class="line">    (<span class="built_in">static_cast</span>&lt;DestT*&gt;(self-&gt;pdest)-&gt;*(pm))(args...);<span class="comment">//然后调用pm即onReadPacket</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">---------------------------------------------------signal_connect 机制：------------------------</span><br><span class="line">signal_connect</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RTC_EXPORT</span> AsyncPacketSocket : <span class="keyword">public</span> sigslot::has_slots&lt;&gt; &#123;</span><br><span class="line">   <span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">mt_policy</span> = SIGSLOT_DEFAULT_MT_POLICY&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> has_slots : <span class="keyword">public</span> has_slots_interface, <span class="keyword">public</span> mt_policy &#123;</span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">typedef</span> std::set&lt;_signal_base_interface*&gt; sender_set;</span><br><span class="line">  <span class="keyword">typedef</span> sender_set::const_iterator const_iterator;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">has_slots</span>()</span><br><span class="line">      : <span class="built_in">has_slots_interface</span>(&amp;has_slots::do_signal_connect,</span><br><span class="line">                            &amp;has_slots::do_signal_disconnect,</span><br><span class="line">                            &amp;has_slots::do_disconnect_all) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">has_slots</span>(has_slots <span class="type">const</span>&amp; o)</span><br><span class="line">      : <span class="built_in">has_slots_interface</span>(&amp;has_slots::do_signal_connect,</span><br><span class="line">                            &amp;has_slots::do_signal_disconnect,</span><br><span class="line">                            &amp;has_slots::do_disconnect_all) &#123;</span><br><span class="line">    <span class="function">lock_block&lt;mt_policy&gt; <span class="title">lock</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span>* sender : o.m_senders) &#123;</span><br><span class="line">      sender-&gt;<span class="built_in">slot_duplicate</span>(&amp;o, <span class="keyword">this</span>);</span><br><span class="line">      m_senders.<span class="built_in">insert</span>(sender);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ~<span class="built_in">has_slots</span>() &#123; <span class="keyword">this</span>-&gt;<span class="built_in">disconnect_all</span>(); &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  has_slots&amp; <span class="keyword">operator</span>=(has_slots <span class="type">const</span>&amp;);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">do_signal_connect</span><span class="params">(has_slots_interface* p,  <span class="comment">//实际上signal_connect调用到的函数</span></span></span></span><br><span class="line"><span class="params"><span class="function">                                _signal_base_interface* sender)</span> </span>&#123;</span><br><span class="line">    has_slots* <span class="type">const</span> self = <span class="built_in">static_cast</span>&lt;has_slots*&gt;(p);</span><br><span class="line">    <span class="function">lock_block&lt;mt_policy&gt; <span class="title">lock</span><span class="params">(self)</span></span>;</span><br><span class="line">    self-&gt;m_senders.<span class="built_in">insert</span>(sender);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">do_signal_disconnect</span><span class="params">(has_slots_interface* p,</span></span></span><br><span class="line"><span class="params"><span class="function">                                   _signal_base_interface* sender)</span> </span>&#123;</span><br><span class="line">    has_slots* <span class="type">const</span> self = <span class="built_in">static_cast</span>&lt;has_slots*&gt;(p);</span><br><span class="line">    <span class="function">lock_block&lt;mt_policy&gt; <span class="title">lock</span><span class="params">(self)</span></span>;</span><br><span class="line">    self-&gt;m_senders.<span class="built_in">erase</span>(sender);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">do_disconnect_all</span><span class="params">(has_slots_interface* p)</span> </span>&#123;</span><br><span class="line">    has_slots* <span class="type">const</span> self = <span class="built_in">static_cast</span>&lt;has_slots*&gt;(p);</span><br><span class="line">    <span class="function">lock_block&lt;mt_policy&gt; <span class="title">lock</span><span class="params">(self)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (!self-&gt;m_senders.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">      std::set&lt;_signal_base_interface*&gt; senders;</span><br><span class="line">      senders.<span class="built_in">swap</span>(self-&gt;m_senders);</span><br><span class="line">      const_iterator it = senders.<span class="built_in">begin</span>();</span><br><span class="line">      const_iterator itEnd = senders.<span class="built_in">end</span>();</span><br><span class="line"></span><br><span class="line">      <span class="keyword">while</span> (it != itEnd) &#123;</span><br><span class="line">        _signal_base_interface* s = *it;</span><br><span class="line">        ++it;</span><br><span class="line">        s-&gt;<span class="built_in">slot_disconnect</span>(p);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  sender_set m_senders;</span><br><span class="line">&#125;;</span><br><span class="line">-------------------------------------------------</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">has_slots_interface</span> &#123;</span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*<span class="type">signal_connect_t</span>)</span><span class="params">(has_slots_interface* self,</span></span></span><br><span class="line"><span class="params"><span class="function">                                   _signal_base_interface* sender)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*<span class="type">signal_disconnect_t</span>)</span><span class="params">(has_slots_interface* self,</span></span></span><br><span class="line"><span class="params"><span class="function">                                      _signal_base_interface* sender)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*<span class="type">disconnect_all_t</span>)</span><span class="params">(has_slots_interface* self)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">const</span> <span class="type">signal_connect_t</span> m_signal_connect;</span><br><span class="line">  <span class="type">const</span> <span class="type">signal_disconnect_t</span> m_signal_disconnect;</span><br><span class="line">  <span class="type">const</span> <span class="type">disconnect_all_t</span> m_disconnect_all;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">protected</span>:</span><br><span class="line">  <span class="built_in">has_slots_interface</span>(<span class="type">signal_connect_t</span> conn,</span><br><span class="line">                      <span class="type">signal_disconnect_t</span> disc,</span><br><span class="line">                      <span class="type">disconnect_all_t</span> disc_all)</span><br><span class="line">      : <span class="built_in">m_signal_connect</span>(conn),</span><br><span class="line">        <span class="built_in">m_signal_disconnect</span>(disc),</span><br><span class="line">        <span class="built_in">m_disconnect_all</span>(disc_all) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Doesn&#x27;t really need to be virtual, but is for backwards compatibility</span></span><br><span class="line">  <span class="comment">// (it was virtual in a previous version of sigslot).</span></span><br><span class="line">  <span class="keyword">virtual</span> ~<span class="built_in">has_slots_interface</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">signal_connect</span><span class="params">(_signal_base_interface* sender)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">m_signal_connect</span>(<span class="keyword">this</span>, sender);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">signal_disconnect</span><span class="params">(_signal_base_interface* sender)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">m_signal_disconnect</span>(<span class="keyword">this</span>, sender);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">disconnect_all</span><span class="params">()</span> </span>&#123; <span class="built_in">m_disconnect_all</span>(<span class="keyword">this</span>); &#125;</span><br><span class="line">&#125;;</span><br><span class="line">-------------------------------------------------signal_connect_end-------------------</span><br><span class="line">------------------------------所以实际调用了：</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AsyncUDPSocket::OnReadEvent</span><span class="params">(AsyncSocket* socket)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">RTC_DCHECK</span>(socket_.<span class="built_in">get</span>() == socket);</span><br><span class="line"></span><br><span class="line">  SocketAddress remote_addr;</span><br><span class="line">  <span class="type">int64_t</span> timestamp;</span><br><span class="line">  <span class="type">int</span> len = socket_-&gt;<span class="built_in">RecvFrom</span>(buf_, size_, &amp;remote_addr, &amp;timestamp);</span><br><span class="line">  <span class="keyword">if</span> (len &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// An error here typically means we got an ICMP error in response to our</span></span><br><span class="line">    <span class="comment">// send datagram, indicating the remote address was unreachable.</span></span><br><span class="line">    <span class="comment">// When doing ICE, this kind of thing will often happen.</span></span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> Do something better like forwarding the error to the user.</span></span><br><span class="line">    SocketAddress local_addr = socket_-&gt;<span class="built_in">GetLocalAddress</span>();</span><br><span class="line">    <span class="built_in">RTC_LOG</span>(LS_INFO) &lt;&lt; <span class="string">&quot;AsyncUDPSocket[&quot;</span> &lt;&lt; local_addr.<span class="built_in">ToSensitiveString</span>()</span><br><span class="line">                     &lt;&lt; <span class="string">&quot;] receive failed with error &quot;</span> &lt;&lt; socket_-&gt;<span class="built_in">GetError</span>();</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// <span class="doctag">TODO:</span> Make sure that we got all of the packet.</span></span><br><span class="line">  <span class="comment">// If we did not, then we should resize our buffer to be large enough.</span></span><br><span class="line">  <span class="built_in">SignalReadPacket</span>(<span class="keyword">this</span>, buf_, <span class="built_in">static_cast</span>&lt;<span class="type">size_t</span>&gt;(len), remote_addr,</span><br><span class="line">                   (timestamp &gt; <span class="number">-1</span> ? timestamp : <span class="built_in">TimeMicros</span>()));</span><br><span class="line">&#125;</span><br><span class="line">--------------------------------</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>在webrtc代码中到处可见这种机制，所以这里简单分析了下。</p>
+<h5 id="AheadOf分析："><a href="#AheadOf分析：" class="headerlink" title="AheadOf分析："></a>AheadOf分析：</h5><p>webrtc代码中也有很多AheadOf的调用，下面从使用来分析看具体含义</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;type_traits&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;new&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;limits&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, T M&gt;</span><br><span class="line"><span class="keyword">inline</span> <span class="keyword">typename</span> std::enable_if&lt;(M == <span class="number">0</span>), T&gt;::<span class="function">type <span class="title">ForwardDiff</span><span class="params">(T a, T b)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">static_assert</span>(std::is_unsigned&lt;T&gt;::value,</span><br><span class="line">                <span class="string">&quot;Type must be an unsigned integer.&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> b - a;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">inline</span> T <span class="title">ForwardDiff</span><span class="params">(T a, T b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">ForwardDiff</span>&lt;T, <span class="number">0</span>&gt;(a, b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, T M&gt;</span><br><span class="line"><span class="keyword">inline</span> <span class="keyword">typename</span> std::enable_if&lt;(M == <span class="number">0</span>), T&gt;::<span class="function">type <span class="title">ReverseDiff</span><span class="params">(T a, T b)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">static_assert</span>(std::is_unsigned&lt;T&gt;::value,</span><br><span class="line">                <span class="string">&quot;Type must be an unsigned integer.&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">inline</span> T <span class="title">ReverseDiff</span><span class="params">(T a, T b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">ReverseDiff</span>&lt;T, <span class="number">0</span>&gt;(a, b);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// The minimum distance is defined as min(ForwardDiff(a, b), ReverseDiff(a, b))</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, T M = <span class="number">0</span>&gt;</span><br><span class="line"><span class="keyword">inline</span> T <span class="built_in">MinDiff</span>(T a, T b) &#123;</span><br><span class="line">  <span class="built_in">static_assert</span>(std::is_unsigned&lt;T&gt;::value,</span><br><span class="line">                <span class="string">&quot;Type must be an unsigned integer.&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> std::<span class="built_in">min</span>(<span class="built_in">ForwardDiff</span>&lt;T, M&gt;(a, b), <span class="built_in">ReverseDiff</span>&lt;T, M&gt;(a, b));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Test if the sequence number |a| is ahead or at sequence number |b|.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// If |M| is an even number and the two sequence numbers are at max distance</span></span><br><span class="line"><span class="comment">// from each other, then the sequence number with the highest value is</span></span><br><span class="line"><span class="comment">// considered to be ahead.</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, T M&gt;</span><br><span class="line"><span class="keyword">inline</span> <span class="keyword">typename</span> std::enable_if&lt;(M &gt; <span class="number">0</span>), <span class="type">bool</span>&gt;::<span class="function">type <span class="title">AheadOrAt</span><span class="params">(T a, T b)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">static_assert</span>(std::is_unsigned&lt;T&gt;::value,</span><br><span class="line">                <span class="string">&quot;Type must be an unsigned integer.&quot;</span>);</span><br><span class="line">  <span class="type">const</span> T maxDist = M / <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">if</span> (!(M &amp; <span class="number">1</span>) &amp;&amp; <span class="built_in">MinDiff</span>&lt;T, M&gt;(a, b) == maxDist)</span><br><span class="line">    <span class="keyword">return</span> b &lt; a;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">ForwardDiff</span>&lt;T, M&gt;(b, a) &lt;= maxDist;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//当a和b的差距大于等于max时，返回true,否则返回false</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, T M&gt;</span><br><span class="line"><span class="keyword">inline</span> <span class="keyword">typename</span> std::enable_if&lt;(M == <span class="number">0</span>), <span class="type">bool</span>&gt;::<span class="function">type <span class="title">AheadOrAt</span><span class="params">(T a, T b)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">static_assert</span>(std::is_unsigned&lt;T&gt;::value,</span><br><span class="line">                <span class="string">&quot;Type must be an unsigned integer.&quot;</span>);</span><br><span class="line">  <span class="type">const</span> T maxDist = std::numeric_limits&lt;T&gt;::<span class="built_in">max</span>() / <span class="number">2</span> + <span class="built_in">T</span>(<span class="number">1</span>);</span><br><span class="line">  <span class="keyword">if</span> (a - b == maxDist) <span class="comment">//a&gt;b and distance == maxDist</span></span><br><span class="line">    <span class="keyword">return</span> b &lt; a;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">ForwardDiff</span>(b, a) &lt; maxDist;<span class="comment">//a-b&lt;maxDist : if a&gt;b &amp;&amp; a-b &lt; maxDist :true, if a&lt;b ,then a-b&lt;0,对u来说补码看差距， &lt; maxDist, return true,</span></span><br><span class="line">  <span class="comment">//1u-3u=-2u = max()-1, -1==max(); == max()-(3-1)+1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">bool</span> <span class="title">AheadOrAt</span><span class="params">(T a, T b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">AheadOrAt</span>&lt;T, <span class="number">0</span>&gt;(a, b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* a&gt;b:</span></span><br><span class="line"><span class="comment">   if a-b == max()/2+1; true</span></span><br><span class="line"><span class="comment">   if a-b &lt; max()/2+1:true</span></span><br><span class="line"><span class="comment">   else false</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">/* a&lt;b: a-b&lt;0</span></span><br><span class="line"><span class="comment">   if a-b&lt; max()/2+1: true  ==&gt;     a-b == max()-(b-a)+1 &lt; max()/2+1 true =&gt; b-a &gt; max()/2+1 true</span></span><br><span class="line"><span class="comment">   else false</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">// Test if the sequence number |a| is ahead of sequence number |b|.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// If |M| is an even number and the two sequence numbers are at max distance</span></span><br><span class="line"><span class="comment">// from each other, then the sequence number with the highest value is</span></span><br><span class="line"><span class="comment">// considered to be ahead.</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, T M = <span class="number">0</span>&gt;</span><br><span class="line"><span class="keyword">inline</span> <span class="type">bool</span> <span class="built_in">AheadOf</span>(T a, T b) &#123;</span><br><span class="line">  <span class="built_in">static_assert</span>(std::is_unsigned&lt;T&gt;::value,</span><br><span class="line">                <span class="string">&quot;Type must be an unsigned integer.&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> a != b &amp;&amp; <span class="built_in">AheadOrAt</span>&lt;T, M&gt;(a, b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="comment">/* a&gt;b:</span></span><br><span class="line"><span class="comment">   if a-b == max()/2+1; true</span></span><br><span class="line"><span class="comment">   if a-b &lt; max()/2+1:true</span></span><br><span class="line"><span class="comment">   else false</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">/* a&lt;b: a-b&lt;0  注意： max()==max()/2+max()/2+1因为unsigned max为奇数</span></span><br><span class="line"><span class="comment">   if a-b&lt; max()/2+1: true  ==&gt;     a-b == max()-(b-a)+1 &lt; max()/2+1 true =&gt; b-a &gt; max()/2+1 true</span></span><br><span class="line"><span class="comment">   else false</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//a &gt; b : 5,2   max()/2+1+ 5 5  true |  max()/2+6, 1 false</span></span><br><span class="line">    <span class="type">uint32_t</span> maxt = std::numeric_limits&lt;<span class="type">uint32_t</span>&gt;::<span class="built_in">max</span>() / <span class="number">2</span> + <span class="number">1u</span>;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;maxt:&quot;</span> &lt;&lt; maxt &lt;&lt; endl ;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">AheadOf</span>(<span class="number">5u</span>,<span class="number">2u</span>))</span><br><span class="line">    &#123;</span><br><span class="line">       std::cout &lt;&lt; <span class="string">&quot;5,2 &quot;</span> &lt;&lt;  <span class="number">5u</span><span class="number">-2u</span> &lt;&lt; <span class="string">&quot; true:&quot;</span>  &lt;&lt; endl;<span class="comment">//in here</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">AheadOf</span>(maxt+<span class="number">5u</span>,<span class="number">5u</span>))</span><br><span class="line">    &#123;</span><br><span class="line">       std::cout &lt;&lt; <span class="string">&quot;maxt+5,5 &quot;</span> &lt;&lt;  maxt+<span class="number">5u</span><span class="number">-5u</span>  &lt;&lt;  <span class="string">&quot; true&quot;</span> &lt;&lt; endl;</span><br><span class="line">      </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">AheadOf</span>(maxt+<span class="number">6u</span>,<span class="number">1u</span>) == <span class="literal">false</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt;<span class="string">&quot;maxt+6u,1u &quot;</span> &lt;&lt; maxt+<span class="number">6u</span><span class="number">-1u</span> &lt;&lt;  <span class="string">&quot; false&quot;</span>  &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;------------------&quot;</span> &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//a &lt; b :   3,max()/2+1+6 true | 4,max()/2+1+3 false  4,max()/2+1+4 false</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">AheadOf</span>(<span class="number">3u</span>,maxt+<span class="number">6u</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;3,maxt+6: &quot;</span>&lt;&lt; (maxt+<span class="number">6u</span>)<span class="number">-3u</span> &lt;&lt; <span class="string">&quot;  true&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">AheadOf</span>(<span class="number">4u</span>,maxt+<span class="number">4u</span>) == <span class="literal">false</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot; 4,maxt+4: &quot;</span> &lt;&lt; (maxt+<span class="number">4u</span>) <span class="number">-4u</span> &lt;&lt; <span class="string">&quot;  false&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">AheadOf</span>(<span class="number">4u</span>,maxt+<span class="number">3u</span>) == <span class="literal">false</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;4,maxt+3 : &quot;</span> &lt;&lt; (maxt+<span class="number">3u</span>)<span class="number">-4u</span> &lt;&lt; <span class="string">&quot;  false&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> maxtt = std::numeric_limits&lt;<span class="type">uint32_t</span>&gt;::<span class="built_in">max</span>();</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;maxtt:&quot;</span> &lt;&lt; maxtt &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="相关业务流程分析："><a href="#相关业务流程分析：" class="headerlink" title="相关业务流程分析："></a>相关业务流程分析：</h4><p>Rtp接收音频：</p>
+<img src="/2022/04/04/webrtc-code/webrtc3.png" class="" title="This is an example image">
+<img src="/2022/04/04/webrtc-code/webrtc4.png" class="" title="This is an example image">
+<img src="/2022/04/04/webrtc-code/webrtc5.png" class="" title="This is an example image">
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line">     webrtc::RtpTransport::<span class="title function_ invoke__">DemuxPacket</span>(rtc::CopyOnWriteBuffer * packet, __int64 packet_time_us) 行<span class="number">202</span>    </span><br><span class="line"> webrtc::RtpDemuxer::<span class="title function_ invoke__">OnRtpPacket</span>(<span class="keyword">const</span> webrtc::RtpPacketReceived &amp; packet) 行<span class="number">158</span>    </span><br><span class="line">void BaseChannel::<span class="title function_ invoke__">OnRtpPacket</span>(<span class="keyword">const</span> webrtc::RtpPacketReceived&amp; parsed_packet) &#123;</span><br><span class="line">     media_channel_<span class="punctuation">-&gt;</span><span class="title function_ invoke__">OnPacketReceived</span>(</span><br><span class="line">    cricket::BaseChannel::<span class="title function_ invoke__">OnPacketReceived</span>(<span class="type">bool</span> rtcp, <span class="keyword">const</span> rtc::CopyOnWriteBuffer &amp; packet, __int64 packet_time_us) 行<span class="number">506</span>    </span><br><span class="line">        void WebRtcVideoChannel::<span class="title function_ invoke__">OnPacketReceived</span>(rtc::CopyOnWriteBuffer packet,  third_party/webrtc/media/engine/webrtc_video_engine.cc</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">反向分析：</span><br><span class="line"> webrtc::PacketBuffer::<span class="title function_ invoke__">InsertPacketList</span>(std::list&lt;webrtc::Packet,std::allocator&lt;webrtc::Packet&gt; &gt; * packet_list, <span class="keyword">const</span> webrtc::DecoderDatabase &amp; decoder_database, absl::optional&lt;unsigned <span class="type">char</span>&gt; * current_rtp_payload_type, absl::optional&lt;unsigned <span class="type">char</span>&gt; * current_cng_rtp_payload_type, webrtc::StatisticsCalculator * stats) 行<span class="number">139</span>    </span><br><span class="line">     webrtc::NetEqImpl::<span class="title function_ invoke__">InsertPacketInternal</span>(<span class="keyword">const</span> webrtc::RTPHeader &amp; rtp_header, rtc::ArrayView&lt;unsigned <span class="type">char</span> <span class="keyword">const</span> ,-<span class="number">4711</span>&gt; payload, unsigned int receive_timestamp) 行<span class="number">712</span>     将数据加到packet_buffer_数据包队列中，待解码</span><br><span class="line">     webrtc::NetEqImpl::<span class="title function_ invoke__">InsertPacket</span>(<span class="keyword">const</span> webrtc::RTPHeader &amp; rtp_header, rtc::ArrayView&lt;unsigned <span class="type">char</span> <span class="keyword">const</span> ,-<span class="number">4711</span>&gt; payload, unsigned int receive_timestamp) 行<span class="number">148</span>     third_party/webrtc/modules/audio_coding/neteq/neteq_impl.cc</span><br><span class="line">     webrtc::acm2::AcmReceiver::<span class="title function_ invoke__">InsertPacket</span>(<span class="keyword">const</span> webrtc::WebRtcRTPHeader &amp; rtp_header, rtc::ArrayView&lt;unsigned <span class="type">char</span> <span class="keyword">const</span> ,-<span class="number">4711</span>&gt; incoming_payload) 行<span class="number">110</span>    </span><br><span class="line">  </span><br><span class="line">       <span class="title function_ invoke__">if</span> (neteq_<span class="punctuation">-&gt;</span><span class="title function_ invoke__">InsertPacket</span>(rtp_header, incoming_payload) &lt; <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">     webrtc::`anonymous namespace&#x27;::AudioCodingModuleImpl::<span class="title function_ invoke__">IncomingPacket</span>(<span class="keyword">const</span> unsigned <span class="type">char</span> * incoming_payload, <span class="keyword">const</span> unsigned int payload_length, <span class="keyword">const</span> webrtc::WebRtcRTPHeader &amp; rtp_header) 行<span class="number">811</span>    </span><br><span class="line">     webrtc::voe::`anonymous namespace&#x27;::ChannelReceive::<span class="title function_ invoke__">OnReceivedPayloadData</span>(<span class="keyword">const</span> unsigned <span class="type">char</span> * payloadData, unsigned int payloadSize, <span class="keyword">const</span> webrtc::WebRtcRTPHeader * rtpHeader) 行<span class="number">289</span>    </span><br><span class="line">     webrtc::voe::`anonymous namespace&#x27;::ChannelReceive::<span class="title function_ invoke__">ReceivePacket</span>(<span class="keyword">const</span> unsigned <span class="type">char</span> * packet, unsigned int packet_length, <span class="keyword">const</span> webrtc::RTPHeader &amp; header) 行<span class="number">675</span>     third_party/webrtc/audio/channel_receive.cc</span><br><span class="line">     webrtc::voe::`anonymous namespace&#x27;::ChannelReceive::<span class="title function_ invoke__">OnRtpPacket</span>(<span class="keyword">const</span> webrtc::RtpPacketReceived &amp; packet) 行<span class="number">624</span>    </span><br><span class="line">     webrtc::RtpDemuxer::<span class="title function_ invoke__">OnRtpPacket</span>(<span class="keyword">const</span> webrtc::RtpPacketReceived &amp; packet) 行<span class="number">158</span>   </span><br><span class="line">              <span class="type">bool</span> RtpDemuxer::<span class="title function_ invoke__">OnRtpPacket</span>(<span class="keyword">const</span> RtpPacketReceived&amp; packet) &#123;</span><br><span class="line">  RtpPacketSinkInterface* sink = <span class="title function_ invoke__">ResolveSink</span>(packet);</span><br><span class="line">  <span class="title function_ invoke__">if</span> (sink != nullptr) &#123;</span><br><span class="line">    sink<span class="punctuation">-&gt;</span><span class="title function_ invoke__">OnRtpPacket</span>(packet);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">     webrtc::RtpStreamReceiverController::<span class="title function_ invoke__">OnRtpPacket</span>(<span class="keyword">const</span> webrtc::RtpPacketReceived &amp; packet) 行<span class="number">54</span>    </span><br><span class="line">     webrtc::internal::Call::<span class="title function_ invoke__">DeliverRtp</span>(webrtc::MediaType media_type, rtc::CopyOnWriteBuffer packet, __int64 packet_time_us) 行<span class="number">1318</span>    </span><br><span class="line">            <span class="type">bool</span> RtpStreamReceiverController::<span class="title function_ invoke__">OnRtpPacket</span>(<span class="keyword">const</span> RtpPacketReceived&amp; packet) &#123;</span><br><span class="line">  <span class="title function_ invoke__">RTC_DCHECK_RUN_ON</span>(&amp;demuxer_sequence_);</span><br><span class="line">  <span class="keyword">return</span> demuxer_.<span class="title function_ invoke__">OnRtpPacket</span>(packet);</span><br><span class="line">&#125;</span><br><span class="line">     webrtc::internal::Call::<span class="title function_ invoke__">DeliverPacket</span>(webrtc::MediaType media_type, rtc::CopyOnWriteBuffer packet, __int64 packet_time_us) 行<span class="number">1356</span>    </span><br><span class="line">     cricket::WebRtcVoiceMediaChannel::<span class="title function_ invoke__">OnPacketReceived</span>(rtc::CopyOnWriteBuffer * packet, __int64 packet_time_us) 行<span class="number">2057</span>  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">反向分析：进行解码：</span><br><span class="line">  <span class="title function_ invoke__">opus_decode</span>(OpusDecoder * st, <span class="keyword">const</span> unsigned <span class="type">char</span> * data, int len, short * pcm, int frame_size, int decode_fec) 行<span class="number">766</span>    </span><br><span class="line">     <span class="title function_ invoke__">DecodeNative</span>(WebRtcOpusDecInst * inst, <span class="keyword">const</span> unsigned <span class="type">char</span> * encoded, unsigned int encoded_bytes, int frame_size, short * decoded, short * audio_type, int decode_fec) 行<span class="number">341</span>    </span><br><span class="line">     <span class="title function_ invoke__">WebRtcOpus_Decode</span>(WebRtcOpusDecInst * inst, <span class="keyword">const</span> unsigned <span class="type">char</span> * encoded, unsigned int encoded_bytes, short * decoded, short * audio_type) 行<span class="number">361</span>    </span><br><span class="line">     webrtc::AudioDecoderOpusImpl::<span class="title function_ invoke__">DecodeInternal</span>(<span class="keyword">const</span> unsigned <span class="type">char</span> * encoded, unsigned int encoded_len, int sample_rate_hz, short * decoded, webrtc::AudioDecoder::SpeechType * speech_type) 行<span class="number">126</span>    </span><br><span class="line">     webrtc::AudioDecoder::<span class="title function_ invoke__">Decode</span>(<span class="keyword">const</span> unsigned <span class="type">char</span> * encoded, unsigned int encoded_len, int sample_rate_hz, unsigned int max_decoded_bytes, short * decoded, webrtc::AudioDecoder::SpeechType * speech_type) 行<span class="number">98</span>    </span><br><span class="line">     webrtc::`anonymous namespace&#x27;::OpusFrame::<span class="title function_ invoke__">Decode</span>(rtc::ArrayView&lt;short,-<span class="number">4711</span>&gt; decoded) 行<span class="number">54</span>    </span><br><span class="line"></span><br><span class="line">     webrtc::NetEqImpl::<span class="title function_ invoke__">DecodeLoop</span>(std::list&lt;webrtc::Packet,std::allocator&lt;webrtc::Packet&gt; &gt; * packet_list, <span class="keyword">const</span> webrtc::Operations &amp; operation, webrtc::AudioDecoder * decoder, int * decoded_length, webrtc::AudioDecoder::SpeechType * speech_type) 行<span class="number">1445</span>  </span><br><span class="line">                auto opt_result = packet_list<span class="punctuation">-&gt;</span><span class="title function_ invoke__">front</span>().frame<span class="punctuation">-&gt;</span><span class="title function_ invoke__">Decode</span>(</span><br><span class="line">     webrtc::NetEqImpl::<span class="title function_ invoke__">Decode</span>(std::list&lt;webrtc::Packet,std::allocator&lt;webrtc::Packet&gt; &gt; * packet_list, webrtc::Operations * operation, int * decoded_length, webrtc::AudioDecoder::SpeechType * speech_type) 行<span class="number">1356</span>    </span><br><span class="line">     webrtc::NetEqImpl::<span class="title function_ invoke__">GetAudioInternal</span>(webrtc::AudioFrame * audio_frame, <span class="type">bool</span> * muted, absl::optional&lt;<span class="keyword">enum</span> <span class="title class_">webrtc</span>::Operations&gt; action_override) 行<span class="number">846</span>    从GetDecision拿到数据包进行解码</span><br><span class="line">     webrtc::NetEqImpl::<span class="title function_ invoke__">GetAudio</span>(webrtc::AudioFrame * audio_frame, <span class="type">bool</span> * muted, absl::optional&lt;<span class="keyword">enum</span> <span class="title class_">webrtc</span>::Operations&gt; action_override) 行<span class="number">211</span>    </span><br><span class="line">     webrtc::acm2::AcmReceiver::<span class="title function_ invoke__">GetAudio</span>(int desired_freq_hz, webrtc::AudioFrame * audio_frame, <span class="type">bool</span> * muted) 行<span class="number">127</span>    </span><br><span class="line">     webrtc::`anonymous namespace&#x27;::AudioCodingModuleImpl::<span class="title function_ invoke__">PlayoutData10Ms</span>(int desired_freq_hz, webrtc::AudioFrame * audio_frame, <span class="type">bool</span> * muted) 行<span class="number">840</span>    </span><br><span class="line">     webrtc::voe::`anonymous namespace&#x27;::ChannelReceive::<span class="title function_ invoke__">GetAudioFrameWithInfo</span>(int sample_rate_hz, webrtc::AudioFrame * audio_frame) 行<span class="number">341</span>    </span><br><span class="line"></span><br><span class="line">     webrtc::AudioMixerImpl::<span class="title function_ invoke__">GetAudioFromSources</span>() 行<span class="number">190</span>    </span><br><span class="line">     webrtc::AudioMixerImpl::<span class="title function_ invoke__">Mix</span>(unsigned int number_of_channels, webrtc::AudioFrame * audio_frame_for_mixing) 行<span class="number">129</span>    </span><br><span class="line">          frame_combiner_.<span class="title function_ invoke__">Combine</span>(<span class="title function_ invoke__">GetAudioFromSources</span>(output_frequency), <span class="comment">//募集各种源的音频，会做混音</span></span><br><span class="line">                          number_of_channels, output_frequency,</span><br><span class="line">                          number_of_streams, audio_frame_for_mixing);</span><br><span class="line">     webrtc::AudioTransportImpl::<span class="title function_ invoke__">NeedMorePlayData</span>(<span class="keyword">const</span> unsigned int nSamples, <span class="keyword">const</span> unsigned int nBytesPerSample, <span class="keyword">const</span> unsigned int nChannels, <span class="keyword">const</span> unsigned int samplesPerSec, void * audioSamples, unsigned int &amp; nSamplesOut, __int64 * elapsed_time_ms, __int64 * ntp_time_ms) 行<span class="number">214</span>    </span><br><span class="line">     webrtc::AudioDeviceBuffer::<span class="title function_ invoke__">RequestPlayoutData</span>(unsigned int samples_per_channel) 行<span class="number">304</span>    </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//以下分设备：third_party/webrtc/modules/audio_device/linux/audio_device_pulse_linux.cc /...</span></span><br><span class="line">     webrtc::AudioDeviceWindowsCore::<span class="title function_ invoke__">DoRenderThread</span>() 行<span class="number">2976</span>    </span><br><span class="line">     webrtc::AudioDeviceWindowsCore::<span class="title function_ invoke__">WSAPIRenderThread</span>(void * context) 行<span class="number">2778</span>    渲染音频数据线程，取音频数据包进行解码播放</span><br><span class="line">   对linux:</span><br><span class="line">    AudioDeviceLinuxPulse::<span class="title function_ invoke__">PlayThreadProcess</span>() &#123; third_party/webrtc/modules/audio_device/linux/audio_device_pulse_linux.cc</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    混音：</span><br><span class="line">在audioMixerImpl:</span><br><span class="line">Mix: frame_combiner_.<span class="title function_ invoke__">Combine</span>(<span class="title function_ invoke__">GetAudioFromSources</span>(output_frequency),</span><br><span class="line">third_party/webrtc/modules/audio_mixer/frame_combiner.cc</span><br><span class="line">void FrameCombiner::<span class="title function_ invoke__">Combine</span>(rtc::ArrayView&lt;AudioFrame* <span class="keyword">const</span>&gt; mix_list,</span><br><span class="line"></span><br><span class="line">         third_party/webrtc/modules/audio_mixer/audio_frame_manipulator.cc </span><br><span class="line">              void <span class="title function_ invoke__">RemixFrame</span>(size_t target_number_of_channels, AudioFrame* frame) &#123;</span><br><span class="line">                         mixer.<span class="title function_ invoke__">Transform</span>(frame);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">third_party/webrtc/audio/utility/channel_mixer.cc</span><br><span class="line">void ChannelMixer::<span class="title function_ invoke__">Transform</span>(AudioFrame* frame) &#123; 混音</span><br></pre></td></tr></table></figure>
+
+<h4 id="相关重要概念："><a href="#相关重要概念：" class="headerlink" title="相关重要概念："></a>相关重要概念：</h4><p>关键帧请求，FIR,PLI区别:</p>
+<ul>
+<li><p>PLI 是Picture Loss Indication<br>图片丢失提示消息表明突发性的丢包影响到了一个或多个帧中的多个包。发送方可以通过重传这些包或者生成一个新的I帧以作出回应。但一般来说，PLI同时表现得像一个NACK和一个FIR，因此，通过使用PLI，接收端为发送端如何对该请求作出响应提供了更大的灵活度</p>
+</li>
+<li><p>SLI 是Slice Loss Indication。<br>切片丢失提示消息表明该包丢失影响到单个帧的部分（即，多个macroblock）。因此，当发送端接收到SLI消息时，它可以通过重新编码的方式纠正切片，停止部分帧解码错误的传播。</p>
+</li>
+</ul>
+<p>发送方接收到接收方反馈的PLI或SLI需要重新让编码器生成关键帧并发送给接收端。</p>
+<ul>
+<li>FIR 是Full Intra Request<br>视频在WebRTC的会话中总是以一个I帧开始，然后发送P帧。但是，当有新的参与者中途加入会议会话时，很有可能接收到一系列P帧，但因缺少相应的I帧，它并不能解码。这种情况下，该接收端会发送一个FIR以请求一个I帧。</li>
+</ul>
+<h4 id="下文"><a href="#下文" class="headerlink" title="下文"></a>下文</h4><h5 id="连接相关机制："><a href="#连接相关机制：" class="headerlink" title="连接相关机制："></a>连接相关机制：</h5><ol>
+<li>webrtc,ice和stun<br><a target="_blank" rel="noopener" href="https://rfc2cn.com/rfc8445.html">https://rfc2cn.com/rfc8445.html</a></li>
+<li>webrtc,sdp<br><a target="_blank" rel="noopener" href="https://rfc2cn.com/rfc4566.html">https://rfc2cn.com/rfc4566.html</a></li>
+<li>webrtc,dtls握手<br><a target="_blank" rel="noopener" href="http://www.rfc2cn.com/rfc6347.html">http://www.rfc2cn.com/rfc6347.html</a><h5 id="传输策略机制：在具体机制章节统一分析。"><a href="#传输策略机制：在具体机制章节统一分析。" class="headerlink" title="传输策略机制：在具体机制章节统一分析。"></a>传输策略机制：在具体机制章节统一分析。</h5></li>
+<li>webrtc,接收方向中的各个队列</li>
+<li>webrtc,jitter机制</li>
+<li>webrtc,fec机制</li>
+<li>webrtc,nack机制</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/webrtc/" rel="tag"># webrtc</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/03/ffmpeg-sourcecode/" rel="prev" title="ffmpeg_sourcecode">
+      <i class="fa fa-chevron-left"></i> ffmpeg_sourcecode
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/04/srs-code/" rel="next" title="srs_code">
+      srs_code <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#chrome-webrtc-%E6%BA%90%E7%A0%81%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">chrome webrtc 源码架构分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%B5%81%E7%A8%8B%E5%9B%BE%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">代码流程图：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%B5%81%E7%A8%8B%E7%9B%B8%E5%85%B3"><span class="nav-number">3.</span> <span class="nav-text">连接流程相关</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#webrtc%E4%B8%AD%E7%9A%84%E7%9B%B8%E5%85%B3%E4%BB%A3%E7%A0%81%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">webrtc中的相关代码底层机制：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#SignalReadEvent%E6%9C%BA%E5%88%B6%E5%88%86%E6%9E%90%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">SignalReadEvent机制分析：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AheadOf%E5%88%86%E6%9E%90%EF%BC%9A"><span class="nav-number">4.2.</span> <span class="nav-text">AheadOf分析：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">相关业务流程分析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E9%87%8D%E8%A6%81%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">相关重要概念：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E6%96%87"><span class="nav-number">7.</span> <span class="nav-text">下文</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E7%9B%B8%E5%85%B3%E6%9C%BA%E5%88%B6%EF%BC%9A"><span class="nav-number">7.1.</span> <span class="nav-text">连接相关机制：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E7%AD%96%E7%95%A5%E6%9C%BA%E5%88%B6%EF%BC%9A%E5%9C%A8%E5%85%B7%E4%BD%93%E6%9C%BA%E5%88%B6%E7%AB%A0%E8%8A%82%E7%BB%9F%E4%B8%80%E5%88%86%E6%9E%90%E3%80%82"><span class="nav-number">7.2.</span> <span class="nav-text">传输策略机制：在具体机制章节统一分析。</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '42915344be885a38f4ebd8bf93313ee4',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

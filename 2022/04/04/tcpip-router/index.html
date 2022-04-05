@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="ip层基本介绍ip层任务 将一个封包顺利的正确的从主机或服务器A传递到服务器或主机B，涉及路由，即如何选择合适的道路；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tcpip_router">
+<meta property="og:url" content="https://xdksx.github.io/2022/04/04/tcpip-router/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="ip层基本介绍ip层任务 将一个封包顺利的正确的从主机或服务器A传递到服务器或主机B，涉及路由，即如何选择合适的道路；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/struct1.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/struct2.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/struct3.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/struct4.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/scope1.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/scope2.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/struct5.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/struct6.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/struct7.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/router1.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/router2.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/router3.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/router4.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/code1.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/code2.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/code3.png">
+<meta property="article:published_time" content="2022-04-04T12:11:52.000Z">
+<meta property="article:modified_time" content="2022-04-04T13:49:59.674Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="tcpip">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2022/04/04/tcpip-router/struct1.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/04/04/tcpip-router/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>tcpip_router | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/04/04/tcpip-router/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          tcpip_router
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-04 20:11:52 / 修改时间：21:49:59" itemprop="dateCreated datePublished" datetime="2022-04-04T20:11:52+08:00">2022-04-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index"><span itemprop="name">tcpip</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="ip层基本介绍"><a href="#ip层基本介绍" class="headerlink" title="ip层基本介绍"></a>ip层基本介绍</h4><h5 id="ip层任务"><a href="#ip层任务" class="headerlink" title="ip层任务"></a>ip层任务</h5><ul>
+<li>将一个封包顺利的正确的从主机或服务器A传递到服务器或主机B，涉及路由，即如何选择合适的道路；<span id="more"></span></li>
+<li>路由是路线图，就像百度地图上源地址到目的地址的路线，路线有很多，故路由也很多；从网络层面讲，路由是一个数据包从源地址到目的地的传输路径，它如何被决定怎么走，即中间经过哪些路由器，选择哪一条路线等等。<h5 id="一个网络通信的例子：已抓包验证过"><a href="#一个网络通信的例子：已抓包验证过" class="headerlink" title="一个网络通信的例子：已抓包验证过"></a>一个网络通信的例子：已抓包验证过</h5>条件：A,B连上AP进行上网，AP和外网连接，AP的下一站是D;<br>情况1：A在构造了数据包后选择发送，要查询路由表，若该数据包发送给B,则通过路由表中的直连路由，找到B的ip,发送时不知道B的mac地址，故先做arp,得到后将数据包发给B:<br>数据包：源ip：A,源mac A ，目的IP:B,目的mac:B<br>情况2：若A在构造了数据包后，查询路由，该数据包是发送给外网，目的地址是百度ip,则无此条目，向默认路由；即发给路由器，此时若不知道路由器的mac地址会做arp;<br>数据包：源ip:A,源mac：A ,目的ip:百度，目的mac：路由器(arp代理）<br>数据包到路由器后，将做下一步转发：在路由发送的数据包：源ip:路由外网地址，源mac:路由，目的ip:百度ip.目的mac,D<br>          (注意，在源ip改为路由外网地址后，此时ip唯一，源地址在传输过程中不会再改变）<br>PS:注意：对wifi网络来说，在同一个lan中，A和B之间可以直接通信，其包不会经过网关，使用的路由是直连路由，即找到的mac不是网关mac，故不经过网关；<br>而对于有线以太网，则连接网线到交换机或集线器，通过桥的方式，以端口号和mac映射关系找到对应的同个lan下的主机并发送；</li>
+</ul>
+<p>因此可以做中间人 arp攻击。</p>
+<h5 id="路由器行为："><a href="#路由器行为：" class="headerlink" title="路由器行为："></a>路由器行为：</h5><p>内网的路由器会将源地址改为路由器的外网地址<br>—想想像192.168.0.4这样的源地址是内网地址，如果在包的传输过程中不做处理，到达目的地如QQ的服务器，那QQ处理完要发给你，这时得到包是从192.168.0.4来的，它作为内网地址，全世界很多个，怎么决定—–所以ip首部中的源地址和目的地址必须是全球唯一的ip地址，即外网地址；</p>
+<h5 id="ip封包情况"><a href="#ip封包情况" class="headerlink" title="ip封包情况"></a>ip封包情况</h5><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">IP头：</span><br><span class="line">0                   1                   2                   3   </span><br><span class="line">    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 </span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |<span class="string">Version</span>|<span class="string">  IHL  </span>|<span class="string">Type of Service</span>|<span class="string">          Total Length         </span>|</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |<span class="string">         Identification        </span>|<span class="string">Flags</span>|<span class="string">      Fragment Offset    </span>|</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |<span class="string">  Time to Live </span>|<span class="string">    Protocol   </span>|<span class="string">         Header Checksum       </span>|</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |<span class="string">                       Source Address                          </span>|</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |<span class="string">                    Destination Address                        </span>|</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |<span class="string">                    Options                    </span>|<span class="string">    Padding    </span>|</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">                    Example Internet Datagram Header</span><br><span class="line"></span><br><span class="line">                               Figure 4.</span><br></pre></td></tr></table></figure>
+
+<h4 id="几种路由配置的网络结构："><a href="#几种路由配置的网络结构：" class="headerlink" title="几种路由配置的网络结构："></a>几种路由配置的网络结构：</h4><p>(1)常见</p>
+<img src="/2022/04/04/tcpip-router/struct1.png" class="" title="This is an example image">
+<p>2） 注意路由器RT在同一个局域网中有两个接口，配置为不同子网</p>
+<img src="/2022/04/04/tcpip-router/struct2.png" class="" title="This is an example image">
+<p>（3）注意路由器RT在用一个接口上配置了两个不同子网的ip</p>
+<img src="/2022/04/04/tcpip-router/struct3.png" class="" title="This is an example image">
+<h4 id="路由基础："><a href="#路由基础：" class="headerlink" title="路由基础："></a>路由基础：</h4><h5 id="涉及路由的几个概念："><a href="#涉及路由的几个概念：" class="headerlink" title="涉及路由的几个概念："></a>涉及路由的几个概念：</h5><p>（1）ISP 互联网服务提供商、<br>（2）转发信息库–即路由表<br>（3）对称路由和非对称路由：<br>从主机A到B的路由和B到A的路由相同则为对称路由，否则是非对称<br>（4）Metrics:<br>路由协议的metrics:用于衡量一条路由的好坏：端到端延迟，跃点数，配置权值和开销等；<br>路由配置中的一个可选参数：metrics:如窗口，往返时间，往返时间差，慢启动阈值，拥塞窗口，通告的最大段长度，重新排序等tcp相关的参数<br>（5）Realm:一个用数值表示的域标识<br>（6）地址分类：A,B，C，D类<br>（7）可路由地址和不可路由地址：可路由地址是由中心体处理且是全球唯一的，不是局域网地址局域网地址是不可路由地址需要使用nat来转换</p>
+<h5 id="关于scope"><a href="#关于scope" class="headerlink" title="关于scope:"></a>关于scope:</h5><p>Scope类似作用域的概念。路由和IP地址可以指定Scope，用来告诉内核它们在那些情况下是有意义的，是可以被使用的。<br>Scope分为两种：路由的Scope 和 IP地址的Scope   </p>
+<ol>
+<li>路由的Scope：表示到目的网络的距离。 </li>
+<li>IP地址的Scope： 表示该IP地址到达本地主机有多远。</li>
+</ol>
+<ul>
+<li><p>常用的Scope<br>IP地址常用的Scope<br>主机：表示该地址只用于主机的内部通信。例如：127.0.0.1 HOST<br>链路：表示地址尽在局域网内部有意义（链路层互联），如子网广播地址 LINK<br>全域：表示地址可以在任何地方使用。（这是大多数地址的默认Scope） UNIVERSE </p>
+</li>
+<li><p>注意：</p>
+</li>
+</ul>
+<p><em>注意点：</em>**Scope并不能反映可路由（公开）地址和不可路由（私有）地址之间的区别。10.0.0.1和165.2.2.2的Scope都可能是链路或全域。<br>广播地址和会换地址由内核来制定合适的Scope。</p>
+<ul>
+<li><p>路由常用的Scope<br>主机： 路由表示的目的地址为本地主机。<br>链路：路由表示的目的地址为本地网络。<br>全域：路由表示的目的地址超过一个下一跳 </p>
+</li>
+<li><p>Scope的应用<br>路由Scope和IP地址Scope在路由代码和内核其他部分都有广泛的应用。  </p>
+</li>
+<li><p>关于IP地址的Scope<br>首先，我们要知道，对于Linux而言，IP地址属于主机而不是接口。这样当主机有两个接口，如eth0，eth1（例如我们路由期Wan口为eth0：202.202.202.202，lan口为eth1：192.168.1.1），两个IP地址（202.202.202.202和192.168.1.1）都是属于主机的，尽管他们配置在不同的接口上。这样，如果没有进行进一步的配置，我们来考虑下ARP应答：假设路由器从eth0（即wan口）接收到ip地址为192.168.1.1的地址请求（即wan端有主机ping 192.168.1.1）路由器是会给予应答的。（当然我们可以通过ARP_IGNORE特性进行配置）。<br>IP地址属于主机，那么，往我们的主机有多个IP地址时，当主机需要往外传送数据是，选择哪一个IP地址作为源IP，就需要进行判断了。对IP地址配置不同的Scope在这里就会得到一定的应用了。 </p>
+</li>
+<li><p>关于路由的Scope<br>我们来看下图有关于路由的Scope的应用： </p>
+<img src="/2022/04/04/tcpip-router/struct4.png" class="" title="This is an example image">
+<p>图中，主机A需要往主机B发送消息。第一条路由的Scope为链路，目的地址为子网10.0.1.0&#x2F;24，主机A无法通过该路由到达主机B。第二条路由的Scope为全域，主机A通过eth0到达网关10.0.1.1，在经网关传送到主机B。<br>路由有更大的Scope能够保证封包能够到达更远的地方</p>
+</li>
+<li><p>Scope在Linux中的实现<br>Linux内核中用枚举常量来表示Scope：</p>
+<figure class="highlight d"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> rt_scope_t</span><br><span class="line">&#123;</span><br><span class="line">    RT_SCOPE_UNIVERSE=<span class="number">0</span>,    <span class="comment">//scope 为全域  所有远程非直连目的地</span></span><br><span class="line"><span class="comment">/* User defined values  */</span></span><br><span class="line">    RT_SCOPE_SITE=<span class="number">200</span>,      <span class="comment">//scope </span></span><br><span class="line">    RT_SCOPE_LINK=<span class="number">253</span>,      <span class="comment">//scope 为链路</span></span><br><span class="line">    RT_SCOPE_HOST=<span class="number">254</span>,      <span class="comment">//scope 为本机</span></span><br><span class="line">    RT_SCOPE_NOWHERE=<span class="number">255</span>    <span class="comment">//被代码视为非法scopte</span></span><br><span class="line">&#125;;</span><br><span class="line">路由<span class="keyword">scope</span>:</span><br><span class="line">如在fib_alias中的fa_scope:</span><br><span class="line">RT_SCOPE_NOWHERE:非法值，不通往任何地方；</span><br><span class="line">RT_SCOPE_HOST：本地</span><br><span class="line">RT_SCOPE_LINK：二层lan，不需要通过路由器</span><br><span class="line">RT_SCOPE_UNIVERSE:远程非直连；</span><br><span class="line"></span><br><span class="line">地址<span class="keyword">scope</span>:两个：</span><br><span class="line">A:保存在in_ifaddr（对设备上配置的每个ip都有这个结构）中的ifa_scope字段；</span><br><span class="line">B：下一跳网关：fib_nh:中有nh_gw:下一跳网关和nh_scope(该地址的<span class="keyword">scope</span>)--即这两个字段是表示了从本地主机到这个下一跳网关的路由表项的<span class="keyword">scope</span>)</span><br><span class="line">通过一个例子来看路由<span class="keyword">scope</span>和下一跳<span class="keyword">scope</span>的关系；</span><br></pre></td></tr></table></figure>
+<img src="/2022/04/04/tcpip-router/scope1.png" class="" title="This is an example image">
+<img src="/2022/04/04/tcpip-router/scope2.png" class="" title="This is an example image"></li>
+</ul>
+<p>例如经常在配置路由中见到：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@dev ~]</span># ip route</span><br><span class="line"><span class="number">192.168.1.17</span> dev ppp0  proto kernel  scope link  src <span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.<span class="number">190</span></span><br><span class="line"><span class="number">10.1.32.14</span> dev tun0  scope link</span><br><span class="line"><span class="number">10.1.32.12</span> dev tun0  scope link</span><br><span class="line"><span class="number">10.4.8.2</span> via <span class="number">192</span>.<span class="number">168</span>.<span class="number">9</span>.<span class="number">254</span> dev eth0  src <span class="number">192</span>.<span class="number">168</span>.<span class="number">9</span>.<span class="number">200</span>  mtu <span class="number">1500</span> advmss <span class="number">1460</span></span><br><span class="line"><span class="number">10.4.9.0</span>/<span class="number">24</span> dev tun0  scope link</span><br><span class="line"><span class="number">192.168.9.0</span>/<span class="number">24</span> dev eth0  proto kernel  scope link  src <span class="number">192</span>.<span class="number">168</span>.<span class="number">9</span>.<span class="number">200</span>  metric <span class="number">1</span></span><br><span class="line"><span class="number">10.2.0.0</span>/<span class="number">16</span> dev tun0  scope link</span><br><span class="line"><span class="number">10.0.0.0</span>/<span class="number">16</span> dev tun0  scope link</span><br><span class="line"><span class="number">10.1.0.0</span>/<span class="number">16</span> dev tun0  scope link</span><br><span class="line"><span class="number">192.168.0.0</span>/<span class="number">16</span> dev tun0  scope link</span><br><span class="line">default via <span class="number">192</span>.<span class="number">168</span>.<span class="number">9</span>.<span class="number">254</span> dev eth0</span><br></pre></td></tr></table></figure>
+
+<h5 id="其他涉及概念："><a href="#其他涉及概念：" class="headerlink" title="其他涉及概念："></a>其他涉及概念：</h5><p>6、默认网关：<br>默认网关经常作为0.0.0.0&#x2F;0路由，linux对默认网关数量没有限制</p>
+<p>7、定向广播：<br>广播封包是一个发往子网广播地址的简单封包，一般是在同一个子网中的所有主机<br>而定向广播则是目的地是远端子网的广播地址，定向广播只能由到达目的子网路径上的最后一个网关识别，因为这个网关配置有该子网的一个IP地址<br>黑客可以通过发送源地址不是自己的icmp 请求广播包来达到dos攻击，这样会有很多主机回复该源地址主机；</p>
+<p>8、主地址和辅助地址：<br>可以在同一个nic上配置多个ip地址，当配置一个地址时，若该地址和同一个nic上已经配置的地址在同一个子网，则这个地址被视为辅助地址，若是不同子网，则是另一个主地址</p>
+<img src="/2022/04/04/tcpip-router/struct5.png" class="" title="This is an example image">
+<img src="/2022/04/04/tcpip-router/struct6.png" class="" title="This is an example image">
+
+<h5 id="路由的基本概念"><a href="#路由的基本概念" class="headerlink" title="路由的基本概念"></a>路由的基本概念</h5><ol>
+<li>路由器，路由和路由表，和非路由多接口主机：</li>
+</ol>
+<ul>
+<li>路由器：是一台网络设备，配备多个网络接口卡（nic),通常包括一个wan口（用于连接互联网）和多个lan口；</li>
+<li>路由：决定一个入口封包当送到本地主机还是转发所需信息，以及正确转发的信息；</li>
+<li>路由表：路由的集合，也叫转发信息库（FIB),一个主机通常维护一张路由表；</li>
+<li>非路由多接口主机：有些非路由主机，尤其是服务器也拥有多个nic,而实际上他们不转发包，拥有多个nic的原因：<ul>
+<li>高可用性：一个接口坏了可以及时接管</li>
+<li>更强的路由能力：服务器可以配置多条路由而不是只有一条默认路由</li>
+<li>多路传输：类似sla,双sta<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">例子：</span><br><span class="line">  一个路由表中含有两个路由：</span><br><span class="line"> 默认路由：对 <span class="number">10.0.0.0</span>/<span class="number">24</span>之外的任何主机（用<span class="number">0.0.0.0</span>/<span class="number">0</span>指定）都送给网关<span class="number">10.0.0.1</span></span><br><span class="line"> 对目的地<span class="number">10.0.0.0</span>/<span class="number">24</span>内的主机流量，都在同一个lan中，则直接用邻居子系统</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>最简单的路由：<br>最简单的路由由以下三部分组成；<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">目的网络：如上述例子的<span class="number">10</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>/<span class="number">24</span></span><br><span class="line">出口设备:如eth0,wlan0</span><br><span class="line">下一跳：如网关</span><br><span class="line"><span class="number">211.91.243.71:503</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h5 id="路由的几个重要部分：路由表，路由项；"><a href="#路由的几个重要部分：路由表，路由项；" class="headerlink" title="路由的几个重要部分：路由表，路由项；"></a>路由的几个重要部分：路由表，路由项；</h5><ul>
+<li>路由表：从2.1之后，linux支持多达255个路由表；有四个表是内置的，此外用户进程可以创建路由表；</li>
+<li>内置路由表如下：<br> + 表255：local table本地路由表，本地接口地址，广播地址和NAT地址都在这个表中，由系统自动维护，管理员不能直接修改<br> + 表254：main table主路由表，若没有指明路由所属的表，则所有的路由都默认放在这个表中，一般是普通路由<br> + 表253: default table默认路由表，默认路由都放在这个表中，特别指明的话，也可以存所有的网关路由<br> + 表0:默认保留；</li>
+<li>创建路由表：TODO:貌似ip命令不行，需要从代码端进行？</li>
+<li>路由项：路由表的内容由一条条路由构成：</li>
+<li>查看本地路由：ip route &#x2F;&#x2F;显示默认路由；<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># route  </span></span><br><span class="line"><span class="attribute">Destination</span>     Gateway         Genmask Flags Metric Ref    Use Iface  </span><br><span class="line"><span class="attribute">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">0</span>     *               <span class="number">255.255.255.0</span>   U     <span class="number">0</span>      <span class="number">0</span>        <span class="number">0</span> eth0  </span><br><span class="line"><span class="attribute">169</span>.<span class="number">254</span>.<span class="number">0</span>.<span class="number">0</span>     *               <span class="number">255.255.0.0</span>     U     <span class="number">0</span>      <span class="number">0</span>        <span class="number">0</span> eth0  </span><br><span class="line"><span class="attribute">default</span>         <span class="number">192.168.0.1</span>     <span class="number">0.0.0.0</span>         UG    <span class="number">0</span>      <span class="number">0</span>        <span class="number">0</span> eth0 </span><br></pre></td></tr></table></figure>
+route 命令的输出项说明<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">输出项         说明</span><br><span class="line">Destination     目标网段或者主机</span><br><span class="line">Gateway         网关地址，”*” 表示目标是本主机所属的网络，不需要路由</span><br><span class="line">Genmask         网络掩码</span><br><span class="line">Flags           标记。一些可能的标记如下：</span><br><span class="line"> </span><br><span class="line">                U — 路由是活动的</span><br><span class="line">                <span class="built_in">H</span> — 目标是一个主机</span><br><span class="line">                G — 路由指向网关</span><br><span class="line">                <span class="built_in">R</span> — 恢复动态路由产生的表项</span><br><span class="line">                D — 由路由的后台程序动态地安装</span><br><span class="line">                M — 由路由的后台程序修改</span><br><span class="line">                ! — 拒绝路由</span><br><span class="line">Metric        路由距离，到达指定网络所需的中转数（linux 内核中没有使用）</span><br><span class="line">Ref           路由项引用次数（linux 内核中没有使用）</span><br><span class="line">Use           此路由项被路由软件查找的次数</span><br><span class="line">Iface         该路由表项对应的输出接口</span><br></pre></td></tr></table></figure>
+<h5 id="语法规则：route-命令"><a href="#语法规则：route-命令" class="headerlink" title="语法规则：route 命令"></a>语法规则：route 命令</h5><figure class="highlight nestedtext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># route  [add|del] [-net|-host] target [netmask Nm] [gw Gw] [[dev] If]</span></span><br><span class="line"><span class="attribute">其中：</span></span><br><span class="line"><span class="attribute">add</span><span class="punctuation"> :</span> <span class="string">添加一条路由规则</span></span><br><span class="line"><span class="attribute">del</span><span class="punctuation"> :</span> <span class="string">删除一条路由规则</span></span><br><span class="line"><span class="attribute">-net</span><span class="punctuation"> :</span> <span class="string">目的地址是一个网络</span></span><br><span class="line"><span class="attribute">-host</span><span class="punctuation"> :</span> <span class="string">目的地址是一个主机</span></span><br><span class="line"><span class="attribute">target</span><span class="punctuation"> :</span> <span class="string">目的网络或主机</span></span><br><span class="line"><span class="attribute">netmask</span><span class="punctuation"> :</span> <span class="string">目的地址的网络掩码</span></span><br><span class="line"><span class="attribute">gw</span><span class="punctuation"> :</span> <span class="string">路由数据包通过的网关</span></span><br><span class="line"><span class="attribute">dev</span><span class="punctuation"> :</span> <span class="string">为路由指定的网络接口</span></span><br><span class="line">具体见man route</span><br></pre></td></tr></table></figure></li>
+<li>路由表的基本使用</li>
+</ul>
+<ol>
+<li>路由成功时进行转发，路由失败时：<br>A：黑洞：悄悄丢弃<br>B:不可达：发送icmp<br>C：禁止：并发送icmp<br>D:放弃：放弃查找此表，继续查找下一张路由表<br>涉及路由的几个概念，包含于route,ip指令中体现</li>
+</ol>
+<ul>
+<li>路由表管理<br>（1）特殊路由：当路由器收到一个封包时，需要决定其提交到本地还是转发，一种简单的方法就是将所有的本地地址存储在一个列表中，对每个封包扫描该列表，作为路由查找的一部分<br>默认情况下：linux使用两张路由表：<br>A:一张用于本地地址，从该表中查找成功表明给主机自己；<br>B:一张用于所有其他路由</li>
+</ul>
+<p>（2）路由成功时进行转发，路由失败时：<br>A：黑洞：悄悄丢弃<br>B:不可达：发送icmp<br>C：禁止：并发送icmp<br>D:放弃：放弃查找此表，继续查找下一张路由表</p>
+<p>（3）路由缓存：<br>linux中无论多少路由表，都只有一个路由缓存：路由缓存分为两部分：<br>A:一个和协议相关的缓存；<br>B:一个和协议无关的缓存：DST<br>(4)路由缓存的垃圾回收<br>A:同步回收：达到阈值，邻居子系统需要内存；<br>B:异步回收：定时周期</p>
+<p>（4）查找路由：<br>路由缓存查找是从一张简单的hash表中寻找完全匹配项，而在容量更大，更复杂的路由表中查找是基于最长前缀匹配（LPM）算法；<br>（5）封包接收和封包传输都会使用到路由：</p>
+<img src="/2022/04/04/tcpip-router/struct7.png" class="" title="This is an example image">
+
+<h5 id="ip-route-命令使用"><a href="#ip-route-命令使用" class="headerlink" title="ip-route 命令使用"></a>ip-route 命令使用</h5><p><a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man8/ip-route.8.html">https://man7.org/linux/man-pages/man8/ip-route.8.html</a></p>
+<p> ip-route - routing table management</p>
+<ul>
+<li>显示某个表，如local表：<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">think</span>@think-VirtualBox:~$ ip route show table local</span><br><span class="line"><span class="attribute">broadcast</span> <span class="number">127.0.0.0</span> dev lo  proto kernel  scope link  src <span class="number">127.0.0.1</span> </span><br><span class="line"><span class="attribute">local</span> <span class="number">127.0.0.0</span>/<span class="number">8</span> dev lo  proto kernel  scope host  src <span class="number">127.0.0.1</span> </span><br><span class="line"><span class="attribute">local</span> <span class="number">127.0.0.1</span> dev lo  proto kernel  scope host  src <span class="number">127.0.0.1</span> </span><br><span class="line"><span class="attribute">broadcast</span> <span class="number">127.255.255.255</span> dev lo  proto kernel  scope link  src <span class="number">127.0.0.1</span> </span><br><span class="line"><span class="attribute">broadcast</span> <span class="number">192.168.0.0</span> dev eth0  proto kernel  scope link  src <span class="number">192.168.0.102</span> </span><br><span class="line"><span class="attribute">local</span> <span class="number">192.168.0.102</span> dev eth0  proto kernel  scope host  src <span class="number">192.168.0.102</span> </span><br><span class="line"><span class="attribute">broadcast</span> <span class="number">192.168.0.255</span> dev eth0  proto kernel  scope link  src <span class="number">192.168.0.102</span> </span><br></pre></td></tr></table></figure></li>
+<li>基本help<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">ip命令：</span><br><span class="line">ip --help:</span><br><span class="line">eg:</span><br><span class="line"> ip --help</span><br><span class="line">Usage: ip [ OPTIONS ] OBJECT &#123; COMMAND |<span class="string"> help &#125;</span></span><br><span class="line"><span class="string">       ip [ -force ] -batch filename</span></span><br><span class="line"><span class="string">where  OBJECT := &#123; link </span>|<span class="string"> addr </span>|<span class="string"> addrlabel </span>|<span class="string"> route </span>|<span class="string"> rule </span>|<span class="string"> neigh </span>|<span class="string"> ntable </span>|</span><br><span class="line">                   tunnel |<span class="string"> tuntap </span>|<span class="string"> maddr </span>|<span class="string"> mroute </span>|<span class="string"> mrule </span>|<span class="string"> monitor </span>|<span class="string"> xfrm </span>|</span><br><span class="line">                   netns |<span class="string"> l2tp </span>|<span class="string"> tcp_metrics </span>|<span class="string"> token &#125;</span></span><br><span class="line"><span class="string">       OPTIONS := &#123; -V[ersion] </span>|<span class="string"> -s[tatistics] </span>|<span class="string"> -d[etails] </span>|<span class="string"> -r[esolve] </span>|</span><br><span class="line">                    -f[amily] &#123; inet |<span class="string"> inet6 </span>|<span class="string"> ipx </span>|<span class="string"> dnet </span>|<span class="string"> bridge </span>|<span class="string"> link &#125; </span>|</span><br><span class="line">                    -4 |<span class="string"> -6 </span>|<span class="string"> -I </span>|<span class="string"> -D </span>|<span class="string"> -B </span>|<span class="string"> -0 </span>|</span><br><span class="line">                    -l[oops] &#123; maximum-addr-flush-attempts &#125; |<span class="string"></span></span><br><span class="line"><span class="string">                    -o[neline] </span>|<span class="string"> -t[imestamp] </span>|<span class="string"> -b[atch] [filename] </span>|</span><br><span class="line">                    -rc[vbuf] [size]&#125;</span><br><span class="line">think<span class="meta">@think-VirtualBox:~$</span> ip -V route </span><br><span class="line">ip utility, iproute2-ss131122</span><br><span class="line">think<span class="meta">@think-VirtualBox:~$</span> ip -f inet route </span><br><span class="line">default via 192.168.0.1 dev eth0  proto static </span><br><span class="line">192.168.0.0/24 dev eth0  proto kernel  scope link  src 192.168.0.102  metric 1 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">解释下：</span><br><span class="line">[]内为可选</span><br><span class="line">&#123;&#125;内为必须，|<span class="string">为或，</span></span><br><span class="line"><span class="string">所以ip的命令： ip 可选option 必选object 必选command/help</span></span><br><span class="line"><span class="string">       option 可以是-V 表示版本号，-f后面可以是 inet/inet6等</span></span><br><span class="line"><span class="string">       object：可以是route/link等命令</span></span><br><span class="line"><span class="string">       command:为object命令中的操作，具体可以见ip object help</span></span><br><span class="line"><span class="string">       如ip route help:</span></span><br><span class="line"><span class="string">think@think-VirtualBox:~$ ip route help  COMMAND即为list/save/restore/...</span></span><br></pre></td></tr></table></figure></li>
+<li>详细的man文档：<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">ip [ ip-<span class="symbol">OPTIONS</span> ] route  &#123; <span class="symbol">COMMAND</span> | help &#125;  --ip-<span class="symbol">OPTIONS</span>是上面ip命令的选项，route是其中之一</span><br><span class="line">ip route &#123; show | flush &#125; <span class="symbol">SELECTOR</span></span><br><span class="line">ip route save <span class="symbol">SELECTOR</span></span><br><span class="line">ip route restore</span><br><span class="line">ip route get <span class="symbol">ROUTE_GET_FLAGS</span> <span class="symbol">ADDRESS</span> [ from <span class="symbol">ADDRESS</span> iif <span class="symbol">STRING</span>  ]</span><br><span class="line">        [ oif <span class="symbol">STRING</span> ] [ mark <span class="symbol">MARK</span> ] [ tos <span class="symbol">TOS</span> ] [ vrf <span class="symbol">NAME</span> ] [</span><br><span class="line">        ipproto <span class="symbol">PROTOCOL</span> ] [ sport <span class="symbol">NUMBER</span> ] [ dport <span class="symbol">NUMBER</span> ]</span><br><span class="line">ip route &#123; add | del | change | append | replace &#125; <span class="symbol">ROUTE</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">SELECTOR</span> := [ root <span class="symbol">PREFIX</span> ] [ match <span class="symbol">PREFIX</span> ] [ exact <span class="symbol">PREFIX</span> ] [</span><br><span class="line">        table <span class="symbol">TABLE_ID</span> ] [ vrf <span class="symbol">NAME</span> ] [ proto <span class="symbol">RTPROTO</span> ] [ type</span><br><span class="line">        <span class="symbol">TYPE</span> ] [ scope <span class="symbol">SCOPE</span> ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">ROUTE</span> := <span class="symbol">NODE_SPEC</span> [ <span class="symbol">INFO_SPEC</span> ]</span><br><span class="line"><span class="symbol">NODE_SPEC</span> := [ <span class="symbol">TYPE</span> ] <span class="symbol">PREFIX</span> [ tos <span class="symbol">TOS</span> ] [ table <span class="symbol">TABLE_ID</span> ] [</span><br><span class="line">        proto <span class="symbol">RTPROTO</span> ] [ scope <span class="symbol">SCOPE</span> ] [ metric <span class="symbol">METRIC</span> ] [ ttl-</span><br><span class="line">        propagate &#123; enabled | disabled &#125; ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">INFO_SPEC</span> := &#123; <span class="symbol">NH</span> | nhid <span class="symbol">ID</span> &#125; <span class="symbol">OPTIONS</span> <span class="symbol">FLAGS</span> [ nexthop <span class="symbol">NH</span> ] ...</span><br><span class="line"></span><br><span class="line"><span class="symbol">NH</span> := [ encap <span class="symbol">ENCAP</span> ] [ via [ <span class="symbol">FAMILY</span> ] <span class="symbol">ADDRESS</span> ] [ dev <span class="symbol">STRING</span> ] [</span><br><span class="line">        weight <span class="symbol">NUMBER</span> ] <span class="symbol">NHFLAGS</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">FAMILY</span> := [ inet | inet6 | mpls | bridge | link ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">OPTIONS</span> := <span class="symbol">FLAGS</span> [ mtu <span class="symbol">NUMBER</span> ] [ advmss <span class="symbol">NUMBER</span> ] [ as [ to ]</span><br><span class="line">        <span class="symbol">ADDRESS</span> ] rtt <span class="symbol">TIME</span> ] [ rttvar <span class="symbol">TIME</span> ] [ reordering <span class="symbol">NUMBER</span></span><br><span class="line">        ] [ window <span class="symbol">NUMBER</span> ] [ cwnd <span class="symbol">NUMBER</span> ] [ ssthresh <span class="symbol">NUMBER</span> ] [</span><br><span class="line">        realms <span class="symbol">REALM</span> ] [ rto_min <span class="symbol">TIME</span> ] [ initcwnd <span class="symbol">NUMBER</span> ] [</span><br><span class="line">        initrwnd <span class="symbol">NUMBER</span> ] [ features <span class="symbol">FEATURES</span> ] [ quickack <span class="symbol">BOOL</span> ]</span><br><span class="line">        [ congctl <span class="symbol">NAME</span> ] [ pref <span class="symbol">PREF</span> ] [ expires <span class="symbol">TIME</span> ] [</span><br><span class="line">        fastopen_no_cookie <span class="symbol">BOOL</span> ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">TYPE</span> := [ unicast | local | broadcast | multicast | throw |</span><br><span class="line">        unreachable | prohibit | blackhole | nat ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">TABLE_ID</span> := [ local| main | default | all | <span class="symbol">NUMBER</span> ]</span><br><span class="line"><span class="symbol">SCOPE</span> := [ host | link | global | <span class="symbol">NUMBER</span> ]</span><br><span class="line"><span class="symbol">NHFLAGS</span> := [ onlink | pervasive ]</span><br><span class="line"><span class="symbol">RTPROTO</span> := [ kernel | boot | static | <span class="symbol">NUMBER</span> ]</span><br><span class="line"><span class="symbol">FEATURES</span> := [ ecn | ]</span><br><span class="line"><span class="symbol">PREF</span> := [ low | medium | high ]</span><br><span class="line"><span class="symbol">ENCAP</span> := [ <span class="symbol">ENCAP_MPLS</span> | <span class="symbol">ENCAP_IP</span> | <span class="symbol">ENCAP_BPF</span> | <span class="symbol">ENCAP_SEG6</span> |</span><br><span class="line">        <span class="symbol">ENCAP_SEG6LOCAL</span> ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">ENCAP_MPLS</span> := mpls [ <span class="symbol">LABEL</span> ] [ ttl <span class="symbol">TTL</span> ]</span><br><span class="line"><span class="symbol">ENCAP_IP</span> := ip id <span class="symbol">TUNNEL_ID</span> dst <span class="symbol">REMOTE_IP</span> [ src <span class="symbol">SRC</span> ] [ tos <span class="symbol">TOS</span> ]</span><br><span class="line">        [ ttl <span class="symbol">TTL</span> ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">ENCAP_BPF</span> := bpf [ in <span class="symbol">PROG</span> ] [ out <span class="symbol">PROG</span> ] [ xmit <span class="symbol">PROG</span> ] [</span><br><span class="line">        headroom <span class="symbol">SIZE</span> ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">ENCAP_SEG6</span> := seg6 mode [ encap | inline | l2encap ] segs</span><br><span class="line">        <span class="symbol">SEGMENTS</span> [ hmac <span class="symbol">KEYID</span> ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">ENCAP_SEG6LOCAL</span> := seg6local action <span class="symbol">SEG6_ACTION</span> [</span><br><span class="line">        <span class="symbol">SEG6_ACTION_PARAM</span> ]</span><br><span class="line"></span><br><span class="line"><span class="symbol">ROUTE_GET_FLAGS</span> :=  [ fibmatch  ]</span><br></pre></td></tr></table></figure>
+描述：</li>
+</ul>
+<ol>
+<li><p>IP路由用于操作内核路由中的条目表。</p>
+</li>
+<li><p>路由类型：对应上面的TYPE的种类解释：即用来描述路由条目的类型</p>
+<ul>
+<li><p>unicast - the route entry describes real paths to the<br>   destinations covered by the route prefix.<br>  单播，即一到一，这个路由项描述了路由前缀覆盖的到达目的地的真实路径；前缀即ip等，下解释</p>
+</li>
+<li><p>unreachable - these destinations are unreachable. Packets<br> are discarded and the ICMP message host unreachable is<br> generated.  The local senders get an EHOSTUNREACH error.<br> 这些目的地是无法到达的。包被丢弃，并且ICMP报文主机不可达为生成的。本地发送者收到EHOSTUNREACH错误</p>
+</li>
+<li><p>blackhole - these destinations are unreachable. Packets<br> are discarded silently.  The local senders get an EINVAL<br> error.<br> 黑洞，带上这个类型时，表示这些目的地是无法到达的。包默默地被丢弃。本地发送者得到一个EINVAL错误。</p>
+</li>
+<li><p>prohibit - these destinations are unreachable. Packets<br> are discarded and the ICMP message communication<br> administratively prohibited is generated. The local<br> senders get an EACCES error.<br> 禁止： 带上这个类型时，表示这些目的地无法到达，包被丢弃并且icmp报文通信生成被管理者禁止。本地发送者会得到一个EACCES错误</p>
+</li>
+<li><p>local - the destinations are assigned to this host. The<br> packets are looped back and delivered locally.<br> 本地：带上这个类型时，表示目的地是本机，这些包被环回并传递到本地；</p>
+</li>
+<li><p>broadcast - the destinations are broadcast addresses. The<br> packets are sent as link broadcasts.<br> 广播：带上这个类型时，表示目的地是广播地址，报文以链路广播的形式发送；</p>
+</li>
+<li><p>throw - a special control route used together with policy<br> rules. If such a route is selected, lookup in this table<br> is terminated pretending that no route was found. Without<br> policy routing it is equivalent to the absence of the<br> route in the routing table. The packets are dropped and<br> the ICMP message net unreachable is generated. The local<br> senders get an ENETUNREACH error.<br> 与策略规则一起使用的特殊控制路径。 如果选择了这样的路由，则会在未找到路由的情况下终止此表中的查找。 如果没有策略路由，则等同于路由表中没有路由。 数据包被丢弃，并生成ICMP消息net unreachable。 本地发件人收到ENETUNREACH错误</p>
+</li>
+<li><p>nat - a special NAT route. Destinations covered by the<br> prefix are considered to be dummy (or external) addresses<br> which require translation to real (or internal) ones<br> before forwarding. The addresses to translate to are<br> selected with the attribute via.  Warning: Route NAT is<br> no longer supported in Linux 2.6.<br> 一条特殊的NAT路由。 前缀所覆盖的目的地被认为是虚拟（或外部）地址，在转发之前需要将其转换为真实（或内部）地址。 使用属性via选择要转换为的地址</p>
+</li>
+<li><p>anycast - not implemented the destinations are anycast<br> addresses assigned to this host. They are mainly<br> equivalent to local with one difference: such addresses<br> are invalid when used as the source address of any<br> packet.<br> 分配给此主机的路由地址，它们主要等效于本地，只是有一个区别：这些地址用作任何数据包的源地址时都是无效的。</p>
+</li>
+<li><p>multicast - a special type used for multicast routing. It<br> is not present in normal routing tables.<br> 一种用于多播路由的特殊类型。 它在常规路由表中不存在。</p>
+</li>
+</ul>
+</li>
+<li><p>路由表和操作：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br></pre></td><td class="code"><pre><span class="line">linux2.<span class="keyword">x</span>能打包路由到几个路由表中，路由表编号为<span class="number">1</span>-<span class="number">2</span>的<span class="number">32</span>次方-<span class="number">1</span>；或者从/etc/iproute2/rt_tables中拿表名；</span><br><span class="line">默认的，所有的普通路由被插入到main表中： id:<span class="number">254</span>,并且内核只使用这个表，当计算路由的时候；</span><br><span class="line">值(<span class="number">0</span>,<span class="number">253</span>,<span class="number">254</span>,<span class="number">255</span>)是保留为内建使用的；</span><br><span class="line"></span><br><span class="line">实际上，另一个表总是存在的，它是不可见的</span><br><span class="line">更加重要。它是local表(ID <span class="number">255</span>)。这个表</span><br><span class="line">由本地地址和广播地址的路由组成。内核</span><br><span class="line">通常由管理员和自动维护这个表</span><br><span class="line">不需要修改，甚至看都不用看。</span><br><span class="line"></span><br><span class="line">当策略路由被使用时，多个路由表开始进入竞争；</span><br><span class="line">操作路由表：</span><br><span class="line">       </span><br><span class="line"><span class="number">1</span> ip route <span class="built_in">add</span></span><br><span class="line">       <span class="built_in">add</span> <span class="keyword">new</span> route</span><br><span class="line"></span><br><span class="line"><span class="number">2</span> ip route <span class="keyword">change</span></span><br><span class="line">       <span class="keyword">change</span> route</span><br><span class="line"></span><br><span class="line"><span class="number">3</span> ip route replace</span><br><span class="line">    <span class="keyword">change</span> <span class="built_in">or</span> <span class="built_in">add</span> <span class="keyword">new</span> one</span><br><span class="line">       一些参数解释：</span><br><span class="line">    TYPE： 如上：  [ unicast | local | broadcast | multicast | <span class="keyword">throw</span> |</span><br><span class="line">        unreachable | prohibit | blackhole | nat ]</span><br><span class="line">    <span class="keyword">to</span> TYPE PREFIX (default)</span><br><span class="line">                   the destination prefix of the route. If TYPE <span class="keyword">is</span></span><br><span class="line">                   omitted, ip assumes <span class="built_in">type</span> unicast.  Other <span class="built_in">values</span> of</span><br><span class="line">                   TYPE are listed above.  PREFIX <span class="keyword">is</span> <span class="keyword">an</span> IP <span class="built_in">or</span> IPv6</span><br><span class="line">                   address optionally followed by <span class="keyword">a</span> slash <span class="built_in">and</span> the</span><br><span class="line">                   prefix length. If the length of the prefix <span class="keyword">is</span></span><br><span class="line">                   missing, ip assumes <span class="keyword">a</span> full-length host route. There</span><br><span class="line">                   <span class="keyword">is</span> also <span class="keyword">a</span> special PREFIX default - which <span class="keyword">is</span></span><br><span class="line">                   equivalent <span class="keyword">to</span> IP <span class="number">0</span>/<span class="number">0</span> <span class="built_in">or</span> <span class="keyword">to</span> IPv6 ::/<span class="number">0</span>.</span><br><span class="line">    <span class="keyword">to</span> TYPE PREFIX (default)：路由的目标前缀。如果省略TYPE，则ip采用unicast类型。上面列出了其他类型的值。前缀是一个IP或IPv6地址，后跟斜杠和前缀长度。如果前缀的长度丢失，ip将采用全长主机路由。还有一个特殊的前缀默认值-相当于IP <span class="number">0</span>/<span class="number">0</span>或IPv6:：/<span class="number">0</span>。</span><br><span class="line"></span><br><span class="line">    eg:</span><br><span class="line">    ip route show:</span><br><span class="line">    default via <span class="number">172.21</span>.<span class="number">212.1</span> dev eth0 onlink  默认通过<span class="number">172.21</span>.<span class="number">212.1</span>，设备eth0出去，所以前缀可以是一个ip地址或者default</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    tos TOS</span><br><span class="line">    </span><br><span class="line">                  dsfield TOS</span><br><span class="line">                         the Type Of Service (TOS) key. This key <span class="built_in">has</span> <span class="keyword">no</span></span><br><span class="line">                         associated mask <span class="built_in">and</span> the longest <span class="keyword">match</span> <span class="keyword">is</span> understood</span><br><span class="line">                         <span class="keyword">as</span>: First, compare the TOS of the route <span class="built_in">and</span> of the</span><br><span class="line">                         packet. If they are not equal, then the packet may</span><br><span class="line">                         still <span class="keyword">match</span> <span class="keyword">a</span> route with <span class="keyword">a</span> zero TOS.  TOS <span class="keyword">is</span> either</span><br><span class="line">                         <span class="keyword">an</span> <span class="number">8</span> bit hexadecimal <span class="keyword">number</span> <span class="built_in">or</span> <span class="keyword">an</span> identifier from</span><br><span class="line">                         /etc/iproute2/rt_dsfield.</span><br><span class="line">    tos TOS/dsfield TOS：服务类型（TOS）密钥。这个密钥没有相关的掩码，最长的匹配被理解为：首先，比较路由和包的TOS。如果它们不相等，则分组仍然可以匹配具有零TOS的路由。TOS是<span class="number">8</span>位十六进制数或/etc/iproute2/rt_dsfield中的标识符。</span><br><span class="line">    <span class="keyword">cat</span> /etc/iproute2/rt_dsfield</span><br><span class="line">    # Differentiated field <span class="built_in">values</span></span><br><span class="line">    # These include the DSCP <span class="built_in">and</span> unused bits</span><br><span class="line">    <span class="number">0</span>x0	default</span><br><span class="line">    # Newer RFC2597 <span class="built_in">values</span></span><br><span class="line">    <span class="number">0</span>x28	AF11</span><br><span class="line">    <span class="number">0</span>x30	AF12</span><br><span class="line">    <span class="number">0</span>x38	AF13</span><br><span class="line">    <span class="number">0</span>x48	AF21</span><br><span class="line">    <span class="number">0</span>x50	AF22</span><br><span class="line">    <span class="number">0</span>x58	AF23</span><br><span class="line">    <span class="number">0</span>x68	AF31</span><br><span class="line">    <span class="number">0</span>x70	AF32</span><br><span class="line">    <span class="number">0</span>x78	AF33</span><br><span class="line">    <span class="number">0</span>x88	AF41</span><br><span class="line">    <span class="number">0</span>x90	AF42</span><br><span class="line">    <span class="number">0</span>x98	AF43</span><br><span class="line">    # Older <span class="built_in">values</span> RFC2474</span><br><span class="line">    <span class="number">0</span>x20	CS1</span><br><span class="line">    <span class="number">0</span>x40	CS2</span><br><span class="line">    <span class="number">0</span>x60	CS3</span><br><span class="line">    <span class="number">0</span>x80	CS4</span><br><span class="line">    <span class="number">0</span>xA0	CS5</span><br><span class="line">    <span class="number">0</span>xC0	CS6</span><br><span class="line">    <span class="number">0</span>xE0	CS7</span><br><span class="line">    # RFC <span class="number">2598</span></span><br><span class="line">    <span class="number">0</span>xB8	EF</span><br><span class="line">    </span><br><span class="line">    metric NUMBER</span><br><span class="line">    preference NUMBER</span><br><span class="line">                         the preference value of the route.  NUMBER <span class="keyword">is</span> <span class="keyword">an</span></span><br><span class="line">                         arbitrary <span class="number">32</span>bit <span class="keyword">number</span>, where routes with lower</span><br><span class="line">                         <span class="built_in">values</span> are preferred.</span><br><span class="line">    metric ：跳数，该条路由记录的质量，一般情况下，如果有多条到达相同目的地的路由记录，路由器会采用metric值小的那条路由</span><br><span class="line">    //添加路由时，可以加上这个，如果你知道的话；</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    table TABLEID：要将此路由添加到的表。TABLEID可以是文件/etc/iproute2/rt_tables中的数字或字符串。如果省略此参数，ip将采用主表(main表)，但本地、广播和nat路由除外，默认情况下，这些路由将放入本地表中(local)</span><br><span class="line">    <span class="keyword">cat</span> /etc/iproute2/rt_tables</span><br><span class="line">    #</span><br><span class="line">    # reserved <span class="built_in">values</span></span><br><span class="line">    #</span><br><span class="line">    <span class="number">255</span>	local</span><br><span class="line">    <span class="number">254</span>	main</span><br><span class="line">    <span class="number">253</span>	default</span><br><span class="line">    <span class="number">0</span>	unspec</span><br><span class="line">    #</span><br><span class="line">    # local</span><br><span class="line">    #</span><br><span class="line">    #<span class="number">1</span>	inr.ruhep</span><br><span class="line">    </span><br><span class="line">                  vrf NAME: Virtual Routing <span class="built_in">and</span> Forwarding - VRF</span><br><span class="line">                         the vrf name <span class="keyword">to</span> <span class="built_in">add</span> this route <span class="keyword">to</span>. Implicitly means</span><br><span class="line">                         the table associated with the VRF.</span><br><span class="line">    dev NAME：输出设备名称: eg: dev eth0</span><br><span class="line">                 </span><br><span class="line">    via [ FAMILY ] ADDRESS</span><br><span class="line">                         the address of the nexthop router, in the address</span><br><span class="line">                         family FAMILY.  Actually, the sense of this field</span><br><span class="line">                         depends <span class="keyword">on</span> the route <span class="built_in">type</span>.  For <span class="keyword">normal</span> unicast</span><br><span class="line">                         routes it <span class="keyword">is</span> either the true <span class="keyword">next</span> hop router <span class="built_in">or</span>, <span class="keyword">if</span></span><br><span class="line">                         it <span class="keyword">is</span> <span class="keyword">a</span> direct route installed in BSD compatibility</span><br><span class="line">                         <span class="keyword">mode</span>, it can <span class="keyword">be</span> <span class="keyword">a</span> local address of the interface.</span><br><span class="line">                         For NAT routes it <span class="keyword">is</span> the <span class="keyword">first</span> address of the block</span><br><span class="line">                         of translated IP destinations</span><br><span class="line">    </span><br><span class="line">    via [family]  ADDRESS：下一跳路由器的地址。 实际上，此字段的含义取决于路由类型。 对于普通的单播路由，它要么是真正的下一跳路由器，要么是以BSD兼容模式安装的直接路由，它可以是接口的本地地址。 对于NAT路由，它是已转换IP目标块的第一个地址</span><br><span class="line">    family可以是  FAMILY := [ inet | inet6 | mpls | bridge | link ]</span><br><span class="line">    ip route <span class="built_in">add</span> default via <span class="number">192.168</span>.<span class="number">1.1</span>	设置系统默认路由</span><br><span class="line">    ip route <span class="built_in">add</span> <span class="number">192.168</span>.<span class="number">4.0</span>/<span class="number">24</span> via <span class="number">192.168</span>.<span class="number">0.254</span> dev eth0	设置<span class="number">192.168</span>.<span class="number">4.0</span>网段的网关为<span class="number">192.168</span>.<span class="number">0.254</span>,数据走eth0接口</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    src ADDRESS：发送到路由前缀所覆盖的目的地时首选的源地址，当一个设备上有多个ip时可能需要；</span><br><span class="line">    </span><br><span class="line">    realm REALMID：此路由被分配到的领域。REALMID可以是/etc/iproute2/rt_realms文件中的数字或字符串。？？</span><br><span class="line">    </span><br><span class="line">    mtu MTU/mtu lock MTU：到达目的地的路径上的MTU。 如果未使用修饰符lock，则由于路径MTU发现，内核可能会更新MTU。 如果使用了修饰符锁定，则将不尝试任何路径MTU发现，在IPv4情况下，所有数据包将在没有DF位的情况下发送，或者将其分片到IPv6的MTU</span><br><span class="line">    </span><br><span class="line">    window NUMBER：TCP播发到这些目的地的最大窗口，以字节为单位。它限制了允许TCP对等方发送给我们的最大数据突发</span><br><span class="line">    rtt TIME：初始RTT（“往返时间”）估算值。 如果未指定后缀，则这些单位是直接传递到路由代码的原始值，以保持与先前版本的兼容性。 否则，如果使用后缀s，sec或secs来指定秒数，而使用ms，msec或msecs的后缀来指定毫秒。</span><br><span class="line">    </span><br><span class="line">    rttvar TIME (<span class="number">2.3</span>.<span class="number">15</span>+ <span class="keyword">only</span>)：初始RTT方差估算值。 与上面的rtt一样指定值</span><br><span class="line">    rto_min TIME (<span class="number">2.6</span>.<span class="number">23</span>+ <span class="keyword">only</span>)：与此目标通信时要使用的最小TCP重新传输超时。值的指定与上面的rtt相同</span><br><span class="line">    ssthresh NUMBER (<span class="number">2.3</span>.<span class="number">15</span>+ <span class="keyword">only</span>)：初始慢启动阈值的估计值</span><br><span class="line">    cwnd NUMBER (<span class="number">2.3</span>.<span class="number">15</span>+ <span class="keyword">only</span>)：锁定标志，如果不使用锁定标志，则忽略该选项</span><br><span class="line">    initcwnd NUMBER (<span class="number">2.5</span>.<span class="number">70</span>+ <span class="keyword">only</span>)：到此目标的连接的初始拥塞窗口大小。 实际窗口大小是该值乘以相同连接的MSS（``最大段大小<span class="string">&#x27;&#x27;</span>）。 默认值为零，表示使用RFC2414中指定的值。</span><br><span class="line">    initrwnd NUMBER (<span class="number">2.6</span>.<span class="number">33</span>+ <span class="keyword">only</span>)：到此目标的连接的初始接收窗口大小。 实际窗口大小是此值乘以连接的MSS。 默认值为零，表示使用慢启动值。</span><br><span class="line">    features FEATURES (<span class="number">3.18</span>+<span class="keyword">only</span>)：启用或禁用每路由功能。此时唯一可用的特性是ecn，它可以在启动到给定目标网络的连接时启用显式拥塞通知。当响应来自给定网络的连接请求时，即使net.ipv4.tcp_ecn sysctl设置为<span class="number">0</span></span><br><span class="line">    </span><br><span class="line">    congctl NAME/congctl lock NAME (<span class="number">3.20</span>+ <span class="keyword">only</span>)：仅针对给定的目的地设置特定的TCP拥塞控制算法。 如果未指定，Linux将保留当前的全局默认TCP拥塞控制算法或应用程序中的一种。 如果未使用修饰符锁定，则应用程序仍可能会覆盖该目的地的建议拥塞控制算法。 如果使用了修饰符锁，则不允许应用程序覆盖该目的地的指定拥塞控制算法，因此将强制/保证使用建议的算法</span><br><span class="line">    </span><br><span class="line">    advmss NUMBER (<span class="number">2.3</span>.<span class="number">15</span>+ <span class="keyword">only</span>)：在建立TCP连接时向这些目标播发的MSS（“最大段大小”）。如果没有给定，Linux将使用从第一跳设备MTU计算的默认值</span><br><span class="line">    reordering NUMBER (<span class="number">2.3</span>.<span class="number">15</span>+ <span class="keyword">only</span>)：到此目的地的路径上的最大重新排序。 如果未给出，则Linux使用通过sysctl变量net/ipv4/tcp_reordering选择的值</span><br><span class="line">    </span><br><span class="line">    nexthop NEXTHOP：多路径路由的下一跳。 NEXTHOP是一个复杂值，其语法类似于顶级参数列表：</span><br><span class="line">    via [family] ADDRESS：下一跳路由</span><br><span class="line">    dev NAME：输出设备名称</span><br><span class="line">    weight NUMBER：是多路径路由的此元素的权重，反映其相对带宽或质量</span><br><span class="line">    </span><br><span class="line">    iproute2中使用的内部缓冲区限制</span><br><span class="line">    中指定的下一跳的最大数目</span><br><span class="line">    一个走。如果只给出ADDRESS，则当前的</span><br><span class="line">    缓冲区大小允许<span class="number">144</span>个IPv6下一跳和<span class="number">253</span>个</span><br><span class="line">    IPv4。对于IPv4，这有效地限制了</span><br><span class="line">    每条路由可能的下一跳数。IPv6,</span><br><span class="line">    进一步的下一跳可能被附加到同一路由</span><br><span class="line">    通过IP route <span class="keyword">append</span>命令。</span><br><span class="line">    </span><br><span class="line">    scope SCOPE_VAL：路由前缀所覆盖的目的地范围。 SCOPE_VAL可以是数字/etc/iproute2/rt_scopes中的字符串。 如果省略此参数，则ip假定所有网关单播路由的作用域是全局范围，直接单播和广播路由的作用域链接以及本地路由的作用域主机</span><br><span class="line">    <span class="keyword">cat</span> /etc/iproute2/rt_scopes </span><br><span class="line">    #</span><br><span class="line">    # reserved <span class="built_in">values</span></span><br><span class="line">    #</span><br><span class="line">    <span class="number">0</span>	<span class="keyword">global</span></span><br><span class="line">    <span class="number">255</span>	nowhere</span><br><span class="line">    <span class="number">254</span>	host</span><br><span class="line">    <span class="number">253</span>	link</span><br><span class="line">    #</span><br><span class="line">    # pseudo-reserved</span><br><span class="line">    #</span><br><span class="line">    <span class="number">200</span>	site</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    protocol RTPROTO：该路由的路由协议标识符。 RTPROTO可以是文件/ etc / iproute2 / rt_protos中的数字或字符串。如果未提供路由协议ID，则ip会采用协议引导方式（即假定路由是由不了解自己在做什么的人添加的）。 几个协议值具有固定的解释。</span><br><span class="line">    redirect： 路由是由于ICMP重定向而安装的</span><br><span class="line">    kernel：路由是在自动配置期间由内核安装的</span><br><span class="line">    boot：路由是在启动过程中安装的。如果路由守护进程启动，它将清除所有这些守护进程</span><br><span class="line">    static：该路由由管理员安装，以覆盖动态路由。 路由守护程序将尊重它们，甚至可能将它们通告给其对等端。</span><br><span class="line">    ra：路由是通过路由器发现协议安装的</span><br><span class="line">    </span><br><span class="line">     onlink pretend that the nexthop <span class="keyword">is</span> directly attached <span class="keyword">to</span></span><br><span class="line">                         this link, even <span class="keyword">if</span> it does not <span class="keyword">match</span> any interface</span><br><span class="line">                         prefix.假设下一跳是直接连接到的此链接，即使它不匹配任何接口前缀。</span><br><span class="line">    //它们是可以本地解析的地址。它们不需要网关，因为它们不需要路由。</span><br><span class="line">    </span><br><span class="line">     pref PREF 优先级</span><br><span class="line">                         the IPv6 route preference.  PREF <span class="keyword">is</span> <span class="keyword">a</span> <span class="built_in">string</span></span><br><span class="line">                         specifying the route preference <span class="keyword">as</span> defined in</span><br><span class="line">                         RFC4191 <span class="keyword">for</span> Router Discovery <span class="keyword">messages</span>. Namely:</span><br><span class="line">    </span><br><span class="line">                                 low - the route <span class="built_in">has</span> <span class="keyword">a</span> lowest priority</span><br><span class="line">    </span><br><span class="line">                                 medium - the route <span class="built_in">has</span> <span class="keyword">a</span> default priority</span><br><span class="line">    </span><br><span class="line">                                 high - the route <span class="built_in">has</span> <span class="keyword">a</span> highest priority</span><br><span class="line">     nhid ID</span><br><span class="line">                         use nexthop object with given id <span class="keyword">as</span> nexthop</span><br><span class="line">                         specification.</span><br><span class="line">    </span><br><span class="line">            encap ENCAPTYPE ENCAPHDR</span><br><span class="line">                         attach tunnel encapsulation attributes <span class="keyword">to</span> this</span><br><span class="line">                         route.</span><br><span class="line">    </span><br><span class="line">                         ENCAPTYPE <span class="keyword">is</span> <span class="keyword">a</span> <span class="built_in">string</span> specifying the supported</span><br><span class="line">                         encapsulation <span class="built_in">type</span>. Namely:</span><br><span class="line">    </span><br><span class="line">                                 mpls - encapsulation <span class="built_in">type</span> MPLS</span><br><span class="line">    </span><br><span class="line">                                 ip - IP encapsulation (Geneve, GRE, VXLAN,</span><br><span class="line">                                 ...)</span><br><span class="line">    </span><br><span class="line">                                 bpf - Execution of BPF program</span><br><span class="line">    </span><br><span class="line">                                 seg6 - encapsulation <span class="built_in">type</span> IPv6 Segment</span><br><span class="line">                                 Routing</span><br><span class="line">    </span><br><span class="line">                                 seg6local - local SRv6 segment processing</span><br><span class="line">    </span><br><span class="line">                         ENCAPHDR <span class="keyword">is</span> <span class="keyword">a</span> <span class="keyword">set</span> of encapsulation attributes</span><br><span class="line">                         specific <span class="keyword">to</span> the ENCAPTYPE.</span><br><span class="line">    </span><br><span class="line">                                 mpls</span><br><span class="line">                                   MPLSLABEL - mpls label stack with labels</span><br><span class="line">                                   separated by /</span><br><span class="line">    </span><br><span class="line">                                   ttl TTL - TTL <span class="keyword">to</span> use <span class="keyword">for</span> MPLS header <span class="built_in">or</span> <span class="number">0</span></span><br><span class="line">                                   <span class="keyword">to</span> inherit from IP header</span><br><span class="line">    </span><br><span class="line">                                 ip</span><br><span class="line">                                   id TUNNEL_ID dst REMOTE_IP [ src SRC ] [</span><br><span class="line">                                   tos TOS ] [ ttl TTL ] [ key ] [ csum ] [</span><br><span class="line">                                   seq ]</span><br><span class="line">    </span><br><span class="line">                                 bpf</span><br><span class="line">                                   in PROG - BPF program <span class="keyword">to</span> <span class="keyword">execute</span> <span class="keyword">for</span></span><br><span class="line">                                   incoming packets</span><br><span class="line">    </span><br><span class="line">                                   out PROG - BPF program <span class="keyword">to</span> <span class="keyword">execute</span> <span class="keyword">for</span></span><br><span class="line">                                   outgoing packets</span><br><span class="line">    </span><br><span class="line">                                   xmit PROG - BPF program <span class="keyword">to</span> <span class="keyword">execute</span> <span class="keyword">for</span></span><br><span class="line">                                   transmitted packets</span><br><span class="line">    </span><br><span class="line">                                   headroom SIZE - Size of header BPF</span><br><span class="line">                                   program will attach (xmit)</span><br><span class="line">    </span><br><span class="line">                                 seg6</span><br><span class="line">                                   <span class="keyword">mode</span> inline - Directly <span class="keyword">insert</span> Segment</span><br><span class="line">                                   Routing Header after IPv6 header</span><br><span class="line">    </span><br><span class="line">                                   <span class="keyword">mode</span> encap - Encapsulate packet in <span class="keyword">an</span></span><br><span class="line">                                   outer IPv6 header with SRH</span><br><span class="line">    </span><br><span class="line">                                   <span class="keyword">mode</span> l2encap - Encapsulate ingress L2</span><br><span class="line">                                   frame within <span class="keyword">an</span> outer IPv6 header <span class="built_in">and</span> SRH</span><br><span class="line">    </span><br><span class="line">                                   SEGMENTS - List of comma-separated IPv6</span><br><span class="line">                                   addresses</span><br><span class="line">    </span><br><span class="line">                                   KEYID - Numerical value in decimal</span><br><span class="line">                                   representation. See ip-sr(<span class="number">8</span>).</span><br><span class="line">    </span><br><span class="line">                                 seg6local</span><br><span class="line">                                   SEG6_ACTION [ SEG6_ACTION_PARAM ] -</span><br><span class="line">                                   Operation <span class="keyword">to</span> perform <span class="keyword">on</span> matching packets.</span><br><span class="line">                                   The following actions are currently</span><br><span class="line">                                   supported (Linux <span class="number">4.14</span>+ <span class="keyword">only</span>).</span><br><span class="line">    </span><br><span class="line">                                     End - Regular SRv6 processing <span class="keyword">as</span></span><br><span class="line">                                     intermediate segment endpoint.  This</span><br><span class="line">                                     action <span class="keyword">only</span> accepts packets with <span class="keyword">a</span> non-</span><br><span class="line">                                     zero Segments Left value. Other</span><br><span class="line">                                     matching packets are dropped.</span><br><span class="line">    </span><br><span class="line">                                     End.<span class="keyword">X</span> nh6 NEXTHOP - Regular SRv6</span><br><span class="line">                                     processing <span class="keyword">as</span> intermediate segment</span><br><span class="line">                                     endpoint.  Additionally, forward</span><br><span class="line">                                     processed packets <span class="keyword">to</span> given <span class="keyword">next</span>-hop.</span><br><span class="line">                                     This action <span class="keyword">only</span> accepts packets with <span class="keyword">a</span></span><br><span class="line">                                     non-zero Segments Left value. Other</span><br><span class="line">                                     matching packets are dropped.</span><br><span class="line">    </span><br><span class="line">                                     End.DX6 nh6 NEXTHOP - Decapsulate inner</span><br><span class="line">                                     IPv6 packet <span class="built_in">and</span> forward it <span class="keyword">to</span> the</span><br><span class="line">                                     specified <span class="keyword">next</span>-hop. If the <span class="keyword">argument</span> <span class="keyword">is</span></span><br><span class="line">                                     <span class="keyword">set</span> <span class="keyword">to</span> ::, then the <span class="keyword">next</span>-hop <span class="keyword">is</span></span><br><span class="line">                                     selected according <span class="keyword">to</span> the local</span><br><span class="line">                                     selection rules. This action <span class="keyword">only</span></span><br><span class="line">                                     accepts packets with either <span class="keyword">a</span> zero</span><br><span class="line">                                     Segments Left value <span class="built_in">or</span> <span class="keyword">no</span> SRH at <span class="keyword">all</span>,</span><br><span class="line">                                     <span class="built_in">and</span> <span class="keyword">an</span> inner IPv6 packet. Other</span><br><span class="line">                                     matching packets are dropped.</span><br><span class="line">    </span><br><span class="line">                                     End.B6 srh segs SEGMENTS [ hmac KEYID ]</span><br><span class="line">                                     - Insert the specified SRH immediately</span><br><span class="line">                                     after the IPv6 header, <span class="keyword">update</span> the DA</span><br><span class="line">                                     with the <span class="keyword">first</span> segment of the newly</span><br><span class="line">                                     inserted SRH, then forward the</span><br><span class="line">                                     resulting packet. The original SRH <span class="keyword">is</span></span><br><span class="line">                                     not modified. This action <span class="keyword">only</span> accepts</span><br><span class="line">                                     packets with <span class="keyword">a</span> non-zero Segments Left</span><br><span class="line">                                     value. Other matching packets are</span><br><span class="line">                                     dropped.</span><br><span class="line">    </span><br><span class="line">                                     End.B6.Encaps srh segs SEGMENTS [ hmac</span><br><span class="line">                                     KEYID ] - Regular SRv6 processing <span class="keyword">as</span></span><br><span class="line">                                     intermediate segment endpoint.</span><br><span class="line">                                     Additionally, encapsulate the matching</span><br><span class="line">                                     packet within <span class="keyword">an</span> outer IPv6 header</span><br><span class="line">                                     followed by the specified SRH. The</span><br><span class="line">                                     destination address of the outer IPv6</span><br><span class="line">                                     header <span class="keyword">is</span> <span class="keyword">set</span> <span class="keyword">to</span> the <span class="keyword">first</span> segment of</span><br><span class="line">                                     the <span class="keyword">new</span> SRH. The <span class="keyword">source</span> address <span class="keyword">is</span> <span class="keyword">set</span></span><br><span class="line">                                     <span class="keyword">as</span> described in ip-sr(<span class="number">8</span>).</span><br><span class="line">    </span><br><span class="line">                  expires TIME (Linux <span class="number">4.4</span>+ <span class="keyword">only</span>)</span><br><span class="line">                         the route will <span class="keyword">be</span> deleted after the expires time.</span><br><span class="line">                         Only support IPv6 at present.</span><br><span class="line">    </span><br><span class="line">                  ttl-propagate &#123; enabled | disabled &#125;</span><br><span class="line">                         Control whether TTL should <span class="keyword">be</span> propagated from any</span><br><span class="line">                         encap into the un-encapsulated packet, overriding</span><br><span class="line">                         any <span class="keyword">global</span> configuration. Only supported <span class="keyword">for</span> MPLS</span><br><span class="line">                         at present.</span><br><span class="line">    </span><br><span class="line">    example:</span><br><span class="line">    ip route <span class="built_in">add</span> default via <span class="number">192.168</span>.<span class="number">1.1</span>	设置系统默认路由,即目的地默认都通过网关<span class="number">192.168</span>.<span class="number">1.1</span>来到达；</span><br><span class="line">    ip route <span class="built_in">add</span> <span class="number">192.168</span>.<span class="number">4.0</span>/<span class="number">24</span> via <span class="number">192.168</span>.<span class="number">0.254</span> dev eth0	设置<span class="number">192.168</span>.<span class="number">4.0</span>网段的网关为<span class="number">192.168</span>.<span class="number">0.254</span>,数据走eth0接口</span><br><span class="line">     即，目的地为<span class="number">192.168</span>.<span class="number">4.0</span>/<span class="number">24</span>的网段，则通过<span class="number">192.168</span>.<span class="number">0.254</span>走，且走eth0接口，这里网关即目的地址会替换为这个；</span><br><span class="line">    ip route <span class="built_in">add</span> default via <span class="number">192.168</span>.<span class="number">0.254</span> dev eth0	设置默认网关为<span class="number">192.168</span>.<span class="number">0.254</span></span><br><span class="line">    ip route <span class="built_in">add</span> default via <span class="number">192.168</span>.<span class="number">1.1</span> table <span class="number">1</span>	在一号表中添加默认路由为<span class="number">192.168</span>.<span class="number">1.1</span></span><br><span class="line">    ip route <span class="built_in">add</span> <span class="number">192.168</span>.<span class="number">0.0</span>/<span class="number">24</span> via <span class="number">192.168</span>.<span class="number">1.2</span> table <span class="number">1</span>	在一号表中添加一条到<span class="number">192.168</span>.<span class="number">0.0</span>网段的路由为<span class="number">192.168</span>.<span class="number">1.2</span></span><br><span class="line">    ip route <span class="built_in">add</span> prohibit <span class="number">209.10</span>.<span class="number">26.51</span>	设置请求的目的地不可达的路由</span><br><span class="line">    ip route <span class="built_in">add</span> prohibit <span class="number">209.10</span>.<span class="number">26.51</span> from <span class="number">192.168</span>.<span class="number">99.35</span>	假设您不想阻止所有用户访问此特定主机，则可以使用该from选项，阻止了源IP <span class="number">192.168</span>.<span class="number">99.35</span>到达<span class="number">209.10</span>.<span class="number">26.51</span></span><br><span class="line">    ip route <span class="keyword">change</span> default via <span class="number">192.168</span>.<span class="number">99.113</span> dev eth0	更改默认路由。此操作等同于先删除，后新增</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="number">4</span> ip route <span class="keyword">delete</span> 删除路由：</span><br><span class="line">    <span class="keyword">delete</span> route</span><br><span class="line">    ip route del <span class="built_in">has</span> the same arguments <span class="keyword">as</span> ip route <span class="built_in">add</span>, but</span><br><span class="line">    their semantics are <span class="keyword">a</span> bit different.</span><br><span class="line"></span><br><span class="line">    Key <span class="built_in">values</span> (<span class="keyword">to</span>, tos, preference <span class="built_in">and</span> table) select the</span><br><span class="line">    route <span class="keyword">to</span> <span class="keyword">delete</span>. If optional attributes are present, ip</span><br><span class="line">    verifies that they coincide with the attributes of the</span><br><span class="line">    route <span class="keyword">to</span> <span class="keyword">delete</span>.  If <span class="keyword">no</span> route with the given key <span class="built_in">and</span></span><br><span class="line">    attributes was found, ip route del fails.</span><br><span class="line">    删除路由，和ip route <span class="built_in">add</span>参数意义，但是语义有点不同： 关键值( <span class="keyword">to</span>,tos,preference和表）选择路由去删除，如果有可选属性，</span><br><span class="line">    ip核实和路由的属性是否一致，是则删除，否则删除失败；</span><br><span class="line"></span><br><span class="line">    eg:</span><br><span class="line">       ip route del <span class="number">192.168</span>.<span class="number">4.0</span>/<span class="number">24</span>	删除<span class="number">192.168</span>.<span class="number">4.0</span>网段的网关</span><br><span class="line">       ip route del default	删除默认路由</span><br><span class="line">       ip route <span class="keyword">delete</span> <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> dev eth0	删除路由</span><br><span class="line">                     </span><br><span class="line"><span class="number">5</span> ip route show</span><br><span class="line">    该命令显示路由表的内容或按某些条件选择的路由</span><br><span class="line">      SELECTOR := [ root PREFIX ] [ <span class="keyword">match</span> PREFIX ] [ exact PREFIX ] [</span><br><span class="line">               table TABLE_ID ] [ vrf NAME ] [ proto RTPROTO ] [ <span class="built_in">type</span></span><br><span class="line">               TYPE ] [ scope SCOPE ]</span><br><span class="line">    <span class="keyword">to</span> SELECTOR (default)：仅从给定的目的地范围内选择路线。 SELECTOR由一个可选的修饰符（root 、<span class="keyword">match</span>、exact）和一个前缀组成。 root PREFIX选择前缀不小于PREFIX的路由。 F.<span class="keyword">e</span>. 根<span class="number">0</span>/<span class="number">0</span>选择整个路由表。 <span class="keyword">match</span> PREFIX选择前缀不超过PREFIX的路由。 比如： 匹配<span class="number">10.0</span>/<span class="number">16</span>选择<span class="number">10.0</span>/<span class="number">16</span>、<span class="number">10</span>/<span class="number">8</span>和<span class="number">0</span>/<span class="number">0</span>，但不选择<span class="number">10.1</span>/<span class="number">16</span>和<span class="number">10.0</span>.<span class="number">0</span>/<span class="number">24</span>。 精确的PREFIX（或仅PREFIX）选择具有此精确前缀的路由。 如果这两个选项都不存在，则ip假定根目录为<span class="number">0</span>/<span class="number">0</span>，即列出整个表。</span><br><span class="line">    tos TOS：仅选择具有给定TOS的路线</span><br><span class="line">    table TABLEID：显示此表中的路由。默认设置是显示主表。TABLEID可以是实表的ID，也可以是特殊值之一：</span><br><span class="line">         <span class="keyword">all</span>：列出所有表</span><br><span class="line">         cache：转储路由缓存</span><br><span class="line">    cloned：缓存列表克隆的路由，即由于某些路由属性（例如MTU）已更新而从其他路由动态分叉的路由。 实际上，它等效于表缓存。</span><br><span class="line">    from SELECTOR：与<span class="keyword">to</span>的语法相同，但它绑定的是源地址范围而不是目的地。请注意，from选项仅适用于克隆路由</span><br><span class="line">    protocol RTPROTO：只列出该协议的路由</span><br><span class="line">    scope SCOPE_VAL：仅列出具有此范围的路由</span><br><span class="line">    <span class="built_in">type</span> TYPE：仅列出该类型的路由</span><br><span class="line">    dev NAME：仅列出通过此设备的路由</span><br><span class="line">    via PREFIX：仅列出通过前缀选择的nexthop路由器的路由</span><br><span class="line">    src PREFIX：仅列出具有按前缀选择的首选源地址的路由</span><br><span class="line">    realms FROMREALM/TOREALM/REALMID：仅列出具有这些领域的路由。</span><br><span class="line"></span><br><span class="line">    example:</span><br><span class="line">    ip route show [exact] <span class="number">169.254</span>.<span class="number">0.0</span>/<span class="number">16</span>	精准查看具体某一条路由</span><br><span class="line">    ip route show <span class="keyword">match</span> <span class="number">172.18</span>	模糊匹配某一条路由</span><br><span class="line">    ip route show src <span class="number">172.18</span>.<span class="number">16.0</span>/<span class="number">20</span>	仅列出源地址前缀为<span class="number">172.18</span>.<span class="number">16.0</span>/<span class="number">20</span>的路由</span><br><span class="line">    ip route show via <span class="number">172.18</span>.<span class="number">31.253</span>	仅列出通过前缀选择的为该ip的路由</span><br><span class="line">    ip -s route show cache <span class="number">192.168</span>.<span class="number">100.17</span>	显示来自路由缓存的统计信息</span><br><span class="line">    ip route show table local</span><br><span class="line">    或：ip route <span class="keyword">list</span> table local	查看本地路由表</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="number">6</span> ip route <span class="built_in">get</span></span><br><span class="line">    此命令获取到目标的单个路由，并按照内核所看到的方式打印其内容。</span><br><span class="line">    此操作不等同于ip route show。 ip routeshow会显示现有路线，而<span class="built_in">get</span>解析它们并在必要时创建新克隆。基本上，<span class="built_in">get</span>相当于沿着此路径发送数据包。如果没有给出iif参数，内核将创建一个路由，以将数据包输出到请求的目的地。这相当于用后续的ip路由<span class="keyword">ls</span>缓存ping目标，但是实际上没有发送任何数据包。使用iif参数，内核假装一个数据包从这个接口到达，并搜索一条路径来转发数据包</span><br><span class="line"></span><br><span class="line">    option：</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">to</span> ADDRESS (default)：目的地址</span><br><span class="line">    from ADDRESS：源地址</span><br><span class="line">    tos TOS：服务类型</span><br><span class="line">    iif NAME：此数据包预期从中到达的设备</span><br><span class="line">    oif NAME：强制将此数据包路由到的输出设备</span><br><span class="line">    connected：如果未给出源地址（选项from），则重新查找源设置为从第一次查找收到的首选地址的路由。 如果使用策略路由，则可能是其他路由</span><br><span class="line">    eg:</span><br><span class="line">    ip route <span class="built_in">get</span> <span class="number">169.254</span>.<span class="number">0.0</span>/<span class="number">16</span>	获取到目标的单个路由，并按照内核所看到的方式打印其内容</span><br><span class="line">    ip route <span class="built_in">get</span> <span class="number">172</span></span><br><span class="line">    <span class="number">172.0</span>.<span class="number">0.0</span> via <span class="number">172.21</span>.<span class="number">212.1</span> dev eth0 src <span class="number">172.21</span>.<span class="number">212.22</span> uid <span class="number">10129</span> </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="number">7</span> ip route save</span><br><span class="line">   将路由表信息保存到标准输出。该命令的行为类似于ip route show，除了输出是适合传递给ip route restore的原始数据外。</span><br><span class="line"></span><br><span class="line"><span class="number">8</span> ip route restore</span><br><span class="line">    从stdin恢复路由表信息 该命令希望读取从ip route save返回的数据流。 它将尝试完全还原保存时的路由表信息，因此必须先完成流中信息的任何转换（例如设备索引）。 任何现有路线均保持不变。 表中已经存在的数据流中指定的任何路由都将被忽略。</span><br><span class="line">    ip route restore</span><br><span class="line"></span><br><span class="line"><span class="number">9</span> ip route flush</span><br><span class="line">    该flush选项与ip route一起使用时，将清空路由表或删除特定目标的路由</span><br><span class="line">    此命令刷新根据某些条件选择的路由。这些参数的语法和语义与ip route show的参数相同，但是路由表不会被列出，而是被清除。唯一的区别是默认操作:show转储所有IP主路由表，而flush打印帮助器页面。使用-statistics选项，命令会变得详细。它打印出删除路由的数量和用于刷新路由表的轮数。如果该选项被给出两次，ip route flush也会以前一小节中描述的格式转储所有已删除的路由。</span><br><span class="line">    ip route flush <span class="number">10.38</span>.<span class="number">0.0</span>/<span class="number">16</span>	删除特定路由</span><br><span class="line">    ip route flush table main	清空路由表</span><br><span class="line">    </span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>more example：<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">ip</span> route add default via <span class="number">192.168.1.1</span> dev eth0</span><br><span class="line">    <span class="attribute">Adds</span> a default route (for <span class="literal">all</span> addresses) via the local</span><br><span class="line">    <span class="attribute">gateway</span> <span class="number">192.168.1.1</span> that can be reached <span class="literal">on</span> device eth0.</span><br><span class="line"></span><br><span class="line"><span class="attribute">ip</span> route add <span class="number">10.1.1.0</span>/<span class="number">30</span> encap mpls <span class="number">200</span>/<span class="number">300</span> via <span class="number">10.1.1.1</span> dev eth0</span><br><span class="line">    <span class="attribute">Adds</span> an ipv4 route with mpls encapsulation attributes</span><br><span class="line">    <span class="attribute">attached</span> to it.</span><br><span class="line"></span><br><span class="line"><span class="attribute">ip</span> -<span class="number">6</span> route add <span class="number">2001</span>:db8:<span class="number">1</span>::/<span class="number">64</span> encap seg6 mode encap segs</span><br><span class="line"><span class="attribute">2001</span>:db8:<span class="number">42</span>::<span class="number">1</span>,<span class="number">2001</span>:db8:ffff::<span class="number">2</span> dev eth0</span><br><span class="line">    <span class="attribute">Adds</span> an IPv6 route with SRv6 encapsulation and two segments</span><br><span class="line">    <span class="attribute">attached</span>.</span><br><span class="line"></span><br><span class="line"><span class="attribute">ip</span> route add <span class="number">10.1.1.0</span>/<span class="number">30</span> nhid <span class="number">10</span></span><br><span class="line">    <span class="attribute">Adds</span> an ipv4 route using nexthop object with id <span class="number">10</span>.</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>ip route打印的路由条目如何解释？<br> $ ip route show table local<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">broadcast</span> <span class="number">127.0.0.0</span> dev lo proto kernel scope link src <span class="number">127.0.0.1</span> </span><br><span class="line"><span class="attribute">local</span> <span class="number">127.0.0.0</span>/<span class="number">8</span> dev lo proto kernel scope host src <span class="number">127.0.0.1</span> </span><br><span class="line"><span class="attribute">local</span> <span class="number">127.0.0.1</span> dev lo proto kernel scope host src <span class="number">127.0.0.1</span> </span><br><span class="line"><span class="attribute">broadcast</span> <span class="number">127.255.255.255</span> dev lo proto kernel scope link src <span class="number">127.0.0.1</span> </span><br><span class="line"><span class="attribute">broadcast</span> <span class="number">172.21.212.0</span> dev eth0 proto kernel scope link src <span class="number">172.21.212.22</span> </span><br><span class="line"><span class="attribute">local</span> <span class="number">172.21.212.22</span> dev eth0 proto kernel scope host src <span class="number">172.21.212.22</span> </span><br><span class="line"><span class="attribute">broadcast</span> <span class="number">172.21.212.255</span> dev eth0 proto kernel scope link src <span class="number">172.21.212.22</span> </span><br></pre></td></tr></table></figure>
+解释：</li>
+<li>broadcast&#x2F;local为类型，上面有解释 </li>
+<li>127.0.0.0 表示目的网络</li>
+<li>dev lo是设备名，上面有解释</li>
+<li>proto kernel 是生成方式。这里是路由是内核自动配置的，上面有解释</li>
+<li>scope link:  SCOPE :&#x3D; [ host | link | global | NUMBER ]: </li>
+<li>The scope of a route in Linux is an indicator of the distance to the</li>
+<li>destination network.<ul>
+<li>Host<br>   A route has host scope when it leads to a destination address on the local host.</li>
+<li>Link<br>   A route has link scope when it leads to a destination address on the local network.</li>
+<li>Universe<br>   A route has universe scope when it leads to addresses more than one hop away.</li>
+</ul>
+</li>
+</ul>
+<h5 id="如何匹配，匹配规则优先级："><a href="#如何匹配，匹配规则优先级：" class="headerlink" title="如何匹配，匹配规则优先级："></a>如何匹配，匹配规则优先级：</h5><p>Linux上通过路由规则和路由表配合来实现路由流程, 处理逻辑如下:</p>
+<ul>
+<li>按路由规则优先级, 根据规则匹配条件找到需要匹配的路由表</li>
+<li>根据路由表中条目进行匹配的结果进行转发</li>
+<li>若路由表中没有匹配到满足的路由条目，则处理下一路由规则</li>
+</ul>
+<p>路由规则由三部分构成:</p>
+<ol>
+<li>Priority: Linux上可以添加多条路由规则，根据优先级数字从小到大依次进行匹配，从0到32767</li>
+<li>Selector: 对IP数据包进行匹配的条件，如”from all” 表示所有IP数据包</li>
+<li>Action: 对IP数据包执行的动作，如”lookup local”表示需要查找路由表local进行处理</li>
+</ol>
+<p>Linux支持多个路由表，其中有三个默认生成的路由表:</p>
+<ul>
+<li>local: 处理本地IP和广播地址路由，local路由表只由kernel维护，不能更改和删除</li>
+<li>main: 处理所有非策略路由，不指定路由表名时默认使用的路由表</li>
+<li>default: 所有其他路由表都没有匹配到的情况下，根据该表中的条目进行处理<br>首先，我们来查看路由规则:<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">~</span>$ ip rule list</span><br><span class="line"><span class="number">0</span>:	<span class="keyword">from</span> <span class="keyword">all</span> lookup <span class="keyword">local</span></span><br><span class="line"><span class="number">32766</span>:	<span class="keyword">from</span> <span class="keyword">all</span> lookup main</span><br><span class="line"><span class="number">32767</span>:	<span class="keyword">from</span> <span class="keyword">all</span> lookup <span class="keyword">default</span></span><br><span class="line">可以看到默认情况下存在<span class="number">3</span>条路由规则，分别对应上述的三张路由表。路由选路时，首先处理规则<span class="number">0</span>，对所有的IP数据包查找路由表<span class="keyword">local</span>。我们来看<span class="keyword">local</span>路由表的内容:</span><br><span class="line">ip route <span class="keyword">show</span> <span class="keyword">table</span> <span class="keyword">local</span></span><br><span class="line">broadcast <span class="number">10.225</span><span class="number">.66</span><span class="number">.0</span> dev eth1 proto kernel <span class="keyword">scope</span> link src <span class="number">10.225</span><span class="number">.66</span><span class="number">.20</span> </span><br><span class="line"><span class="keyword">local</span> <span class="number">10.225</span><span class="number">.66</span><span class="number">.20</span> dev eth1 proto kernel <span class="keyword">scope</span> host src <span class="number">10.225</span><span class="number">.66</span><span class="number">.20</span> </span><br><span class="line">broadcast <span class="number">10.225</span><span class="number">.66</span><span class="number">.255</span> dev eth1 proto kernel <span class="keyword">scope</span> link src <span class="number">10.225</span><span class="number">.66</span><span class="number">.20</span> </span><br><span class="line">broadcast <span class="number">127.0</span><span class="number">.0</span><span class="number">.0</span> dev lo proto kernel <span class="keyword">scope</span> link src <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> </span><br><span class="line"><span class="keyword">local</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.0</span><span class="operator">/</span><span class="number">8</span> dev lo proto kernel <span class="keyword">scope</span> host src <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> </span><br><span class="line"><span class="keyword">local</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> dev lo proto kernel <span class="keyword">scope</span> host src <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> </span><br><span class="line">broadcast <span class="number">127.255</span><span class="number">.255</span><span class="number">.255</span> dev lo proto kernel <span class="keyword">scope</span> link src <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> </span><br><span class="line">broadcast <span class="number">211.91</span><span class="number">.243</span><span class="number">.192</span> dev eth0 proto kernel <span class="keyword">scope</span> link src <span class="number">211.91</span><span class="number">.243</span><span class="number">.201</span> </span><br><span class="line"><span class="keyword">local</span> <span class="number">211.91</span><span class="number">.243</span><span class="number">.201</span> dev eth0 proto kernel <span class="keyword">scope</span> host src <span class="number">211.91</span><span class="number">.243</span><span class="number">.201</span> </span><br><span class="line">broadcast <span class="number">211.91</span><span class="number">.243</span><span class="number">.255</span> dev eth0 proto kernel <span class="keyword">scope</span> link src <span class="number">211.91</span><span class="number">.243</span><span class="number">.201</span> </span><br></pre></td></tr></table></figure></li>
+<li>如何匹配呢？</li>
+</ul>
+<ol>
+<li>在查找路由表时遵循最长匹配原则：<br>比如，表中有两个条目，目的IP网络地址分别为<br>“172.16.96.0&#x2F;24”和”172.16.0.0&#x2F;16”, 目的IP为172.16.96.101的数据包两个条目都会匹配，会以匹配的更长的”172.16.96.0&#x2F;24”条目为准。</li>
+<li>若所有目的地址条目都不能匹配，则使用default条目：<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">一个例子：</span><br><span class="line">ip route show </span><br><span class="line">default via <span class="number">211</span>.<span class="number">91</span>.<span class="number">243</span>.<span class="number">247</span> dev eth0 onlink </span><br><span class="line"><span class="number">10.0.0.0</span>/<span class="number">8</span> via <span class="number">10</span>.<span class="number">225</span>.<span class="number">66</span>.<span class="number">1</span> dev eth1 </span><br><span class="line"><span class="number">10.225.66.0</span>/<span class="number">24</span> dev eth1 proto kernel scope link src <span class="number">10</span>.<span class="number">225</span>.<span class="number">66</span>.<span class="number">20</span> </span><br><span class="line"><span class="number">211.91.243.192</span>/<span class="number">26</span> dev eth0 proto kernel scope link src <span class="number">211</span>.<span class="number">91</span>.<span class="number">243</span>.<span class="number">201</span> </span><br><span class="line"></span><br><span class="line">内网：当</span><br><span class="line">目的为<span class="number">10</span>.<span class="number">255</span>.<span class="number">66</span>.<span class="number">0</span>/<span class="number">24</span>网络的，则匹配第三条路由，并且源ip优先为<span class="number">10</span>.<span class="number">225</span>.<span class="number">66</span>.<span class="number">20</span>，这个路由是link的，即是本地网络，即只有一跳；</span><br><span class="line">不需要经过路由器转发；即是二层网络；</span><br><span class="line">目的地址为<span class="number">211</span>.<span class="number">91</span>.<span class="number">243</span>.<span class="number">192</span>/<span class="number">26</span>，也是走本地网络；</span><br><span class="line"></span><br><span class="line"><span class="number">211.91.243.192</span>  /<span class="number">26</span>:</span><br><span class="line"><span class="number">11111111</span>   <span class="number">11111111</span> <span class="number">11111111</span> <span class="number">11000000</span></span><br><span class="line"><span class="number">211</span>...... <span class="number">192</span>开始-&gt;<span class="number">255</span></span><br><span class="line">所以对本机，也是走的本地网络，即不是本机，就是还是会发送出去，然后接收，会从网卡出去；</span><br><span class="line">除非配置为host;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>网段ip如何看？<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">子网掩码&amp;IP地址=网络标识</span><br><span class="line">如果网络标识一样，那么属于同一网段</span><br><span class="line">例子<span class="number">192.168.0</span>.n <span class="number">255.255.255.0</span> 由于前面都一样n&amp;<span class="number">1</span>肯定等于<span class="number">0</span>那么肯定属于同一网段。</span><br><span class="line">同时子网掩码决定了一个网段可以连多少台机器。</span><br><span class="line">例如 子网掩码为<span class="number">255.255.255.0</span> <span class="number">11111111</span>.<span class="number">11111111</span>.<span class="number">11111111</span>.<span class="number">00000000</span></span><br><span class="line">计算机公式是<span class="number">2</span>的m次方，其中，我们可以把m看到是后面的多少颗<span class="number">0</span></span><br></pre></td></tr></table></figure></li>
+<li>IP标识法<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">一个完整IP描述包含IP 地址和子网掩码</span><br><span class="line">具体标识有两种</span><br><span class="line"><span class="number">192.168.0</span>.n <span class="number">255.255.255.0</span></span><br><span class="line"><span class="number">192.168.0</span>.n/<span class="number">24</span></span><br><span class="line">/<span class="number">24</span>表示子网掩码二进制标识法中前面<span class="number">24</span>位<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h4 id="路由高级"><a href="#路由高级" class="headerlink" title="路由高级"></a>路由高级</h4><h5 id="路由和防火墙的关系"><a href="#路由和防火墙的关系" class="headerlink" title="路由和防火墙的关系"></a>路由和防火墙的关系</h5>路由的使用是在接收和发送的时候使用，接收时判断是否是发往自己的包，不是则转发，转发时需要路由，发送时也需要路由来确定出口；<br>如下：<img src="/2022/04/04/tcpip-router/router1.png" class="" title="This is an example image">
+<h5 id="防火墙："><a href="#防火墙：" class="headerlink" title="防火墙："></a>防火墙：</h5>而防火墙的使用是从报文进入后，的几个阶段(如下图五个位置)进行检查，过滤，来进行不安全包的拦截，丢弃等等；<img src="/2022/04/04/tcpip-router/router2.png" class="" title="This is an example image">
+防火墙iptable(netifter):<br>以下这篇文章写得很好： <a target="_blank" rel="noopener" href="http://www.zsythink.net/archives/1199/">http://www.zsythink.net/archives/1199/</a><br>需要明确的概念：注意iptable中的表不是路由表，里面的规则也不是路由项，也不是策略路由中的规则；而其中的chain实际上对应的五个拦截口；<br>且每次包经过一个拦截口，都要经过该拦截口(链)的所有规则；</li>
+</ul>
+<h5 id="策略路由："><a href="#策略路由：" class="headerlink" title="策略路由："></a>策略路由：</h5><p>策略路由：<br><a target="_blank" rel="noopener" href="http://www.policyrouting.org/PolicyRoutingBook/ONLINE/CH01.web.html">http://www.policyrouting.org/PolicyRoutingBook/ONLINE/CH01.web.html</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/iceocean/articles/1594488.html">https://www.cnblogs.com/iceocean/articles/1594488.html</a></p>
+<ol>
+<li>策略路由的概念：</li>
+</ol>
+<ul>
+<li>背景：若内核编译时支持策略路由，则可以有多达255张不同的相互独立的路由表；</li>
+<li>策略路由：即允许用户除了可以根据目的IP地址配置路由外，还可以根据其他多个参数来配置路由；</li>
+<li>原因：出现的原因是商业界：出于安全或计费考虑需要分开流量或通过单独的路由发送实时数据流，故出现了策略路由；除了基于目的地址外的路由都认为是策略路由</li>
+<li>例子：略</li>
+</ul>
+<ol start="2">
+<li>策略路由的查找：</li>
+</ol>
+<ul>
+<li>当使用策略路由时，为目的地查找路由可分为两个步骤：<br>A:根据配置策略选择要用的路由表，<br>B:从选择的路由表中查找路由；<br>而这两个步骤都是在路由缓存中找不到才做的；<br>eg:<a target="_blank" rel="noopener" href="https://www.cnblogs.com/iceocean/articles/1594488.html">https://www.cnblogs.com/iceocean/articles/1594488.html</a> </li>
+<li>详解两个步骤：<br>A: 选择路由表:内核可以根据以下参数作为选择路由表时所用的策略：<br>源地址或（与）目的地址；入口设备；tos；Fwmark;<br>B：略</li>
+</ul>
+<h5 id="多径路由"><a href="#多径路由" class="headerlink" title="多径路由"></a>多径路由</h5><ol>
+<li>概念：只管理员可以为一条路由的目的地指定多个下一跳（可以参考sla,等多通道类型）<br>linux允许管理员通过weight关键字为每一个下一跳分配一个权值，从而为选择算法提供很大灵活性；</li>
+</ol>
+<img src="/2022/04/04/tcpip-router/router3.png" class="" title="This is an example image">
+
+<ol start="2">
+<li><p>选择下一跳（在多径路由中）的方法：<br>A:加权循环算法：</p>
+</li>
+<li><p>支持多路径缓存；<br>B:随机算法<br>C:加权随机算法；<br>D:循环法<br>E:设备循环法； </p>
+</li>
+<li><p>基于流，基于连接，和基于封包的流量分配<br>给定一条多路径路由，对于与该路由项匹配的流量，在下一跳之间分配时可以基于流，基于连接或基于封包；</p>
+<img src="/2022/04/04/tcpip-router/router4.png" class="" title="This is an example image"></li>
+</ol>
+<h5 id="连接跟踪"><a href="#连接跟踪" class="headerlink" title="连接跟踪"></a>连接跟踪</h5><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1761367">https://cloud.tencent.com/developer/article/1761367</a></p>
+<h5 id="iptable教程"><a href="#iptable教程" class="headerlink" title="iptable教程"></a>iptable教程</h5><p><a target="_blank" rel="noopener" href="https://www.path8.net/docs/iptables-tutorial_cn/iptables-tutorial-1.2.2-cn.pdf">https://www.path8.net/docs/iptables-tutorial_cn/iptables-tutorial-1.2.2-cn.pdf</a></p>
+<p><a target="_blank" rel="noopener" href="https://zzyongx.github.io/blogs/iptables.html">https://zzyongx.github.io/blogs/iptables.html</a></p>
+<p>防火墙可以是一台中间服务器；</p>
+<p>如何部署和编写公司级别防火墙？</p>
+<h4 id="内核相关"><a href="#内核相关" class="headerlink" title="内核相关"></a>内核相关</h4><h5 id="内核选项："><a href="#内核选项：" class="headerlink" title="内核选项："></a>内核选项：</h5><p>路由的一些功能，可以在内核选项里面选择是否编译进内核中来支持；总共可以分为两类；<br>A:一类是永远支持的；只需要用户通过比如&#x2F;proc来配置或开启的选项；<br>B: 另一类是重新编译内核时进行添加或删除：可以将CONFIG_WAN_ROUTE选项和CONFIG_IP_ROUTE_MULTIPATH_CHANGED菜单下的选项编成模块<br>而如代码中一些CONFIG_XXX符号表示的内核配置可以用这些符号来识别；<br>一些基本选项和高级选项：<br>A:基本选项：ip多播路由（CONFIG_IP_MROUTE)和WAN路由器（CONFIG_WAN_ROUTE)<br>B:高级选项：IP:advanced route中可以激活更多选项：策略路由（CONFIG_IP_MULTIPLE_TABLES) ;使用netfilter MARK值作为路由查找关键字（CONFIG_IP_ROUTE_FWMARK);<br>  等价多路径（CONFIG_IP_ROUTE_MULTIPATH) –即多个下一跳；支持缓存的等价多路径；详细的路由监控；（CONFIG_IP_ROUTE_VEROSE)</p>
+<h5 id="内核路由子系统源码结构："><a href="#内核路由子系统源码结构：" class="headerlink" title="内核路由子系统源码结构："></a>内核路由子系统源码结构：</h5><p>总体和路由相关结构：</p>
+<img src="/2022/04/04/tcpip-router/code1.png" class="" title="This is an example image">
+<p>路由缓存操作：</p>
+<img src="/2022/04/04/tcpip-router/code2.png" class="" title="This is an example image">
+<p>路由策略</p>
+<img src="/2022/04/04/tcpip-router/code3.png" class="" title="This is an example image">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tcpip/" rel="tag"># tcpip</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/04/tcp-stack-graph/" rel="prev" title="tcp_stack_graph">
+      <i class="fa fa-chevron-left"></i> tcp_stack_graph
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#ip%E5%B1%82%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">ip层基本介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ip%E5%B1%82%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.1.</span> <span class="nav-text">ip层任务</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E7%9A%84%E4%BE%8B%E5%AD%90%EF%BC%9A%E5%B7%B2%E6%8A%93%E5%8C%85%E9%AA%8C%E8%AF%81%E8%BF%87"><span class="nav-number">1.2.</span> <span class="nav-text">一个网络通信的例子：已抓包验证过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E5%99%A8%E8%A1%8C%E4%B8%BA%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">路由器行为：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ip%E5%B0%81%E5%8C%85%E6%83%85%E5%86%B5"><span class="nav-number">1.4.</span> <span class="nav-text">ip封包情况</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%A0%E7%A7%8D%E8%B7%AF%E7%94%B1%E9%85%8D%E7%BD%AE%E7%9A%84%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">几种路由配置的网络结构：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E5%9F%BA%E7%A1%80%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">路由基础：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B6%89%E5%8F%8A%E8%B7%AF%E7%94%B1%E7%9A%84%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">涉及路由的几个概念：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Escope"><span class="nav-number">3.2.</span> <span class="nav-text">关于scope:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%B6%89%E5%8F%8A%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">其他涉及概念：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">3.4.</span> <span class="nav-text">路由的基本概念</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E7%9A%84%E5%87%A0%E4%B8%AA%E9%87%8D%E8%A6%81%E9%83%A8%E5%88%86%EF%BC%9A%E8%B7%AF%E7%94%B1%E8%A1%A8%EF%BC%8C%E8%B7%AF%E7%94%B1%E9%A1%B9%EF%BC%9B"><span class="nav-number">3.5.</span> <span class="nav-text">路由的几个重要部分：路由表，路由项；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95%E8%A7%84%E5%88%99%EF%BC%9Aroute-%E5%91%BD%E4%BB%A4"><span class="nav-number">3.6.</span> <span class="nav-text">语法规则：route 命令</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ip-route-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8"><span class="nav-number">3.7.</span> <span class="nav-text">ip-route 命令使用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%8C%B9%E9%85%8D%EF%BC%8C%E5%8C%B9%E9%85%8D%E8%A7%84%E5%88%99%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%9A"><span class="nav-number">3.8.</span> <span class="nav-text">如何匹配，匹配规则优先级：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E9%AB%98%E7%BA%A7"><span class="nav-number">4.</span> <span class="nav-text">路由高级</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E5%92%8C%E9%98%B2%E7%81%AB%E5%A2%99%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">4.1.</span> <span class="nav-text">路由和防火墙的关系</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%EF%BC%9A"><span class="nav-number">4.2.</span> <span class="nav-text">防火墙：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E8%B7%AF%E7%94%B1%EF%BC%9A"><span class="nav-number">4.3.</span> <span class="nav-text">策略路由：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%9A%E5%BE%84%E8%B7%AF%E7%94%B1"><span class="nav-number">4.4.</span> <span class="nav-text">多径路由</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E8%B7%9F%E8%B8%AA"><span class="nav-number">4.5.</span> <span class="nav-text">连接跟踪</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#iptable%E6%95%99%E7%A8%8B"><span class="nav-number">4.6.</span> <span class="nav-text">iptable教程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E6%A0%B8%E7%9B%B8%E5%85%B3"><span class="nav-number">5.</span> <span class="nav-text">内核相关</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%85%E6%A0%B8%E9%80%89%E9%A1%B9%EF%BC%9A"><span class="nav-number">5.1.</span> <span class="nav-text">内核选项：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%85%E6%A0%B8%E8%B7%AF%E7%94%B1%E5%AD%90%E7%B3%BB%E7%BB%9F%E6%BA%90%E7%A0%81%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">5.2.</span> <span class="nav-text">内核路由子系统源码结构：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '563227fe955d07dbbc815f8debfc2fb0',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

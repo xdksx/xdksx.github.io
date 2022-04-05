@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="linux skb发送到设备即 skb从协议栈出来，到设备驱动程序的过程；简介：传输过程和接收过程是对称的，也是初始化相关软中断，和对应的net_tx_action:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux_nettx_dev">
+<meta property="og:url" content="https://xdksx.github.io/2022/04/04/linux-nettx-dev/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="linux skb发送到设备即 skb从协议栈出来，到设备驱动程序的过程；简介：传输过程和接收过程是对称的，也是初始化相关软中断，和对应的net_tx_action:">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-04T09:55:13.000Z">
+<meta property="article:modified_time" content="2022-04-04T10:09:28.716Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="tcpip">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/04/04/linux-nettx-dev/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>linux_nettx_dev | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/04/04/linux-nettx-dev/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          linux_nettx_dev
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-04 17:55:13 / 修改时间：18:09:28" itemprop="dateCreated datePublished" datetime="2022-04-04T17:55:13+08:00">2022-04-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcpip/" itemprop="url" rel="index"><span itemprop="name">tcpip</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="linux-skb发送到设备"><a href="#linux-skb发送到设备" class="headerlink" title="linux skb发送到设备"></a>linux skb发送到设备</h4><p>即 skb从协议栈出来，到设备驱动程序的过程；<br>简介：传输过程和接收过程是对称的，也是初始化相关软中断，和对应的net_tx_action:</p>
+<span id="more"></span>
+<h4 id="帧传输数据通路的主要任务："><a href="#帧传输数据通路的主要任务：" class="headerlink" title="帧传输数据通路的主要任务："></a>帧传输数据通路的主要任务：</h4><ol>
+<li>为设备开启和关闭帧的传输（驱动程序中的任务）</li>
+<li>为设备调度以准备传输；</li>
+<li>为下一帧调度以准备传输，也就是在设备出口队列中等待的那些帧；</li>
+<li>传输本身（涉及到io端口操作）<h6 id="初始化软中断："><a href="#初始化软中断：" class="headerlink" title="初始化软中断："></a>初始化软中断：</h6><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NET_TX_SOFTIRQ:</span><br><span class="line">  dev.c:net_dev_init:</span><br><span class="line">open_softir<span class="string">q(NET_TX_SOFTIRQ, net_tx_action, NULL)</span>;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h5 id="几个结构："><a href="#几个结构：" class="headerlink" title="几个结构："></a>几个结构：</h5><ol>
+<li>poll_list对应的是接收的设备列表， output_queue 是传输的设备列表；<br>1_2:struct Qdisc *q;&#x2F;&#x2F;设备的出口队列，每个设备都会有一个</li>
+<li>只有开启的设备（__LINK_STATE_START标识的设备）才能接收调度以准备接收，同样，只有开启传输功能的设备（__LINK_STATE_XOFF标示清除的设备）才能接受调度并准备传输；</li>
+<li>当设备接收调度准备接收时，其__LINK_STATE_RX_SCHED标识会设置，当设备接收调度准备传输时,其__LINK_STATE_SCHED标识会设置；</li>
+</ol>
+<h5 id="开始传输"><a href="#开始传输" class="headerlink" title="开始传输"></a>开始传输</h5><p>当上层的APP试图建立一个TCP的链接，或者发送一个封包的时候，在kernel的协议栈部分，在TCP&#x2F;UDP层会组成一个网络的封包，然后通过IP进行路由选择以及iptables的Hook，之后 到neighbor层查询或者询问下一跳的链路层地址，然后通过调用 dev_queue_xmit 这个网络设备接口层函数发送给driver</p>
+<p>所以从 dev_queue_xmit 这个函数开始分析起来；</p>
+<ul>
+<li>dev_queue_xmit<br>从设备的出口队列（Qdisc）中退出一帧，然后将该帧传递给设备的hard_start_xmit方法；<br>但是这个函数可能因为各种原因无法传输，如该设备的出口队列已关闭，或者该设备队列的锁被取走；为处理后一种情况，内核提供了一个函数：__netif_schedule<br>下面是某个版本dev_queue_xmit，不同版本大同小异<br>关键点：</li>
+</ul>
+<ol>
+<li>tc qdisc队列处理，这里根据过滤条件需要，如进行丢包，流量整形等。</li>
+<li>队列出来后，发送：dev_hard_start_xmit(skb, dev, txq, &amp;ret);</li>
+<li>判断是否设备发送完成：dev_xmit_complete，是则清理相关缓存，否则，启动__netif_schedule，会<br>raise_softirq_irqoff(NET_TX_SOFTIRQ); 启动软中断 调用到net_tx_action<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *	dev_queue_xmit - transmit a buffer</span></span><br><span class="line"><span class="comment"> *	@skb: buffer to transmit</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *	Queue a buffer for transmission to a network device. The caller must</span></span><br><span class="line"><span class="comment"> *	have set the device and priority and built the buffer before calling</span></span><br><span class="line"><span class="comment"> *	this function. The function can be called from an interrupt.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *	A negative errno code is returned on a failure. A success does not</span></span><br><span class="line"><span class="comment"> *	guarantee the frame will be transmitted as it may be dropped due</span></span><br><span class="line"><span class="comment"> *	to congestion or traffic shaping.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">dev_queue_xmit</span><span class="params">(<span class="keyword">struct</span> sk_buff *skb)</span><span class="comment">//从上层传来skb结构，携带要发送的数据包；</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net_device</span> *<span class="title">dev</span> =</span> skb-&gt;dev;<span class="comment">//从skb中取得net_device结构，以标识外出设备；skb-&gt;data则指向有效载荷的开头长度为skb-&gt;len</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">Qdisc</span> *<span class="title">q</span>;</span><span class="comment">//</span></span><br><span class="line">	<span class="type">int</span> rc = -ENOMEM;</span><br><span class="line">                   <span class="comment">//检查帧是否由一些片段组成，以及设备是否可以通过散播/聚集dma方式处理这些片段</span></span><br><span class="line">	<span class="keyword">if</span> (skb_shinfo(skb)-&gt;frag_list &amp;&amp;</span><br><span class="line">	    !(dev-&gt;features &amp; NETIF_F_FRAGLIST) &amp;&amp;</span><br><span class="line">	    __skb_linearize(skb, GFP_ATOMIC))</span><br><span class="line">		<span class="keyword">goto</span> out_kfree_skb;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Fragmented skb is linearized if device does not support SG,</span></span><br><span class="line"><span class="comment">	 * or if at least one of fragments is in highmem and device</span></span><br><span class="line"><span class="comment">	 * does not support DMA from it.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (skb_shinfo(skb)-&gt;nr_frags &amp;&amp;</span><br><span class="line">	    (!(dev-&gt;features &amp; NETIF_F_SG) || illegal_highdma(dev, skb)) &amp;&amp;</span><br><span class="line">	    __skb_linearize(skb, GFP_ATOMIC))</span><br><span class="line">		<span class="keyword">goto</span> out_kfree_skb;</span><br><span class="line">                    <span class="comment">//计算校验和</span></span><br><span class="line">	<span class="comment">/* If packet is not checksummed and device does not support</span></span><br><span class="line"><span class="comment">	 * checksumming for this protocol, complete checksumming here.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (skb-&gt;ip_summed == CHECKSUM_HW &amp;&amp;</span><br><span class="line">	    (!(dev-&gt;features &amp; (NETIF_F_HW_CSUM | NETIF_F_NO_CSUM)) &amp;&amp;</span><br><span class="line">	     (!(dev-&gt;features &amp; NETIF_F_IP_CSUM) ||</span><br><span class="line">	      skb-&gt;protocol != htons(ETH_P_IP)))) &#123;</span><br><span class="line">		<span class="keyword">if</span> ((skb = skb_checksum_help(skb)) == <span class="literal">NULL</span>)</span><br><span class="line">			<span class="keyword">goto</span> out;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Grab device queue */</span><span class="comment">//有队列设备：设备的队列规则存在；通过dev-&gt;qdisc访问</span></span><br><span class="line">	spin_lock_bh(&amp;dev-&gt;queue_lock);<span class="comment">//需要先获得对应的锁</span></span><br><span class="line">	q = dev-&gt;qdisc; <span class="comment">//取得设备的出口队列</span></span><br><span class="line">	<span class="keyword">if</span> (q-&gt;enqueue) &#123;</span><br><span class="line">		rc = q-&gt;enqueue(skb, q);<span class="comment">//将一个元素添加到队列中（dequeue:从队列中取出一个元素；requeue:将一个原先已提取的元素放回队列中（如传输失败）</span></span><br><span class="line"></span><br><span class="line">		qdisc_run(dev);<span class="comment">//选出下一个要传输的帧，会间接调用相关联的队列规则的dequeue函数（后面分析）</span></span><br><span class="line"></span><br><span class="line">		spin_unlock_bh(&amp;dev-&gt;queue_lock);</span><br><span class="line">		rc = rc == NET_XMIT_BYPASS ? NET_XMIT_SUCCESS : rc;</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	&#125;</span><br><span class="line">                   <span class="comment">//无队列设备，走以下通道：</span></span><br><span class="line">	<span class="comment">/* The device has no queue. Common case for software devices:</span></span><br><span class="line"><span class="comment">	   loopback, all the sorts of tunnels...</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">	   Really, it is unlikely that xmit_lock protection is necessary here.</span></span><br><span class="line"><span class="comment">	   (f.e. loopback and IP tunnels are clean ignoring statistics</span></span><br><span class="line"><span class="comment">	   counters.)</span></span><br><span class="line"><span class="comment">	   However, it is possible, that they rely on protection</span></span><br><span class="line"><span class="comment">	   made by us here.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">	   Check this and shot the lock. It is not prone from deadlocks.</span></span><br><span class="line"><span class="comment">	   Either shot noqueue qdisc, it is even simpler 8)</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (dev-&gt;flags &amp; IFF_UP) &#123;</span><br><span class="line">		<span class="type">int</span> cpu = smp_processor_id();</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (dev-&gt;xmit_lock_owner != cpu) &#123;</span><br><span class="line">			<span class="comment">/*</span></span><br><span class="line"><span class="comment">			 * The spin_lock effectivly does a preempt lock, but </span></span><br><span class="line"><span class="comment">			 * we are about to drop that...</span></span><br><span class="line"><span class="comment">			 */</span></span><br><span class="line">			preempt_disable();</span><br><span class="line">			spin_unlock(&amp;dev-&gt;queue_lock);</span><br><span class="line">			spin_lock(&amp;dev-&gt;xmit_lock);</span><br><span class="line">			dev-&gt;xmit_lock_owner = cpu;</span><br><span class="line">			preempt_enable();</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (!netif_queue_stopped(dev)) &#123;</span><br><span class="line">				<span class="keyword">if</span> (netdev_nit)<span class="comment">//拷贝副本到嗅探器</span></span><br><span class="line">					dev_queue_xmit_nit(skb, dev);</span><br><span class="line"></span><br><span class="line">				rc = <span class="number">0</span>;</span><br><span class="line">				<span class="keyword">if</span> (!dev-&gt;hard_start_xmit(skb, dev)) &#123;<span class="comment">//可能是回环设备，直接调用netif_rx</span></span><br><span class="line">					dev-&gt;xmit_lock_owner = <span class="number">-1</span>;</span><br><span class="line">					spin_unlock_bh(&amp;dev-&gt;xmit_lock);</span><br><span class="line">					<span class="keyword">goto</span> out;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			dev-&gt;xmit_lock_owner = <span class="number">-1</span>;</span><br><span class="line">			spin_unlock_bh(&amp;dev-&gt;xmit_lock);</span><br><span class="line">			<span class="keyword">if</span> (net_ratelimit())</span><br><span class="line">				printk(KERN_CRIT <span class="string">&quot;Virtual device %s asks to &quot;</span></span><br><span class="line">				       <span class="string">&quot;queue packet!\n&quot;</span>, dev-&gt;name);</span><br><span class="line">			<span class="keyword">goto</span> out_enetdown;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">/* Recursion is detected! It is possible,</span></span><br><span class="line"><span class="comment">			 * unfortunately */</span></span><br><span class="line">			<span class="keyword">if</span> (net_ratelimit())</span><br><span class="line">				printk(KERN_CRIT <span class="string">&quot;Dead loop on virtual device &quot;</span></span><br><span class="line">				       <span class="string">&quot;%s, fix it urgently!\n&quot;</span>, dev-&gt;name);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	spin_unlock_bh(&amp;dev-&gt;queue_lock);</span><br><span class="line">out_enetdown:</span><br><span class="line">	rc = -ENETDOWN;</span><br><span class="line">out_kfree_skb:</span><br><span class="line">	kfree_skb(skb);</span><br><span class="line">out:</span><br><span class="line">	<span class="keyword">return</span> rc;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+为什么上述的，要启动__netif_schedule 并启动软中断呢？<br>__netif_schedule主要完成两个任务：</li>
+<li>将设备添加到output_queue列表的头部，此列表是接收时所用的与poll_list配对的列表；每个cpu都有一个output_queue，一个output_queue是一个设备列表，包含多个设备；output_queue会由napi以及非napi设备所用；output_queue中的设备是以net_device-&gt;next_sched指针连接在一起的；</li>
+<li>为NET_TX_SOFTIRQ软IRQ调度以准备执行；<br>原因：<br>&#x2F;&#x2F;net_tx_action:这个是软中断触发，可由设备在两种情境下以raise_softirq_irqoff(NET_TX_SOFTIRQ)触发：分为两个任务：</li>
+<li>当传输已完成且驱动程序通过dev_kfree_skb_irq通知相关联的缓冲区可释放时，此函数收回那些已成功传输的缓冲区的skb_buff结构：<br>原因：因设备驱动程序是在中断环境下运行的，所以必须尽快执行，所以它不使用dev_kfree_skb，而是使用dev_kfree_skb_irq，把要被释放的缓冲区指针添加到与<br>cpu关联的softnet_data中的completion_queue中；然后让net_tx_action去做实际工作；</li>
+<li>当设备的传输通过netif_wake_queue时，要确保所有的条件吻合时，传输帧</li>
+</ol>
+<ul>
+<li>net_tx_action<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">static void net<span class="constructor">_tx_action(<span class="params">struct</span> <span class="params">softirq_action</span> <span class="operator">*</span><span class="params">h</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">struct</span> softnet_data *sd = &amp;<span class="constructor">__get_cpu_var(<span class="params">softnet_data</span>)</span>;</span><br><span class="line">                    </span><br><span class="line">	<span class="keyword">if</span> (sd-&gt;completion_queue) &#123;<span class="comment">//回收所有因设备驱动程序调用dev_kfree_skb_irq而被添加到completion_queue列表的缓冲区</span></span><br><span class="line">		<span class="keyword">struct</span> sk_buff *clist;</span><br><span class="line"></span><br><span class="line">		local<span class="constructor">_irq_disable()</span>;<span class="comment">//在访问softnet_data时必须关闭中断，因中断处理可能会访问该结构</span></span><br><span class="line">		clist = sd-&gt;completion_queue;</span><br><span class="line">		sd-&gt;completion_queue = NULL;</span><br><span class="line">		local<span class="constructor">_irq_enable()</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">while</span> (clist) &#123;</span><br><span class="line">			<span class="keyword">struct</span> sk_buff *skb = clist;</span><br><span class="line">			clist = clist-&gt;next;</span><br><span class="line"></span><br><span class="line">			<span class="constructor">BUG_TRAP(!<span class="params">atomic_read</span>(&amp;<span class="params">skb</span>-&gt;<span class="params">users</span>)</span>);</span><br><span class="line">			<span class="constructor">__kfree_skb(<span class="params">skb</span>)</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (sd-&gt;output_queue) &#123;<span class="comment">//若该softnet_data有传输设备队列不为空</span></span><br><span class="line">		<span class="keyword">struct</span> net_device *head;</span><br><span class="line"></span><br><span class="line">		local<span class="constructor">_irq_disable()</span>;</span><br><span class="line">		head = sd-&gt;output_queue;<span class="comment">//取得头</span></span><br><span class="line">		sd-&gt;output_queue = NULL;</span><br><span class="line">		local<span class="constructor">_irq_enable()</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">while</span> (head) &#123;<span class="comment">//循环每个设备看哪个可以获得锁并传输</span></span><br><span class="line">			<span class="keyword">struct</span> net_device *dev = head;</span><br><span class="line">			head = head-&gt;next_sched;</span><br><span class="line"></span><br><span class="line">			smp<span class="constructor">_mb__before_clear_bit()</span>;</span><br><span class="line">			clear<span class="constructor">_bit(<span class="params">__LINK_STATE_SCHED</span>, &amp;<span class="params">dev</span>-&gt;<span class="params">state</span>)</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (spin<span class="constructor">_trylock(&amp;<span class="params">dev</span>-&gt;<span class="params">queue_lock</span>)</span>) &#123;<span class="comment">//若取得锁，则运行传输</span></span><br><span class="line">				qdisc<span class="constructor">_run(<span class="params">dev</span>)</span>;-&gt;__qdisc_run-&gt;qdisc_restart-&gt;sch_direct_xmit-&gt;dev_hard_start_xmit 从而发送出去。</span><br><span class="line">				spin<span class="constructor">_unlock(&amp;<span class="params">dev</span>-&gt;<span class="params">queue_lock</span>)</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;<span class="comment">//否则继续调度</span></span><br><span class="line">				netif<span class="constructor">_schedule(<span class="params">dev</span>)</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>最后是通过驱动程序的out（io端口函数）发出去的：<br>例如以下设备类型:<br>初始化时：<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">/* The Airo-specific entries in the device structure. */</span></span><br><span class="line">	dev<span class="punctuation">-&gt;</span>hard_start_xmit = &amp;airo_start_xmit;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> int <span class="title function_ invoke__">airo_start_xmit</span>(<span class="keyword">struct</span> <span class="title class_">sk_buff</span> *skb, <span class="keyword">struct</span> <span class="title class_">net_device</span> *dev) &#123;</span><br><span class="line">	s16 len;</span><br><span class="line">	int i, j;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">airo_info</span> *<span class="keyword">priv</span> = dev<span class="punctuation">-&gt;</span><span class="keyword">priv</span>;</span><br><span class="line">	<span class="type">u32</span> *fids = <span class="keyword">priv</span><span class="punctuation">-&gt;</span>fids;</span><br><span class="line"></span><br><span class="line">	<span class="title function_ invoke__">if</span> ( skb == NULL ) &#123;</span><br><span class="line">		<span class="title function_ invoke__">printk</span>( KERN_ERR <span class="string">&quot;airo:  skb == NULL!!!\n&quot;</span> );</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Find a vacant FID */</span></span><br><span class="line">	<span class="title function_ invoke__">for</span>( i = <span class="number">0</span>; i &lt; MAX_FIDS / <span class="number">2</span> &amp;&amp; (fids[i] &amp; <span class="number">0xffff0000</span>); i++ );</span><br><span class="line">	<span class="title function_ invoke__">for</span>( j = i + <span class="number">1</span>; j &lt; MAX_FIDS / <span class="number">2</span> &amp;&amp; (fids[j] &amp; <span class="number">0xffff0000</span>); j++ );</span><br><span class="line"></span><br><span class="line">	<span class="title function_ invoke__">if</span> ( j &gt;= MAX_FIDS / <span class="number">2</span> ) &#123;</span><br><span class="line">		<span class="title function_ invoke__">netif_stop_queue</span>(dev);</span><br><span class="line"></span><br><span class="line">		<span class="title function_ invoke__">if</span> (i == MAX_FIDS / <span class="number">2</span>) &#123;</span><br><span class="line">			<span class="keyword">priv</span><span class="punctuation">-&gt;</span>stats.tx_fifo_errors++;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/* check min length*/</span></span><br><span class="line">	len = ETH_ZLEN &lt; skb<span class="punctuation">-&gt;</span>len ? skb<span class="punctuation">-&gt;</span>len : ETH_ZLEN;</span><br><span class="line">        <span class="comment">/* Mark fid as used &amp; save length for later */</span></span><br><span class="line">	fids[i] |= (len &lt;&lt; <span class="number">16</span>);</span><br><span class="line">	<span class="keyword">priv</span><span class="punctuation">-&gt;</span>xmit.skb = skb;</span><br><span class="line">	<span class="keyword">priv</span><span class="punctuation">-&gt;</span>xmit.fid = i;</span><br><span class="line">	<span class="title function_ invoke__">if</span> (<span class="title function_ invoke__">down_trylock</span>(&amp;<span class="keyword">priv</span><span class="punctuation">-&gt;</span>sem) != <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="title function_ invoke__">set_bit</span>(FLAG_PENDING_XMIT, &amp;<span class="keyword">priv</span><span class="punctuation">-&gt;</span>flags);</span><br><span class="line">		<span class="title function_ invoke__">netif_stop_queue</span>(dev);</span><br><span class="line">		<span class="title function_ invoke__">set_bit</span>(JOB_XMIT, &amp;<span class="keyword">priv</span><span class="punctuation">-&gt;</span>flags);</span><br><span class="line">		<span class="title function_ invoke__">wake_up_interruptible</span>(&amp;<span class="keyword">priv</span><span class="punctuation">-&gt;</span>thr_wait);</span><br><span class="line">	&#125; <span class="keyword">else</span></span><br><span class="line">		<span class="title function_ invoke__">airo_end_xmit</span>(dev);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> void <span class="title function_ invoke__">airo_end_xmit</span>(<span class="keyword">struct</span> <span class="title class_">net_device</span> *dev) &#123;</span><br><span class="line">	<span class="type">u16</span> status;</span><br><span class="line">	int i;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">airo_info</span> *<span class="keyword">priv</span> = dev<span class="punctuation">-&gt;</span><span class="keyword">priv</span>;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">sk_buff</span> *skb = <span class="keyword">priv</span><span class="punctuation">-&gt;</span>xmit.skb;</span><br><span class="line">	int fid = <span class="keyword">priv</span><span class="punctuation">-&gt;</span>xmit.fid;</span><br><span class="line">	<span class="type">u32</span> *fids = <span class="keyword">priv</span><span class="punctuation">-&gt;</span>fids;</span><br><span class="line"></span><br><span class="line">	<span class="title function_ invoke__">clear_bit</span>(JOB_XMIT, &amp;<span class="keyword">priv</span><span class="punctuation">-&gt;</span>flags);</span><br><span class="line">	<span class="title function_ invoke__">clear_bit</span>(FLAG_PENDING_XMIT, &amp;<span class="keyword">priv</span><span class="punctuation">-&gt;</span>flags);</span><br><span class="line">	status = <span class="title function_ invoke__">transmit_802_3_packet</span> (<span class="keyword">priv</span>, fids[fid], skb<span class="punctuation">-&gt;</span>data);</span><br><span class="line">	<span class="title function_ invoke__">up</span>(&amp;<span class="keyword">priv</span><span class="punctuation">-&gt;</span>sem);</span><br><span class="line"></span><br><span class="line">	i = <span class="number">0</span>;</span><br><span class="line">	<span class="title function_ invoke__">if</span> ( status == SUCCESS ) &#123;</span><br><span class="line">		dev<span class="punctuation">-&gt;</span>trans_start = jiffies;</span><br><span class="line">		<span class="title function_ invoke__">for</span> (; i &lt; MAX_FIDS / <span class="number">2</span> &amp;&amp; (<span class="keyword">priv</span><span class="punctuation">-&gt;</span>fids[i] &amp; <span class="number">0xffff0000</span>); i++);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">priv</span><span class="punctuation">-&gt;</span>fids[fid] &amp;= <span class="number">0xffff</span>;</span><br><span class="line">		<span class="keyword">priv</span><span class="punctuation">-&gt;</span>stats.tx_window_errors++;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="title function_ invoke__">if</span> (i &lt; MAX_FIDS / <span class="number">2</span>)</span><br><span class="line">		<span class="title function_ invoke__">netif_wake_queue</span>(dev);</span><br><span class="line">	<span class="title function_ invoke__">dev_kfree_skb</span>(skb);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> int <span class="title function_ invoke__">transmit_802_3_packet</span>(<span class="keyword">struct</span> <span class="title class_">airo_info</span> *ai, int len, <span class="type">char</span> *pPacket)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// packet is destination[6], source[6], payload[len-12]</span></span><br><span class="line">	<span class="comment">// write the payload length and dst/src/payload</span></span><br><span class="line">	<span class="title function_ invoke__">if</span> (<span class="title function_ invoke__">bap_setup</span>(ai, txFid, <span class="number">0x0036</span>, BAP1) != SUCCESS) <span class="keyword">return</span> ERROR;</span><br><span class="line">	<span class="comment">/* The hardware addresses aren&#x27;t counted as part of the payload, so</span></span><br><span class="line"><span class="comment">	 * we have to subtract the 12 bytes for the addresses off */</span></span><br><span class="line">	payloadLen = <span class="title function_ invoke__">cpu_to_le16</span>(len + miclen);</span><br><span class="line">	<span class="title function_ invoke__">bap_write</span>(ai, &amp;payloadLen, <span class="title function_ invoke__">sizeof</span>(payloadLen),BAP1);</span><br><span class="line">	<span class="title function_ invoke__">bap_write</span>(ai, (<span class="keyword">const</span> <span class="type">u16</span>*)pPacket, <span class="title function_ invoke__">sizeof</span>(etherHead), BAP1);</span><br><span class="line">	<span class="title function_ invoke__">if</span> (miclen)</span><br><span class="line">		<span class="title function_ invoke__">bap_write</span>(ai, (<span class="keyword">const</span> <span class="type">u16</span>*)&amp;pMic, miclen, BAP1);</span><br><span class="line">	<span class="title function_ invoke__">bap_write</span>(ai, (<span class="keyword">const</span> <span class="type">u16</span>*)(pPacket + <span class="title function_ invoke__">sizeof</span>(etherHead)), len, BAP1);</span><br><span class="line">	<span class="comment">// issue the transmit command</span></span><br><span class="line">	<span class="title function_ invoke__">memset</span>( &amp;cmd, <span class="number">0</span>, <span class="title function_ invoke__">sizeof</span>( cmd ) );</span><br><span class="line">	cmd.cmd = CMD_TRANSMIT;</span><br><span class="line">	cmd.parm0 = txFid;</span><br><span class="line">。。。</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> int <span class="title function_ invoke__">bap_write</span>(<span class="keyword">struct</span> <span class="title class_">airo_info</span> *ai, <span class="keyword">const</span> <span class="type">u16</span> *pu16Src,</span><br><span class="line">		     int bytelen, int whichbap)</span><br><span class="line">&#123;</span><br><span class="line">	bytelen = (bytelen + <span class="number">1</span>) &amp; (~<span class="number">1</span>); <span class="comment">// round up to even value</span></span><br><span class="line">	<span class="title function_ invoke__">if</span> ( !do8bitIO )</span><br><span class="line">		<span class="title function_ invoke__">outsw</span>( ai<span class="punctuation">-&gt;</span>dev<span class="punctuation">-&gt;</span>base_addr+DATA0+whichbap,</span><br><span class="line">		       pu16Src, bytelen&gt;&gt;<span class="number">1</span> );</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="title function_ invoke__">outsb</span>( ai<span class="punctuation">-&gt;</span>dev<span class="punctuation">-&gt;</span>base_addr+DATA0+whichbap, pu16Src, bytelen );</span><br><span class="line">	<span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="netif-schedule和几个基础函数："><a href="#netif-schedule和几个基础函数：" class="headerlink" title="netif_schedule和几个基础函数："></a>netif_schedule和几个基础函数：</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">几个基础函数：涉及设备的开启和关闭：</span><br><span class="line">netif_queue_stopped:返回出口队列的状态，开启或关闭  </span><br><span class="line">netif_start_queue:开启设备的传输，当设备启动时通常会调用此函数</span><br><span class="line">netif_stop_queue:关闭设备的传输，任何企图在设备上传输信息的尝试都会被拒绝；</span><br><span class="line">netif_wake_queue:开启设备的传输，若先前传输已关闭，就为设备调度以准备传输；相当于调用netif_start_queue和netif_schedule,由驱动程序使用</span><br><span class="line">      驱动程序可以在以下场景使用这个函数：<span class="number">1</span>)看门狗超时，需要重启设备队列；<span class="number">2</span>)当设备通知驱动程序已有足够的内存可处理一个特定尺寸的帧传输时</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tcpip/" rel="tag"># tcpip</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/04/srs-code/" rel="prev" title="srs_code">
+      <i class="fa fa-chevron-left"></i> srs_code
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/04/tcp-stack-graph/" rel="next" title="tcp_stack_graph">
+      tcp_stack_graph <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#linux-skb%E5%8F%91%E9%80%81%E5%88%B0%E8%AE%BE%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">linux skb发送到设备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%A7%E4%BC%A0%E8%BE%93%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF%E7%9A%84%E4%B8%BB%E8%A6%81%E4%BB%BB%E5%8A%A1%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">帧传输数据通路的主要任务：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BD%AF%E4%B8%AD%E6%96%AD%EF%BC%9A"><span class="nav-number">2.0.1.</span> <span class="nav-text">初始化软中断：</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">几个结构：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E4%BC%A0%E8%BE%93"><span class="nav-number">2.2.</span> <span class="nav-text">开始传输</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#netif-schedule%E5%92%8C%E5%87%A0%E4%B8%AA%E5%9F%BA%E7%A1%80%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">netif_schedule和几个基础函数：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'c0f94200360baefaee2160a9573e1db3',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

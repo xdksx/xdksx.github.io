@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="ffmpeg简介用来支持音视频转封装，转码，过滤，音视频相关参数调整的一个库，以及附带工具。ffmpeg工具可以用于容器转换，转码，对音视频做基本的码流，帧率，分辨率，裁剪等基本动作，以及过滤等复杂操作的功能；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ffmpeg_use">
+<meta property="og:url" content="https://xdksx.github.io/2022/04/03/ffmpeg-use/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="ffmpeg简介用来支持音视频转封装，转码，过滤，音视频相关参数调整的一个库，以及附带工具。ffmpeg工具可以用于容器转换，转码，对音视频做基本的码流，帧率，分辨率，裁剪等基本动作，以及过滤等复杂操作的功能；">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-03T06:31:03.000Z">
+<meta property="article:modified_time" content="2022-04-04T08:47:37.795Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="ffmpeg">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/04/03/ffmpeg-use/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>ffmpeg_use | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/04/03/ffmpeg-use/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ffmpeg_use
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-03 14:31:03" itemprop="dateCreated datePublished" datetime="2022-04-03T14:31:03+08:00">2022-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-04 16:47:37" itemprop="dateModified" datetime="2022-04-04T16:47:37+08:00">2022-04-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ffmpeg/" itemprop="url" rel="index"><span itemprop="name">ffmpeg</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="ffmpeg简介"><a href="#ffmpeg简介" class="headerlink" title="ffmpeg简介"></a>ffmpeg简介</h3><p>用来支持音视频转封装，转码，过滤，音视频相关参数调整的一个库，以及附带工具。<br>ffmpeg工具可以用于容器转换，转码，对音视频做基本的码流，帧率，分辨率，裁剪等基本动作，以及过滤等复杂操作的功能；<span id="more"></span></p>
+<h4 id="ffmpeg-命令行"><a href="#ffmpeg-命令行" class="headerlink" title="ffmpeg 命令行"></a>ffmpeg 命令行</h4><h5 id="命令行参数规则："><a href="#命令行参数规则：" class="headerlink" title="命令行参数规则："></a>命令行参数规则：</h5><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">usage: </span><br><span class="line">./ffmpeg  <span class="selector-attr">[global_options]</span> &#123;<span class="selector-attr">[input_file_options]</span> -<span class="selector-tag">i</span> input_url&#125; ... &#123;<span class="selector-attr">[output_file_options]</span> output_url&#125; ...</span><br><span class="line">描述：</span><br><span class="line">提供转换，过滤器；取任意数量的输入“文件”(可以是常规文件、管道、网络流、抓取设备等)，由-i选项指定，并写入任意数量的输出“文件”，这些文件由普通输出url指定。在命令行中发现的任何不能被解释为选项的内容都被认为是输出url。</span><br><span class="line">参数理解：进一步解释： </span><br><span class="line">./ffmpeg 为具体执行工具，</span><br><span class="line"><span class="number">1</span>)</span><br><span class="line"><span class="selector-attr">[global_options]</span>为全局的选项，即不区分输入输出</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>)</span><br><span class="line">infile iptions 为输入文件选项，对应着后面的-<span class="selector-tag">i</span> input_url，这里的文件不仅仅支持本地，设备(对录制视频而言，表示设备： 如win下，-<span class="selector-tag">i</span> <span class="number">0</span>,linux :-<span class="selector-tag">i</span> /dev/video0)，</span><br><span class="line">还支持网络等，所以这里的input_url是广义的；</span><br><span class="line">&#123;<span class="selector-attr">[input_file_options]</span> -<span class="selector-tag">i</span> input_url&#125; 为一组合参数，或者说一个输入源，以及对应这个输入源的options.</span><br><span class="line">... 表示可以有多个输入源组合参数。</span><br><span class="line"></span><br><span class="line"><span class="number">3</span>)</span><br><span class="line">&#123;<span class="selector-attr">[output_file_options]</span> output_url&#125; 为一组合参数对应输出选项和目的地。</span><br><span class="line">... 表示可以有多个输出目的地。</span><br><span class="line"></span><br><span class="line">例子：ffmpeg -<span class="selector-tag">i</span> <span class="selector-tag">input</span><span class="selector-class">.avi</span> -<span class="selector-tag">b</span>:v <span class="number">64</span>k -bufsize <span class="number">64</span>k output<span class="selector-class">.avi</span> </span><br><span class="line"><span class="comment">//输入文件intput.avi 输出选项： -b:v 64k : -b bitrate video bitrate (please use -b:v) z指定比特率 -bufsize 64k</span></span><br><span class="line"><span class="comment">//bufsize:https://trac.ffmpeg.org/wiki/Limiting%20the%20output%20bitrate</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>原则上，每个输入或输出url可以包含任意数量的不同类型的流(视频&#x2F;音频&#x2F;字幕&#x2F;附件&#x2F;数据)。允许的流的数量和&#x2F;或类型可能受到容器格式的限制。<br>选择哪个流的输入将进入哪个流的输出是自动完成的，或者使用-map选项</p>
+</li>
+<li><p>要在选项中引用输入文件，必须使用它们的索引(基于0)。例如，第一个输入文件是0，第二个是1，等等。类似地，文件中的流通过索引来引用。<br>例如:2:3指的是第三个输入文件中的第四个流。也请参阅流说明符一章。作为一般规则，选项将应用于下一个指定的文件。<br>因此，顺序很重要，您可以在命令行上多次使用相同的选项。然后将每次出现的情况应用到下一个输入或输出文件。<br>该规则的例外是全局选项(例如，verbose level)，它应该首先指定。</p>
+</li>
+<li><p>不要混合输入和输出文件-首先指定所有输入文件，然后指定所有输出文件。也不要混合属于不同文件的选项。所有选项只应用于下一个输入或输出文件，并在文件之间重置。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">eg:To set the <span class="selector-tag">video</span> bitrate of the output file to <span class="number">64</span> kbit/s</span><br><span class="line">ffmpeg -<span class="selector-tag">i</span> <span class="selector-tag">input</span><span class="selector-class">.avi</span> -<span class="selector-tag">b</span>:v <span class="number">64</span>k -bufsize <span class="number">64</span>k output<span class="selector-class">.avi</span></span><br><span class="line">To force the frame rate of the output file to <span class="number">24</span> fps:</span><br><span class="line">ffmpeg -<span class="selector-tag">i</span> <span class="selector-tag">input</span><span class="selector-class">.avi</span> -r <span class="number">24</span> output<span class="selector-class">.avi</span></span><br><span class="line">强制输入文件(仅对原始格式有效)的帧率为<span class="number">1</span> fps，输出文件的帧率为<span class="number">24</span> fps:</span><br><span class="line">ffmpeg -r <span class="number">1</span> -<span class="selector-tag">i</span> <span class="selector-tag">input</span><span class="selector-class">.m2v</span> -r <span class="number">24</span> output<span class="selector-class">.avi</span></span><br><span class="line">原始输入文件可能需要format选项。</span><br></pre></td></tr></table></figure>
+<h4 id="ffmpeg工具和库相关概念："><a href="#ffmpeg工具和库相关概念：" class="headerlink" title="ffmpeg工具和库相关概念："></a>ffmpeg工具和库相关概念：</h4></li>
+</ul>
+<ol>
+<li>libavformat：用于各种音视频封装格式的生成和解析，包括获取解码所需信息以生成解码上下文结构和读取音视频帧等功能，包含demuxers和muxer库；</li>
+<li>libavcodec：用于各种类型声音&#x2F;图像编解码；</li>
+<li>libavutil：包含一些公共的工具函数；</li>
+<li>libswscale：用于视频场景比例缩放、色彩映射转换；</li>
+<li>libpostproc：用于后期效果处理；</li>
+<li>ffmpeg：是一个命令行工具，用来对视频文件转换格式，也支持对电视卡实时编码；</li>
+<li>ffsever：是一个HTTP多媒体实时广播流服务器，支持时光平移；</li>
+<li>ffplay：是一个简单的播放器，使用ffmpeg 库解析和解码，通过SDL显示；</li>
+</ol>
+<ul>
+<li>容器(Container)<br>容器就是一种文件格式，比如flv，mkv等。包含下面5种流以及文件头信息。</li>
+<li>流(Stream)<br>是一种视频数据信息的传输方式，5种流：音频，视频，字幕，附件，数据。</li>
+<li>帧(Frame)<br>帧代表一幅静止的图像，分为I帧，P帧，B帧。</li>
+<li>编解码器(Codec)<br>是对视频进行压缩或者解压缩，CODEC &#x3D;COde （编码） +DECode（解码）</li>
+<li>复用&#x2F;解复用(mux&#x2F;demux)<br>把不同的流按照某种容器的规则放入容器，这种行为叫做复用（mux），所以通常是把视频和音频进行复用封装；<br>把不同的流从某种容器中解析出来，这种行为叫做解复用(demux)</li>
+</ul>
+<h4 id="ffmpeg处理流程："><a href="#ffmpeg处理流程：" class="headerlink" title="ffmpeg处理流程："></a>ffmpeg处理流程：</h4><h5 id="整体："><a href="#整体：" class="headerlink" title="整体："></a>整体：</h5><p>将input文件—&gt;进行解复用(demuxer),得到视频和音频文件包，此时的文件是经过压缩了的(Encoded Packet）–&gt;接着进行将已经编码的视频、音频包进行分别解码得到音视频帧(注意这里是帧级别的)–&gt;接着对帧级别做filter过滤器处理–&gt;接着再做重新编码–&gt;重新进行复用；</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> _______              ______________</span><br><span class="line">|<span class="string">       </span>|<span class="string">            </span>|<span class="string">              </span>|</span><br><span class="line">|<span class="string"> input </span>|<span class="string">  demuxer   </span>|<span class="string"> encoded data </span>|<span class="string">   decoder</span></span><br><span class="line"><span class="string"></span>|<span class="string"> file  </span>|<span class="string"> ---------&gt; </span>|<span class="string"> packets      </span>|<span class="string"> -----+</span></span><br><span class="line"><span class="string"></span>|<span class="string">_______</span>|<span class="string">            </span>|<span class="string">______________</span>|<span class="string">      </span>|</span><br><span class="line">                                           v</span><br><span class="line">                                       _________</span><br><span class="line">                                      |<span class="string">         </span>|</span><br><span class="line">                                      |<span class="string"> decoded </span>|</span><br><span class="line">                                      |<span class="string"> frames  </span>|</span><br><span class="line">                                      |<span class="string">_________</span>|</span><br><span class="line"> ________             ______________       |<span class="string"></span></span><br><span class="line"><span class="string"></span>|<span class="string">        </span>|<span class="string">           </span>|<span class="string">              </span>|<span class="string">      </span>|</span><br><span class="line">|<span class="string"> output </span>|<span class="string"> &lt;-------- </span>|<span class="string"> encoded data </span>|<span class="string"> &lt;----+</span></span><br><span class="line"><span class="string"></span>|<span class="string"> file   </span>|<span class="string">   muxer   </span>|<span class="string"> packets      </span>|<span class="string">   encoder</span></span><br><span class="line"><span class="string"></span>|<span class="string">________</span>|<span class="string">           </span>|<span class="string">______________</span>|</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>Ffmpeg调用libavformat库(包含解复用器)来读取输入文件并从中获取包含编码数据的包。当有多个输入文件时，ffmpeg试图通过跟踪任何活动输入流的最低时间戳来保持它们的同步。<br>编码后的数据包随后被传递给解码器(除非为流选择了streamcopy，请参阅进一步的描述)。解码器产生未压缩的帧(原始视频&#x2F;PCM音频&#x2F;…)，可以通过过滤进一步处理(见下一节)。<br>过滤后，帧被传递给编码器，编码器对帧进行编码并输出经过编码的包。最后，它们被传递给muxer, muxer将编码后的包写入输出文件。</p>
+<h4 id="过滤："><a href="#过滤：" class="headerlink" title="过滤："></a>过滤：</h4><p>在编码之前，ffmpeg可以使用libavfilter库中的过滤器处理原始音频和视频帧。几个链式过滤器形成一个过滤器图。Ffmpeg区分了两种类型的过滤器图:简单的和复杂的。</p>
+<ol>
+<li><p>简单过滤：简单过滤器是那些只有一个输入和输出，两者都是相同类型的过滤器。在上面的图表中，它们可以通过简单地在解码和编码之间插入一个额外的步骤来表示:</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> _________                        ______________</span><br><span class="line">|<span class="string">         </span>|<span class="string">                      </span>|<span class="string">              </span>|</span><br><span class="line">|<span class="string"> decoded </span>|<span class="string">                      </span>|<span class="string"> encoded data </span>|</span><br><span class="line">|<span class="string"> frames  </span>|<span class="string">\                   _ </span>|<span class="string"> packets      </span>|</span><br><span class="line">|<span class="string">_________</span>|<span class="string"> \                  /</span>||<span class="string">______________</span>|</span><br><span class="line">             \   __________   /</span><br><span class="line">  simple     _\||<span class="string">          </span>|<span class="string"> /  encoder</span></span><br><span class="line"><span class="string">  filtergraph   </span>|<span class="string"> filtered </span>|<span class="string">/</span></span><br><span class="line"><span class="string">                </span>|<span class="string"> frames   </span>|</span><br><span class="line">                |<span class="string">__________</span>|</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>简单的过滤器配置为每个流的-filter选项(分别为视频和音频使用-vf和-af别名)。一个简单的视频滤图可以像这样:</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> _______        _____________        _______        ________</span><br><span class="line">|<span class="string">       </span>|<span class="string">      </span>|<span class="string">             </span>|<span class="string">      </span>|<span class="string">       </span>|<span class="string">      </span>|<span class="string">        </span>|</span><br><span class="line">|<span class="string"> input </span>|<span class="string"> ---&gt; </span>|<span class="string"> deinterlace </span>|<span class="string"> ---&gt; </span>|<span class="string"> scale </span>|<span class="string"> ---&gt; </span>|<span class="string"> output </span>|</span><br><span class="line">|<span class="string">_______</span>|<span class="string">      </span>|<span class="string">_____________</span>|<span class="string">      </span>|<span class="string">_______</span>|<span class="string">      </span>|<span class="string">________</span>|</span><br></pre></td></tr></table></figure>
+<p>注意，有些过滤器只改变框架的属性而不改变框架的内容。例如，上面例子中的fps过滤器改变帧数，但不涉及帧内容。另一个例子是setpts过滤器，它只设置时间戳，否则不更改传递帧。</p>
+</li>
+<li><p>复杂过滤：</p>
+</li>
+</ol>
+<p>复杂的过滤器图不能简单地描述为应用于一个流的线性处理链。例如，当图形有多个输入和&#x2F;或输出时，或者当输出流类型与输入流不同时，就会出现这种情况。它们可以用下图表示:</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> _________</span><br><span class="line">|<span class="string">         </span>|</span><br><span class="line">|<span class="string"> input 0 </span>|<span class="string">\                    __________</span></span><br><span class="line"><span class="string"></span>|<span class="string">_________</span>|<span class="string"> \                  </span>|<span class="string">          </span>|</span><br><span class="line">             \   _________    /|<span class="string"> output 0 </span>|</span><br><span class="line">              \ |<span class="string">         </span>|<span class="string">  / </span>|<span class="string">__________</span>|</span><br><span class="line"> _________     \|<span class="string"> complex </span>|<span class="string"> /</span></span><br><span class="line"><span class="string"></span>|<span class="string">         </span>|<span class="string">     </span>|<span class="string">         </span>|<span class="string">/</span></span><br><span class="line"><span class="string"></span>|<span class="string"> input 1 </span>|<span class="string">----&gt;</span>|<span class="string"> filter  </span>|<span class="string">\</span></span><br><span class="line"><span class="string"></span>|<span class="string">_________</span>|<span class="string">     </span>|<span class="string">         </span>|<span class="string"> \   __________</span></span><br><span class="line"><span class="string">               /</span>|<span class="string"> graph   </span>|<span class="string">  \ </span>|<span class="string">          </span>|</span><br><span class="line">              / |<span class="string">         </span>|<span class="string">   \</span>|<span class="string"> output 1 </span>|</span><br><span class="line"> _________   /  |<span class="string">_________</span>|<span class="string">    </span>|<span class="string">__________</span>|</span><br><span class="line">|<span class="string">         </span>|<span class="string"> /</span></span><br><span class="line"><span class="string"></span>|<span class="string"> input 2 </span>|<span class="string">/</span></span><br><span class="line"><span class="string"></span>|<span class="string">_________</span>|</span><br></pre></td></tr></table></figure>
+<p>使用-filter_complex选项配置复杂筛选器。注意，这个选项是全局的，因为复杂的过滤器图本质上不能明确地与单个流或文件关联。-lavfi选项等价于-filter_complex<br>复杂过滤器图的一个简单示例是叠加过滤器，它有两个视频输入和一个视频输出，包含一个视频叠加在另一个视频之上。它的音频对应物是混音滤波器。</p>
+<ol start="3">
+<li><p>流的拷贝；<br>流拷贝是通过向-codec选项提供copy参数来选择的一种模式。它使ffmpeg省略指定流的解码和编码步骤，因此它只做解复用和muxing。它对于更改容器格式或修改容器级元数据非常有用。在这种情况下，上面的图表将简化为:</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> _______              ______________            ________</span><br><span class="line">|<span class="string">       </span>|<span class="string">            </span>|<span class="string">              </span>|<span class="string">          </span>|<span class="string">        </span>|</span><br><span class="line">|<span class="string"> input </span>|<span class="string">  demuxer   </span>|<span class="string"> encoded data </span>|<span class="string">  muxer   </span>|<span class="string"> output </span>|</span><br><span class="line">|<span class="string"> file  </span>|<span class="string"> ---------&gt; </span>|<span class="string"> packets      </span>|<span class="string"> -------&gt; </span>|<span class="string"> file   </span>|</span><br><span class="line">|<span class="string">_______</span>|<span class="string">            </span>|<span class="string">______________</span>|<span class="string">          </span>|<span class="string">________</span>|</span><br></pre></td></tr></table></figure>
+<p>由于没有解码或编码，它非常快，而且没有质量损失。然而，由于许多因素，它可能在某些情况下不起作用。应用过滤器显然也是不可能的，因为过滤器处理的是未压缩的数据。</p>
+</li>
+<li><p>多流情况下，流的选择</p>
+</li>
+<li><p>各种选项的使用</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-vcodec codec (output) </span><br><span class="line">Set <span class="keyword">the</span> video codec. This is <span class="keyword">an</span> <span class="built_in">alias</span> <span class="keyword">for</span> -codec:v. -vcodec rawvideo设置</span><br><span class="line">-vcodec rawvideo means that <span class="keyword">the</span> video data <span class="keyword">within</span> <span class="keyword">the</span> container is <span class="keyword">not</span> compressed. However, there are many ways uncompressed video could be stored, so <span class="keyword">it</span> is necessary <span class="built_in">to</span> specify <span class="keyword">the</span> -pix_fmt option. In your <span class="keyword">case</span>, -pix_fmt rgb32 says that <span class="keyword">each</span> pixel <span class="keyword">in</span> your raw video data uses <span class="number">32</span> bits (<span class="number">1</span> <span class="keyword">byte</span> <span class="keyword">each</span> <span class="keyword">for</span> red, green, <span class="keyword">and</span> blue, <span class="keyword">and</span> <span class="keyword">the</span> remaining <span class="keyword">byte</span> ignored).</span><br><span class="line">ffmpeg -pix_fmgs 可以列出所有格式；</span><br><span class="line">Normally <span class="keyword">a</span> video <span class="built_in">file</span> <span class="keyword">contains</span> <span class="keyword">a</span> video stream (whose <span class="built_in">format</span> is specified <span class="keyword">using</span> -vcodec), embedded <span class="keyword">in</span> <span class="keyword">a</span> media container (e.g. mp4, mkv, wav, etc.). The -f option is used <span class="built_in">to</span> specify <span class="keyword">the</span> container <span class="built_in">format</span>. -f rawvideo is basically <span class="keyword">a</span> dummy setting that tells ffmpeg that your video is <span class="keyword">not</span> <span class="keyword">in</span> <span class="keyword">any</span> container.</span><br><span class="line">...</span><br></pre></td></tr></table></figure></li>
+<li><p>例子：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">几个例子：</span><br><span class="line"><span class="number">1</span>）ffmpeg -i destEarth.ogv -c:v libx264 -c:a aac destEarth_transcoded.mp4</span><br><span class="line">输入选项为空，输入文件为destEarth.ogv, 输入-i destEarth.ogv；输出选项： -c:v libx264 将视频转码为h264编码，-c为codec缩写，:v指定其中的视频流；-c:a 为指定音频流的编码，这里转为aac ，输出文件为 destEarth_transcoded.mp4</span><br><span class="line"><span class="number">2</span>）ffmpeg -i destEarth.m4v -ss <span class="number">00</span>:<span class="number">01</span>:<span class="number">00</span> -<span class="keyword">to</span> <span class="number">00</span>:<span class="number">04</span>:<span class="number">35</span> -c:v <span class="keyword">copy</span> -an destEarth_Mars_video.mp4</span><br><span class="line">-ss <span class="number">00</span>:<span class="number">01</span>:<span class="number">00</span> = 设置起始时间点；-<span class="keyword">to</span> <span class="number">00</span>:<span class="number">04</span>:<span class="number">45</span> = sets <span class="keyword">end</span> <span class="type">point</span> <span class="keyword">to</span> <span class="number">4</span> minutes <span class="keyword">and</span> <span class="number">45</span> seconds <span class="keyword">from</span> <span class="keyword">start</span> <span class="keyword">of</span> file</span><br><span class="line">-c:v copy = 直接拷贝视频流，不转码 -an = 忽略音频流，不写入输出文件中</span><br><span class="line"><span class="number">3</span>）设置帧率：ffmpeg –i <span class="keyword">input</span>.mp4 –r fps output.mp4 如设置为<span class="number">25</span>：ffmpeg –i <span class="keyword">input</span>.mp4 –r <span class="number">25</span> output.mp4</span><br><span class="line"><span class="number">4</span>）设置视频码率：ffmpeg -i <span class="keyword">input</span>.avi -b:v <span class="number">1500</span>k output.mp4 b为bitrate的意思</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="ffmpeg-map和stream的概念"><a href="#ffmpeg-map和stream的概念" class="headerlink" title="ffmpeg map和stream的概念"></a>ffmpeg map和stream的概念</h4><ul>
+<li>流的概念：<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">ffprobe输出信息：</span><br><span class="line">λ ffprobe.exe <span class="string">..</span>\destEarth.ogv</span><br><span class="line">ffprobe <span class="keyword">version</span> N-93955-g415886588f Copyright <span class="params">(c)</span> 2007-2019 the FFmpeg developers</span><br><span class="line">built with gcc 8.3.1 <span class="params">(GCC)</span> 20190414</span><br><span class="line">configuration: <span class="params">--disable-static</span> <span class="params">--enable-shared</span> <span class="params">--enable-gpl</span> <span class="params">--enable-version3</span> <span class="params">--enable-sdl2</span> <span class="params">--enable-fontconfig</span> <span class="params">--enable-gnutls</span> <span class="params">--enable-iconv</span> <span class="params">--enable-libass</span> <span class="params">--enable-libdav1d</span> <span class="params">--enable-libbluray</span> <span class="params">--enable-libfreetype</span> <span class="params">--enable-libmp3lame</span> <span class="params">--enable-libopencore-amrnb</span> <span class="params">--enable-libopencore-amrwb</span> <span class="params">--enable-libopenjpeg</span> <span class="params">--enable-libopus</span> <span class="params">--enable-libshine</span> <span class="params">--enable-libsnappy</span> <span class="params">--enable-libsoxr</span> <span class="params">--enable-libtheora</span> <span class="params">--enable-libtwolame</span> <span class="params">--enable-libvpx</span> <span class="params">--enable-libwavpack</span> <span class="params">--enable-libwebp</span> <span class="params">--enable-libx264</span> <span class="params">--enable-libx265</span> <span class="params">--enable-libxml2</span> <span class="params">--enable-libzimg</span> <span class="params">--enable-lzma</span> <span class="params">--enable-zlib</span> <span class="params">--enable-gmp</span> <span class="params">--enable-libvidstab</span> <span class="params">--enable-libvorbis</span> <span class="params">--enable-libvo-amrwbenc</span> <span class="params">--enable-libmysofa</span> <span class="params">--enable-libspeex</span> <span class="params">--enable-libxvid</span> <span class="params">--enable-libaom</span> <span class="params">--enable-libmfx</span> <span class="params">--enable-amf</span> <span class="params">--enable-ffnvcodec</span> <span class="params">--enable-cuvid</span> <span class="params">--enable-d3d11va</span> <span class="params">--enable-nvenc</span> <span class="params">--enable-nvdec</span> <span class="params">--enable-dxva2</span> <span class="params">--enable-avisynth</span> <span class="params">--enable-libopenmpt</span></span><br><span class="line">libavutil 56. 28.100 / 56. 28.100</span><br><span class="line">libavcodec 58. 52.102 / 58. 52.102</span><br><span class="line">libavformat 58. 27.103 / 58. 27.103</span><br><span class="line">libavdevice 58. 7.100 / 58. 7.100</span><br><span class="line">libavfilter 7. 55.100 / 7. 55.100</span><br><span class="line">libswscale 5. 4.101 / 5. 4.101</span><br><span class="line">libswresample 3. 4.100 / 3. 4.100</span><br><span class="line">libpostproc 55. 4.100 / 55. 4.100</span><br><span class="line">Input <span class="comment">#0, ogg, from &#x27;..\destEarth.ogv&#x27;: ---&gt;这里指明容器格式是ogg</span></span><br><span class="line">Duration: 00<span class="function">:13</span><span class="function">:39.62</span>, start: 0.000000, bitrate: 595 kb/s --&gt;码率</span><br><span class="line">Stream <span class="comment">#0:0: Video: theora, yuv420p, 400x300 [SAR 1:1 DAR 4:3], 29.97 fps, 29.97 tbr, 29.97 tbn, 29.97 tbc--&gt;这里指明了第一条流为视频流，以theora为编码，yuv420解码出来或者叫采集方式，400x300分辨率，fps等数据；</span></span><br><span class="line">Metadata:</span><br><span class="line">TITLE : Destination Earth</span><br><span class="line">DATE : 1956</span><br><span class="line">LOCATION : http:<span class="string">//archive.org/details/4050_Destination_Earth_01_47_33_28</span></span><br><span class="line">encoder : Lavf54.49.102</span><br><span class="line">Stream <span class="comment">#0:1: Audio: vorbis, 44100 Hz, stereo, fltp, 128 kb/s---&gt;这里指明第二条流：音频流，以vorbis编码，44100hz,立体声，128kb/s</span></span><br><span class="line">Metadata:</span><br><span class="line">TITLE : Destination Earth</span><br><span class="line">DATE : 1956</span><br><span class="line">LOCATION : http:<span class="string">//archive.org/details/4050_Destination_Earth_01_47_33_28</span></span><br><span class="line">encoder : Lavf54.49.102</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>再看一个例子：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">ffprobe</span> version N-<span class="number">93955</span>-g415886588f Copyright (c) <span class="number">2007</span>-<span class="number">2019</span> the FFmpeg developers</span><br><span class="line"><span class="attribute">built</span> with gcc <span class="number">8</span>.<span class="number">3</span>.<span class="number">1</span> (GCC) <span class="number">20190414</span></span><br><span class="line"><span class="attribute">configuration</span>: --disable-static --enable-shared --enable-gpl --enable-version3 --enable-sdl2 --enable-fontconfig --enable-gnutls --enable-iconv --enable-libass --enable-libdav1d --enable-libbluray --enable-libfreetype --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libopus --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libtheora --enable-libtwolame --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libzimg --enable-lzma --enable-zlib --enable-gmp --enable-libvidstab --enable-libvorbis --enable-libvo-amrwbenc --enable-libmysofa --enable-libspeex --enable-libxvid --enable-libaom --enable-libmfx --enable-amf --enable-ffnvcodec --enable-cuvid --enable-d3d11va --enable-nvenc --enable-nvdec --enable-dxva2 --enable-avisynth --enable-libopenmpt</span><br><span class="line"><span class="attribute">libavutil</span> <span class="number">56</span>. <span class="number">28</span>.<span class="number">100</span> / <span class="number">56</span>. <span class="number">28</span>.<span class="number">100</span></span><br><span class="line"><span class="attribute">libavcodec</span> <span class="number">58</span>. <span class="number">52</span>.<span class="number">102</span> / <span class="number">58</span>. <span class="number">52</span>.<span class="number">102</span></span><br><span class="line"><span class="attribute">libavformat</span> <span class="number">58</span>. <span class="number">27</span>.<span class="number">103</span> / <span class="number">58</span>. <span class="number">27</span>.<span class="number">103</span></span><br><span class="line"><span class="attribute">libavdevice</span> <span class="number">58</span>. <span class="number">7</span>.<span class="number">100</span> / <span class="number">58</span>. <span class="number">7</span>.<span class="number">100</span></span><br><span class="line"><span class="attribute">libavfilter</span> <span class="number">7</span>. <span class="number">55</span>.<span class="number">100</span> / <span class="number">7</span>. <span class="number">55</span>.<span class="number">100</span></span><br><span class="line"><span class="attribute">libswscale</span> <span class="number">5</span>. <span class="number">4</span>.<span class="number">101</span> / <span class="number">5</span>. <span class="number">4</span>.<span class="number">101</span></span><br><span class="line"><span class="attribute">libswresample</span> <span class="number">3</span>. <span class="number">4</span>.<span class="number">100</span> / <span class="number">3</span>. <span class="number">4</span>.<span class="number">100</span></span><br><span class="line"><span class="attribute">libpostproc</span> <span class="number">55</span>. <span class="number">4</span>.<span class="number">100</span> / <span class="number">55</span>. <span class="number">4</span>.<span class="number">100</span></span><br><span class="line"><span class="attribute">Input</span> #<span class="number">0</span>, mov,mp4,m4a,<span class="number">3</span>gp,<span class="number">3</span>g2,mj2, from &#x27;..\destEarth.m4v&#x27;:</span><br><span class="line"><span class="attribute">Metadata</span>:</span><br><span class="line"><span class="attribute">major_brand</span> : mp42</span><br><span class="line"><span class="attribute">minor_version</span> : <span class="number">1</span></span><br><span class="line"><span class="attribute">compatible_brands</span>: mp42mp41</span><br><span class="line"><span class="attribute">creation_time</span> : <span class="number">2013</span>-<span class="number">08</span>-<span class="number">03</span>T13:<span class="number">58</span>:<span class="number">40</span>.<span class="number">000000</span>Z</span><br><span class="line"><span class="attribute">Duration</span>: <span class="number">00</span>:<span class="number">13</span>:<span class="number">39</span>.<span class="number">62</span>, start: <span class="number">0</span>.<span class="number">000000</span>, bitrate: <span class="number">3162</span> kb/s</span><br><span class="line"><span class="attribute">Stream</span> #<span class="number">0</span>:<span class="number">0</span>(eng): Video: h264 (Constrained Baseline) (avc1 / <span class="number">0</span>x31637661), yuv420p(tv, smpte170m/smpte170m/bt709), <span class="number">640</span>x480, <span class="number">2999</span> kb/s, <span class="number">29</span>.<span class="number">97</span> fps, <span class="number">29</span>.<span class="number">97</span> tbr, <span class="number">2997</span> tbn, <span class="number">5994</span> tbc (default)</span><br><span class="line"><span class="attribute">Metadata</span>:</span><br><span class="line"><span class="attribute">creation_time</span> : <span class="number">2013</span>-<span class="number">08</span>-<span class="number">03</span>T13:<span class="number">58</span>:<span class="number">40</span>.<span class="number">000000</span>Z</span><br><span class="line"><span class="attribute">handler_name</span> : Apple Video Media Handler</span><br><span class="line"><span class="attribute">Stream</span> #<span class="number">0</span>:<span class="number">1</span>(eng): Audio: aac (LC) (mp4a / <span class="number">0</span>x6134706D), <span class="number">48000</span> Hz, stereo, fltp, <span class="number">159</span> kb/s (default)</span><br><span class="line"><span class="attribute">Metadata</span>:</span><br><span class="line"><span class="attribute">creation_time</span> : <span class="number">2013</span>-<span class="number">08</span>-<span class="number">03</span>T13:<span class="number">58</span>:<span class="number">40</span>.<span class="number">000000</span>Z</span><br><span class="line"><span class="attribute">handler_name</span> : Apple Sound Media Handler</span><br></pre></td></tr></table></figure>
+<p>所以一个容器可能有多个流：音频，视频，字幕，附件，数据</p>
+<ul>
+<li>map的使用：<a target="_blank" rel="noopener" href="https://trac.ffmpeg.org/wiki/Map">https://trac.ffmpeg.org/wiki/Map</a> 这里把map的使用以例子说明白了，暂时不解释；<br>就是针对输入的每条流做处理(编码或者其他方式)，然后再写入到输出文件中 ；</li>
+</ul>
+<h4 id="ffmpeg-过滤器-filter-filterchain-filtergraph"><a href="#ffmpeg-过滤器-filter-filterchain-filtergraph" class="headerlink" title="ffmpeg 过滤器 filter,filterchain,filtergraph"></a>ffmpeg 过滤器 filter,filterchain,filtergraph</h4><h5 id="几个概念："><a href="#几个概念：" class="headerlink" title="几个概念："></a>几个概念：</h5><ul>
+<li>filter，filterchain，fitergraph的关系：</li>
+<li>filter是单个过滤器</li>
+<li>filterchain是： filter1,filter2,…组成</li>
+<li>filtergraph是: filterchain1,filterchain2,filterchain3这样组成的；</li>
+</ul>
+<h5 id="过滤器简介："><a href="#过滤器简介：" class="headerlink" title="过滤器简介："></a>过滤器简介：</h5><p>FFmpeg filter提供了很多音视频特效处理的功能，比如视频缩放、截取、翻转、叠加等。<br>其中定义了很多的filter，例如以下常用的一些filter。</p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">scale</span>：视频/图像的缩放</span><br><span class="line">overlay：视频/图像的叠加</span><br><span class="line">crop：视频/图像的裁剪</span><br><span class="line"><span class="keyword">trim</span>：截取视频的片段</span><br><span class="line"><span class="keyword">rotate</span>：以任意角度旋转视频</span><br></pre></td></tr></table></figure>
+<p>通过ffmpeg -filters 可以获得支持的filter列表；<br>    ffmpeg -h filter&#x3D;filter_name</p>
+<h5 id="过滤器使用："><a href="#过滤器使用：" class="headerlink" title="过滤器使用："></a>过滤器使用：</h5><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-af filter_graph <span class="built_in">set</span> audio filters</span><br><span class="line">-vf filter_graph <span class="built_in">set</span> video filters</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input -vf scale=w=iw/<span class="symbol">2:h</span>=ih/<span class="number">2</span> output</span><br><span class="line">这里进行视频过滤： vf</span><br><span class="line">scale是其中一种过滤器：ffmpeg -h filter= scale 可以看参数，主要是视频/图像的缩放</span><br><span class="line">=w=iw/<span class="symbol">2:h</span>=ih/<span class="number">2</span> 这里把宽高裁剪为<span class="number">1</span>半；</span><br></pre></td></tr></table></figure>
+<p>ref:<br><a target="_blank" rel="noopener" href="https://trac.ffmpeg.org/wiki/FilteringGuide">https://trac.ffmpeg.org/wiki/FilteringGuide</a><br><a target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv4910766">https://www.bilibili.com/read/cv4910766</a>   简单整理一下x264参数<br>x264 FFmpeg Options Guide  <a target="_blank" rel="noopener" href="https://sites.google.com/site/linuxencoding/x264-ffmpeg-mapping">https://sites.google.com/site/linuxencoding/x264-ffmpeg-mapping</a></p>
+<h4 id="采集使用："><a href="#采集使用：" class="headerlink" title="采集使用："></a>采集使用：</h4><p>windows下</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg.exe -f dshow -i audio=&quot;@device_cm_&#123;33D9A762<span class="string">-90</span>C8<span class="string">-11</span>D0-BD43<span class="string">-00</span>A0C911CE86&#125;\wave_&#123;E41DED46<span class="string">-6012</span><span class="string">-4493</span><span class="string">-8</span>D55<span class="string">-7</span>D9322A433B6&#125;&quot; D:\output.mp3</span><br><span class="line">ffmpeg.exe -f dshow -t 10 -i audio=&quot;@device_cm_&#123;33D9A762<span class="string">-90</span>C8<span class="string">-11</span>D0-BD43<span class="string">-00</span>A0C911CE86&#125;\wave_&#123;E41DED46<span class="string">-6012</span><span class="string">-4493</span><span class="string">-8</span>D55<span class="string">-7</span>D9322A433B6&#125;&quot;  -f s16le -y D:\sound.pcm</span><br><span class="line">ffplay.exe -channels 2 -f s16le -i D:\sound.pcm</span><br></pre></td></tr></table></figure>
+
+<h3 id="ffmpeg相关库的使用简记："><a href="#ffmpeg相关库的使用简记：" class="headerlink" title="ffmpeg相关库的使用简记："></a>ffmpeg相关库的使用简记：</h3><p><a target="_blank" rel="noopener" href="https://github.com/leandromoreira/ffmpeg-libav-tutorial/blob/master/README-cn.md">https://github.com/leandromoreira/ffmpeg-libav-tutorial/blob/master/README-cn.md</a></p>
+<h4 id="结构："><a href="#结构：" class="headerlink" title="结构："></a>结构：</h4><ol>
+<li>AVFormatContext 组件（容器这个词你认为是文件格式就好了）  –容器 组件工具</li>
+<li>AVStream: 音频流和视频流<br>首先我们需要加载媒体文件到 AVFormatContext 组件（容器这个词你认为是文件格式就好了），它并不是真正的加载整个文件，它只是加载了文件头。<br>这样我们就可以访问媒体文件流（流只是最基本的音频和视频数据）。每个流对于AVStream都是有用的。  </li>
+<li>AVPacket 音视频的封装包 ，从代码使用上看，AVPacket解码前传入的数据是不带头的，比如flv中获取，视频会-11-5，音频会-11-2<br>一个是 AAC 的音频流，一个是 H264（AVC）视频流。我们可以从每一个流中提取出数据包，这些数据包将被加载到 AVPacket。<br>AVPacket ：如对flv ,视频： flvtag-11-5-4(presize),音频：flvtag-11-2-4<br>反过来，编码是把AVFrame-&gt;AVPacket  </li>
+<li>编解码工具<br>AVCodec将解压这些数据到 AVFrame    —AVCodec 编解码器 工具</li>
+<li>解码帧</li>
+</ol>
+<p>AVFrame: 解码后的帧</p>
+<h4 id="一般流程："><a href="#一般流程：" class="headerlink" title="一般流程："></a>一般流程：</h4><ol>
+<li>注册： av_register_all</li>
+<li>分配结构体：比如解封装时：avformat_alloc_context()，解码时：avcodec_alloc_context3（不过解码时要先找对应的解码器:avcodec_find_decoder_by_name)</li>
+<li>初始化结构体等：如解码：avcodec_open2</li>
+<li>创建结构 压缩帧： AVPacket ,解码后帧：AVFrame:<br>开始解码：avcodec_decode_video2 注意分配的时候：av_init_packet，av_frame_alloc，av_free_packet，av_frame_free</li>
+<li>AVFrame* decFrame 得到这个格式的解码后的帧，再接着传到混画那里：<br>混画解码：<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">main: 注册：av<span class="constructor">_register_all()</span>; <span class="comment">//初始化注册所有要用的编码器解码器等</span></span><br><span class="line">收帧解码线程：</span><br><span class="line">m_flvReader.UnpackFlvFrame ;<span class="comment">//拆出flv tag</span></span><br><span class="line">m_videoDecoder.set<span class="constructor">UpDec(<span class="params">config</span>)</span>; <span class="comment">//找解码器：</span></span><br><span class="line">avcodec_find_decoder_by_name <span class="comment">//找解码器</span></span><br><span class="line">avcodec_alloc_context3 <span class="comment">//分配解码结构</span></span><br><span class="line">avcodec_open2 <span class="comment">//初始化结构体</span></span><br><span class="line">m_videoDecoder.doDecVideo 开始解码 </span><br><span class="line">av<span class="constructor">_init_packet(<span class="params">pkt</span>)</span> <span class="comment">//分配AVPacket编码格式结构</span></span><br><span class="line">pkt.data =(uint8_t*)data.data<span class="literal">()</span>; <span class="comment">//塞数据</span></span><br><span class="line">分配解码后数据结构： decframe = av<span class="constructor">_frame_alloc()</span>;</span><br><span class="line">开始解码：avcodec<span class="constructor">_decode_video2(<span class="params">dec</span>, <span class="params">frame</span>, &amp;<span class="params">got_frame</span>, <span class="params">pkt</span>)</span>;</span><br><span class="line">释放相关结构体：av<span class="constructor">_free_packet(&amp;<span class="params">pkt</span>)</span>;</span><br><span class="line">混画过程：opencv</span><br><span class="line">编码：类似解码；</span><br></pre></td></tr></table></figure>
+ffmpeg使用可以参考example文件夹下的例子；</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ffmpeg/" rel="tag"># ffmpeg</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/03/opencv3/" rel="prev" title="opencv3">
+      <i class="fa fa-chevron-left"></i> opencv3
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/03/ffmpeg-sourcecode/" rel="next" title="ffmpeg_sourcecode">
+      ffmpeg_sourcecode <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ffmpeg%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">ffmpeg简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ffmpeg-%E5%91%BD%E4%BB%A4%E8%A1%8C"><span class="nav-number">1.1.</span> <span class="nav-text">ffmpeg 命令行</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0%E8%A7%84%E5%88%99%EF%BC%9A"><span class="nav-number">1.1.1.</span> <span class="nav-text">命令行参数规则：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ffmpeg%E5%B7%A5%E5%85%B7%E5%92%8C%E5%BA%93%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">ffmpeg工具和库相关概念：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ffmpeg%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">ffmpeg处理流程：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%EF%BC%9A"><span class="nav-number">1.3.1.</span> <span class="nav-text">整体：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%EF%BC%9A"><span class="nav-number">1.4.</span> <span class="nav-text">过滤：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ffmpeg-map%E5%92%8Cstream%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.5.</span> <span class="nav-text">ffmpeg map和stream的概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ffmpeg-%E8%BF%87%E6%BB%A4%E5%99%A8-filter-filterchain-filtergraph"><span class="nav-number">1.6.</span> <span class="nav-text">ffmpeg 过滤器 filter,filterchain,filtergraph</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">1.6.1.</span> <span class="nav-text">几个概念：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%99%A8%E7%AE%80%E4%BB%8B%EF%BC%9A"><span class="nav-number">1.6.2.</span> <span class="nav-text">过滤器简介：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%99%A8%E4%BD%BF%E7%94%A8%EF%BC%9A"><span class="nav-number">1.6.3.</span> <span class="nav-text">过滤器使用：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%87%E9%9B%86%E4%BD%BF%E7%94%A8%EF%BC%9A"><span class="nav-number">1.7.</span> <span class="nav-text">采集使用：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ffmpeg%E7%9B%B8%E5%85%B3%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8%E7%AE%80%E8%AE%B0%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">ffmpeg相关库的使用简记：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">结构：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E8%88%AC%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">一般流程：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '5ae90e478000a9314504e315b7bdda6b',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
