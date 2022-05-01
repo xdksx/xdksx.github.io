@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="fec背景和分类：背景：主要在无线传输领域和音视频传输领域，前者是因为空气介质环境恶劣，不如光缆传输的抗性，所以会出现丢包，异常等情况，这个时候就需要有恢复动作。而后者是音视频传输对网络传输丢包很敏感，会出现卡顿等，体验不好，所以恢复也很重要。无线传输的fec算法有：TURBO,LDPC,POLAR三种音视频传输领域fec算法有：异或fec, RS(Reed-Solomon)，交织编码，Fount">
+<meta property="og:type" content="article">
+<meta property="og:title" content="live_fec">
+<meta property="og:url" content="https://xdksx.github.io/2022/04/17/live-fec/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="fec背景和分类：背景：主要在无线传输领域和音视频传输领域，前者是因为空气介质环境恶劣，不如光缆传输的抗性，所以会出现丢包，异常等情况，这个时候就需要有恢复动作。而后者是音视频传输对网络传输丢包很敏感，会出现卡顿等，体验不好，所以恢复也很重要。无线传输的fec算法有：TURBO,LDPC,POLAR三种音视频传输领域fec算法有：异或fec, RS(Reed-Solomon)，交织编码，Fount">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-17T06:58:55.000Z">
+<meta property="article:modified_time" content="2022-04-17T07:20:41.360Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="fec">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/04/17/live-fec/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>live_fec | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/04/17/live-fec/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          live_fec
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-17 14:58:55 / 修改时间：15:20:41" itemprop="dateCreated datePublished" datetime="2022-04-17T14:58:55+08:00">2022-04-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/live/" itemprop="url" rel="index"><span itemprop="name">live</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="fec背景和分类："><a href="#fec背景和分类：" class="headerlink" title="fec背景和分类："></a>fec背景和分类：</h4><p>背景：主要在无线传输领域和音视频传输领域，前者是因为空气介质环境恶劣，不如光缆传输的抗性，所以会出现丢包，异常等情况，这个时候就需要有恢复动作。而后者是音视频传输对网络传输丢包很敏感，会出现卡顿等，体验不好，所以恢复也很重要。<br>无线传输的fec算法有：TURBO,LDPC,POLAR三种<br>音视频传输领域fec算法有：异或fec, RS(Reed-Solomon)，交织编码，Fountain,inband fec(带内fec)<span id="more"></span></p>
+<h4 id="各类别fec的原理和应用场景，例子–主要针对音视频；"><a href="#各类别fec的原理和应用场景，例子–主要针对音视频；" class="headerlink" title="各类别fec的原理和应用场景，例子–主要针对音视频；"></a>各类别fec的原理和应用场景，例子–主要针对音视频；</h4><ol>
+<li><p>异或fec:异或算法实现相对简单，将M个数据包逐字节进行异或计算，计算得到的结果即为冗余包。这种算法只需要进行异常运算，复杂度低。但是抗丢包能力弱，例如 4+1算法，5个包里面最多只能丢1个包，否则就无法恢复。</p>
+</li>
+<li><p>RS fec: <a target="_blank" rel="noopener" href="https://www.smiletoyou.cn/?p=319">https://www.smiletoyou.cn/?p=319</a><br>其实是利用多个等式方程求多个变量的方式，允许丢失多个包；</p>
+</li>
+<li><p>交织编码：对简单异或来说，只能有一个包丢失，对复杂异或，可以进行多次异或生成N个冗余包来支持多个<br>冗余。而异或方式还可以有更多，比如非均等异或等，称为交织编码：<a target="_blank" rel="noopener" href="https://blog.csdn.net/CrystalShaw/article/details/83413772">https://blog.csdn.net/CrystalShaw/article/details/83413772</a></p>
+</li>
+<li><p>inband fec带内fec，主要出现在Opus音频编码领域，简单的来说，带内就是指在编码时进行fec，而不是在传输时，如：|1| | -&gt; |2|1| -&gt; |3|2| -&gt; |4|3| -&gt; |5|4| -&gt; |6|5| 若这次1没收到可以在下次收到。<br><a target="_blank" rel="noopener" href="https://blog.jianchihu.net/webrtc-research-audio-inband-fec.html">https://blog.jianchihu.net/webrtc-research-audio-inband-fec.html</a></p>
+</li>
+<li><p>fountain fec目前没了解；</p>
+</li>
+</ol>
+<h4 id="各fec的源码使用和基本分析："><a href="#各fec的源码使用和基本分析：" class="headerlink" title="各fec的源码使用和基本分析："></a>各fec的源码使用和基本分析：</h4><ol>
+<li>huya主播网用的 RSfec ，及相关开源库</li>
+<li>webrtc用的ulpfec</li>
+<li>其他，如opus中用的fec，大致了解代码在哪就好；</li>
+</ol>
+<h4 id="RS-fec"><a href="#RS-fec" class="headerlink" title="RS fec:"></a>RS fec:</h4><p>假设每个包长为L个位bit, 有M&#x3D;4个包，有N&#x3D;2个冗余包，即允许丢失两个包，则；<br>将这M个包排成矩阵，则 （R矩阵为常数系数矩阵)<br>R00M00+R01M10+R02M20+R03M30 &#x3D; N00<br>R10M00+R11M10+R12M20+R13M30 &#x3D; N10<br>….N0LN1L</p>
+<p>则当M0，M1包丢失时：<br>已知N00,N10，则可以求得M00，M10包；以此类推；</p>
+<h4 id="CRS-源码和使用"><a href="#CRS-源码和使用" class="headerlink" title="CRS 源码和使用"></a>CRS 源码和使用</h4><p>源码：<a target="_blank" rel="noopener" href="https://github.com/catid/longhair">https://github.com/catid/longhair</a><br>（CRS 开源库）</p>
+<p>1 基本使用：Documentation is provided in the header file cauchy_256.h.<br>1） 初始化：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">#include &quot;cauchy_256.h&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (cauchy_init()) &#123;</span><br><span class="line"><span class="regexp">//</span> Wrong static library</span><br><span class="line"><span class="keyword">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2） fec编码：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">  <span class="built_in">int</span> data_len = ...;</span><br><span class="line"><span class="built_in">int</span> k = <span class="number">32</span>; <span class="comment">// Choose a number of pieces to split the data into. 原始数据包个数</span></span><br><span class="line"><span class="built_in">int</span> m = <span class="number">12</span>; <span class="comment">// Choose a number of redundant pieces to generate. 冗余包个数</span></span><br><span class="line"><span class="built_in">int</span> <span class="built_in">bytes</span> = <span class="number">1000</span>; <span class="comment">// Chose a number of bytes per chunk, a multiple of 8 bytes. 包长度，为8bytes的倍数</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">bytes</span> % <span class="number">8</span><span class="operator"> == </span><span class="number">0</span>);</span><br><span class="line"><span class="keyword">assert</span>(data_len<span class="operator"> == </span>k<span class="operator"> * </span><span class="built_in">bytes</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">char</span> *recovery_blocks = <span class="keyword">new</span> <span class="built_in">char</span><span class="literal">[<span class="identifier">m</span> <span class="operator">*</span> <span class="identifier">bytes</span>]</span>;</span><br><span class="line"><span class="built_in">char</span> *data_ptrs<span class="literal">[<span class="number">32</span>]</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Point data_ptrs to data here</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Encode the data using this library</span></span><br><span class="line"><span class="keyword">if</span> (cauchy<span class="constructor">_256_encode(<span class="params">k</span>, <span class="params">m</span>, <span class="params">data_ptrs</span>, <span class="params">recovery_blocks</span>, <span class="params">bytes</span>)</span>) &#123; <span class="comment">//传入原始包个数，冗余包个数，原始包，存放冗余包指针，包大小；</span></span><br><span class="line"><span class="comment">// Input was invalid</span></span><br><span class="line">return <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// For each recovery block,</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">int</span> ii = <span class="number">0</span>; ii &lt; m; ++ii) &#123;</span><br><span class="line"><span class="built_in">char</span> *block = recovery_blocks + ii<span class="operator"> * </span><span class="built_in">bytes</span>;</span><br><span class="line">unsigned <span class="built_in">char</span> row = k + ii; <span class="comment">// Transmit this with block (just one byte)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Transmit or store block bytes and row</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">delete <span class="literal">[]</span>recovery_blocks;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>3）fec解码恢复原始包:</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Use the same settings as the encoder</span></span><br><span class="line"><span class="built_in">int</span> k = <span class="number">33</span>;</span><br><span class="line"><span class="built_in">int</span> m = <span class="number">12</span>;</span><br><span class="line"><span class="built_in">int</span> <span class="built_in">bytes</span> = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Allocate block info array</span></span><br><span class="line"><span class="comment">// There should be exactly k blocks</span></span><br><span class="line">Block *block_info = <span class="keyword">new</span> Block<span class="literal">[<span class="identifier">k</span>]</span>;<span class="comment">//分配空间</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Fill block_info here with data and rows from the encoder  //填充数据到block_info </span></span><br><span class="line"><span class="comment">// Rows under k are original data, and the rest are redundant data //k个以下的原始数据，剩下的是冗余数据？</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Attempt decoding</span></span><br><span class="line"><span class="keyword">if</span> (cauchy<span class="constructor">_256_decode(<span class="params">k</span>, <span class="params">m</span>, <span class="params">block_info</span>, <span class="params">bytes</span>)</span>) &#123;</span><br><span class="line"><span class="comment">// Decoding should never fail - indicates input is invalid</span></span><br><span class="line"><span class="keyword">assert</span>(k + m &lt;= <span class="number">256</span>);</span><br><span class="line"><span class="keyword">assert</span>(block_info != <span class="number">0</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">bytes</span> % <span class="number">8</span><span class="operator"> == </span><span class="number">0</span>);</span><br><span class="line">return <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Now the block_info elements that used to have redundant data are</span></span><br><span class="line"><span class="comment">// corrected in-place and contain the original data.</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>灵活的解码恢复使用方式：<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Use the same settings as the encoder</span></span><br><span class="line"><span class="built_in">int</span> k = <span class="number">33</span>;</span><br><span class="line"><span class="built_in">int</span> m = <span class="number">12</span>;</span><br><span class="line"><span class="built_in">int</span> <span class="built_in">bytes</span> = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Allocate enough space for the original data</span></span><br><span class="line"><span class="built_in">char</span> *block_data = <span class="keyword">new</span> <span class="built_in">char</span><span class="literal">[<span class="identifier">bytes</span> <span class="operator">*</span> <span class="identifier">k</span>]</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Allocate block info array</span></span><br><span class="line">Block *block_info = <span class="keyword">new</span> Block<span class="literal">[<span class="identifier">k</span>]</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">int</span> original_count = <span class="number">0</span>, recovery_count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// This function will be called by onData() with original data after recovery</span></span><br><span class="line">static void process<span class="constructor">Data(<span class="params">int</span> <span class="params">row</span>, <span class="params">char</span> <span class="operator">*</span><span class="params">data</span>, <span class="params">int</span> <span class="params">data_bytes</span>)</span> &#123;</span><br><span class="line"><span class="comment">// Handle original data here only</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call this function with each block received, either original or recovery</span></span><br><span class="line"><span class="comment">// Returns true on complete</span></span><br><span class="line"><span class="built_in">bool</span> on<span class="constructor">Data(<span class="params">unsigned</span> <span class="params">char</span> <span class="params">row</span>, <span class="params">char</span> <span class="operator">*</span><span class="params">new_data</span>)</span> &#123;</span><br><span class="line"><span class="built_in">int</span> insertion_point;</span><br><span class="line"></span><br><span class="line"><span class="comment">// If it is original data,</span></span><br><span class="line"><span class="keyword">if</span> (row &lt; k) &#123;</span><br><span class="line"><span class="comment">// Process the original data immediately - Do not wait for it all to arrive!</span></span><br><span class="line">process<span class="constructor">Data(<span class="params">row</span>, <span class="params">new_data</span>, <span class="params">bytes</span>)</span>; <span class="comment">//处理收到的原始包；</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Copy to the end of the original block data</span></span><br><span class="line">insertion_point = original_count++; <span class="comment">//原始数据，则正向插入</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="comment">// Copy to the front of the recovery block data</span></span><br><span class="line">insertion_point = k - ++recovery_count; <span class="comment">//若是fec编码包，则倒着插入</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Copy data into place</span></span><br><span class="line"><span class="built_in">char</span> *dest = block_data + insertion_point<span class="operator"> * </span><span class="built_in">bytes</span>;</span><br><span class="line">memcpy(dest, new_data, <span class="built_in">bytes</span>);<span class="comment">//拷贝数据(原始或收到的fec编码包)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> It may be possible to avoid copying depending on if</span></span><br><span class="line"><span class="comment">// you can hang onto the provided data buffer.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Fill in the block array entry //把数据赋值给block</span></span><br><span class="line">Block *block = block_info + insertion_point;</span><br><span class="line">block-&gt;data = dest;</span><br><span class="line">block-&gt;row = row;</span><br><span class="line"></span><br><span class="line"><span class="comment">// If recovery is not possible yet, 凑齐了k个包(包括fec编码包，才能恢复）</span></span><br><span class="line"><span class="keyword">if</span> (original_count + recovery_count &lt; k) &#123;</span><br><span class="line">return <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Attempt decoding</span></span><br><span class="line"><span class="keyword">if</span> (cauchy<span class="constructor">_256_decode(<span class="params">k</span>, <span class="params">m</span>, <span class="params">block_info</span>, <span class="params">bytes</span>)</span>) &#123;</span><br><span class="line"><span class="comment">// Decoding should never fail - indicates input is invalid</span></span><br><span class="line"><span class="keyword">assert</span>(k + m &lt;= <span class="number">256</span>);</span><br><span class="line"><span class="keyword">assert</span>(block_info != <span class="number">0</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">bytes</span> % <span class="number">8</span><span class="operator"> == </span><span class="number">0</span>);</span><br><span class="line">return <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// For each recovered block,</span></span><br><span class="line">block = block_info + k - recovery_count;<span class="comment">//把恢复出来的原始包处理下；</span></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">int</span> ii = <span class="number">0</span>; ii &lt; recovery_count; ++ii, ++block) &#123;</span><br><span class="line"><span class="comment">// Process the recovered data</span></span><br><span class="line">process<span class="constructor">Data(<span class="params">block</span>-&gt;<span class="params">row</span>, <span class="params">block</span>-&gt;<span class="params">data</span>, <span class="params">bytes</span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="webrtc中的fec"><a href="#webrtc中的fec" class="headerlink" title="webrtc中的fec"></a>webrtc中的fec</h4><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ishen/p/15333271.html">https://www.cnblogs.com/ishen/p/15333271.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/fec/" rel="tag"># fec</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/17/live-nack/" rel="prev" title="live_nack">
+      <i class="fa fa-chevron-left"></i> live_nack
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/01/linux-select-epoll/" rel="next" title="linux_select_epoll">
+      linux_select_epoll <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#fec%E8%83%8C%E6%99%AF%E5%92%8C%E5%88%86%E7%B1%BB%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">fec背景和分类：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%84%E7%B1%BB%E5%88%ABfec%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%8C%E4%BE%8B%E5%AD%90%E2%80%93%E4%B8%BB%E8%A6%81%E9%92%88%E5%AF%B9%E9%9F%B3%E8%A7%86%E9%A2%91%EF%BC%9B"><span class="nav-number">2.</span> <span class="nav-text">各类别fec的原理和应用场景，例子–主要针对音视频；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%84fec%E7%9A%84%E6%BA%90%E7%A0%81%E4%BD%BF%E7%94%A8%E5%92%8C%E5%9F%BA%E6%9C%AC%E5%88%86%E6%9E%90%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">各fec的源码使用和基本分析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RS-fec"><span class="nav-number">4.</span> <span class="nav-text">RS fec:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CRS-%E6%BA%90%E7%A0%81%E5%92%8C%E4%BD%BF%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">CRS 源码和使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#webrtc%E4%B8%AD%E7%9A%84fec"><span class="nav-number">6.</span> <span class="nav-text">webrtc中的fec</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '773376207d1bbf77ba34fccfaad372d3',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

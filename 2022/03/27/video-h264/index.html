@@ -20,19 +20,19 @@
     var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="AnnexB,AVCC,RBSP,等概念1 AnnexB,AVCC,HVCC">
+  <meta name="description" content="几个概念认识：h.264,avc, avcc,annexb, h.265,hevc,av1等概念的理解：  h.264&#x2F;avc: 这两个其实是一样的概念，avc是advance video coding的简称，要说不一样的话，avc限定了一些封装的格式和要求，且支持mvc和svc而h.264则更加靠近编码层面。比如h.264支持使用annexb或avcc方式封装，而avc不支持annex">
 <meta property="og:type" content="article">
 <meta property="og:title" content="video_h264">
 <meta property="og:url" content="https://xdksx.github.io/2022/03/27/video-h264/index.html">
 <meta property="og:site_name" content="追光者">
-<meta property="og:description" content="AnnexB,AVCC,RBSP,等概念1 AnnexB,AVCC,HVCC">
+<meta property="og:description" content="几个概念认识：h.264,avc, avcc,annexb, h.265,hevc,av1等概念的理解：  h.264&#x2F;avc: 这两个其实是一样的概念，avc是advance video coding的简称，要说不一样的话，avc限定了一些封装的格式和要求，且支持mvc和svc而h.264则更加靠近编码层面。比如h.264支持使用annexb或avcc方式封装，而avc不支持annex">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://xdksx.github.io/2022/03/27/video-h264/table7-1.png">
 <meta property="og:image" content="https://xdksx.github.io/2022/03/27/video-h264/rbsp.png">
 <meta property="og:image" content="https://xdksx.github.io/2022/03/27/video-h264/sps.png">
 <meta property="og:image" content="https://xdksx.github.io/2022/03/27/video-h264/pps.png">
 <meta property="article:published_time" content="2022-03-27T09:14:08.000Z">
-<meta property="article:modified_time" content="2022-03-27T12:21:56.738Z">
+<meta property="article:modified_time" content="2022-04-09T09:02:44.814Z">
 <meta property="article:author" content="小兴">
 <meta property="article:tag" content="video">
 <meta name="twitter:card" content="summary">
@@ -233,10 +233,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-03-27 17:14:08 / 修改时间：20:21:56" itemprop="dateCreated datePublished" datetime="2022-03-27T17:14:08+08:00">2022-03-27</time>
+              <time title="创建时间：2022-03-27 17:14:08" itemprop="dateCreated datePublished" datetime="2022-03-27T17:14:08+08:00">2022-03-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-09 17:02:44" itemprop="dateModified" datetime="2022-04-09T17:02:44+08:00">2022-04-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -258,7 +264,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h4 id="AnnexB-AVCC-RBSP-等概念"><a href="#AnnexB-AVCC-RBSP-等概念" class="headerlink" title="AnnexB,AVCC,RBSP,等概念"></a>AnnexB,AVCC,RBSP,等概念</h4><p>1 AnnexB,AVCC,HVCC  <span id="more"></span><br>H.264码流分Annex-B和AVCC两种格式<br>H.265码流是Annex-B和HVCC格式。</p>
+        <h4 id="几个概念认识："><a href="#几个概念认识：" class="headerlink" title="几个概念认识："></a>几个概念认识：</h4><p>h.264,avc, avcc,annexb, h.265,hevc,av1等概念的理解：</p>
+<ul>
+<li>h.264&#x2F;avc: 这两个其实是一样的概念，avc是advance video coding的简称，要说不一样的话，avc限定了一些封装的格式和要求，且支持mvc和svc<br>而h.264则更加靠近编码层面。比如h.264支持使用annexb或avcc方式封装，而avc不支持annexb .</li>
+<li>avcc,annexb是两种不同的封装h.264的nalu的方式，前者更靠近容器文件，后者更靠近流媒体，下详述。且avc不支持annexb,flv只支持avc的话，也不能封为annexb</li>
+<li>h.265是H.264的升级版，hevc是avc的升级版，av1是google开发对标h.265的协议。</li>
+</ul>
+<h4 id="AnnexB-AVCC-RBSP-等概念"><a href="#AnnexB-AVCC-RBSP-等概念" class="headerlink" title="AnnexB,AVCC,RBSP,等概念"></a>AnnexB,AVCC,RBSP,等概念</h4><p>1 AnnexB,AVCC,HVCC  <span id="more"></span><br>H.264码流分Annex-B和AVCC两种格式<br>H.265码流是Annex-B和HVCC格式。</p>
 <ul>
 <li>AVCC格式 也叫AVC1格式，MPEG-4格式，字节对齐，因此也叫Byte-Stream Format。用于mp4&#x2F;flv&#x2F;mkv, VideoToolbox。</li>
 <li>Annex-B格式 也叫MPEG-2 transport stream format格式（ts格式）, ElementaryStream格式。<br>2 AnnexB和AVCC的区别：<br>区别有两点：一个是参数集(SPS, PPS)组织格式；一个是分隔。</li>
@@ -275,8 +287,8 @@
 </li>
 <li><p>格式：<br>AnnexB格式每个NALU都包含起始码，且通常会周期性的在关键帧之前重复SPS和PPS，所以解码器可以从视频流随机点开始进行解码，实时的流格式<br>AnnexB format:  In annexb, [start code] may be 0x000001 or 0x00000001.<br>([start code] NALU) | ( [start code] NALU) |   more detail:  ([start code] SPS NALU) | ( [start code] PPS NALU)  ([start code] NALU) | ( [start code] NALU)</p>
 </li>
-<li><p>FLV可能封装形式：<br>对AnnexB:<br>AVCC头，塞两个NALU sps pps<br>AVC数据：起始码 nalu   </p>
-</li>
+<li><p>FLV可能封装形式：<br>flv格式不支持封装annexB ,但若想基于flv去做强制封装，可以：&#x2F;&#x2F;最好不要这么做</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">对AnnexB:  </span><br><span class="line"><span class="built_in">AVCC</span>头，塞两个NALU sps pps  </span><br><span class="line"><span class="built_in">AVC</span>数据：起始码 nalu   </span><br></pre></td></tr></table></figure></li>
 <li><p>关于RBSP和AnnexB如何处理竞争码：<br>RBSP:是没有竞争码字节的NALU即RBSP:A NALU representation without emulation prevention bytes is called a Raw Byte Sequence Payload, or RBSP<br>为啥需要竞争码？<br>我们知道，AnnexB是通过start code(上述)来分割Nalu的，但如果Nalu数据中就有start_code，这个时候分割就会出现问题，如何处理？<br>spec这样处理，认为四字节序列0x00000000、0x00000001、0x00000002和0x00000003在非rbsp NALU中是非法的，因此进行字节填充：<br>为了将RBSP转换为具有开始代码的NALU，字节填充是通过在两个连续的0x00字节之后插入一个预防字节0x03(竞争码)来实现的。所以，要反转这种情况，在读取流时，删除两个连续的0x00字节之后的任何0x03。<br>才能还原原始的RBSP.<br>要确定NALU的长度，从一个字节流开始(它将有一个开始代码)，跳到下一个开始代码，并计算中间的字节数。</p>
 </li>
 </ol>
@@ -426,7 +438,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#AnnexB-AVCC-RBSP-%E7%AD%89%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">AnnexB,AVCC,RBSP,等概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nalu"><span class="nav-number">2.</span> <span class="nav-text">nalu</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E6%8F%8F%E8%BF%B0%E8%A7%84%E5%AE%9A%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">字段描述规定：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#nalu-%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">nalu 格式：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#srs%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86AnnexB%E5%92%8CAVCC"><span class="nav-number">3.</span> <span class="nav-text">srs如何处理AnnexB和AVCC:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B6%E4%BB%96debug"><span class="nav-number">3.1.</span> <span class="nav-text">其他debug:</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5%E8%AE%A4%E8%AF%86%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">几个概念认识：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AnnexB-AVCC-RBSP-%E7%AD%89%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">AnnexB,AVCC,RBSP,等概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nalu"><span class="nav-number">3.</span> <span class="nav-text">nalu</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E6%8F%8F%E8%BF%B0%E8%A7%84%E5%AE%9A%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">字段描述规定：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#nalu-%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">nalu 格式：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#srs%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86AnnexB%E5%92%8CAVCC"><span class="nav-number">4.</span> <span class="nav-text">srs如何处理AnnexB和AVCC:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B6%E4%BB%96debug"><span class="nav-number">4.1.</span> <span class="nav-text">其他debug:</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -441,7 +453,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -452,7 +464,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-count">50</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

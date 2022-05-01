@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="jitterBuffer概述jitterBuffer:jitterBuffer严格上来说分为jitter和buffer，一些实现上把jitterbuffer一起实现，所以就直接称为jitterbuffer.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="live_transJitterbuffer">
+<meta property="og:url" content="https://xdksx.github.io/2022/04/10/live-transJitterbuffer/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="jitterBuffer概述jitterBuffer:jitterBuffer严格上来说分为jitter和buffer，一些实现上把jitterbuffer一起实现，所以就直接称为jitterbuffer.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/10/live-transJitterbuffer/videobuffer.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/04/10/live-transJitterbuffer/audiobuffer.png">
+<meta property="article:published_time" content="2022-04-10T02:11:23.000Z">
+<meta property="article:modified_time" content="2022-04-10T02:59:22.082Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="JitterBuffer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2022/04/10/live-transJitterbuffer/videobuffer.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/04/10/live-transJitterbuffer/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>live_transJitterbuffer | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/04/10/live-transJitterbuffer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          live_transJitterbuffer
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-10 10:11:23 / 修改时间：10:59:22" itemprop="dateCreated datePublished" datetime="2022-04-10T10:11:23+08:00">2022-04-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/live/" itemprop="url" rel="index"><span itemprop="name">live</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="jitterBuffer概述"><a href="#jitterBuffer概述" class="headerlink" title="jitterBuffer概述"></a>jitterBuffer概述</h4><h5 id="jitterBuffer"><a href="#jitterBuffer" class="headerlink" title="jitterBuffer:"></a>jitterBuffer:</h5><p>jitterBuffer严格上来说分为jitter和buffer，一些实现上把jitterbuffer一起实现，所以就直接称为jitterbuffer. <span id="more"></span></p>
+<h5 id="jitter"><a href="#jitter" class="headerlink" title="jitter:"></a>jitter:</h5><p>维基百科上对jitter的定义：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">抖动（英语：Jitter），又可称为时基误差，指的是电子学和电信领域中，周期信号与真实周期之间的差异，通常是相当于参考时钟信号而言。</span><br><span class="line">时基误差会影响数字模拟转换器的模拟输出。在通信连结（如USB，PCI-E，SATA，OC-<span class="number">48</span>）中，尤其是采样信号的还原过程中，是不希望发生抖动的。<span class="selector-attr">[1]</span></span><br><span class="line">像所有的随时间变化的信号一样，抖动可以被量化，比如均方根，峰-峰值位移；也可以用频谱分布进行量化。</span><br></pre></td></tr></table></figure>
+<p>在网络相关的场景下，jitter也是表示抖动，但是是表示网络的抖动。什么叫网络的抖动？网络传输就像水的传输，正常情况下的传输，是匀速的，像匀速的水流，<br>当出现了影响网络的因素，如拥塞等，就像水管出现拥堵，水流此时就不是稳定的了，网络上的包传输也不是匀速的，原本能在t1+1 的时间到达，拖到了t1+2才到。</p>
+<h5 id="Buffer："><a href="#Buffer：" class="headerlink" title="Buffer："></a>Buffer：</h5><p>即常规的缓存。因为乱序到达，丢包，或者处理不过来等情况做处理，缓存就是解决这些场景问题的一种手段。也是一种结构。</p>
+<h4 id="jitter的本质"><a href="#jitter的本质" class="headerlink" title="jitter的本质"></a>jitter的本质</h4><ul>
+<li><p>为什么需要关心jitter?<br>网络上的数据包非匀速到达，即抖动，会导致一些问题，比如包乱序了，原本应该到达的包没到，可能会阻塞其他包的处理，如tcp的首包问题。一些实现处理这些问题往往是等到乱序了，出现问题了，才去处理，<br>此时问题已经发生。甚至已经很严重了，带有延迟性。<br>如何更早的发现？ 答案就是jitter，当然，也可能出现jitter抖动和乱序同时发生的情况，jitter在这里的优势是更好的量化和控制。<br>PS: 一些实现通过乱序丢包来做类似jitter的处理，当他们无法计算出jitter时，也是有合理性的。</p>
+</li>
+<li><p>jitter的表示<br> jitter是一个时间值，单位一般是ms，一般代表网络抖动。</p>
+</li>
+<li><p>jitter的使用场景<br>jitter一般用于在网络传输不平滑的情况下(如乱序，帧大小变化，网络传输速率变化)，平滑帧率(解码帧率，或传输出帧帧率等等)</p>
+</li>
+<li><p>jitter的基本计算：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">根据RFC<span class="number">3550</span>，假设RTP包i，RTP报头记录的时间戳为Si（单位为采样率），到达接收端的时间为Ri（单位同样为采样率），对于包i，j，我们定义一个变量D，描述两个包时间的差异，由接收时间差减去发送时间差：</span><br><span class="line"><span class="comment">(即i-&gt;j的抖动)</span></span><br><span class="line">D<span class="comment">(i,j)</span>=<span class="comment">(Rj−Ri)</span>−<span class="comment">(Sj−Si)</span>=<span class="comment">(Rj−Sj)</span>−<span class="comment">(Ri−Si)</span><span class="comment">(1)</span></span><br><span class="line"></span><br><span class="line">为了消除噪声，抖动J按如下公式定义：</span><br><span class="line">J<span class="comment">(i)</span>=J<span class="comment">(i−1)</span>+<span class="comment">(|D(i−1,i)</span>|−J<span class="comment">(i−1)</span>)/<span class="number">16</span><span class="comment">(2)</span></span><br><span class="line"></span><br><span class="line">上述公式中i<span class="number">-1</span>指的是前一个收到的包，不是按RTP序列号计数的。增益参数<span class="number">1</span>/<span class="number">16</span>是为了消除噪声影响，使抖动收敛在较合理范围内，避免突发数据的影响。</span><br><span class="line"></span><br><span class="line">由公式可知，如果接受端收到的包间隔跟发送端发送间隔一样，那么抖动为<span class="number">0</span>。</span><br></pre></td></tr></table></figure></li>
+<li><p>如何更准确的计算jitter:<br>因为网络速率，网络情况等是一个随机过程(即每个时间的状态是不一样的),所以计算每个网络状态下的抖动来得到jitter，可以利用卡尔曼滤波来较准确的计算到。<br>推荐一篇：webrtc的jitter 算法：卡尔曼滤波，在解码时计算。<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ishen/p/15000909.html">https://www.cnblogs.com/ishen/p/15000909.html</a> </p>
+<h4 id="buffer和jitter的关系"><a href="#buffer和jitter的关系" class="headerlink" title="buffer和jitter的关系"></a>buffer和jitter的关系</h4><p>如上所述：jitterBuffer严格上来说分为jitter和buffer，一些实现上把jitterbuffer一起实现，所以就直接称为jitterbuffer.<br>而且，buffer往往依赖jitter。<br>buffer主要是流媒体传输过程中为了有序或者依赖顺序，而造的缓冲区，常和jitter一起使用，缓冲区的使用，会带来延迟。</p>
+<h4 id="webrtc-jitter的实现。"><a href="#webrtc-jitter的实现。" class="headerlink" title="webrtc jitter的实现。"></a>webrtc jitter的实现。</h4><p>注意是在解码后。<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ishen/p/15000909.html">https://www.cnblogs.com/ishen/p/15000909.html</a></p>
+</li>
+</ul>
+<h4 id="webrtc-buffer"><a href="#webrtc-buffer" class="headerlink" title="webrtc buffer"></a>webrtc buffer</h4><p>在webrtc实现中，jitter和buffer是相对分开的。</p>
+<h5 id="视频buffer"><a href="#视频buffer" class="headerlink" title="视频buffer"></a>视频buffer</h5><p>分为包buffer,帧buffer等。因为处理阶段不同。</p>
+<img src="/2022/04/10/live-transJitterbuffer/videobuffer.png" class="" title="This is an example image">
+
+<h5 id="音频buffer"><a href="#音频buffer" class="headerlink" title="音频buffer:"></a>音频buffer:</h5><p>简单展示</p>
+<img src="/2022/04/10/live-transJitterbuffer/audiobuffer.png" class="" title="This is an example image">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JitterBuffer/" rel="tag"># JitterBuffer</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/10/live-transCongestionControl/" rel="prev" title="live_transCongestionControl">
+      <i class="fa fa-chevron-left"></i> live_transCongestionControl
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/17/live-nack/" rel="next" title="live_nack">
+      live_nack <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#jitterBuffer%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">jitterBuffer概述</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#jitterBuffer"><span class="nav-number">1.1.</span> <span class="nav-text">jitterBuffer:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#jitter"><span class="nav-number">1.2.</span> <span class="nav-text">jitter:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Buffer%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">Buffer：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#jitter%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="nav-number">2.</span> <span class="nav-text">jitter的本质</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#buffer%E5%92%8Cjitter%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.</span> <span class="nav-text">buffer和jitter的关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#webrtc-jitter%E7%9A%84%E5%AE%9E%E7%8E%B0%E3%80%82"><span class="nav-number">4.</span> <span class="nav-text">webrtc jitter的实现。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#webrtc-buffer"><span class="nav-number">5.</span> <span class="nav-text">webrtc buffer</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A7%86%E9%A2%91buffer"><span class="nav-number">5.1.</span> <span class="nav-text">视频buffer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91buffer"><span class="nav-number">5.2.</span> <span class="nav-text">音频buffer:</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '5f253611c0825f426fbf74f36ed810bb',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

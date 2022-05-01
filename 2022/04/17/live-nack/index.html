@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="重传理论正向反馈： ack，收到的包确认，靠发送方来得出需要重传的包反向反馈： nack，未收到的包请求重传，靠接收方来得出需要重传的包，并请求重传">
+<meta property="og:type" content="article">
+<meta property="og:title" content="live_nack">
+<meta property="og:url" content="https://xdksx.github.io/2022/04/17/live-nack/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="重传理论正向反馈： ack，收到的包确认，靠发送方来得出需要重传的包反向反馈： nack，未收到的包请求重传，靠接收方来得出需要重传的包，并请求重传">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-16T16:06:33.000Z">
+<meta property="article:modified_time" content="2022-04-17T03:21:24.177Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="nack">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/04/17/live-nack/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>live_nack | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/04/17/live-nack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          live_nack
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-17 00:06:33 / 修改时间：11:21:24" itemprop="dateCreated datePublished" datetime="2022-04-17T00:06:33+08:00">2022-04-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/live/" itemprop="url" rel="index"><span itemprop="name">live</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="重传理论"><a href="#重传理论" class="headerlink" title="重传理论"></a>重传理论</h4><p>正向反馈： ack，收到的包确认，靠发送方来得出需要重传的包<br>反向反馈： nack，未收到的包请求重传，靠接收方来得出需要重传的包，并请求重传<span id="more"></span></p>
+<p>如何确定丢包？ tcp通过seqnum，其他基本也得依赖序号标记；接收方来判断是否需要重传；</p>
+<h4 id="nack的算法几个关键要素"><a href="#nack的算法几个关键要素" class="headerlink" title="nack的算法几个关键要素"></a>nack的算法几个关键要素</h4><h5 id="流程和算法："><a href="#流程和算法：" class="headerlink" title="流程和算法："></a>流程和算法：</h5><ul>
+<li><p>最好用单独的队列结构存储没收到的seq包信息。</p>
+</li>
+<li><p>nack重传基础：<br>必须是包的seq连续的前提下，才能做这种算法。能知道本来应到的包和能判断出来哪些seq的包丢失了。</p>
+</li>
+<li><p>重传序号检测和收集：注意回滚等情况<br>排除第一个包，当收到的包比当前的包seq大于预期间隔如1，<br>eg: 2,3,5,6,8,则认为4,7 可能丢失，当过了认为的晚到时间后，则以丢失对待，发起重传，<br>因为流媒体的特殊性，对延迟和丢包敏感，所以需要尽快重传，不能等太久。</p>
+</li>
+<li><p>同个seq的重传频率控制：<br>这个seq已经累计重传了n次了，超过限制，则不再请求重传.</p>
+</li>
+<li><p>同个seq的重传间隔控制：<br>这个seq在t1时间时请求重传了，要在t1+xxms 后再进行判断重传。</p>
+</li>
+<li><p>同个seq的超时控制：<br>即这个seq本来应该在t1时间收到，但是没收到，要超时到t1+2s就认为不用再重传了</p>
+</li>
+<li><p>其他：</p>
+</li>
+</ul>
+<ol>
+<li>当seq跳变时的处理：可能是向前跳1000,10000，或者向后跳1000,10000，这种，而且可能是正常的跳，如切流了，或者是异常的跳变，如前一个结点的bug</li>
+</ol>
+<h4 id="nack的协议："><a href="#nack的协议：" class="headerlink" title="nack的协议："></a>nack的协议：</h4><h5 id="简单的是"><a href="#简单的是" class="headerlink" title="简单的是"></a>简单的是</h5><p>流id,缺失的seq列表，上述流程和算法中的一些控制参数。</p>
+<h5 id="webrtc中的nack协议。"><a href="#webrtc中的nack协议。" class="headerlink" title="webrtc中的nack协议。"></a>webrtc中的nack协议。</h5><ul>
+<li><p>rfc: RFC5104,rfc4585<br>Video数据包的发送和接收为例，分析ANCK丢包重传机制的实现。<br>主要内容包括：SDP协商NACK，接收端丢包判定，NACK报文构造、发送、接收和解析，RTP数据包重传。</p>
+</li>
+<li><p>sdp中的相关定义：见rfc5104</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">v</span>=<span class="number">0</span></span><br><span class="line"><span class="attr">o</span>=alice <span class="number">3203093520</span> <span class="number">3203093520</span> IN IP4 host.example.com</span><br><span class="line"><span class="attr">s</span>=Media with feedback</span><br><span class="line"><span class="attr">t</span>=<span class="number">0</span> <span class="number">0</span></span><br><span class="line"><span class="attr">c</span>=IN IP4 host.example.com</span><br><span class="line"><span class="attr">m</span>=audio <span class="number">49170</span> RTP/AVPF <span class="number">98</span></span><br><span class="line"><span class="attr">a</span>=rtpmap:<span class="number">98</span> H263-<span class="number">1998</span>/<span class="number">90000</span></span><br><span class="line"><span class="attr">a</span>=rtcp-fb:<span class="number">98</span> nack pli   //这里是指示用pli</span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关于Webrtc中定义的反馈消息格式和nack协议格式：<br>摘自rfc4585第六节：</p>
+</li>
+</ul>
+<p>6.RTCP反馈消息的格式<br>本节定义了低延迟RTCP反馈消息的格式。这些信息分为以下三类：</p>
+<ul>
+<li>传输层FB消息-负载特定FB消息-应用层FB消息</li>
+</ul>
+<ul>
+<li><p>传输层FB消息旨在传输通用反馈信息，即独立于特定编解码器或正在使用的应用程序的信息。信息预计将在传输&#x2F;RTP层生成和处理。目前，仅定义了一般否定确认（NACK）消息。</p>
+</li>
+<li><p>特定于有效负载的FB消息传输特定于特定有效负载类型的信息，并将在编解码器“层”生成和执行。本文档定义了一个与所有特定于有效负载的FB消息一起使用的通用标头。<br>特定消息的定义留给RTP有效负载格式规范或其他反馈格式文档。</p>
+</li>
+<li><p>应用层FB消息提供了一种将接收方的反馈透明地传递给发送方的应用程序的方法。此类消息中包含的信息预计不会在传输&#x2F;RTP或编解码器层上进行操作。<br>两个应用程序实例之间要交换的数据通常在应用程序协议规范中定义，因此可以由应用程序识别，因此不需要额外的外部信息。<br>因此，本文档仅定义一个与所有应用层FB消息一起使用的公共头。从协议的角度来看，应用层FB消息被视为特定于有效负载的FB消息的特例。</p>
+</li>
+<li><p>注意：在媒体发送方端正确处理某些FB消息可能需要发送方知道FB消息所指的有效负载类型。大多数情况下，这些知识可能仅使用单一有效负载类型从媒体流中获得。<br>然而，如果同时使用多个编解码器（例如，与音频和DTMF一起使用），或者当编解码器发生变化时，可能需要作为FB消息的一部分显式地传送有效负载类型信息。<br>这适用于所有人</p>
+</li>
+</ul>
+<p>特定于负载以及应用层FB消息。如何传输有效负载类型信息取决于FB消息的规范。<br>本文档定义了两个传输层和三个（视频）特定于负载的FB消息，以及应用层FB消息的单个容器。其他文件中可能会定义额外的传输层和负载特定的FB消息，并且必须通过IANA进行注册（参见第9节“IANA注意事项”）<br>以下小节描述了上述RTCP FB消息类型的一般语法和语义。<br>6.1. 反馈消息的通用数据包格式<br>所有FB消息必须使用图3所示的通用数据包格式：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">   <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |V=2|P|   FMT   |       PT      |          length               |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |                  SSRC of packet sender                        |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |                  SSRC of media source                         |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   :            Feedback Control Information (FCI)                 :</span><br><span class="line">   :                                                               :</span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+<p>图3：反馈消息的通用数据包格式<br>RTP规范[2]中定义了字段V、P、SSRC和长度，其各自含义总结如下：<br>版本（V）：2位此字段标识RTP版本。目前的版本是2。<br>padding（P）：1位如果设置，则padding位表示数据包末尾包含额外的padding八位字节，这些八位字节不属于控制信息的一部分，但包含在长度字段中。<br>反馈消息类型（FMT）：5位此字段标识FB消息的类型，并根据类型（传输层、特定负载或应用层反馈）进行解释。三种反馈类型中每种类型的值在以下各节中定义。<br>有效负载类型（PT）：8位这是将数据包标识为RTCP FB消息的RTCP数据包类型。IANA定义了两个值：</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Name   | <span class="type">Value</span> | <span class="type">Brief</span> Description</span><br><span class="line">      ----------+-------+------------------------------------</span><br><span class="line">         RTPFB  |  <span class="type">205</span>  | <span class="type">Transport</span> layer FB message</span><br><span class="line">         PSFB   |  <span class="type">206</span>  | <span class="type">Payload</span>-specific FB message</span><br></pre></td></tr></table></figure>
+<p>长度：16位此数据包的长度（32位字减去1），包括标头和任何填充。这与RTCP发送方和接收方报告中使用的长度字段的定义一致[3]。<br>数据包发送方的SSRC：32位此数据包发起方的同步源标识符。<br>媒体源SSRC：32位此反馈信息相关的媒体源的同步源标识符。<br>反馈控制信息（FCI）：可变长度以下三个部分定义了每种反馈类型的FB消息中可能包含的附加信息：传输层、特定负载或应用层反馈。请注意，进一步的FCI内容可能会在进一步的文件中指定。<br>每个RTCP反馈数据包必须在FCI字段中至少包含一条FB消息。第6.2节和第6.3节定义了每种FCI类型，是否可以将多条FB消息压缩到单个FCI字段中。如果是这种情况，它们必须是相同类型的，即相同的FMT。如果需要传输多种类型的反馈消息，即多个FMT，则必须生成多个RTCP FB消息，并将其连接在同一复合RTCP数据包中。</p>
+<p>6.2. 传输层反馈消息<br>传输层FB消息由值RTPFB标识为RTCP消息类型。rtp报文丢失重传。<br>本文档中定义了一条通用传输层FB消息：通用NACK。FMT通过以下参数进行识别：<br>0:unassigned 1:Generic NACK 2-30:unassigned 31:保留用于将来扩展标识符编号空间<br>以下小节定义了此类FB消息的FCI字段格式。将来可能会定义更多的通用反馈消息。<br>6.2.1. 泛型NACK<br>通用NACK消息由PT&#x3D;RTPFB和FMT&#x3D;1标识。<br>FCI字段必须至少包含一个，并且可以包含多个通用NACK。<br>通用NACK用于指示一个或多个RTP分组的丢失。丢失的分组通过分组标识符和位掩码来识别。<br>如果基础传输协议能够向发送方提供类似的反馈信息，则不应使用通用NACK反馈（如DCCP）。<br>反馈控制信息（FCI）字段具有以下语法（图4）：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">  <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |            PID                |             BLP               |</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+<p>图4：通用NACK消息的语法</p>
+<p>数据包ID（PID）：16位PID字段用于指定丢失的数据包。PID字段是指丢失数据包的RTP序列号。<br>bitmask of following lost packets (BLP)：16位BLP允许在PID指示的RTP数据包之后立即报告16个RTP数据包中的任何一个的丢失。<br>BLP的定义与[6]中给出的定义相同。将BLP的最低有效位表示为位1，将其最高有效位表示为位16，然后，如果接收器未接收到RTP分组号（PID+i）（模2^16）并指示该分组丢失，<br>则将位掩码的位i设置为1；否则，位i设置为0。请注意，发送方不能因为其位掩码设置为0而假设接收方已收到数据包。<br>例如，如果与PID对应的分组和以下分组已经丢失，则BLP的最低有效位将被设置为1。然而，发送方不能仅仅因为BLP的比特2到15为0而推断已经接收到分组PID+2到PID+16；<br>发送者只知道接收者此时没有将其报告为丢失。</p>
+<p>FB消息的长度必须设置为2+n，n是FCI字段中包含的通用NACK数。<br>通用NACK消息通过序列号隐式引用有效负载类型。</p>
+<p>6.3. 负载特定反馈消息<br>有效负载特定的FB消息由值PT&#x3D;PSFB标识为RTCP消息类型。<br>到目前为止，定义了三条特定于有效负载的FB消息以及一条应用层FB消息。它们通过FMT参数识别，如下所示：<br>0:未分配1:图片丢失指示（PLI）2:切片丢失指示（SLI）3:参考图片选择指示（RPSI）4-14:未分配15:应用层FB（AFB）消息16-30:未分配31:保留用于序列号空间的未来扩展<br>即：<br>指定负载重传，指定负载重传里面又分如下三种：<br>(1) PLI(Picture Loss Indication)视频帧丢失重传。<br>(2) SLI(Slice Loss Indication)slice丢失重转。<br>(3)RPSI(Reference Picture Selection Indication)参考帧丢失重传。</p>
+<p>以下小节定义了有效负载特定FB消息的FCI格式，第6.4节定义了应用层FB消息的FCI格式。</p>
+<p>6.3.1. Picture Loss Indication<br>图像丢失指示（PLI）<br>PLI FB消息由PT&#x3D;PSFB和FMT&#x3D;1标识。<br>FCI字段中必须正好包含一个PLI。<br>6.3.1.1. 语义学<br>利用图片丢失指示消息，解码器将属于一个或多个图片的未定义量的编码视频数据的丢失通知编码器。当与基于画面间预测的任何视频编码方案结合使用时，接收PLI的编码器意识到预测链可能被中断。发送方可通过发送帧内图片对PLI作出反应以实现再同步（使该消息有效地类似于[6]中定义的FIR消息）；然而，发送方必须考虑如第7节所述的拥塞控制，这可能限制其发送帧内的能力。</p>
+<p>其他RTP有效负载规范（如RFC 2032[6]）已经为某些特定编解码器定义了反馈机制。支持这两种方案的应用程序在发送反馈时必须使用本规范中定义的反馈机制。出于向后兼容性的原因，如果有效载荷格式需要，这样的应用程序还应该能够接收在各自的RTP有效载荷格式中定义的反馈方案并对其作出反应。</p>
+<p>6.3.1.2. 消息格式<br>PLI不需要参数。因此，长度字段必须为2，并且不得有任何反馈控制信息。<br>此FB消息的语义与有效负载类型无关。<br>6.3.1.3. Timing Rules<br>The timing follows the rules outlined in Section 3. In systems that employ both PLI and other types of feedback, it may be advisable to follow the Regular RTCP RR timing rules for PLI, since PLI is not as delay critical as other FB types.</p>
+<p>6.3.1.4. Remarks<br>PLI消息通常触发完整帧内图片的发送。帧内图片比预测（帧间）图片大几倍。它们的大小与生成它们的时间无关。在大多数环境中，特别是在使用带宽有限的链路时，使用帧内图片意味着允许的延迟，即<br>大量的典型帧持续时间。例如：如果发送帧速率为10 fps，并且假设帧内图片是帧间图片的10倍大，则必须接受整整一秒的延迟。在这种环境中，发送FB消息时不需要特定的短延迟。因此，根据[2]，在Tmin&#x3D;0的情况下等待RTCP定时规则允许的下一个可能的时隙不会对系统性能产生负面影响。</p>
+<p>6.3.2. Slice Loss Indication (SLI)<br>The SLI FB message is identified by PT&#x3D;PSFB and FMT&#x3D;2.<br>FCI字段必须至少包含一个，并且可以包含多个SLI。<br>6.3.2.1. 语义学<br>利用片丢失指示，解码器可以通知编码器它已检测到一个或多个连续宏块按扫描顺序丢失或损坏（见下文）。此FB消息不得用于具有非统一、动态可变宏块大小的视频编解码器，如启用附录Q的H.263。在这种情况下，编码器无法始终识别损坏的空间区域。</p>
+<p>6.3.2.2. Format<br>切片丢失指示使用一个额外的FCI字段，其内容如图6所示。FB消息的长度必须设置为2+n，n是FCI字段中包含的SLI数。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">  <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |            First        |        Number           | PictureID |</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       </span><br></pre></td></tr></table></figure>
+<p>图6：切片丢失指示（SLI）的语法<br>第一：13位第一个丢失宏块的宏块（MB）地址。进行MB编号，使得图片左上角的宏块被视为宏块编号1，并且每个宏块的编号按照光栅扫描顺序从左到右然后从上到下增加（这样，如果图片中总共有N个宏块，则右下宏块被视为宏块编号N）。</p>
+<p>数字：13位丢失宏块的数量，按上面讨论的扫描顺序。<br>PictureID:6位编解码器特定标识符的六个最低有效位，用于引用发生宏块丢失的图片。对于许多视频编解码器，PictureID与时间参考相同。<br>此FB消息的适用性仅限于一小部分视频编解码器；因此，没有提供明确的有效负载类型信息。<br>6.3.2.3. Timing Rules<br>当指示没有及时传输时，使用切片丢失指示的算法的效率大大降低。运动补偿传播未报告为损坏的损坏像素。因此，强烈建议使用第3节中讨论的算法。<br>6.3.2.4. Remarks<br>术语Slice在这里是按照MPEG-1定义和使用的，MPEG-1是按扫描顺序的连续宏块数。最近的视频编码标准有时对术语切片有不同的理解。例如，在H.263（1998）中，存在一个称为“矩形切片”的概念。一个矩形切片的丢失可能导致需要发送多个SLI，以便准确识别丢失&#x2F;损坏MBs的区域。<br>FCI的第一个字段将图片的第一个宏块定义为1，而不是人们可能怀疑的0。这样做是为了使本规范与ITU-T Rec.H.245[24]中提供的类似机制保持一致。图片中的最大宏块数（2**13或8192）对应于大多数ITU-T和ISO&#x2F;IEC视频编解码器的最大图片大小。如果未来的视频编解码器提供更大的图片大小和&#x2F;或更小的宏块大小，则必须定义额外的FB消息。时间参考场的六个最低有效位被认为足以指示发生丢失的画面。<br>对SLI的反应不属于本规范的一部分。对SLI作出反应的一种典型方式是对受影响的空间区域使用帧内刷新。<br>报告了跟踪受运动补偿影响的区域的算法，以便允许将帧内宏块传输到所有这些区域，而与FB的定时无关（见H.263（2000）附录I[17]和[15]）。尽管当使用这些算法时，FB的定时比不使用这些算法时不那么关键，但必须观察到，这些算法校正了图片的大部分，因此，在FB延迟的情况下，必须传输更高的数据量。 </p>
+<p>6.3.3. Reference Picture Selection Indication (RPSI)<br>The RPSI FB message is identified by PT&#x3D;PSFB and FMT&#x3D;3.<br>FCI字段中必须正好包含一个RPSI。<br>6.3.3.1. 语义学<br>现代视频编码标准，如MPEG-4 visual version 2[16]或H.263 version 2[17]，允许使用比最新参考图片更旧的参考图片进行预测编码。通常，保持参考图片的先进先出队列。如果编码器了解到编码器-解码器同步性丢失，则可以使用称为正确参考图片的图像。由于该参考图片在时间上比平常更远，因此产生的预测编码图片将使用更多比特。</p>
+<p>MPEG-4和H.263都为RPSI消息的“有效载荷”定义了二进制格式，该RPSI消息包括诸如受损图片的时间ID和受损区域的大小之类的信息。该位串通常很小（几十位）、长度可变且自包含，即包含执行参考图片选择所需的所有信息。</p>
+<p>MPEG-4和H.263都允许使用带有正反馈信息的RPSI。也就是说，报告的图片（或切片）解码无误。请注意，在多方会话中，不得使用任何形式的正反馈（以RTCP间隔报告有关单个参考图片的正反馈无论如何都不会有多大用处）。</p>
+<p>6.3.3.2. Format<br>The FCI for the RPSI message follows the format depicted in Figure 7:</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0                   1                   2                   3</span><br><span class="line"><span class="section"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|      PB       |0| Payload Type|    Native RPSI bit string     |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|   defined per codec          ...                | Padding (0) |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br></pre></td></tr></table></figure>
+<p>图7：参考图片选择指示（RPSI）的语法<br>PB:8位将RPSI消息长度填充为32位的倍数所需的未使用位数。<br>0:1位必须在传输时设置为零，在接收时忽略。<br>有效负载类型：7位表示必须在其上下文中解释本机RPSI位字符串的RTP有效负载类型。<br>Native RPSI bit string: variable length The RPSI information as natively defined by the video codec.<br>填充：#PB位设置为零的位数，用于将RPSI消息的内容填充到下一个32位边界。填充位数必须由PB字段指示。<br>6.3.3.3. Timing Rules<br>RPSI比使用SLI的算法对延迟更为关键。这是因为RPSI消息越老，编码器需要花费的比特数就越多，以重新建立编码器-解码器的同步性。有关特定比特率&#x2F;帧速率&#x2F;丢失率情况下RPSI开销的一些信息，请参见[15]。<br>因此，通常应使用第3节的算法尽快发送RPSI消息。<br>6.4. 应用层反馈消息<br>应用层FB消息是特定于有效负载的消息的特例，由PT&#x3D;PSFB和FMT&#x3D;15标识。FCI字段中必须仅包含一条应用层FB消息，除非应用层FB消息结构本身允许堆叠（例如，通过固定大小或显式长度指示器）。<br>这些消息用于将应用程序定义的数据直接从接收方的应用程序传输到发送方的应用程序。FB消息未识别传输的数据。因此，应用程序必须能够识别消息负载。<br>通常，应用程序定义自己的消息集，例如，MPEG-4[16]中的NEWPRED消息（根据RFC 3016[23]在RTP包中携带）或H.263&#x2F;附录N，U[17]中的FB消息（根据RFC 2429[14]打包）。这些消息不需要来自RTCP消息的任何附加信息。因此，应用程序消息被简单地放置到FCI字段中，如下所示，并且相应地设置长度字段。<br>应用程序消息（FCI）：可变长度此字段包含应从接收方传输到源的原始应用程序消息。格式取决于应用程序。此字段的长度是可变的。如果应用程序数据未32位对齐，则必须添加填充位和字节以实现32位对齐。填充标识由应用层决定，本规范中未定义。<br>应用层FB消息规范必须定义是否需要在特定编解码器（由RTP有效负载类型标识）的上下文中专门解释消息。如果正确处理需要对有效负载类型的引用，则应用层FB消息规范必须定义将有效负载类型信息作为应用层FB消息本身的一部分进行通信的方式。</p>
+<h4 id="webrtc中的nack算法流程。"><a href="#webrtc中的nack算法流程。" class="headerlink" title="webrtc中的nack算法流程。"></a>webrtc中的nack算法流程。</h4><ul>
+<li>流程图</li>
+<li>代码位置：<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void RtpVideoStreamReceiver2::<span class="title function_ invoke__">OnReceivedPayloadData</span>(</span><br><span class="line">   <span class="title function_ invoke__">if</span> (nack_module_) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="type">bool</span> is_keyframe =</span><br><span class="line">        video_header.is_first_packet_in_frame &amp;&amp;</span><br><span class="line">        video_header.frame_type == VideoFrameType::kVideoFrameKey;</span><br><span class="line"></span><br><span class="line">    packet<span class="punctuation">-&gt;</span>times_nacked = nack_module_<span class="punctuation">-&gt;</span>OnReceivedPacket <span class="comment">//这里，webrtc将nack交给单独的nack_module处理。</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="srs中的nack"><a href="#srs中的nack" class="headerlink" title="srs中的nack"></a>srs中的nack</h4><p>srs上行重传：其中体现一些控参数的地方；</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">srs_error_t</span> <span class="title">SrsRtcPublishStream::check_send_nacks</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">srs_error_t</span> err = srs_success;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!nack_enabled_) &#123;</span><br><span class="line">        <span class="keyword">return</span> err;</span><br><span class="line">    &#125;</span><br><span class="line">   <span class="comment">//视频的重传</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; (<span class="type">int</span>)video_tracks_.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">        SrsRtcVideoRecvTrack* track = video_tracks_.<span class="built_in">at</span>(i);</span><br><span class="line">        <span class="keyword">if</span> ((err = track-&gt;<span class="built_in">check_send_nacks</span>()) != srs_success) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">srs_error_wrap</span>(err, <span class="string">&quot;video track=%s&quot;</span>, track-&gt;<span class="built_in">get_track_id</span>().<span class="built_in">c_str</span>());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">   <span class="comment">//音频的重传</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; (<span class="type">int</span>)audio_tracks_.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">        SrsRtcAudioRecvTrack* track = audio_tracks_.<span class="built_in">at</span>(i);</span><br><span class="line">        <span class="keyword">if</span> ((err = track-&gt;<span class="built_in">check_send_nacks</span>()) != srs_success) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">srs_error_wrap</span>(err, <span class="string">&quot;audio track=%s&quot;</span>, track-&gt;<span class="built_in">get_track_id</span>().<span class="built_in">c_str</span>());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">srs_error_t</span> <span class="title">SrsRtcVideoRecvTrack::check_send_nacks</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">srs_error_t</span> err = srs_success;</span><br><span class="line"></span><br><span class="line">    ++_srs_pps_svnack-&gt;sugar;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> timeout_nacks = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> ((err = <span class="built_in">do_check_send_nacks</span>(timeout_nacks)) != srs_success) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">srs_error_wrap</span>(err, <span class="string">&quot;video&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If NACK timeout, start PLI if not requesting.</span></span><br><span class="line">    <span class="keyword">if</span> (timeout_nacks == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> err;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">srs_trace2</span>(TAG_MAYBE, <span class="string">&quot;RTC: NACK timeout=%u, request PLI, track=%s, ssrc=%u&quot;</span>, timeout_nacks,</span><br><span class="line">        track_desc_-&gt;id_.<span class="built_in">c_str</span>(), track_desc_-&gt;ssrc_);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">srs_error_t</span> <span class="title">SrsRtcRecvTrack::do_check_send_nacks</span><span class="params">(<span class="type">uint32_t</span>&amp; timeout_nacks)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">srs_error_t</span> err = srs_success;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> sent_nacks = <span class="number">0</span>;</span><br><span class="line">    session_-&gt;<span class="built_in">check_send_nacks</span>(nack_receiver_, track_desc_-&gt;ssrc_, sent_nacks, timeout_nacks);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SrsRtcConnection::check_send_nacks</span><span class="params">(SrsRtpNackForReceiver* nack, <span class="type">uint32_t</span> ssrc, <span class="type">uint32_t</span>&amp; sent_nacks, <span class="type">uint32_t</span>&amp; timeout_nacks)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ++_srs_pps_snack-&gt;sugar;</span><br><span class="line"></span><br><span class="line">    <span class="function">SrsRtcpNack <span class="title">rtcpNack</span><span class="params">(ssrc)</span></span>;</span><br><span class="line"></span><br><span class="line">    rtcpNack.<span class="built_in">set_media_ssrc</span>(ssrc);</span><br><span class="line">    nack-&gt;<span class="built_in">get_nack_seqs</span>(rtcpNack, timeout_nacks);<span class="comment">//去拿没收到的seqs</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(rtcpNack.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ++_srs_pps_snack2-&gt;sugar;</span><br><span class="line">    ++_srs_pps_srtcps-&gt;sugar;</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> buf[kRtcpPacketSize];</span><br><span class="line">    <span class="function">SrsBuffer <span class="title">stream</span><span class="params">(buf, <span class="keyword">sizeof</span>(buf))</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> <span class="doctag">FIXME:</span> Check error.</span></span><br><span class="line">    rtcpNack.<span class="built_in">encode</span>(&amp;stream);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> <span class="doctag">FIXME:</span> Check error.</span></span><br><span class="line">    <span class="type">int</span> nb_protected_buf = stream.<span class="built_in">pos</span>();</span><br><span class="line">    transport_-&gt;<span class="built_in">protect_rtcp</span>(stream.<span class="built_in">data</span>(), &amp;nb_protected_buf);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> <span class="doctag">FIXME:</span> Check error.</span></span><br><span class="line">    sendonly_skt-&gt;<span class="built_in">sendto</span>(stream.<span class="built_in">data</span>(), nb_protected_buf, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SrsRtpNackForReceiver::get_nack_seqs</span><span class="params">(SrsRtcpNack&amp; seqs, <span class="type">uint32_t</span>&amp; timeout_nacks)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// If circuit-breaker is enabled, disable nack.</span></span><br><span class="line">    <span class="keyword">if</span> (_srs_circuit_breaker-&gt;<span class="built_in">hybrid_high_water_level</span>()) &#123;</span><br><span class="line">        queue_.<span class="built_in">clear</span>();</span><br><span class="line">        ++_srs_pps_snack4-&gt;sugar;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">srs_utime_t</span> now = <span class="built_in">srs_get_system_time</span>();</span><br><span class="line"></span><br><span class="line">    <span class="type">srs_utime_t</span> interval = now - pre_check_time_; <span class="comment">//上次检查的时间距离现在</span></span><br><span class="line">    <span class="keyword">if</span> (interval &lt; opts_.nack_check_interval) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    pre_check_time_ = now;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 结构：seqnum -&gt; SrsRtpNackInfo </span></span><br><span class="line">    std::map&lt;<span class="type">uint16_t</span>, SrsRtpNackInfo&gt;::iterator iter = queue_.<span class="built_in">begin</span>();</span><br><span class="line">    <span class="keyword">while</span> (iter != queue_.<span class="built_in">end</span>()) &#123;</span><br><span class="line">        <span class="type">const</span> <span class="type">uint16_t</span>&amp; seq = iter-&gt;first;</span><br><span class="line">        SrsRtpNackInfo&amp; nack_info = iter-&gt;second;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> alive_time = now - nack_info.generate_time_;<span class="comment">//老化时间</span></span><br><span class="line">        <span class="keyword">if</span> (alive_time &gt; opts_.max_alive_time || nack_info.req_nack_count_ &gt; opts_.max_count) &#123;<span class="comment">//同个seq的最大重传次数，删除</span></span><br><span class="line">            ++timeout_nacks;</span><br><span class="line">            rtp_-&gt;<span class="built_in">notify_drop_seq</span>(seq);</span><br><span class="line">            queue_.<span class="built_in">erase</span>(iter++);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// <span class="doctag">TODO:</span>Statistics unorder packet.</span></span><br><span class="line">        <span class="keyword">if</span> (now - nack_info.generate_time_ &lt; opts_.first_nack_interval) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//同个seq前后 两次重传的时间间隔，避免太频繁</span></span><br><span class="line">        <span class="type">srs_utime_t</span> nack_interval = <span class="built_in">srs_max</span>(opts_.min_nack_interval, opts_.nack_interval / <span class="number">3</span>);</span><br><span class="line">        <span class="keyword">if</span>(opts_.nack_interval &lt; <span class="number">50</span> * SRS_UTIME_MILLISECONDS)&#123;</span><br><span class="line">            nack_interval = <span class="built_in">srs_max</span>(opts_.min_nack_interval, opts_.nack_interval);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (now - nack_info.pre_req_nack_time_ &gt;= nack_interval ) &#123;<span class="comment">//超过时间才能加入重传seqs</span></span><br><span class="line">            ++nack_info.req_nack_count_;</span><br><span class="line">            nack_info.pre_req_nack_time_ = now;</span><br><span class="line">            seqs.<span class="built_in">add_lost_sn</span>(seq);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ++iter;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="xx的nack"><a href="#xx的nack" class="headerlink" title="xx的nack:"></a>xx的nack:</h4><p>一个亮点：结点会给其哪个序号的包没收到，这样下级结点就不会去做这个包的请求重传，这样避免了下级结点的无效重传请求。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nack/" rel="tag"># nack</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/10/live-transJitterbuffer/" rel="prev" title="live_transJitterbuffer">
+      <i class="fa fa-chevron-left"></i> live_transJitterbuffer
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/17/live-fec/" rel="next" title="live_fec">
+      live_fec <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E4%BC%A0%E7%90%86%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">重传理论</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nack%E7%9A%84%E7%AE%97%E6%B3%95%E5%87%A0%E4%B8%AA%E5%85%B3%E9%94%AE%E8%A6%81%E7%B4%A0"><span class="nav-number">2.</span> <span class="nav-text">nack的算法几个关键要素</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E5%92%8C%E7%AE%97%E6%B3%95%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">流程和算法：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nack%E7%9A%84%E5%8D%8F%E8%AE%AE%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">nack的协议：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E6%98%AF"><span class="nav-number">3.1.</span> <span class="nav-text">简单的是</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#webrtc%E4%B8%AD%E7%9A%84nack%E5%8D%8F%E8%AE%AE%E3%80%82"><span class="nav-number">3.2.</span> <span class="nav-text">webrtc中的nack协议。</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#webrtc%E4%B8%AD%E7%9A%84nack%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E3%80%82"><span class="nav-number">4.</span> <span class="nav-text">webrtc中的nack算法流程。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#srs%E4%B8%AD%E7%9A%84nack"><span class="nav-number">5.</span> <span class="nav-text">srs中的nack</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#xx%E7%9A%84nack"><span class="nav-number">6.</span> <span class="nav-text">xx的nack:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '7e5074e9367f750f75f0a38ffee5e40a',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
