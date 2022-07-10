@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="google 在webrtc上的拥塞控制rfc总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="simple_googleCongestionControl">
+<meta property="og:url" content="https://xdksx.github.io/2022/07/10/simple-googleCongestionControl/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="google 在webrtc上的拥塞控制rfc总结">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-10T06:54:59.000Z">
+<meta property="article:modified_time" content="2022-07-10T12:48:53.238Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="congestion">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/07/10/simple-googleCongestionControl/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>simple_googleCongestionControl | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/07/10/simple-googleCongestionControl/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          simple_googleCongestionControl
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-10 14:54:59 / 修改时间：20:48:53" itemprop="dateCreated datePublished" datetime="2022-07-10T14:54:59+08:00">2022-07-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/webrtc/" itemprop="url" rel="index"><span itemprop="name">webrtc</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="google-在webrtc上的拥塞控制rfc总结"><a href="#google-在webrtc上的拥塞控制rfc总结" class="headerlink" title="google 在webrtc上的拥塞控制rfc总结"></a>google 在webrtc上的拥塞控制rfc总结</h4> <span id="more"></span>
+<h5 id="1-实时媒体的拥塞控制的-挑战-x2F-困难点-x2F-特点："><a href="#1-实时媒体的拥塞控制的-挑战-x2F-困难点-x2F-特点：" class="headerlink" title="1  实时媒体的拥塞控制的 挑战&#x2F;困难点&#x2F;特点："></a>1  实时媒体的拥塞控制的 挑战&#x2F;困难点&#x2F;特点：</h5><p>1）媒体通常是被编码为格式以致于不能很快的调整来适应多变的带宽，<br>      并且带宽要求经常只能进行离散的改变而不是大步调整。<br>2） 参与者可能会对如何响应有具体的期望，这可能不会减少流所需的带宽当发现拥塞时。<br>3)   编码通常对丢包敏感，实时传输要求尽量避免出现重传修复丢包的情况。 </p>
+<h5 id="2-分类：两种拥塞控制算法；"><a href="#2-分类：两种拥塞控制算法；" class="headerlink" title="2 分类：两种拥塞控制算法；"></a>2 分类：两种拥塞控制算法；</h5><p>gcc认为，这两种拥塞控制，<br>一种是基于丢包的控制器 - 进行丢包率测量、往返时间测量和 REMB 消息，并计算目标发送比特率。并以此判定拥塞情况，做拥塞控制。<br>另一种是 基于延迟的控制器 - 获取数据包到达信息，或者在 RTP 接收器，或从 RTP 发送器接收到的反馈，并计算它传递给基于丢包的控制器的最大比特率。<br>通过延迟的变化和具体情况，来判定拥塞情况，做拥塞控制。 </p>
+<p>gcc 是基于丢包的控制器和基于延迟的控制器一起实现拥塞控制算法。并提供了两种方式：<br>1）  一种是两个控制器都在发送端运行：<br>具体：<br>第一个版本可以通过使用 [I-D.holmer-rmcat-transport-wide-cc-extensions] 中描述的每包反馈协议来实现。<br>在这里，RTP 接收器将记录每个接收到的数据包的到达时间和传输范围的seqnum，这些信息将使用传输范围的反馈消息定期发送回发送方。<br>推荐的反馈间隔是每接收到一个视频帧一次，如果是纯音频或多流，则至少每 30 毫秒一次。 如果需要限制反馈开销，该间隔可以增加到 100 毫秒。</p>
+<p>发送方将接收到的{序列号，到达时间}对映射到反馈报告涵盖的每个数据包的发送时间，并将这些时间戳提供给基于延迟的控制器。 它还将根据反馈消息中的序列号计算丢失率。</p>
+<p>2）另一种是基于延迟的控制器在接收端运行，基于丢包的控制器在发送端运行。<br>第二个版本可以通过在接收端有一个基于延迟的控制器来实现，监控和处理传入数据包的到达时间和大小。<br>发送方应该使用 abs-send-time RTP 头扩展 [abs-send-time] 使接收方能够计算组间延迟变化。 基于延迟的控制器的输出将是一个比特率，它将使用 REMB 反馈消息 [I-D.alvestrand-rmcat-remb] 发送回发送方。<br> 丢包率通过 RTCP 接收器报告发回。 在发送方，REMB 消息中的比特率和丢失的数据包部分被送入基于丢失的控制器，后者输出最终目标比特率。 建议在检测到拥塞时立即发送 REMB 消息，否则至少每秒发送一次。</p>
+<p>不管怎样最终都是发送方根据信息得到最后的发送bitrate，并调整速率进行拥塞控制； </p>
+<h5 id="3-详细阐述基于延迟的控制器：注意是接收方才能统计到延迟"><a href="#3-详细阐述基于延迟的控制器：注意是接收方才能统计到延迟" class="headerlink" title="3 详细阐述基于延迟的控制器：注意是接收方才能统计到延迟"></a>3 详细阐述基于延迟的控制器：注意是接收方才能统计到延迟</h5><ol>
+<li>组成：<br>基于延迟的控制算法可以进一步分解为三部分：到达时间滤波器、过度使用检测器和速率控制器。<br>2）Arrival-time model 到达时间模型</li>
+</ol>
+<ul>
+<li><p>抖动的定义：组间延迟变化<br>我们将到达间隔时间 t(i) - t(i-1) 定义为两个数据包或两组数据包的到达时间差。<br>  相应地，出发间隔时间T(i)-T(i-1)被定义为两个数据包或两组数据包的出发时间差。 最后，组间延迟变化 d(i) 被定义为到达间隔时间和出发间隔时间之间的差值。<br> 或者不同的解释，作为第 i 组和第 i-1 组延迟之间的差异。<br>   d(i) &#x3D; t(i) - t(i-1) - (T(i) - T(i-1))<br>不过我个人觉得，写成这样好理解些，是等价的：<br> d(i) &#x3D; t(i) - T(i) - (t(i-1) - T(i-1))  意义是两组数据包在空中停留的时间差异，也是组间延迟差异。</p>
+</li>
+<li><p>如何选择一组的时间范围？如何定义ti, Ti<br>在接收端，我们观察传入的数据包组，<br>其中一组数据包定义如下：在 burst_time 间隔内发送的数据包序列组成一个群体。 Burst_time 的推荐值为 5 ms。<br>此外，具有小于burst_time的到达间隔时间和小于0的组间延迟变化d(i)的任何分组也被认为是当前分组分组的一部分。<br> 将这些数据包包含在组中的原因是为了更好地处理延迟瞬变，这是由于数据包因与拥塞无关的原因排队而引起的。 例如，在许多 Wi-Fi 和无线网络上都观察到了这种情况。</p>
+</li>
+<li><p>Ti:<br>连续组之间的出发间隔时间计算为 T(i) - T(i-1)，其中 T(i) 是当前正在处理的分组组中最后一个分组的出发时间戳。<br>任何无序接收的数据包都会被到达时间模型忽略。</p>
+</li>
+<li><p>ti:<br>每个组被分配一个接收时间 t(i)，它对应于收到组的最后一个数据包的时间。</p>
+</li>
+<li><p>延迟的变化di：<br>如果 t(i) - t(i-1)&gt; T(i) - T(i-1)，即d(i)大于0，则一组是相对于其前任延迟，<br>即，如果到达间隔时间大于出发间隔时间</p>
+</li>
+<li><p>基于容量C(类似于带宽), 组数据包大小，时间建模：<br>由于在容量为 C 的路径上发送一组大小为 L 的数据包的时间 ts 大致为ts &#x3D; L&#x2F;C，类似路程&#x2F;速度&#x3D;时间<br>我们可以将组间延迟变化建模为： </p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">d(i) = <span class="constructor">L(<span class="params">i</span>)</span>/<span class="constructor">C(<span class="params">i</span>)</span> - <span class="constructor">L(<span class="params">i</span>-1)</span>/<span class="constructor">C(<span class="params">i</span>-1)</span> + w(i) =</span><br><span class="line"></span><br><span class="line">           <span class="constructor">L(<span class="params">i</span>)</span>-<span class="constructor">L(<span class="params">i</span>-1)</span></span><br><span class="line">       = -------------- + w(i) = d<span class="constructor">L(<span class="params">i</span>)</span>/<span class="constructor">C(<span class="params">i</span>)</span> + w(i)</span><br><span class="line">               <span class="constructor">C(<span class="params">i</span>)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>Here, w(i) is a sample from a stochastic process W, which is a<br> function of the capacity C(i), the current cross traffic, and the<br> current sent bitrate.  C is modeled as being constant as we expect it<br> to vary more slowly than other parameters of this model.  We model W<br> as a white Gaussian process.  If we are over-using the channel we<br> expect the mean of w(i) to increase, and if a queue on the network<br> path is being emptied, the mean of w(i) will decrease; otherwise the<br> mean of w(i) will be zero.<br>这里，w(i) 是来自随机过程 W 的样本，它是容量 C(i)、当前交叉流量和当前发送比特率的函数。<br>C 被建模为常数，因为我们预计它比该模型的其他参数变化得更慢。 我们将 W 建模为白高斯过程。<br>如果我们过度使用通道，我们预计 w(i) 的均值会增加，如果网络路径上的队列被清空，则 w(i) 的均值会减少； 否则 w(i) 的平均值将为零。</p>
+</li>
+</ul>
+<p> Breaking out the mean, m(i), from w(i) to make the process zero mean,<br>从 w(i) 中取出均值 m(i) ，使过程均值为零，<br>    我们得到</p>
+<pre><code>等式 1
+
+  d(i) = dL(i)/C(i) + m(i) + v(i)
+
+这是我们的基本模型，我们考虑到一大群数据包比一小群数据包需要更多的时间来遍历链路，因此到达时具有更高的相对延迟。
+</code></pre>
+<p> 噪声项表示模型未捕获的网络抖动和其他延迟效应。<br>&#x2F;&#x2F;<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ishen/p/15000909.html#!comments">https://www.cnblogs.com/ishen/p/15000909.html#!comments</a></p>
+<p>3） 到达时间过滤：Arrival-time filter<br>上面建模后，其实我们想估计的是C(i), m(i) ,即当前合适的发送速率。<br>参数 d(i) 和 dL(i) 可用于每组数据包，i&gt;1，我们想估计 C(i) 和 m(i) 并使用它们<br>估计以检测瓶颈链路是否被过度使用。这些参数可以通过任何自适应滤波器来估计——我们是使用卡尔曼滤波器。<br>这里是通过数据包传输的时延这个间接值对带宽进行估算。<br>  Let</p>
+<pre><code> theta_bar(i) = [1/C(i)  m(i)]^T  //这里的^T 即是转置，这里1/C(i)是在位置(0,0),而m(i)是在位置(1,0),是同一列。下同
+ m(i)是表示发送队列的时延(长短)变化量
+</code></pre>
+<p>并将其称为时间 i 的状态。我们对状态演化进行建模<br>时间 i 到时间 i+1 为<br>     theta_bar(i+1) &#x3D; theta_bar(i) + u_bar(i)<br>其中 u_bar(i) 是我们建模为平稳的状态噪声，处理具有零均值和协方差的高斯统计量</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="constructor">Q(<span class="params">i</span>)</span> = E&#123;u<span class="constructor">_bar(<span class="params">i</span>)</span><span class="operator"> * </span>u<span class="constructor">_bar(<span class="params">i</span>)</span>^T&#125;</span><br><span class="line"></span><br><span class="line"> <span class="constructor">Q(<span class="params">i</span>)</span> is RECOMMENDED <span class="keyword">as</span> a diagonal matrix <span class="keyword">with</span> main diagonal elements <span class="comment">//建议将Q（i）作为具有主对角元素的对角矩阵</span></span><br><span class="line"> <span class="keyword">as</span>:</span><br><span class="line"></span><br><span class="line">   diag(<span class="constructor">Q(<span class="params">i</span>)</span>) = <span class="literal">[<span class="number">10</span>^-<span class="number">13</span> <span class="number">10</span>^-<span class="number">3</span>]</span>^T</span><br><span class="line"></span><br><span class="line"> Given equation <span class="number">1</span> we get</span><br><span class="line"></span><br><span class="line">   d(i) = h<span class="constructor">_bar(<span class="params">i</span>)</span>^T<span class="operator"> * </span>theta<span class="constructor">_bar(<span class="params">i</span>)</span> + v(i)</span><br><span class="line"></span><br><span class="line">   h<span class="constructor">_bar(<span class="params">i</span>)</span> = <span class="literal">[<span class="identifier">dL</span>(<span class="identifier">i</span>)  <span class="number">1</span>]</span>^T</span><br><span class="line"></span><br><span class="line"> where v(i) is zero mean white Gaussian measurement noise <span class="keyword">with</span></span><br><span class="line"> variance var_v = sigma(v,i)^<span class="number">2</span>  <span class="comment">//其中v（i）是零均值高斯白测量噪声，具有方差var_v=sigma（v，i）^2</span></span><br><span class="line"></span><br><span class="line"> The Kalman filter recursively updates our estimate 卡尔曼滤波器递归更新我们的估计</span><br><span class="line"></span><br><span class="line">   theta<span class="constructor">_hat(<span class="params">i</span>)</span> = <span class="literal">[<span class="number">1</span><span class="operator">/</span>C<span class="identifier">_hat</span>(<span class="identifier">i</span>) <span class="identifier">m_hat</span>(<span class="identifier">i</span>)]</span>^T</span><br><span class="line"></span><br><span class="line"> <span class="keyword">as</span></span><br><span class="line"></span><br><span class="line">   z(i) = d(i) - h<span class="constructor">_bar(<span class="params">i</span>)</span>^T<span class="operator"> * </span>theta<span class="constructor">_hat(<span class="params">i</span>-1)</span> <span class="comment">//zi表示模型未捕获的网络抖动和其他延迟噪声。这里算出来的是测量值</span></span><br><span class="line"></span><br><span class="line">   theta<span class="constructor">_hat(<span class="params">i</span>)</span> = theta<span class="constructor">_hat(<span class="params">i</span>-1)</span> + z(i)<span class="operator"> * </span>k<span class="constructor">_bar(<span class="params">i</span>)</span> <span class="comment">//k_bar(i)为卡尔曼增益，其值越小说明越相信估算值，其值越大说明越相信测量值。</span></span><br><span class="line">   </span><br><span class="line">   卡尔曼滤波的两个重要参数计算：</span><br><span class="line"></span><br><span class="line">                     ( <span class="constructor">E(<span class="params">i</span>-1)</span> + <span class="constructor">Q(<span class="params">i</span>)</span> )<span class="operator"> * </span>h<span class="constructor">_bar(<span class="params">i</span>)</span></span><br><span class="line">   k<span class="constructor">_bar(<span class="params">i</span>)</span> = ------------------------------------------------------</span><br><span class="line">              var<span class="constructor">_v_hat(<span class="params">i</span>)</span> + h<span class="constructor">_bar(<span class="params">i</span>)</span>^T<span class="operator"> * </span>(<span class="constructor">E(<span class="params">i</span>-1)</span> + <span class="constructor">Q(<span class="params">i</span>)</span>)<span class="operator"> * </span>h<span class="constructor">_bar(<span class="params">i</span>)</span></span><br><span class="line"></span><br><span class="line">   <span class="constructor">E(<span class="params">i</span>)</span> = (I - k<span class="constructor">_bar(<span class="params">i</span>)</span><span class="operator"> * </span>h<span class="constructor">_bar(<span class="params">i</span>)</span>^T)<span class="operator"> * </span>(<span class="constructor">E(<span class="params">i</span>-1)</span> + <span class="constructor">Q(<span class="params">i</span>)</span>)</span><br><span class="line"></span><br><span class="line"> where I is the <span class="number">2</span>-by-<span class="number">2</span> identity matrix.</span><br><span class="line"></span><br><span class="line"> The variance var<span class="constructor">_v(<span class="params">i</span>)</span> = sigma<span class="constructor">_v(<span class="params">i</span>)</span>^<span class="number">2</span> is estimated using an</span><br><span class="line"> exponential averaging filter, modified <span class="keyword">for</span> variable sampling rate </span><br><span class="line"> var_v_hat是卡尔曼率波中的噪声值？</span><br><span class="line"></span><br><span class="line">   var<span class="constructor">_v_hat(<span class="params">i</span>)</span> = max(beta<span class="operator"> * </span>var<span class="constructor">_v_hat(<span class="params">i</span>-1)</span> + (<span class="number">1</span>-beta)<span class="operator"> * </span>z(i)^<span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">   beta = (<span class="number">1</span>-chi)^(<span class="number">30</span>/(<span class="number">1000</span><span class="operator"> * </span>f_max))</span><br></pre></td></tr></table></figure>
+<p>   where f_max &#x3D; max {1&#x2F;(T(j) - T(j-1))} for j in i-K+1,…,i is the<br>   highest rate at which the last K packet groups have been received and<br>   chi is a filter coefficient typically chosen as a number in the<br>   interval [0.1, 0.001].  Since our assumption that v(i) should be zero<br>   mean WGN is less accurate in some cases, we have introduced an<br>   additional outlier filter around the updates of var_v_hat.  If z(i) &gt;<br>   3<em>sqrt(var_v_hat) the filter is updated with 3</em>sqrt(var_v_hat) rather<br>   than z(i).  For instance v(i) will not be white in situations where<br>   packets are sent at a higher rate than the channel capacity, in which<br>   case they will be queued behind each other.</p>
+<p>4）过量使用检测器：Over-use detector</p>
+<ul>
+<li>检测1：<br>作为到达时间滤波器的输出获得的偏移估计 m(i) 与阈值 gamma_1(i) 进行比较。 高于阈值的估计被视为过度使用的迹象。<br> 这种指示不足以使检测器向速率控制子系统发出过度使用信号。 只有在至少 gamma_2 毫秒内检测到过度使用时，才会发出明确的过度使用信号。<br>  但是，如果 m(i) &lt; m(i-1)，即使满足上述所有条件，也不会发出过度使用信号。 类似地，当 m(i) &lt; -gamma_1(i) 时，检测到相反的状态，即使用不足。<br> 如果没有检测到过度使用和使用不足，则探测器将处于正常状态。阈值 gamma_1 对算法的整体动态和性能有显着影响。 特别是，已经表明，<br>使用静态阈值 gamma_1，由所提出的算法控制的流可能会被并发 TCP 流 [Pv13] 饿死。   可以通过将阈值 gamma_1 增加到足够大的值来避免这种饥饿。</li>
+</ul>
+<p>为什么？<br>原因是，通过使用较大的 gamma_1 值，可以容忍较大的排队延迟，而对于较小的 gamma_1，<br>过度使用检测器通过生成过度使用快速响应偏移估计 m(i) 的小幅增加 - 使用减少可用带宽 A_hat 的基于延迟的估计的信号（参见第 4.4 节）。<br> 因此，有必要动态调整阈值 gamma_1 以在最常见的场景中获得良好的性能，例如与基于损失的流竞争时。<br>出于这个原因，我们建议改变阈值 gamma_1(i)<br>根据以下动态方程：<br>gamma_1(i) &#x3D; gamma_1(i-1) + (t(i)-t(i-1)) * K(i) * (|m(i)|-gamma_1(i-1)) </p>
+<p>K(i)&#x3D;K_d 如果 |m(i)| &lt; gamma_1(i-1) 否则 K(i)&#x3D;K_u 。<br>基本原理是当 m(i) 超出范围 [-gamma_1(i-1),gamma_1(i-1)] 时增加 gamma_1(i)，而当偏移估计值 m(i) 回落到 范围内，gamma_1 减小。<br> 通过这种方式，当 m(i) 增加时，例如由于 TCP 流进入同一瓶颈，gamma_1(i) 会增加并避免过度使用信号的不受控制的生成，<br> 这可能导致所提出的算法控制的流饥饿 [Pv13]。<br>此外，如果此条件成立，则不应更新 gamma_1(i)：  |m(i)| - gamma_1(i) &gt; 15 </p>
+<p>还建议将 gamma_1(i) 限制在 [6, 600] 范围内，因为太小 gamma_1(i) 会导致检测器变得过于敏感。<br>另一方面，当 m(i) 回落到范围 [-gamma_1(i-1),gamma_1(i-1)] 时，阈值 gamma_1(i) 会降低，从而可以实现较低的排队延迟。<br>建议选择 K_u &gt; K_d，以便 gamma_1 增加的速率高于其减少的速率。 通过此设置，可以在并发 TCP 流的情况下增加阈值并防止饥饿以及强制执行协议内公平性。<br> gamma_1(0)、gamma_2、K_u 和 K_d 的推荐值分别为 12.5 ms、10 ms、0.01 和 0.00018。</p>
+<p>5）速度控制：Rate control</p>
+<ul>
+<li>组成：<br>速率控制分为两部分，一部分控制基于延迟的带宽估计，另一部分控制基于丢包的带宽估计。<br>只要没有检测到拥塞，两者都旨在增加对可用带宽 A_hat 的估计，并确保我们最终将匹配信道的可用带宽并检测过度使用。</li>
+</ul>
+<p>一旦检测到过度使用，由基于延迟的控制器估计的可用带宽减少。这样我们获得可用带宽的递归和自适应估计。</p>
+<ul>
+<li><p>过程：<br>在本文档中，我们假设速率控制子系统定期执行，并且这个周期是恒定的。<br>速率控制子系统有 3 种状态：增加、减少和保持。<br>“增加”是没有检测到拥塞时的状态；<br>“减少”是检测到拥塞的状态，<br>“保持”是一种状态在“增加”之前等待直到已建立的队列耗尽。<br>有点类似于bbr</p>
+</li>
+<li><p>状态转换：<br>状态转换（空白字段表示“保持状态”）</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="code">+----+</span>--------<span class="code">+-----------+</span>------------<span class="code">+--------+</span></span><br><span class="line">|     \ State |   Hold    |  Increase  |Decrease|</span><br><span class="line">|      \      |           |            |        |</span><br><span class="line"><span class="section">| Signal\     |           |            |        |</span></span><br><span class="line"><span class="section">+--------+----+-----------+------------+--------+</span></span><br><span class="line"><span class="section">|  Over-use   | Decrease  |  Decrease  |        |</span></span><br><span class="line"><span class="section">+-------------+-----------+------------+--------+</span></span><br><span class="line"><span class="section">|  Normal     | Increase  |            |  Hold  |</span></span><br><span class="line"><span class="section">+-------------+-----------+------------+--------+</span></span><br><span class="line"><span class="section">|  Under-use  |           |   Hold     |  Hold  |</span></span><br><span class="line"><span class="section">+-------------+-----------+------------+--------+</span></span><br></pre></td></tr></table></figure></li>
+<li><p>状态处理过程：<br>子系统以增加状态开始，它将一直保持到检测器子系统检测到过度使用或使用不足。在每次更新时，可用带宽的基于延迟的估计增加，乘法或加法，取决于它的当前状态。</p>
+</li>
+</ul>
+<p>如果当前带宽估计看起来离收敛很远，则系统进行乘法增加，而如果看起来更接近收敛，则系统进行加法增加。<br>如果当前传入的比特率 R_hat(i) 接近我们之前处于降低状态时的传入比特率的平均值，我们假设我们接近收敛。</p>
+<p>“Close” 定义为围绕该平均值的三个标准偏差。 建议使用平滑因子为 0.95 的指数移动平均来测量此平均值和标准偏差，因为预计此平均值涵盖我们处于减少状态的多个场合。<br>当这些统计数据的有效估计不可用时，我们假设我们还没有接近收敛，因此仍处于乘法增加状态。</p>
+<p>如果 R_hat(i) 增加到平均最大比特率的三个标准偏差以上，我们假设当前的拥塞程度已经改变，此时我们重置平均最大比特率并返回乘法递增状态。<br>R_hat(i) 是基于延迟的控制器在 T 秒窗口内测量的传入比特率：<br>     R_hat(i) &#x3D; 1&#x2F;T * sum(L(j)) for j from 1 to N(i)<br>N(i) 是过去 T 秒收到的数据包数量，L(j) 是数据包 j 的有效载荷大小。 0.5 到 1 秒之间的窗口是受到推崇的。</p>
+<p>在乘法增加期间，估计最多增加每秒 8%。<br>     eta &#x3D; 1.08^min(time_since_last_update_ms &#x2F; 1000, 1.0)<br>     A_hat(i) &#x3D; eta * A_hat(i-1)</p>
+<p>在加法增加期间，每个 response_time 间隔最多增加半个数据包的估计值。 response_time 间隔估计为往返时间加上 100 ms 作为过度使用估计器和检测器反应时间的估计。<br>     response_time_ms &#x3D; 100 + rtt_ms<br>     beta &#x3D; 0.5 * min(time_since_last_update_ms &#x2F; response_time_ms, 1.0)<br>     A_hat(i) &#x3D; A_hat(i-1) + max(1000, beta * expected_packet_size_bits)<br>Expected_packet_size_bits 用于在较低比特率下获得略微较慢的附加增加斜率。 例如，它可以通过假设每秒 30 帧的帧速率从当前比特率计算：<br>     bits_per_frame &#x3D; A_hat(i-1) &#x2F; 30<br>     packets_per_frame &#x3D; ceil(bits_per_frame &#x2F; (1200 * 8))<br>     avg_packet_size_bits &#x3D; bits_per_frame &#x2F; packets_per_frame</p>
+<p>由于系统依赖于过度使用信道来验证当前可用带宽估计，我们必须确保我们的估计不会偏离发送方实际发送的速率。<br>因此，如果发送方无法以拥塞控制器要求的比特率生成比特流，则可用带宽估计应保持在给定范围内。 因此我们引入了一个阈值<br>     A_hat(i) &lt; 1.5 * R_hat(i)  A_hat(i)是估计出来的可用带宽</p>
+<p>当检测到过度使用时，系统过渡到减少状态，其中基于延迟的可用带宽估计是减少到当前传入比特率的倍数。<br>     A_hat(i) &#x3D; alpha * R_hat(i)</p>
+<p>alpha 通常选择在区间 [0.8, 0.95] 中，0.85 是推荐值。</p>
+<p>当探测器向速率控制子系统发送正在使用的信号时,我们知道网络路径中的队列正在被清空，这表明我们的可用带宽估计 A_hat 低于实际可用带宽。<br>根据该信号，速率控制子系统将进入保持状态，在等待队列稳定在较低水平的同时，接收端可用带宽估计将保持不变——这是一种保持延迟尽可能低的方法。<br> 在由于过度使用而减少估计值之后立即需要并预期这种延迟减少，但如果某些链路上的交叉流量减少，也会发生这种情况。<br>   建议更新 A_hat(i) 的例程至少在每个 response_time 间隔运行一次。</p>
+<p>6）  Parameters settings</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">+------------+-------------------------------------+----------------+</span><br><span class="line">|<span class="string"> Parameter  </span>|<span class="string"> Description                         </span>|<span class="string"> RECOMMENDED    </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string">                                     </span>|<span class="string"> Value          </span>|</span><br><span class="line">+------------+-------------------------------------+----------------+</span><br><span class="line">|<span class="string"> burst_time </span>|<span class="string"> Time limit in milliseconds between  </span>|<span class="string"> 5 ms           </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> packet bursts which identifies a    </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> group                               </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> Q          </span>|<span class="string"> State noise covariance matrix       </span>|<span class="string"> diag(Q(i)) =   </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string">                                     </span>|<span class="string"> [10^-13        </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string">                                     </span>|<span class="string"> 10^-3]^T       </span>|</span><br><span class="line">|<span class="string"> E(0)       </span>|<span class="string"> Initial value of the  system error  </span>|<span class="string"> diag(E(0)) =   </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> covariance                          </span>|<span class="string"> [100 0.1]^T    </span>|</span><br><span class="line">|<span class="string"> chi        </span>|<span class="string"> Coefficient used  for the measured  </span>|<span class="string"> [0.1, 0.001]   </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> noise variance                      </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> gamma_1(0) </span>|<span class="string"> Initial value for the adaptive      </span>|<span class="string"> 12.5 ms        </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> threshold                           </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> gamma_2    </span>|<span class="string"> Time required to trigger an overuse </span>|<span class="string"> 10 ms          </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> signal                              </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> K_u        </span>|<span class="string"> Coefficient for the adaptive        </span>|<span class="string"> 0.01           </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> threshold                           </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> K_d        </span>|<span class="string"> Coefficient for the adaptive        </span>|<span class="string"> 0.00018        </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> threshold                           </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> T          </span>|<span class="string"> Time window for measuring the       </span>|<span class="string"> [0.5, 1] s     </span>|</span><br><span class="line">|<span class="string">            </span>|<span class="string"> received bitrate                    </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> alpha      </span>|<span class="string"> Decrease rate factor                </span>|<span class="string"> 0.85           </span>|</span><br><span class="line">+------------+-------------------------------------+----------------+</span><br></pre></td></tr></table></figure>
+<pre><code>      Table 1: RECOMMENDED values for delay based controller
+</code></pre>
+<h5 id="4-基于丢包的控制：Loss-based-control"><a href="#4-基于丢包的控制：Loss-based-control" class="headerlink" title="4 基于丢包的控制：Loss-based control"></a>4 基于丢包的控制：Loss-based control</h5><ul>
+<li><p>简介：<br>拥塞控制器的第二部分基于从基于延迟的控制器接收到的往返时间、数据包丢失和可用带宽估计 A_hat 做出决定。<br>由基于丢包的控制器计算的可用带宽估计用 As_hat 表示。<br>  仅当沿路径的队列大小足够大时，基于延迟的控制器产生的可用带宽估计 A_hat 才是可靠的。<br> 如果队列非常短，过度使用只会通过数据包丢失可见，而基于延迟的控制器不会使用这些数据包。<br>  每次收到来自接收器的反馈时，基于丢包的控制器都应该运行。</p>
+</li>
+<li><p>过程：<br> o  If 2-10% of the packets have been lost since the previous report<br>from the receiver, the sender available bandwidth estimate<br>As_hat(i) will be kept unchanged.<br> o  If more than 10% of the packets have been lost a new estimate is<br>calculated as As_hat(i) &#x3D; As_hat(i-1)(1-0.5p), where p is the loss<br>ratio.<br> o  As long as less than 2% of the packets have been lost As_hat(i)<br>will be increased as As_hat(i) &#x3D; 1.05(As_hat(i-1))</p>
+</li>
+<li><p>上下限控制：<br>新的带宽估计由 TCP 友好速率控制公式 [RFC3448] 下限，上限由可用带宽 A_hat(i) 的基于延迟的估计确定，其中基于延迟的估计具有优先权：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">                                  <span class="number">8</span> s</span><br><span class="line"><span class="function"><span class="title">As_hat</span><span class="params">(i)</span></span> &gt;= ---------------------------------------------------------</span><br><span class="line">             R*<span class="built_in">sqrt</span>(<span class="number">2</span>*b*p/<span class="number">3</span>) + (t_RTO*(<span class="number">3</span>*<span class="built_in">sqrt</span>(<span class="number">3</span>*b*p/<span class="number">8</span>)*p*(<span class="number">1</span>+<span class="number">32</span>*p^<span class="number">2</span>)))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">As_hat</span><span class="params">(i)</span></span> &lt;= <span class="built_in">A_hat</span>(i)</span><br></pre></td></tr></table></figure>
+<p>其中<br>b 是单个 TCP 确认的数据包数确认（根据 TFRC 建议设置为 1），<br>t_RTO 是 TCP以秒为单位的重传超时值（设置为 4*R），<br>s 是平均数据包大小（以字节为单位）。<br>R 是以秒为单位的往返时间。<br>（乘以 8 是因为 TFRC 在计算带宽<br>字节，而本文档以位为单位计算带宽。）</p>
+</li>
+</ul>
+<p>换句话说：基于丢包的估计永远不会大于基于延迟的估计，并且永远不会低于来自TFRC 公式，除非基于延迟的估计低于TFRC 估计。<br>我们通过注意到如果传输通道由于过度使用而有少量数据包丢失来激发丢包阈值，如果发送方不调整他的比特率，该数量将很快增加。<br>因此，我们将很快达到 10% 以上的阈值并调整 As_hat(i)。 但是，如果丢包率没有增加，则丢包可能与自己造成的拥塞无关，因此我们不应对其做出反应。</p>
+<h5 id="5-其他："><a href="#5-其他：" class="headerlink" title="5 其他："></a>5 其他：</h5><p>该算法已在开源WebRTC中实现<br>项目，自 M23 以来一直在 Chrome 中使用，并且正在被使用</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/congestion/" rel="tag"># congestion</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/10/rtprtcp-formattype/" rel="prev" title="rtprtcp_formattype">
+      <i class="fa fa-chevron-left"></i> rtprtcp_formattype
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#google-%E5%9C%A8webrtc%E4%B8%8A%E7%9A%84%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6rfc%E6%80%BB%E7%BB%93"><span class="nav-number">1.</span> <span class="nav-text">google 在webrtc上的拥塞控制rfc总结</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E5%AE%9E%E6%97%B6%E5%AA%92%E4%BD%93%E7%9A%84%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%9A%84-%E6%8C%91%E6%88%98-x2F-%E5%9B%B0%E9%9A%BE%E7%82%B9-x2F-%E7%89%B9%E7%82%B9%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">1  实时媒体的拥塞控制的 挑战&#x2F;困难点&#x2F;特点：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E5%88%86%E7%B1%BB%EF%BC%9A%E4%B8%A4%E7%A7%8D%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95%EF%BC%9B"><span class="nav-number">1.2.</span> <span class="nav-text">2 分类：两种拥塞控制算法；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E8%AF%A6%E7%BB%86%E9%98%90%E8%BF%B0%E5%9F%BA%E4%BA%8E%E5%BB%B6%E8%BF%9F%E7%9A%84%E6%8E%A7%E5%88%B6%E5%99%A8%EF%BC%9A%E6%B3%A8%E6%84%8F%E6%98%AF%E6%8E%A5%E6%94%B6%E6%96%B9%E6%89%8D%E8%83%BD%E7%BB%9F%E8%AE%A1%E5%88%B0%E5%BB%B6%E8%BF%9F"><span class="nav-number">1.3.</span> <span class="nav-text">3 详细阐述基于延迟的控制器：注意是接收方才能统计到延迟</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E5%9F%BA%E4%BA%8E%E4%B8%A2%E5%8C%85%E7%9A%84%E6%8E%A7%E5%88%B6%EF%BC%9ALoss-based-control"><span class="nav-number">1.4.</span> <span class="nav-text">4 基于丢包的控制：Loss-based control</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-%E5%85%B6%E4%BB%96%EF%BC%9A"><span class="nav-number">1.5.</span> <span class="nav-text">5 其他：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '671d923cb6e8964a211a62b4453854b2',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

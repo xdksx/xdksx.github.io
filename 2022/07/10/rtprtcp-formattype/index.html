@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="rtp的报文基本格式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rtprtcp_formattype">
+<meta property="og:url" content="https://xdksx.github.io/2022/07/10/rtprtcp-formattype/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="rtp的报文基本格式">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2022/07/10/rtprtcp-formattype/rtptype.png">
+<meta property="article:published_time" content="2022-07-10T06:53:25.000Z">
+<meta property="article:modified_time" content="2022-07-10T08:42:02.370Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="rtp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2022/07/10/rtprtcp-formattype/rtptype.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/07/10/rtprtcp-formattype/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>rtprtcp_formattype | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/07/10/rtprtcp-formattype/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          rtprtcp_formattype
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-10 14:53:25 / 修改时间：16:42:02" itemprop="dateCreated datePublished" datetime="2022-07-10T14:53:25+08:00">2022-07-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/webrtc/" itemprop="url" rel="index"><span itemprop="name">webrtc</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="rtp的报文基本格式"><a href="#rtp的报文基本格式" class="headerlink" title="rtp的报文基本格式  "></a>rtp的报文基本格式  <span id="more"></span></h4><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">0                   1                   2                   3</span><br><span class="line"><span class="section"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|V=2|P|X|  CC   |M|     PT      |       sequence number         |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                           timestamp                           |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|           synchronization source (SSRC) identifier            |</span></span><br><span class="line"><span class="section">+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span></span><br><span class="line">|            contributing source (CSRC) identifiers             |</span><br><span class="line"><span class="section">|                             ....                              |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"></span><br><span class="line">版本（V）：2位此字段标识RTP的版本。本规范规定的版本为二（2）。（RTP初稿版本使用值1，最初在“vat”音频工具中实现的协议使用值0。）</span><br><span class="line">padding（P）：1位如果设置了padding位，则数据包的末尾包含一个或多个额外的padding八位字节，它们不是有效负载的一部分。</span><br><span class="line"><span class="code">      填充的最后一个八位字节包含应忽略的填充八位字节数，包括其本身。</span></span><br><span class="line"><span class="code">      某些具有固定块大小的加密算法或在较低层协议数据单元中承载多个RTP数据包可能需要填充。</span></span><br><span class="line">扩展（X）：1位如果设置了扩展位，则固定标题后面必须紧跟一个标题扩展，格式见第5.3.1节。</span><br><span class="line">CSRC计数（CC）：4位CSC计数包含固定标头后面的CSRC标识符的数量。</span><br><span class="line">标记（M）：1位标记的解释由profile定义。它旨在允许在分组流中标记诸如帧边界之类的重要事件。</span><br><span class="line"><span class="code">     配置文件可以定义额外的标记位，或者通过更改有效负载类型字段中的位数来指定没有标记位（参见第5.3节）。</span></span><br><span class="line">有效负载类型（PT）：7位该字段标识RTP有效负载的格式(类型)，并确定应用程序对其的解释。配置文件可以指定有效负载类型代码到有效负载格式</span><br><span class="line"><span class="code">          的默认静态映射。其他有效载荷类型代码可通过非RTP方式动态定义（见第3节）。配套RFC 3551[1]中指定了一组音频和视频的默认映射。</span></span><br><span class="line"><span class="code">          RTP源可以在会话期间更改有效负载类型，但此字段不应用于多路复用单独的媒体流（参见第5.2节）。</span></span><br><span class="line"><span class="code">          接收器必须忽略其不了解的有效负载类型的数据包。</span></span><br><span class="line"></span><br><span class="line">序列号：16位序列号对于发送的每个RTP数据包，序列号递增1，接收器可使用序列号检测数据包丢失并恢复数据包序列。</span><br><span class="line"><span class="code">         序列号的初始值应该是随机的（不可预测的），以使对加密的已知明文攻击更加困难，即使源本身没有按照第9.1节中的方法进行加密，</span></span><br><span class="line"><span class="code">         因为数据包可能会通过进行加密的转换器。[17]中讨论了选择不可预测数字的技术。</span></span><br><span class="line"></span><br><span class="line">时间戳：32位时间戳反映RTP数据包中第一个八位字节的采样瞬间。采样瞬间必须从时间上单调线性递增的时钟中得出，</span><br><span class="line"><span class="code">         以允许同步和抖动计算（见第6.4.1节）。时钟的分辨率必须足以达到所需的同步精度和测量数据包到达抖动</span></span><br><span class="line"><span class="code">         （每个视频帧一个刻度通常是不够的）。时钟频率取决于作为有效载荷承载的数据的格式，</span></span><br><span class="line"><span class="code">         并且在定义该格式的概要文件或有效载荷格式规范中静态地指定，或者可以针对通过非RTP方式定义的有效载荷格式动态地指定。</span></span><br><span class="line"><span class="code">         如果定期生成RTP数据包，则将使用从采样时钟确定的标称采样瞬间，而不是系统时钟的读数。</span></span><br><span class="line"><span class="code">         例如，对于固定速率音频，时间戳时钟对于每个采样周期可能增加一个。如果音频应用程序读取块覆盖</span></span><br><span class="line">更多：https://xdksx.github.io/2022/04/02/live-rtp/</span><br></pre></td></tr></table></figure>
+<h4 id="rtp的报文类型和格式"><a href="#rtp的报文类型和格式" class="headerlink" title="rtp的报文类型和格式"></a>rtp的报文类型和格式</h4><p>rtp的pt值指定了这个rtp包写到的载荷类型，rtp pt类型分为固定的和动态的，7bit的pt值可以支持2^7 种；</p>
+<ul>
+<li><p>静态固定类型：0-95<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/RTP_payload_formats">https://en.wikipedia.org/wiki/RTP_payload_formats</a><br>截取一部分展示:</p>
+<img src="/2022/07/10/rtprtcp-formattype/rtptype.png" class="" title="This is an example image">
+</li>
+<li><p>动态的类型：<br>96-127<br>什么叫动态的类型？其实是在rtc信令交互阶段，如sdp，会传递信息，指定支持的pt类型，这个时候就是动态指定了。<br>例如：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Example</span> (SDP excerpt):</span><br><span class="line"></span><br><span class="line">     <span class="attribute">m</span>=audio <span class="number">49200</span> RTP/AVP <span class="number">97</span> <span class="number">98</span> <span class="number">99</span> <span class="number">100</span> <span class="number">101</span> <span class="number">102</span> //这里就是指定的pt值，下面是对每个pt值对应的协议类型名做指定</span><br><span class="line">     <span class="attribute">a</span>=mid:foo</span><br><span class="line">     <span class="attribute">a</span>=rtpmap:<span class="number">97</span> G711/<span class="number">8000</span></span><br><span class="line">     <span class="attribute">a</span>=rtpmap:<span class="number">98</span> LPC/<span class="number">8000</span></span><br><span class="line">     <span class="attribute">a</span>=rtpmap:<span class="number">99</span> OPUS/<span class="number">48000</span>/<span class="number">1</span></span><br><span class="line">     <span class="attribute">a</span>=rtpmap:<span class="number">100</span> RED/<span class="number">8000</span>/<span class="number">1</span></span><br><span class="line">     <span class="attribute">a</span>=rtpmap:<span class="number">101</span> CN/<span class="number">8000</span></span><br><span class="line">     <span class="attribute">a</span>=rtpmap:<span class="number">102</span> telephone-event/<span class="number">8000</span></span><br><span class="line">     <span class="attribute">a</span>=fmtp:<span class="number">99</span> useinbandfec=<span class="number">1</span>; usedtx=<span class="number">0</span></span><br><span class="line">     <span class="attribute">a</span>=fmtp:<span class="number">100</span> <span class="number">97</span>/<span class="number">98</span></span><br><span class="line">     <span class="attribute">a</span>=fmtp:<span class="number">102</span> <span class="number">0</span>-<span class="number">15</span></span><br><span class="line">     <span class="attribute">a</span>=ptime:<span class="number">20</span></span><br><span class="line">     <span class="attribute">a</span>=maxptime:<span class="number">40</span></span><br><span class="line">     <span class="attribute">a</span>=rid:<span class="number">5</span> send pt=<span class="number">99</span>,<span class="number">102</span>;max-br=<span class="number">64000</span></span><br><span class="line">     <span class="attribute">a</span>=rid:<span class="number">6</span> send pt=<span class="number">100</span>,<span class="number">97</span>,<span class="number">101</span>,<span class="number">102</span></span><br></pre></td></tr></table></figure></li>
+<li><p>常见</p>
+</li>
+</ul>
+<ol>
+<li>视频媒体:<br>eg: rtp封装h264:<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc6184">https://datatracker.ietf.org/doc/html/rfc6184</a><br>①single NAL unit packet　单包（1个RTP包：1个NALU）<br>②aggregation packets　　聚合(组合)包（1个RTP包：多个NALU，提高传输效率），需要解包时在重组。<br>　　①STAP (Single-time aggregation packet)<br>　　　　STAP-A<br>　　　　STAP-B<br>　　② MTAP (Multi-time aggregation packet)<br>　　　　MTAP16<br>　　　　MTAP24<br>③Fragmentation Unit　　拆包处理【一个NALU→多包　NALU＞最大传输单元MTU】<br>　　　　FU-A　　&#x2F;&#x2F;非交错模式<br>　　　　FU-B　　&#x2F;&#x2F;交错模式<br>方式1 ： 单个nalu封装在一个rtp包中：即开头1个字节表示NAL单元类型，接着1个或多个聚合单元，后面是可选的RTP填充。 <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="code"> 0                   1                   2                   3</span></span><br><span class="line"><span class="section"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line">|F|NRI|  Type   |                                               |</span><br><span class="line"><span class="code">+-+</span>-<span class="code">+-+</span>-<span class="code">+-+</span>-<span class="code">+-+</span>-+                                               |</span><br><span class="line">|                                                               |</span><br><span class="line">|               Bytes 2..n of a single NAL unit                 |</span><br><span class="line">|                                                               |</span><br><span class="line">|                               <span class="code">+-+</span>-<span class="code">+-+</span>-<span class="code">+-+</span>-<span class="code">+-+</span>-<span class="code">+-+</span>-<span class="code">+-+</span>-<span class="code">+-+</span>-<span class="code">+-+</span>-+</span><br><span class="line"><span class="section">|                               :...OPTIONAL RTP padding        |</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"></span><br><span class="line">Figure 2.  RTP payload format for single NAL unit packet</span><br></pre></td></tr></table></figure>
+方式2： 组合封包，即一个RTP多个NALU :<br>分别有4种组合方式: STAP-A, STAP-B, MTAP16, MTAP24.那么这里的类型值分别是 24, 25, 26 以及 27。<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">0                  <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">  <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">                  :                                               |</span><br><span class="line">  +-+-+-+-+-+-+-+-+                                               |</span><br><span class="line">  |                                                               |</span><br><span class="line">  |                single-time aggregation units                  |</span><br><span class="line">  |                                                               |</span><br><span class="line">  |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |                               :</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">  Figure 4.  Payload format for STAP-A</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>方式3： 一个NALU有多个RTP ,即一个NALU跨越了多个RTP；多RTP一NALU，这种fu-a也适合带多个nalu,但是最后一个分片的情况(见srs的封装)<br>；<a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc6184">https://datatracker.ietf.org/doc/html/rfc6184</a></p>
+<ol start="2">
+<li>音频媒体</li>
+<li>fec<br>red fec:如下是一个携带两个RED Header的RTP包结构：<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">m=audio <span class="number">12345</span> RTP/AVP <span class="number">121</span> <span class="number">0</span> <span class="number">5</span></span><br><span class="line">       a=rtpmap:<span class="number">121</span> <span class="built_in">red</span>/<span class="number">8000</span>/<span class="number">1</span></span><br><span class="line">|<span class="type">RTP</span> header| <span class="type">RED</span> header | <span class="type">RED</span> headr | <span class="type">RED</span> encoding data | <span class="type">RED</span> encoding data|</span><br><span class="line"><span class="type">https</span>://datatracker.ietf.org/doc/html/rfc2198</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>rtx:<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">rtx: pt值也是动态的， 这个是重传回复包，rtc是nack的方式，nack请求重传放在rtcp上的。</span><br><span class="line">https://datatracker.ietf.org/doc/html/rfc4588</span><br><span class="line"><span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">   <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |                         RTP Header                            |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |            OSN                |                               |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               |</span><br><span class="line">   |                  Original RTP Packet Payload                  |</span><br><span class="line">   |                                                               |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="rtcp的报文基本格式"><a href="#rtcp的报文基本格式" class="headerlink" title="rtcp的报文基本格式"></a>rtcp的报文基本格式</h4><p>rtcp报文每个种类都不太一样，但基本都有一个类似的固定的头：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">       <span class="number"> 0 </span>                 <span class="number"> 1 </span>                 <span class="number"> 2 </span>                  3</span><br><span class="line">       <span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1<span class="number"> 2 </span>3<span class="number"> 4 </span>5<span class="number"> 6 </span>7<span class="number"> 8 </span>9<span class="number"> 0 </span>1</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">header |V=2|P|    RC   |   PT=RR=201   |             length            |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+
+<h4 id="rtcp的报文类型和格式"><a href="#rtcp的报文类型和格式" class="headerlink" title="rtcp的报文类型和格式"></a>rtcp的报文类型和格式</h4><h5 id="pt值和类型："><a href="#pt值和类型：" class="headerlink" title="pt值和类型："></a>pt值和类型：</h5><ul>
+<li><p>204：application<br><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc3550#section-6.7">https://tools.ietf.org/html/rfc3550#section-6.7</a> </p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">0</span>                   <span class="number">1</span>                   <span class="number">2</span>                   <span class="number">3</span></span><br><span class="line">   <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span></span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |V=<span class="number">2</span>|P| subtype |   PT=APP=<span class="number">204</span>  |             <span class="built_in">length</span>            |</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |                           SSRC/CSRC                           |</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |                          name (ASCII)                         |</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  |                   application-dependent data                ...</span><br><span class="line">  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">  The APP packet is intended <span class="keyword">for</span> experimental use <span class="keyword">as</span> <span class="built_in">new</span> applications</span><br><span class="line">  <span class="keyword">and</span> <span class="built_in">new</span> features are developed, <span class="keyword">without</span> requiring packet type <span class="built_in">value</span></span><br><span class="line">  registration.  APP packets <span class="keyword">with</span> unrecognized names SHOULD be ignored.</span><br><span class="line">  After testing <span class="keyword">and</span> <span class="keyword">if</span> wider use is justified, <span class="keyword">it</span> is RECOMMENDED that</span><br><span class="line">  <span class="keyword">each</span> APP packet be redefined <span class="keyword">without</span> <span class="keyword">the</span> subtype <span class="keyword">and</span> name fields <span class="keyword">and</span></span><br><span class="line">  registered <span class="keyword">with</span> IANA <span class="keyword">using</span> <span class="keyword">an</span> RTCP packet type.</span><br><span class="line"><span class="built_in">version</span> (V), padding (P), <span class="built_in">length</span>:</span><br><span class="line">     As described <span class="keyword">for</span> <span class="keyword">the</span> SR packet (see Section <span class="number">6.4</span><span class="number">.1</span>).</span><br><span class="line"></span><br><span class="line">  subtype: <span class="number">5</span> bits</span><br><span class="line">     May be used <span class="keyword">as</span> <span class="keyword">a</span> subtype <span class="built_in">to</span> allow <span class="keyword">a</span> <span class="built_in">set</span> <span class="keyword">of</span> APP packets <span class="built_in">to</span> be</span><br><span class="line">     defined under <span class="literal">one</span> unique name, <span class="keyword">or</span> <span class="keyword">for</span> <span class="keyword">any</span> application-dependent</span><br><span class="line">     data.</span><br><span class="line"></span><br><span class="line">  packet type (PT): <span class="number">8</span> bits</span><br><span class="line">     Contains <span class="keyword">the</span> <span class="built_in">constant</span> <span class="number">204</span> <span class="built_in">to</span> identify this <span class="keyword">as</span> <span class="keyword">an</span> RTCP APP packet.</span><br><span class="line">  name: <span class="number">4</span> octets</span><br><span class="line">     A name chosen <span class="keyword">by</span> <span class="keyword">the</span> person defining <span class="keyword">the</span> <span class="built_in">set</span> <span class="keyword">of</span> APP packets <span class="built_in">to</span> be</span><br><span class="line">     unique <span class="keyword">with</span> respect <span class="built_in">to</span> other APP packets this application might</span><br><span class="line">     receive.  The application creator might choose <span class="built_in">to</span> use <span class="keyword">the</span></span><br><span class="line">     application name, <span class="keyword">and</span> <span class="keyword">then</span> coordinate <span class="keyword">the</span> allocation <span class="keyword">of</span> subtype</span><br><span class="line">     values <span class="built_in">to</span> others who want <span class="built_in">to</span> define <span class="built_in">new</span> packet types <span class="keyword">for</span> <span class="keyword">the</span></span><br><span class="line">     application.  Alternatively, <span class="keyword">it</span> is RECOMMENDED that others choose</span><br><span class="line">     <span class="keyword">a</span> name based <span class="keyword">on</span> <span class="title">the</span> <span class="title">entity</span> <span class="title">they</span> <span class="title">represent</span>, <span class="title">then</span> <span class="title">coordinate</span> <span class="title">the</span> <span class="title">use</span></span><br><span class="line">     <span class="keyword">of</span> <span class="keyword">the</span> name <span class="keyword">within</span> that entity.  The name is interpreted <span class="keyword">as</span> <span class="keyword">a</span></span><br><span class="line">     sequence <span class="keyword">of</span> <span class="literal">four</span> ASCII <span class="keyword">characters</span>, <span class="keyword">with</span> uppercase <span class="keyword">and</span> lowercase</span><br><span class="line">     <span class="keyword">characters</span> treated <span class="keyword">as</span> distinct.</span><br><span class="line"></span><br><span class="line">  application-dependent data: <span class="built_in">variable</span> <span class="built_in">length</span></span><br><span class="line">     Application-dependent data may <span class="keyword">or</span> may <span class="keyword">not</span> appear <span class="keyword">in</span> <span class="keyword">an</span> APP packet.</span><br><span class="line">     It is interpreted <span class="keyword">by</span> <span class="keyword">the</span> application <span class="keyword">and</span> <span class="keyword">not</span> RTP itself.  It MUST</span><br><span class="line">     be <span class="keyword">a</span> multiple <span class="keyword">of</span> <span class="number">32</span> bits <span class="keyword">long</span>.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>200: SR 发送方报告<br> <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc3550#section-6.4.1">https://tools.ietf.org/html/rfc3550#section-6.4.1</a>  </p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line">        <span class="number">0</span>                   <span class="number">1</span>                   <span class="number">2</span>                   <span class="number">3</span></span><br><span class="line">        <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span></span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">header |V=<span class="number">2</span>|P|    RC   |   PT=SR=<span class="number">200</span>   |             <span class="built_in">length</span>            |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                         SSRC <span class="keyword">of</span> sender                        |</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">sender |              NTP timestamp, most significant <span class="built_in">word</span>             |</span><br><span class="line">info   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |             NTP timestamp, least significant <span class="built_in">word</span>             |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                         RTP timestamp                         |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                     sender&#x27;s packet <span class="built_in">count</span>                     |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                      sender&#x27;s octet <span class="built_in">count</span>                     |</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">report |                 SSRC_1 (SSRC <span class="keyword">of</span> <span class="keyword">first</span> source)                 |</span><br><span class="line">block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  <span class="number">1</span>    | fraction lost |       cumulative <span class="built_in">number</span> <span class="keyword">of</span> packets lost       |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |           extended highest sequence <span class="built_in">number</span> received           |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                      interarrival jitter                      |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                         <span class="keyword">last</span> SR (LSR)                         |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">       |                   <span class="built_in">delay</span> <span class="keyword">since</span> <span class="keyword">last</span> SR (DLSR)                  |</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">report |                 SSRC_2 (SSRC <span class="keyword">of</span> <span class="keyword">second</span> source)                |</span><br><span class="line">block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  <span class="number">2</span>    :                               ...                             :</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">       |                  profile-specific extensions                  |</span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">   The sender report packet consists <span class="keyword">of</span> three sections, possibly</span><br><span class="line">   followed <span class="keyword">by</span> a <span class="keyword">fourth</span> profile-specific extension section <span class="keyword">if</span> defined.</span><br><span class="line">   The <span class="keyword">first</span> section, <span class="keyword">the</span> header, <span class="keyword">is</span> <span class="number">8</span> octets long.  The fields have <span class="keyword">the</span></span><br><span class="line">   following meaning:</span><br><span class="line"></span><br><span class="line">   <span class="built_in">version</span> (V): <span class="number">2</span> bits</span><br><span class="line">      Identifies <span class="keyword">the</span> <span class="built_in">version</span> <span class="keyword">of</span> RTP, which <span class="keyword">is</span> <span class="keyword">the</span> same <span class="keyword">in</span> RTCP packets</span><br><span class="line">      <span class="keyword">as</span> <span class="keyword">in</span> RTP data packets.  The <span class="built_in">version</span> defined <span class="keyword">by</span> this specification</span><br><span class="line">      <span class="keyword">is</span> two (<span class="number">2</span>).</span><br><span class="line">   padding (P): <span class="number">1</span> bit</span><br><span class="line">      If <span class="keyword">the</span> padding bit <span class="keyword">is</span> <span class="keyword">set</span>, this individual RTCP packet <span class="keyword">contains</span></span><br><span class="line">      <span class="keyword">some</span> additional padding octets <span class="keyword">at</span> <span class="keyword">the</span> <span class="keyword">end</span> which are <span class="keyword">not</span> part <span class="keyword">of</span></span><br><span class="line">      <span class="keyword">the</span> control information <span class="keyword">but</span> are included <span class="keyword">in</span> <span class="keyword">the</span> <span class="built_in">length</span> field.  The</span><br><span class="line">      <span class="keyword">last</span> octet <span class="keyword">of</span> <span class="keyword">the</span> padding <span class="keyword">is</span> a <span class="built_in">count</span> <span class="keyword">of</span> how many padding octets</span><br><span class="line">      should be ignored, including itself (<span class="keyword">it</span> will be a multiple <span class="keyword">of</span></span><br><span class="line">      four).  Padding may be needed <span class="keyword">by</span> <span class="keyword">some</span> encryption algorithms <span class="keyword">with</span></span><br><span class="line">      fixed block sizes.  In a compound RTCP packet, padding <span class="keyword">is</span> only</span><br><span class="line">      required <span class="keyword">on</span> one individual packet because <span class="keyword">the</span> compound packet <span class="keyword">is</span></span><br><span class="line">      encrypted <span class="keyword">as</span> a whole <span class="keyword">for</span> <span class="keyword">the</span> method <span class="keyword">in</span> Section <span class="number">9.1</span>.  Thus, padding</span><br><span class="line">      MUST only be added <span class="keyword">to</span> <span class="keyword">the</span> <span class="keyword">last</span> individual packet, <span class="keyword">and</span> <span class="keyword">if</span> padding</span><br><span class="line">      <span class="keyword">is</span> added <span class="keyword">to</span> <span class="keyword">that</span> packet, <span class="keyword">the</span> padding bit MUST be <span class="keyword">set</span> only <span class="keyword">on</span> <span class="keyword">that</span></span><br><span class="line">      packet.  This convention aids <span class="keyword">the</span> header validity checks described</span><br><span class="line">      <span class="keyword">in</span> Appendix A<span class="number">.2</span> <span class="keyword">and</span> allows detection <span class="keyword">of</span> packets <span class="keyword">from</span> <span class="keyword">some</span> early</span><br><span class="line">      implementations <span class="keyword">that</span> incorrectly <span class="keyword">set</span> <span class="keyword">the</span> padding bit <span class="keyword">on</span> <span class="keyword">the</span> <span class="keyword">first</span></span><br><span class="line">      individual packet <span class="keyword">and</span> add padding <span class="keyword">to</span> <span class="keyword">the</span> <span class="keyword">last</span> individual packet.</span><br><span class="line"></span><br><span class="line">   reception report <span class="built_in">count</span> (RC): <span class="number">5</span> bits</span><br><span class="line">      The <span class="built_in">number</span> <span class="keyword">of</span> reception report blocks contained <span class="keyword">in</span> this packet.  A</span><br><span class="line">      value <span class="keyword">of</span> zero <span class="keyword">is</span> valid.</span><br><span class="line"></span><br><span class="line">   packet type (PT): <span class="number">8</span> bits</span><br><span class="line">      Contains <span class="keyword">the</span> <span class="built_in">constant</span> <span class="number">200</span> <span class="keyword">to</span> identify this <span class="keyword">as</span> an RTCP SR packet.</span><br><span class="line"></span><br><span class="line">   <span class="built_in">length</span>: <span class="number">16</span> bits</span><br><span class="line">      The <span class="built_in">length</span> <span class="keyword">of</span> this RTCP packet <span class="keyword">in</span> <span class="number">32</span>-bit <span class="built_in">words</span> minus one,</span><br><span class="line">      including <span class="keyword">the</span> header <span class="keyword">and</span> any padding.  (The <span class="built_in">offset</span> <span class="keyword">of</span> one makes</span><br><span class="line">      zero a valid <span class="built_in">length</span> <span class="keyword">and</span> avoids a possible infinite loop <span class="keyword">in</span></span><br><span class="line">      scanning a compound RTCP packet, <span class="keyword">while</span> counting <span class="number">32</span>-bit <span class="built_in">words</span></span><br><span class="line">      avoids a validity check <span class="keyword">for</span> a multiple <span class="keyword">of</span> <span class="number">4.</span>)</span><br><span class="line"></span><br><span class="line">   SSRC: <span class="number">32</span> bits</span><br><span class="line">      The synchronization source identifier <span class="keyword">for</span> <span class="keyword">the</span> originator <span class="keyword">of</span> this</span><br><span class="line">      SR packet.</span><br><span class="line"></span><br><span class="line">   The <span class="keyword">second</span> section, <span class="keyword">the</span> sender information, <span class="keyword">is</span> <span class="number">20</span> octets long <span class="keyword">and</span> <span class="keyword">is</span></span><br><span class="line">   present <span class="keyword">in</span> <span class="keyword">every</span> sender report packet.  It summarizes <span class="keyword">the</span> data</span><br><span class="line">   transmissions <span class="keyword">from</span> this sender.  The fields have <span class="keyword">the</span> following</span><br><span class="line">   meaning:</span><br><span class="line"></span><br><span class="line">   NTP timestamp: <span class="number">64</span> bits</span><br><span class="line">      Indicates <span class="keyword">the</span> wallclock <span class="built_in">time</span> (see Section <span class="number">4</span>) when this report was</span><br><span class="line">      sent so <span class="keyword">that</span> <span class="keyword">it</span> may be used <span class="keyword">in</span> combination <span class="keyword">with</span> timestamps</span><br><span class="line">      returned <span class="keyword">in</span> reception reports <span class="keyword">from</span> other receivers <span class="keyword">to</span> measure</span><br><span class="line">      <span class="built_in">round</span>-trip propagation <span class="keyword">to</span> those receivers.  Receivers should</span><br><span class="line">      expect <span class="keyword">that</span> <span class="keyword">the</span> measurement accuracy <span class="keyword">of</span> <span class="keyword">the</span> timestamp may be</span><br><span class="line">      limited <span class="keyword">to</span> far <span class="keyword">less than</span> <span class="keyword">the</span> resolution <span class="keyword">of</span> <span class="keyword">the</span> NTP timestamp.  The</span><br><span class="line">      measurement uncertainty <span class="keyword">of</span> <span class="keyword">the</span> timestamp <span class="keyword">is</span> <span class="keyword">not</span> indicated <span class="keyword">as</span> <span class="keyword">it</span></span><br><span class="line">    may <span class="keyword">not</span> be known.  On a system <span class="keyword">that</span> has no notion <span class="keyword">of</span> wallclock</span><br><span class="line">      <span class="built_in">time</span> <span class="keyword">but</span> <span class="keyword">does</span> have <span class="keyword">some</span> system-specific clock such <span class="keyword">as</span> <span class="string">&quot;system</span></span><br><span class="line"><span class="string">      uptime&quot;</span>, a sender MAY use <span class="keyword">that</span> clock <span class="keyword">as</span> <span class="keyword">a reference</span> <span class="keyword">to</span> calculate</span><br><span class="line">      relative NTP timestamps.  It <span class="keyword">is</span> important <span class="keyword">to</span> choose a commonly</span><br><span class="line">      used clock so <span class="keyword">that</span> <span class="keyword">if</span> separate implementations are used <span class="keyword">to</span> produce</span><br><span class="line">      <span class="keyword">the</span> individual streams <span class="keyword">of</span> a multimedia session, all</span><br><span class="line">      implementations will use <span class="keyword">the</span> same clock.  Until <span class="keyword">the</span> <span class="built_in">year</span> <span class="number">2036</span>,</span><br><span class="line">      relative <span class="keyword">and</span> absolute timestamps will differ <span class="keyword">in</span> <span class="keyword">the</span> high bit so</span><br><span class="line">      (invalid) comparisons will show a large difference; <span class="keyword">by</span> <span class="keyword">then</span> one</span><br><span class="line">      hopes relative timestamps will no longer be needed.  A sender <span class="keyword">that</span></span><br><span class="line">      has no notion <span class="keyword">of</span> wallclock <span class="keyword">or</span> elapsed <span class="built_in">time</span> MAY <span class="keyword">set</span> <span class="keyword">the</span> NTP</span><br><span class="line">      timestamp <span class="keyword">to</span> zero.</span><br><span class="line"></span><br><span class="line">   RTP timestamp: <span class="number">32</span> bits</span><br><span class="line">      Corresponds <span class="keyword">to</span> <span class="keyword">the</span> same <span class="built_in">time</span> <span class="keyword">as</span> <span class="keyword">the</span> NTP timestamp (<span class="keyword">above</span>), <span class="keyword">but</span> <span class="keyword">in</span></span><br><span class="line">      <span class="keyword">the</span> same units <span class="keyword">and</span> <span class="keyword">with</span> <span class="keyword">the</span> same random <span class="built_in">offset</span> <span class="keyword">as</span> <span class="keyword">the</span> RTP</span><br><span class="line">      timestamps <span class="keyword">in</span> data packets.  This correspondence may be used <span class="keyword">for</span></span><br><span class="line">      intra- <span class="keyword">and</span> inter-media synchronization <span class="keyword">for</span> sources <span class="keyword">whose</span> NTP</span><br><span class="line">      timestamps are synchronized, <span class="keyword">and</span> may be used <span class="keyword">by</span> media-independent</span><br><span class="line">      receivers <span class="keyword">to</span> estimate <span class="keyword">the</span> nominal RTP clock frequency.  Note <span class="keyword">that</span></span><br><span class="line">      <span class="keyword">in</span> most cases this timestamp will <span class="keyword">not</span> be <span class="keyword">equal</span> <span class="keyword">to</span> <span class="keyword">the</span> RTP</span><br><span class="line">      timestamp <span class="keyword">in</span> any adjacent data packet.  Rather, <span class="keyword">it</span> MUST be</span><br><span class="line">      calculated <span class="keyword">from</span> <span class="keyword">the</span> corresponding NTP timestamp using <span class="keyword">the</span></span><br><span class="line">      relationship <span class="keyword">between</span> <span class="keyword">the</span> RTP timestamp counter <span class="keyword">and</span> <span class="built_in">real</span> <span class="built_in">time</span> <span class="keyword">as</span></span><br><span class="line">      maintained <span class="keyword">by</span> periodically checking <span class="keyword">the</span> wallclock <span class="built_in">time</span> <span class="keyword">at</span> a</span><br><span class="line">      sampling instant.</span><br><span class="line"></span><br><span class="line">   sender&#x27;s packet <span class="built_in">count</span>: <span class="number">32</span> bits</span><br><span class="line">      The total <span class="built_in">number</span> <span class="keyword">of</span> RTP data packets transmitted <span class="keyword">by</span> <span class="keyword">the</span> sender</span><br><span class="line">      <span class="keyword">since</span> starting transmission up <span class="keyword">until</span> <span class="keyword">the</span> <span class="built_in">time</span> this SR packet was</span><br><span class="line">      generated.  The <span class="built_in">count</span> SHOULD be reset <span class="keyword">if</span> <span class="keyword">the</span> sender changes <span class="keyword">its</span></span><br><span class="line">      SSRC identifier.</span><br><span class="line"></span><br><span class="line">   sender&#x27;s octet <span class="built_in">count</span>: <span class="number">32</span> bits</span><br><span class="line">      The total <span class="built_in">number</span> <span class="keyword">of</span> payload octets (i.e., <span class="keyword">not</span> including header <span class="keyword">or</span></span><br><span class="line">      padding) transmitted <span class="keyword">in</span> RTP data packets <span class="keyword">by</span> <span class="keyword">the</span> sender <span class="keyword">since</span></span><br><span class="line">      starting transmission up <span class="keyword">until</span> <span class="keyword">the</span> <span class="built_in">time</span> this SR packet was</span><br><span class="line">      generated.  The <span class="built_in">count</span> SHOULD be reset <span class="keyword">if</span> <span class="keyword">the</span> sender changes <span class="keyword">its</span></span><br><span class="line">      SSRC identifier.  This field can be used <span class="keyword">to</span> estimate <span class="keyword">the</span> average</span><br><span class="line">      payload data rate.</span><br><span class="line">      ....</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>201:   RR 接收方报告<br><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc3550#section-6.4.2">https://tools.ietf.org/html/rfc3550#section-6.4.2</a></p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">        <span class="number">0</span>                   <span class="number">1</span>                   <span class="number">2</span>                   <span class="number">3</span></span><br><span class="line">        <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span> <span class="number">0</span> <span class="number">1</span></span><br><span class="line">       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">header |<span class="type">V</span>=<span class="number">2</span>|<span class="type">P</span>|    <span class="type">RC</span>   |   <span class="type">PT</span>=RR=<span class="number">201</span>   |             <span class="type">length</span>            |</span><br><span class="line">       <span class="type">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="type">       |                     SSRC</span> of packet sender                     |</span><br><span class="line">       <span class="type">+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span></span><br><span class="line"><span class="type">report</span> |                 <span class="type">SSRC_1</span> (SSRC of <span class="built_in">first</span> source)                 |</span><br><span class="line"><span class="type">block</span>  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  <span class="number">1</span>    | <span class="type">fraction</span> lost |       <span class="type">cumulative</span> number of packets lost       |</span><br><span class="line">       <span class="type">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="type">       |           extended</span> highest sequence number received           |</span><br><span class="line">       <span class="type">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="type">       |                      interarrival</span> jitter                      |</span><br><span class="line">       <span class="type">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="type">       |                         last</span> SR (LSR)                         |</span><br><span class="line">       <span class="type">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="type">       |                   delay</span> since last SR (DLSR)                  |</span><br><span class="line">       <span class="type">+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span></span><br><span class="line"><span class="type">report</span> |                 <span class="type">SSRC_2</span> (SSRC of second source)                |</span><br><span class="line"><span class="type">block</span>  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">  <span class="number">2</span>    :                               ...                             :</span><br><span class="line">       +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+</span><br><span class="line">       |                  <span class="type">profile</span>-specific extensions                  |</span><br><span class="line">       <span class="type">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="type"></span></span><br><span class="line"><span class="type">   The</span> format of the receiver report (RR) packet is the same <span class="built_in">as</span> that of</span><br><span class="line">   the SR packet except that the packet type <span class="built_in">field</span> contains the constant</span><br><span class="line">   <span class="number">201</span> and the five words of sender information are omitted (these are</span><br><span class="line">   the NTP and RTP timestamps and sender&#x27;s packet and octet counts).</span><br><span class="line">   The remaining fields have the same meaning <span class="built_in">as</span> <span class="keyword">for</span> the SR packet.</span><br><span class="line"></span><br><span class="line">   An empty RR packet (RC = <span class="number">0</span>) MUST be put <span class="built_in">at</span> the head of a compound</span><br><span class="line">   RTCP packet when there is no data transmission or reception to</span><br><span class="line">   report.</span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p>205，206: 表示rtcp feedback message，是一个大类：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"> This is the RTCP packet <span class="keyword">type</span> that identifies the packet <span class="keyword">as</span> being</span><br><span class="line">      <span class="keyword">an</span> RTCP FB message.  <span class="keyword">Two</span> values are defined <span class="keyword">by</span> the IANA:</span><br><span class="line"></span><br><span class="line">            Name   | Value | Brief Description</span><br><span class="line">         ----------+-------+------------------------------------</span><br><span class="line">            RTPFB  |  205  | Transport layer FB message</span><br><span class="line">            PSFB   |  206  | Payload-specific FB message</span><br><span class="line"></span><br><span class="line">基本格式：</span><br><span class="line">    FCI系列：</span><br><span class="line">            0                   1                   2                   3</span><br><span class="line">    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |V=2|P|   FMT   |       PT      |          length               |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |                  SSRC of packet sender                        |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |                  SSRC of media source                         |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   :            Feedback Control Information (FCI)                 :</span><br><span class="line">   :                                                               :</span><br><span class="line">   Feedback message <span class="keyword">type</span> (FMT): 5 bits</span><br><span class="line">      This field identifies the <span class="keyword">type</span> of the FB message and is</span><br><span class="line">      interpreted relative to the <span class="keyword">type</span> (transport layer, payload-</span><br><span class="line">      specific, or application layer feedback).  The values <span class="keyword">for</span> each of</span><br><span class="line">      the three feedback types are defined <span class="keyword">in</span> the respective sections</span><br><span class="line">      below.</span><br><span class="line">      </span><br><span class="line">  对RTPFB:</span><br><span class="line">  FMT对应值如下：</span><br><span class="line">         NACK = 1,</span><br><span class="line">https:<span class="comment">//tools.ietf.org/html/rfc4585#section-6.1 </span></span><br><span class="line">nack  Feedback Control Information (FCI)  </span><br><span class="line">The Generic NACK message is identified <span class="keyword">by</span> PT=RTPFB and FMT=1.</span><br><span class="line">         TMMBR = 3,</span><br><span class="line">         TMMBN = 4,</span><br><span class="line">         SR_REQ = 5,</span><br><span class="line">         RAMS = 6,</span><br><span class="line">         TLLEI = 7,</span><br><span class="line">         ECN = 8,</span><br><span class="line">         PS = 9,</span><br><span class="line">         TCC = 15,</span><br><span class="line"> https:<span class="comment">//tools.ietf.org/html/draft-holmer-rmcat-transport-wide-cc-extensions-01#section-3.1  TCC </span></span><br><span class="line"> &quot;sender: add <span class="keyword">global</span> seqnum to all RTP packet sent; and remember their send time</span><br><span class="line">reeiver: <span class="keyword">Report</span> back receiving deltas of RTP packets based <span class="keyword">on</span> <span class="keyword">global</span> seqnum; then sender decides <span class="keyword">if</span>/when to increase/decrease bitrate</span><br><span class="line">&quot;</span><br><span class="line">         EXT = 31</span><br><span class="line">         </span><br><span class="line">  对PSFB:</span><br><span class="line">https:<span class="comment">//tools.ietf.org/html/rfc4585#section-6.1 psfb</span></span><br><span class="line">  FMT对应的值目前有：</span><br><span class="line">       0:    unassigned</span><br><span class="line">       1:     Picture Loss Indication (PLI)</span><br><span class="line">      2:     Slice Loss Indication (SLI)</span><br><span class="line">      3:     Reference Picture Selection Indication (RPSI)</span><br><span class="line">      4-14:  unassigned</span><br><span class="line">      15:    Application layer FB (AFB) message 目前是REMB</span><br><span class="line">      16-30: unassigned</span><br><span class="line">      31:    reserved <span class="keyword">for</span> future expansion of the sequence number space</span><br><span class="line">       15： REMB</span><br><span class="line">https:<span class="comment">//datatracker.ietf.org/doc/html/draft-alvestrand-rmcat-remb-03 remb</span></span><br><span class="line">&quot;</span><br><span class="line"> sender-&gt;add send time to all video packets .</span><br><span class="line">receiver: decide <span class="keyword">if</span>/when to increase/decrease bitrate and send new bitrate estimate <span class="keyword">if</span> needed; </span><br><span class="line">即接收方测量出来的比特率带宽发送给发送方。</span><br><span class="line">&quot;               </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">nack:</span><br><span class="line">    FMT是1，WebRTC对应的代码是nack.<span class="keyword">cc</span>。 NACK的FCI个数如下，其中PID（Packet ID）是第一个丢失的序号，</span><br><span class="line">    BLP（bitmask of following lost packets）是继第一个</span><br><span class="line">      序号之后的16个包的丢失情况，当丢失之后，此二进制位就会被<span class="keyword">mark</span>为1。例如PID等于666，如果668和692也丢失了，</span><br><span class="line">      那么BLP等于100010。当后续丢失的包序号大于</span><br><span class="line">      第一个丢失的包序号16以上就需要重新使用一个新的FCI反馈包表示。NACK包可以存在多个FCI。 </span><br><span class="line"></span><br><span class="line">     0                   1                   2                   3</span><br><span class="line">    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">   |            PID                |             BLP               |</span><br><span class="line">   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line"></span><br><span class="line">               Figure 4: <span class="keyword">Syntax</span> <span class="keyword">for</span> the Generic NACK message</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>207: XR<br><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc3611#section-2">https://tools.ietf.org/html/rfc3611#section-2</a></p>
+</li>
+<li><p>202: source decription message<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc3550#section-6.5">https://datatracker.ietf.org/doc/html/rfc3550#section-6.5</a></p>
+</li>
+<li><p>203: Bye Message<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc3550#section-6.6">https://datatracker.ietf.org/doc/html/rfc3550#section-6.6</a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rtp/" rel="tag"># rtp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/03/tcpip-congestion/" rel="prev" title="tcpip_congestion">
+      <i class="fa fa-chevron-left"></i> tcpip_congestion
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/10/simple-googleCongestionControl/" rel="next" title="simple_googleCongestionControl">
+      simple_googleCongestionControl <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#rtp%E7%9A%84%E6%8A%A5%E6%96%87%E5%9F%BA%E6%9C%AC%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">rtp的报文基本格式  </span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rtp%E7%9A%84%E6%8A%A5%E6%96%87%E7%B1%BB%E5%9E%8B%E5%92%8C%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">rtp的报文类型和格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rtcp%E7%9A%84%E6%8A%A5%E6%96%87%E5%9F%BA%E6%9C%AC%E6%A0%BC%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">rtcp的报文基本格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rtcp%E7%9A%84%E6%8A%A5%E6%96%87%E7%B1%BB%E5%9E%8B%E5%92%8C%E6%A0%BC%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">rtcp的报文类型和格式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#pt%E5%80%BC%E5%92%8C%E7%B1%BB%E5%9E%8B%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">pt值和类型：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : '2ec378579f5a2a240aeaf629edca4ccf',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
