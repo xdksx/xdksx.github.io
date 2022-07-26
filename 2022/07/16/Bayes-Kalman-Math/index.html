@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概率论和随机过程前提知识随机事件和相关概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bayes_Kalman_Math">
+<meta property="og:url" content="https://xdksx.github.io/2022/07/16/Bayes-Kalman-Math/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="概率论和随机过程前提知识随机事件和相关概念">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdksx.github.io/2022/07/16/Bayes-Kalman-Math/bayse.png">
+<meta property="og:image" content="https://xdksx.github.io/2022/07/16/Bayes-Kalman-Math/cont_bayse.jpg">
+<meta property="og:image" content="https://xdksx.github.io/2022/07/16/Bayes-Kalman-Math/kalman1.jpg">
+<meta property="og:image" content="https://xdksx.github.io/2022/07/16/Bayes-Kalman-Math/kalman2.jpg">
+<meta property="article:published_time" content="2022-07-16T06:19:57.000Z">
+<meta property="article:modified_time" content="2022-07-16T09:38:15.278Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="kalman">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdksx.github.io/2022/07/16/Bayes-Kalman-Math/bayse.png">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/07/16/Bayes-Kalman-Math/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>Bayes_Kalman_Math | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/07/16/Bayes-Kalman-Math/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Bayes_Kalman_Math
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-16 14:19:57 / 修改时间：17:38:15" itemprop="dateCreated datePublished" datetime="2022-07-16T14:19:57+08:00">2022-07-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="概率论和随机过程前提知识"><a href="#概率论和随机过程前提知识" class="headerlink" title="概率论和随机过程前提知识"></a>概率论和随机过程前提知识</h4><h5 id="随机事件和相关概念"><a href="#随机事件和相关概念" class="headerlink" title="随机事件和相关概念 "></a>随机事件和相关概念 <span id="more"></span></h5><ul>
+<li>什么是随机事件</li>
+</ul>
+<ol>
+<li><p>随机现象：在一定条件下，并不总是出现相同结果的现象，比如抛硬币 </p>
+</li>
+<li><p>随机实验：可重复的随机现象，什么是可重复呢?<br>就是可以重来，外部条件环境，时间等不会影响结果，例如，抛硬币不受时间和环境影响，但股票的价格是受到环境和时间的影响(比如政策，上一次的股票价格)<br>需要满足三个条件才能做随机实验：<br>(1) 同条件下可以重复进行，随机实验之间相互独立。<br>(2) 满足随机现象，即一次实验，结果不确定，但是所有可能结果已知。<br>(3) 实验之前未知结果。 </p>
+</li>
+<li><p>基本结果：随机现象的结果值，比如抛硬币的结果是正面&#x2F;反面 </p>
+</li>
+<li><p>基本空间：所有基本结果的全体，比如抛硬币：{正面，反面} </p>
+</li>
+<li><p>随机事件：随机现象的某些基本结果组成的集合称为随机事件，简称事件，用大写字母A,B等表示，如投掷骰子出现奇数点是一个事件，它由<br>1,3,5点三个基本结果组成，若记这个事件为A,则A&#x3D;{1,3,5}, 通常记 A事件的取值为a，则a可能值为1,3,5. </p>
+</li>
+<li><p>事件的概率：因为随机事件是随机发生的，因此需要用概率来确定发生的可能性。对必然事件来说，则概率为1，对不可能事件来说，概率为0<br>而且事件和事件之间也可能有关系，如A事件发生时，B事件发生与否可能和A有关，也可能无关，可能是概率的，也可能是必然的，如A发生的概率为0.6，<br>若A发生，B也必然发生。<br>常用P(A&#x3D;3)表示A事件取值为3，即投掷骰子是奇数3的概率。</p>
+</li>
+<li><p>事件的概率特性：排列和组合，古典概型，主观概率，概率的性质：P(A)+p(~A)&#x3D;1等 </p>
+</li>
+<li><p>独立性：两个事件是否相互独立，是指两个事件是否相互影响对方发生的概率，若相互独立则满足<br>P(AB) &#x3D; P(A)P(B)<br>这里要注意，独立不一定没有函数关系，这里的函数关系表示事件A,B虽然相互独立不影响，但是满足一定的函数关系。</p>
+</li>
+<li><p>条件概率：重要！！！<br>条件概率是什么？ 条件概率涉及两个事件，A,B，在事件B已发生的条件下，事件A再发生的概率称为条件概率，记为P(A|B).<br>条件概率反映了两个事件之间的关系。例如，某市有30%的学生视力有缺陷A，7%的学生听力有缺陷B，3%的学生听力视力都有缺陷C。由此经过<br>计算A,B事件不是相互独立的，在A已发生的情况下，B发生的概率更高。<br>条件概率的计算：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">       P<span class="comment">(A|B)</span> = P<span class="comment">(AB)</span>/P<span class="comment">(B)</span> ,即在B发生的概率下，AB同时发生的概率即为B发生的条件下A发生的概率。</span><br><span class="line">       =&gt; P<span class="comment">(AB)</span>= P<span class="comment">(A|B)</span>P<span class="comment">(B)</span> = P<span class="comment">(B|A)</span>P<span class="comment">(A)</span></span><br><span class="line">对比下，若A,B事件相互独立：则P<span class="comment">(A|B)</span> = P<span class="comment">(AB)</span>/P<span class="comment">(B)</span> = P<span class="comment">(A)</span> 即不管B发生与否，A的概率都一样。</span><br><span class="line">全概率公式：P<span class="comment">(A)</span> 可能在B发生的条件下或B没发生的条件下发生：</span><br><span class="line">      P<span class="comment">(A)</span> = P<span class="comment">(A|B)</span>*P<span class="comment">(B)</span> + P<span class="comment">(A|~B)</span>P<span class="comment">(~B)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>贝叶斯公式：<br>先看看贝叶斯公式：</p>
+<img src="/2022/07/16/Bayes-Kalman-Math/bayse.png" class="" title="This is an example image"></li>
+</ol>
+<p>贝叶斯公式本质上是在求一个条件概率，是A发生的条件下，B发生的概率，本质的公式也是P(A|B) &#x3D; P(AB)&#x2F;P(B) 即条件概率的公式。<br>贝叶斯公式涉及三组概率：{P(Bi)},{P(A|Bi)},{P(Bi|A)}。<br>那贝叶斯公式为何很重要，是因为在一定条件下，可以用求得的条件概率，来替换原先概率，如用{P(Bi|A)}替换{P(Bi)}<br>什么情况下可以替换呢？为什么能替换呢？<br>(1) 当{P(Bi)} 不可信时，而且得出的{P(Bi|A)} 更可信时，凭什么更可信，即{P(A|Bi)} 比较大，粗略来讲。<br>(2) 为什么可以替换？由P(A) &#x3D; P(A|B)*P(B) + P(A|<del>B)P(</del>B) 可以知道 P(A)是可以通过条件概率得到的。 </p>
+<p>应用：应用范围很广，可以用来修正和求得某个事件的概率，通过另一个关联事件。所以对于不能直接求的事件，可以用它关联的事件来求得。<br>本质上，贝叶斯滤波和卡尔曼滤波等都是这个原理。 </p>
+<h5 id="随机变量"><a href="#随机变量" class="headerlink" title="随机变量"></a>随机变量</h5><ul>
+<li><p>随机变量常常用来表示要关系的事物，而随机变量的取值则表示该事物发生的事件，根据其概率来了解该事件是否为随机事件。<br>如：设 抛硬币这个事物为X,则X的取值为正面，即X&#x3D;1，则表示抛硬币为正面这个事件，X&lt;&#x3D;1,则表示抛硬币的值为正面&#x2F;反面这个事件，显然是必然事件。</p>
+</li>
+<li><p>离散随机变量：<br>若X的取值为可数的，则为离散的</p>
+</li>
+<li><p>连续随机变量：<br>若X的取值为连续不可数，则为连续随机变量。</p>
+</li>
+</ul>
+<h5 id="概率分布："><a href="#概率分布：" class="headerlink" title="概率分布："></a>概率分布：</h5><ul>
+<li><p>离散：<br>即X取每个可能值的概率，列出来。例如：P(X&#x3D;1) &#x3D; 0.5 ,P(X&#x3D;0)&#x3D;0.5,所有加上去P&#x3D;1.<br>离散随机变量常见事件分布：<br>二项分布<br>泊松分布<br>超几何分布</p>
+</li>
+<li><p>连续：<br>连续变量的概率分布，因为连续变量是取连续值的，讨论某个值的概率没有意义，-&gt;0,所以一般是求某个范围的取值的概率。<br>将每个取值的概率相加(积分),则等于1，那么如对 p(x)在负无穷到正无穷求积分&#x3D;&#x3D;1，则p(x) 称为概率密度函数。<br>求某个范围的取值的密度，比如X&lt;3的取值的概率，则是对p(x)在负无穷到3求积分。<br>称p(x)为连续随机变量X的概率分布，或密度函数，即为X~p(x),即X服从密度p(x)<br>pdf: 即概率密度函数：PDF:概率密度函数(probability density function)<br>常见连续随机变量的概率分布：<br>正态分布<br>伽玛分布<br>贝塔分布</p>
+</li>
+</ul>
+<h5 id="期望，方差等"><a href="#期望，方差等" class="headerlink" title="期望，方差等"></a>期望，方差等</h5><ul>
+<li>期望：反映平均值</li>
+<li>方差：反映抖动，稳定情况</li>
+</ul>
+<h5 id="随机过程"><a href="#随机过程" class="headerlink" title="随机过程:"></a>随机过程:</h5><p>对随机变量X, 的每个状态取值 x0,x1,x2…对抛硬币来说，x0和x1.。xn是相互独立的，互不影响，且可重复<br>而对股票价格事件来说，x0—xn，不是相互独立的，P(x0)和当时的环境有关，不是随机实验。甚至每个x的概率计算方式都不一样。<br>称x0-xn 是X的一个随机过程。</p>
+<h4 id="单个随机变量的贝叶斯滤波"><a href="#单个随机变量的贝叶斯滤波" class="headerlink" title="单个随机变量的贝叶斯滤波"></a>单个随机变量的贝叶斯滤波</h4><h5 id="前提："><a href="#前提：" class="headerlink" title="前提："></a>前提：</h5><p>要知道贝叶斯滤波是在干嘛？ 是在求一个概率，或者说修正一个概率。如何修正？<br>引入：当我们在求一个事件的概率时，会以我们对这个事件的认识程度，给一个概率值，如，某设备优化后，产品生产为高质量的概率为80%，<br>这个80%可能是我们瞎猜的，或者是我们很粗糙的估计。是一种携带主观的概率。 对抛硬币，1&#x2F;2的概率猜测，一些人是靠主观，一些是靠大量统计<br>，即大数定律。<br>在初始的这个概率，是一个先验概率，主观概率，即在实验之前的), 而贝叶斯的工作，就是通过外部观测，引入证据，信息，来得到一个概率(似然概率，<br>即上面的{P(A|Bi)}，从而求得一个新的概率(在观测发生的情况下)的概率，并用它替换先验概率，这个新概率称为后验概率。</p>
+<p>从而达到修正主观概率的目的。这样事件的概率就会变得更准确，当然取决于这个似然概率的准确性。起到一个滤波的作用。</p>
+<p>(PS:几个问题： 对事件是否是满足可随机实验的判断，即是否相互独立的判断，也是主观的，因为判断独立性需要概率，但是概率又需要可随机实验<br>即独立性的判断—鸡生蛋蛋生鸡）</p>
+<h5 id="离散"><a href="#离散" class="headerlink" title="离散"></a>离散</h5><p>举例，一个离散随机变量的贝叶斯滤波：<br>设置事件为今天的温度是多少。T<br>先验概率： P(T&#x3D;10)&#x3D;0.8,P(T&#x3D;11)&#x3D;0.2<br>温度计测量的温度 Tm,测出来的温度为10.3<br>则 1)P(T&#x3D;10|Tm&#x3D;10.3) &#x3D; P(Tm&#x3D;10.3|T&#x3D;10)P(T&#x3D;10) &#x2F; P(Tm&#x3D;10.3)<br>   2)P(T&#x3D;11|Tm&#x3D;10.3) &#x3D; P(Tm&#x3D;10.3|T&#x3D;11)P(T&#x3D;11) &#x2F; P(Tm&#x3D;10.3)<br>(先验概率和后验概率都满足概率分布，所有概率相加为1)<br>则：<br>P(T&#x3D;10|Tm&#x3D;10.3),P(T&#x3D;11|Tm&#x3D;10.3) : 后验概率<br>P(Tm&#x3D;10.3|T&#x3D;10),P(Tm&#x3D;10.3|T&#x3D;11): 似然概率<br>P(T&#x3D;10),P(T&#x3D;11) ：先验概率(主观概率)<br>P(Tm&#x3D;10.3): 为一个常数：</p>
+<p>由全概率公式：P(A) &#x3D; P(A|B)*P(B) + P(A|<del>B)P(</del>B)<br>可以求得 P(Tm&#x3D;10.3) &#x3D; P(Tm&#x3D;10.3|T&#x3D;10)*P(T&#x3D;10) + P(Tm&#x3D;10.3|T&#x3D;11)*P(T&#x3D;11) 显然是一个常数。</p>
+<h5 id="连续"><a href="#连续" class="headerlink" title="连续"></a>连续</h5><p>连续随机变量的贝叶斯公式：<br>P(X&lt;x|Y&#x3D;y) &#x3D; P(Y&#x3D;y|X&lt;x)P(X&#x3D;x)&#x2F;P(Y&#x3D;y)<br>这里参考b站的视频，通过积分中值定理和极限定理，将其推导出来：<br>具体公式，略</p>
+<ul>
+<li>概率密度函数这里无法确定，只能靠猜测，或者选择，验证,有：</li>
+</ul>
+<ol>
+<li>等可能模型</li>
+<li>阶梯型</li>
+<li>推广，直方图型</li>
+<li>正态分布。。。<br>我们选择其中一个代入计算，如正态分布，则可以求得更具体的，先验概率分布，似然概率和后验概率分布。<br>若选择了正态分布，则:</li>
+</ol>
+<img src="/2022/07/16/Bayes-Kalman-Math/cont_bayse.jpg" class="" title="This is an example image">
+
+
+<h4 id="随机过程和贝叶斯滤波"><a href="#随机过程和贝叶斯滤波" class="headerlink" title="随机过程和贝叶斯滤波"></a>随机过程和贝叶斯滤波</h4><p>随机过程和单个随机变量求法不太一样，随机过程是由多个随机变量组成。<br>所以理论上可能有多种解法：</p>
+<ul>
+<li>1 对随机过程的每个随机变量单独处理，对每个随机变量都按照上面的随机变量的处理方式处理一次，<br>那这样会引入n个主观概率，完全依赖观测，放弃了n个随机变量之间可能的关系。</li>
+<li>2 只引入初始的主观概率，利用n个随机变量之间的关系，推导x2-xn,保留和利用了x1-xn之间的关系。<br>例如，可能xk&#x3D;2xk-1+Qk</li>
+</ul>
+<p>故，这里已知： x1,y1-yn ,y1-yn为观测值。这里：x，y 为随机变量X的取值，观测Y的取值</p>
+<p>例子：测温度：<br>建模：</p>
+<ol>
+<li>状态方程，即xk,xk+1的关系式，表示随机过程如何演化<br>Xk &#x3D; f(Xk-1)+Qk    这里Qk是预测噪声</li>
+<li>观测方程，即yk和xk的关系式；表示随机过程如何引起观测<br>Yk &#x3D; h(Xk) + Rk，这里Rk是观测噪声。 对直接可观测到的值，h(Xk)&#x3D;Xk,但往往X是速度，而Y是路程，有函数关系。</li>
+</ol>
+<p>目标：<br>1 通过建模的方程和贝叶斯滤波，递推，逐渐更新X的概率分布，这样从x1-&gt;xn的取值，或者说，X&#x3D;x的概率会越来越准确。<br>2 对求期望，方差，可以通过概率密度函数来求得，也会越来越准确。</p>
+<p>如何递推：<br>分两步：</p>
+<ol>
+<li>预测步：上一时刻的后验概率-通过状态方程–&gt;得出这一时刻的先验概率</li>
+<li>更新步：这一时刻的先验概率-通过观测方程–&gt;得出这一时刻的后验概率&#x2F;下一时刻的先验概率，<br>这里的先验，后验是相对来说的。<br>预测步，通过状态方程和全概率公式，变形推出。更新步通过极限，似然概率和贝叶斯公式推出。具体见文末链接b站大佬的视频。</li>
+</ol>
+<p>–&gt;由此得到了我们的目标，但是公式需要求无穷积分等，太难或者说无解，所以为了简化，采用简单的模型假设或其他方法：</p>
+<ol>
+<li>假设：<br>设状态方程和观测方程中,f(x),h(x)为线性函数，Qk,Rk，满足正态分布，则<br>得到的模型，称为卡尔曼滤波，即：<br>Xk&#x3D;FXk-1+Qk<br>Yk&#x3D;HXk+Rk,F，H为常数。</li>
+</ol>
+<p>若f(x),h(x)为非线性函数，则称为扩展的卡尔曼滤波。</p>
+<ol start="2">
+<li>直接对无穷积分做数值积分：<br> 高斯积分&#x2F; 蒙特卡罗积分&#x2F; 直方图滤波</li>
+</ol>
+<h4 id="卡尔曼滤波"><a href="#卡尔曼滤波" class="headerlink" title="卡尔曼滤波"></a>卡尔曼滤波</h4><img src="/2022/07/16/Bayes-Kalman-Math/kalman1.jpg" class="" title="This is an example image">
+
+
+<img src="/2022/07/16/Bayes-Kalman-Math/kalman2.jpg" class="" title="This is an example image">
+
+<p>五个公式：</p>
+<p>ref:<br>概率论和数理统计 书籍<br><a target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv5841653?spm_id_from=333.999.0.0">https://www.bilibili.com/read/cv5841653?spm_id_from=333.999.0.0</a> b站老王的相关视频</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/kalman/" rel="tag"># kalman</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/10/simple-googleCongestionControl/" rel="prev" title="simple_googleCongestionControl">
+      <i class="fa fa-chevron-left"></i> simple_googleCongestionControl
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/21/quicrfc/" rel="next" title="quicrfc">
+      quicrfc <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E8%AE%BA%E5%92%8C%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%89%8D%E6%8F%90%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">概率论和随机过程前提知识</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E4%BA%8B%E4%BB%B6%E5%92%8C%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">随机事件和相关概念 </span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F"><span class="nav-number">1.2.</span> <span class="nav-text">随机变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">概率分布：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%9F%E6%9C%9B%EF%BC%8C%E6%96%B9%E5%B7%AE%E7%AD%89"><span class="nav-number">1.4.</span> <span class="nav-text">期望，方差等</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B"><span class="nav-number">1.5.</span> <span class="nav-text">随机过程:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E4%B8%AA%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E7%9A%84%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%BB%A4%E6%B3%A2"><span class="nav-number">2.</span> <span class="nav-text">单个随机变量的贝叶斯滤波</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%89%8D%E6%8F%90%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">前提：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%A6%BB%E6%95%A3"><span class="nav-number">2.2.</span> <span class="nav-text">离散</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD"><span class="nav-number">2.3.</span> <span class="nav-text">连续</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%92%8C%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%BB%A4%E6%B3%A2"><span class="nav-number">3.</span> <span class="nav-text">随机过程和贝叶斯滤波</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2"><span class="nav-number">4.</span> <span class="nav-text">卡尔曼滤波</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'a823b4ace234572a5b35dc0ab5e54672',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

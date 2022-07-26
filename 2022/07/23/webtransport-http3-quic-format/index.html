@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdksx.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="webtransport和quic,http3的封装简单总结：webTransport:webtransport 是啥">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webtransport_http3_quic_format">
+<meta property="og:url" content="https://xdksx.github.io/2022/07/23/webtransport-http3-quic-format/index.html">
+<meta property="og:site_name" content="追光者">
+<meta property="og:description" content="webtransport和quic,http3的封装简单总结：webTransport:webtransport 是啥">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-23T02:30:21.000Z">
+<meta property="article:modified_time" content="2022-07-23T03:07:25.581Z">
+<meta property="article:author" content="小兴">
+<meta property="article:tag" content="format">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xdksx.github.io/2022/07/23/webtransport-http3-quic-format/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>webtransport_http3_quic_format | 追光者</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">追光者</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">小兴的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-观影">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-film"></i>观影</a>
+
+  </li>
+        <li class="menu-item menu-item-阅读">
+
+    <a href="/read/" rel="section"><i class="fa fa-fw fa-book"></i>阅读</a>
+
+  </li>
+        <li class="menu-item menu-item-心理">
+
+    <a href="/categories/%E5%BF%83%E7%90%86/" rel="section"><i class="fa fa-fw fa-heart"></i>心理</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdksx.github.io/2022/07/23/webtransport-http3-quic-format/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/headicon2.jpg">
+      <meta itemprop="name" content="小兴">
+      <meta itemprop="description" content="始于歧路，愿归于征途">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="追光者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webtransport_http3_quic_format
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-23 10:30:21 / 修改时间：11:07:25" itemprop="dateCreated datePublished" datetime="2022-07-23T10:30:21+08:00">2022-07-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/quic/" itemprop="url" rel="index"><span itemprop="name">quic</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="webtransport和quic-http3的封装简单总结："><a href="#webtransport和quic-http3的封装简单总结：" class="headerlink" title="webtransport和quic,http3的封装简单总结："></a>webtransport和quic,http3的封装简单总结：</h3><h4 id="webTransport"><a href="#webTransport" class="headerlink" title="webTransport:"></a>webTransport:</h4><h5 id="webtransport-是啥"><a href="#webtransport-是啥" class="headerlink" title="webtransport 是啥"></a>webtransport 是啥<span id="more"></span></h5><p> This specification uses [WEB-TRANSPORT-HTTP3] to send data to and receive data from servers. It can be used like WebSockets but with support for multiple streams, unidirectional streams, out-of-order delivery, and reliable as well as unreliable transport.<br>（注意：本规范中提出的 API 代表了一个基于 IETF WEBTRANS WG 正在进行的工作的初步提案。由于 [WEB-TRANSPORT-HTTP3] 规范正在进行中，因此协议和 API 都可能在未来发生重大变化。）<br>根据这个描述，是使用这个web-transport-http3去发送数据到服务器或从服务器接收数据。 可以像webSocket但比较高级点。<br>所以是web&lt;-&gt;server ,web端的话，基于chrome或浏览器就需要用js写，而且chrome自带了quic等。而server端就需要实现或使用webtransport框架？</p>
+<p>WebTransport 会话是基于 HTTP&#x2F;3 的 WebTransport 会话。启用池时，一个连接上可能有多个 WebTransport 会话。<br>A WebTransport session is a session of WebTransport over HTTP&#x2F;3. There may be multiple WebTransport sessions on one connection, when pooling is enabled.<br>webTransport session有以下的能力：WebTransport session has the following capabilities defined in [WEB-TRANSPORT-HTTP3].<br>capability    definition<br>send a datagram    [WEB-TRANSPORT-HTTP3] section 4.4<br>receive a datagram    [WEB-TRANSPORT-HTTP3] section 4.4<br>create an outgoing unidirectional stream    [WEB-TRANSPORT-HTTP3] section 4.1<br>create a bidirectional stream    [WEB-TRANSPORT-HTTP3] section 4.2<br>receive an incoming unidirectional stream    [WEB-TRANSPORT-HTTP3] section 4.1<br>receive a bidirectional stream    [WEB-TRANSPORT-HTTP3] section 4.2<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/draft-ietf-webtrans-http3/#section-3.3">https://datatracker.ietf.org/doc/html/draft-ietf-webtrans-http3/#section-3.3</a></p>
+<p>ref:<a target="_blank" rel="noopener" href="https://www.w3.org/TR/webtransport/#introduction">https://www.w3.org/TR/webtransport/#introduction</a></p>
+<h5 id="3-Session-Establishment"><a href="#3-Session-Establishment" class="headerlink" title="3.  Session Establishment"></a>3.  Session Establishment</h5><ul>
+<li><p>3.1.  Establishing a Transport-Capable HTTP&#x2F;3 Connection</p>
+<p> In order to indicate support for WebTransport, both the client and<br> the server MUST send a SETTINGS_ENABLE_WEBTRANSPORT value set to “1”<br> in their SETTINGS frame.  The SETTINGS_ENABLE_WEBTRANSPORT parameter<br> value SHALL be either “0” or “1”, with “0” being the default; an<br> endpoint that receives a value other than “0” or “1” MUST close the<br> connection with the H3_SETTINGS_ERROR error code.<br> 为了提示支持webTransport, 包括client和server 必须发送一个SETTING frame包含了这个值SETTINGS_ENABLE_WEBTRANSPORT value set to “1”</p>
+</li>
+</ul>
+<p> 0是默认的，节点收到的值如果不是0&#x2F;1则需要关闭连接携带H3_SETTINGS_ERROR error code.<br>   The client MUST NOT send a WebTransport request until it has received<br>   the setting indicating WebTransport support from the server.<br>   Similarly, the server MUST NOT process any incoming WebTransport<br>   requests until the client settings have been received, as the client<br>   may be using a version of WebTransport extension that is different<br>   from the one used by the server.<br>            client 必须不能发送一个webTransport请求直到它有接收到webtransport支持的设置从服务端。<br>            相似的，server不能处理任何到来的webtransport的请求直到client设置被收到。因为client可能会使用和服务端的webtransport扩展不同的版本。</p>
+<ul>
+<li><p>3.2.  Extended CONNECT in HTTP&#x2F;3</p>
+</li>
+<li><p>3.3.  Creating a New Session 创建一个新的session</p>
+<p> As WebTransport sessions are established over HTTP&#x2F;3, they are<br> identified using the https URI scheme [RFC7230].<br> 使用http uri来标识。</p>
+<p>  In order to create a new WebTransport session, a client can send an<br> HTTP CONNECT request.<br>The :protocol pseudo-header field ([RFC8441])<br> MUST be set to webtransport.  The :scheme field MUST be https.  Both<br> the :authority and the :path value MUST be set; those fields indicate<br> the desired WebTransport server.  An Origin header [RFC6454] MUST be<br> provided within the request.<br>要创建一个新的webtransport session,client㤇发送 http connect 请求。</p>
+</li>
+</ul>
+<p>请求的相关uri等：</p>
+<p>   Upon receiving an extended CONNECT request with a :protocol field set<br>   to webtransport, the HTTP&#x2F;3 server can check if it has a WebTransport<br>   server associated with the specified :authority and :path values.  If<br>   it does not, it SHOULD reply with status code 404 (Section 6.5.4,<br>   [RFC7231]).  If it does, it MAY accept the session by replying with a<br>   2xx series status code, as defined in Section 15.3 of [SEMANTICS].</p>
+<p>   The WebTransport server MUST verify the Origin header to ensure that<br>   the specified origin is allowed to access the server in question.<br>   服务端行为：接收到connect request后，要检查是否有管理的服务，路径，没有则返回404，有则返回2xx.<br>   From the client’s perspective, a WebTransport session is established<br>   when the client receives a 2xx response.   从客户端的角度看，一个webTransportsession被建立当client收到2xx恢复。<br>   From the server’s<br>   perspective, a session is established once it sends a 2xx response.<br>   WebTransport over HTTP&#x2F;3 does not support 0-RTT. 从服务端的角度看，一个session被建立了一旦它发送了2xx回复，webtransport不支持0-rtt</p>
+<p>   The webtransport HTTP Upgrade Token uses the Capsule Protocol as<br>   defined in [HTTP-DATAGRAM].  webtransport http更新token使用 Capsule Protocol  定义在。。</p>
+<p>session建立后；<br>WebTransport Features:<br>WebTransport over HTTP&#x2F;3 provides the following features described in<br>   [OVERVIEW]: unidirectional streams, bidirectional streams and<br>   datagrams, initiated by either endpoint.<br>Session IDs are used to demultiplex streams and datagrams belonging<br>   to different WebTransport sessions.  On the wire, session IDs are<br>   encoded using the QUIC variable length integer scheme described in<br>   [RFC9000].<br>If at any point a session ID is received that cannot a valid ID for a<br>   client-initiated bidirectional stream, the recepient MUST close the<br>   connection with an H3_ID_ERROR error code.</p>
+<p>发送&#x2F;接收数据报：</p>
+<h5 id="4-4-Datagrams"><a href="#4-4-Datagrams" class="headerlink" title="4.4.  Datagrams"></a>4.4.  Datagrams</h5><p>   Datagrams can be sent using HTTP Datagrams, using the WEB_TRANSPORT<br>   HTTP Datagram Format Type (see value in Section 8.6).  When using the<br>   WEB_TRANSPORT HTTP Datagram Format Type, the WebTransport datagram<br>   payload is sent unmodified in the “HTTP Datagram Payload” field of an<br>   HTTP Datagram.  When sending a registration capsule using the<br>   “Datagram Format Type” set to WEB_TRANSPORT, the “Datagram Format<br>   Additional Data” field SHALL be empty.</p>
+<p>   In QUIC, a datagram frame can span at most one packet.  Because of<br>   that, the applications have to know the maximum size of the datagram<br>   they can send.  However, when proxying the datagrams, the hop-by-hop<br>   MTUs can vary.  TODO: Describe how the path MTU can be computed,<br>   specifically propagation across HTTP proxies.<br>可以使用 HTTP 数据报发送数据报，使用 WEB_TRANSPORT<br>HTTP 数据报格式类型（参见第 8.6 节中的值）。使用时<br>WEB_TRANSPORT HTTP 数据报格式类型，WebTransport 数据报<br>负载在“HTTP 数据报负载”字段中未经修改地发送<br>HTTP 数据报。当使用<br>“Datagram Format Type”设置为WEB_TRANSPORT，即“Datagram Format<br>附加数据”字段应为空。</p>
+<p>在 QUIC 中，一个数据报帧最多可以跨越一个数据包。因为<br>也就是说，应用程序必须知道数据报他们可以发送的最大大小<br>。然而，当代理数据报时，逐跳<br>MTU 可能会有所不同。 TODO：描述如何计算路径 MTU，<br>特别是跨 HTTP 代理的传播。</p>
+<p>创建一个传出的单向流&#x2F;接收一个传入的单向流:</p>
+<h5 id="4-1-Unidirectional-streams"><a href="#4-1-Unidirectional-streams" class="headerlink" title="4.1.  Unidirectional streams"></a>4.1.  Unidirectional streams</h5><p>   Once established, both endpoints can open unidirectional streams.<br>   The HTTP&#x2F;3 unidirectional stream type SHALL be 0x54.  The body of the<br>   stream SHALL be the stream type, followed by the session ID, encoded<br>   as a variable-length integer, followed by the user-specified stream<br>   data (Figure 1).</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0                   1                   2                   3</span><br><span class="line"><span class="section">0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                           0x54 (i)                          ...</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                        Session ID (i)                       ...</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                         Stream Body                         ...</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"></span><br><span class="line"><span class="code">       Figure 1: Unidirectional WebTransport stream format</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>创建一个双向流&#x2F;接收一个双向流。</p>
+<h5 id="4-2"><a href="#4-2" class="headerlink" title="4.2:"></a>4.2:</h5><p>WebTransport endpoints can initiate bidirectional streams by opening<br>   an HTTP&#x2F;3 bidirectional stream and sending an HTTP&#x2F;3 frame with type<br>   WEBTRANSPORT_STREAM (type&#x3D;0x41).  The format of the frame SHALL be<br>   the frame type, followed by the session ID, encoded as a variable-<br>   length integer, followed by the user-specified stream data<br>   (Figure 2).  The frame SHALL last until the end of the stream.</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0                   1                   2                   3</span><br><span class="line"><span class="section">0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                           0x41 (i)                          ...</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                        Session ID (i)                       ...</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="section">|                         Stream Body                         ...</span></span><br><span class="line"><span class="section">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span></span><br><span class="line"><span class="code">              Figure 2: WEBTRANSPORT_STREAM frame format</span></span><br></pre></td></tr></table></figure>
+<p>HTTP&#x2F;3 does not by itself define any semantics for server-initiated<br>   bidirectional streams.  If WebTransport setting is negotiated by both<br>   endpoints, the syntax of the server-initiated bidirectional streams<br>   SHALL be the same as the syntax of client-initated bidirectional<br>   streams, that is, a sequence of HTTP&#x2F;3 frames.  The only frame<br>   defined by this document for use within server-initiated<br>   bidirectional streams is WEBTRANSPORT_STREAM.</p>
+<p>   TODO: move the paragraph above into a separate draft; define what<br>   happens with already existing HTTP&#x2F;3 frames on server-initiated<br>   bidirectional streams</p>
+<h5 id="4-3-Resetting-Data-Streams"><a href="#4-3-Resetting-Data-Streams" class="headerlink" title="4.3.  Resetting Data Streams"></a>4.3.  Resetting Data Streams</h5><h5 id="4-5-缓冲传入的流和数据报-Buffering-Incoming-Streams-and-Datagrams"><a href="#4-5-缓冲传入的流和数据报-Buffering-Incoming-Streams-and-Datagrams" class="headerlink" title="4.5.缓冲传入的流和数据报 Buffering Incoming Streams and Datagrams"></a>4.5.缓冲传入的流和数据报 Buffering Incoming Streams and Datagrams</h5><p>因为报文的无序性，所以可能数据先到，到的时候还没建立session,此时需要缓存起来等session resp，当然，缓存大小也是有限制大小的。<br>session终止：<br>To terminate a WebTransport session session with an optional integer code and an optional byte sequence reason, follow [WEB-TRANSPORT-HTTP3] section 5. 以下两个情况会关session：</p>
+<ul>
+<li><p>the CONNECT stream is closed, either cleanly or abruptly, on<br>   either side; or</p>
+<ul>
+<li>a CLOSE_WEBTRANSPORT_SESSION capsule is either sent or received.<br> A WebTransport session session is terminated, with optionally an integer code and a byte sequence reason,</li>
+</ul>
+</li>
+</ul>
+<p> when the HTTP&#x2F;3 stream associated with the CONNECT request that initiated session is closed by the server,<br>as described at [WEB-TRANSPORT-HTTP3] section 5.</p>
+<h5 id="webTransport流的概念："><a href="#webTransport流的概念：" class="headerlink" title="webTransport流的概念："></a>webTransport流的概念：</h5><p>WebTransport stream is a concept for HTTP&#x2F;3 stream on a WebTransport session. 流是基于session的</p>
+<p>A WebTransport stream is one of incoming unidirectional, outgoing unidirectional or bidirectional. 流有这些类型。</p>
+<p>WebTransport stream has the following capabilities:<br>capability    definition    incoming unidirectional    outgoing unidirectional    bidirectional<br>send bytes (potentially with FIN)    [QUIC] section 2.2    No    Yes    Yes<br>receive bytes (potentially with FIN)    [QUIC] section 2.2    Yes    No    Yes<br>send STOP_SENDING    [QUIC] section 3.5    Yes    No    Yes<br>reset a WebTransport stream    [QUIC] section 19.4    No    Yes    Yes</p>
+<p>WebTransport stream has the following signals:</p>
+<p>event    definition    incoming unidirectional    outgoing unidirectional    bidirectional<br>STOP_SENDING    [QUIC] section 3.5    No    Yes    Yes<br>reset    [QUIC] section 19.4    Yes    No    Yes</p>
+<h5 id="相关接口："><a href="#相关接口：" class="headerlink" title="相关接口："></a>相关接口：</h5><p>1）  WebTransportDatagramDuplexStream(网络传输数据报双工流) 接口<br>5.1. Internal slots<br>A WebTransportDatagramDuplexStream object has the following internal slots.<br>2)  webTransport Interface</p>
+<h4 id="http3，quic-封装："><a href="#http3，quic-封装：" class="headerlink" title="http3，quic 封装："></a>http3，quic 封装：</h4><p>ref: <a target="_blank" rel="noopener" href="https://www.taohui.tech/2021/02/04/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90HTTP3%E5%8D%8F%E8%AE%AE/">https://www.taohui.tech/2021/02/04/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90HTTP3%E5%8D%8F%E8%AE%AE/</a></p>
+<ul>
+<li>一个udp连接：</li>
+<li>一个udp载荷：可以放多个quic pkt。 一个quic pkt可以放多个FRAME(多种FRAME），对于一个http_conn来说，可以等同于一个quic conn&#x3D;&#x3D;一个udp conn</li>
+<li>quic的以下类型的pkt不能带帧(frame)其他可以：<br>这几个类型的，不能携带帧。其他可以<br>Version Negotiation, Stateless Reset, and Retry packets do not contain frames.</li>
+<li>关系:<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">quic pkt : long header pkt <span class="regexp">/ short header pkt (long header pkt:Initial/</span><span class="number">0</span>-RTT<span class="regexp">/Handshake/</span>Retry, short header pkt:<span class="number">1</span>-RTT)</span><br><span class="line">    quic frame (type ...) : ACK Frame <span class="regexp">/ Crypto Frame/</span> Stream Frame / PING Frame..  (<span class="number">0</span>x08 – <span class="number">0</span>x0f范围是Stream Frame)</span><br><span class="line">        http3: 基于quic frame中的Stream Frame: 其中streamid代表 流id，data字段为http frame的载荷，载荷中的type字段表明这种frame下面的载荷类型：</span><br><span class="line">          streamid可以用来识别是单向还是双向；</span><br><span class="line">这里的stream frame即是放流的。</span><br><span class="line">type字段：</span><br><span class="line"><span class="number">0</span>x00：DATA帧，用于传输HTTP Body包体；</span><br><span class="line"><span class="number">0</span>x01：HEADERS帧，通过QPACK 编码，传输HTTP Header头部；</span><br><span class="line"><span class="number">0</span>x03：CANCEL_PUSH控制帧，用于取消<span class="number">1</span>次服务器推送消息，通常客户端在收到PUSH_PROMISE帧后，通过它告知服务器不需要这次推送；</span><br><span class="line"><span class="number">0</span>x04：SETTINGS控制帧，设置各类通讯参数；</span><br><span class="line"><span class="number">0</span>x05：PUSH_PROMISE帧，用于服务器推送HTTP Body前，先将HTTP Header头部发给客户端，流程与HTTP2相似；</span><br><span class="line"><span class="number">0</span>x07：GOAWAY控制帧，用于关闭连接（注意，不是关闭Stream）；</span><br><span class="line"><span class="number">0</span>x0d：MAX_PUSH_ID，客户端用来限制服务器推送消息数量的控制帧。</span><br><span class="line"><span class="number">0</span>x41/<span class="number">0</span>x54用于webtransport</span><br><span class="line"></span><br><span class="line">例如webrtc中的webtransport:</span><br><span class="line">net<span class="regexp">/third_party/</span>quiche<span class="regexp">/src/</span>quiche<span class="regexp">/quic/</span>core<span class="regexp">/http/</span>http_frames.h</span><br><span class="line">enum class HttpFrameType &#123;</span><br><span class="line">  DATA = <span class="number">0</span>x0,</span><br><span class="line">  HEADERS = <span class="number">0</span>x1,</span><br><span class="line">  CANCEL_PUSH = <span class="number">0</span>X3,</span><br><span class="line">  SETTINGS = <span class="number">0</span>x4,</span><br><span class="line">  PUSH_PROMISE = <span class="number">0</span>x5,</span><br><span class="line">  GOAWAY = <span class="number">0</span>x7,</span><br><span class="line">  MAX_PUSH_ID = <span class="number">0</span>xD,</span><br><span class="line">  <span class="regexp">//</span> https:<span class="regexp">//</span>tools.ietf.org<span class="regexp">/html/</span>draft-davidben-http-client-hint-reliability-<span class="number">02</span></span><br><span class="line">  ACCEPT_CH = <span class="number">0</span>x89,</span><br><span class="line">  <span class="regexp">//</span> https:<span class="regexp">//</span>tools.ietf.org<span class="regexp">/html/</span>draft-ietf-httpbis-priority-<span class="number">03</span></span><br><span class="line">  PRIORITY_UPDATE_REQUEST_STREAM = <span class="number">0</span>xF0700,</span><br><span class="line">  <span class="regexp">//</span> https:<span class="regexp">//</span>www.ietf.org<span class="regexp">/archive/i</span>d/draft-ietf-webtrans-http3-<span class="number">00</span>.html</span><br><span class="line">  WEBTRANSPORT_STREAM = <span class="number">0</span>x41,</span><br><span class="line">&#125;;</span><br><span class="line">net<span class="regexp">/third_party/</span>quiche<span class="regexp">/src/</span>quiche<span class="regexp">/quic/</span>core<span class="regexp">/http/</span>http_encoder.cc</span><br><span class="line">QuicByteCount HttpEncoder::SerializeWebTransportStreamFrameHeader(</span><br><span class="line">    WebTransportSessionId session_id, std::unique_ptr&lt;char[]&gt;* output) &#123;</span><br><span class="line">  uint64_t stream_type =</span><br><span class="line">      static_cast&lt;uint64_t&gt;(HttpFrameType::WEBTRANSPORT_STREAM);</span><br><span class="line">  QuicByteCount header_length = QuicDataWriter::GetVarInt62Len(stream_type) +</span><br><span class="line">                                QuicDataWriter::GetVarInt62Len(session_id);</span><br><span class="line"></span><br><span class="line">  *output = std::make_unique&lt;char[]&gt;(header_length);</span><br><span class="line">  QuicDataWriter writer(header_length, output-&gt;get());</span><br><span class="line">  bool success =</span><br><span class="line">      writer.WriteVarInt62(stream_type) &amp;&amp; writer.WriteVarInt62(session_id);</span><br><span class="line">  <span class="keyword">if</span> (success &amp;&amp; writer.remaining() == <span class="number">0</span>) &#123;</span><br><span class="line">    return header_length;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  QUIC_DLOG(ERROR) &lt;&lt; <span class="string">&quot;Http encoder failed when attempting to serialize &quot;</span></span><br><span class="line">                      <span class="string">&quot;WEBTRANSPORT_STREAM frame header.&quot;</span>;</span><br><span class="line">  return <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>因为是在Stream Frame上做更多的封装，所以解释下：</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*关于 0x08-0x0f是Stream Frame的解释）</span></span><br><span class="line"><span class="comment"> STREAM Frame &#123;</span></span><br><span class="line"><span class="comment">     Type (i) = 0x08..0x0f,</span></span><br><span class="line"><span class="comment">     Stream ID (i),</span></span><br><span class="line"><span class="comment">     [Offset (i)],</span></span><br><span class="line"><span class="comment">     [Length (i)],</span></span><br><span class="line"><span class="comment">     Stream Data (..),</span></span><br><span class="line"><span class="comment">   &#125;</span></span><br><span class="line"><span class="comment">                       Figure 32: STREAM Frame Format</span></span><br><span class="line"><span class="comment">   STREAM frames implicitly create a stream and carry stream data.</span></span><br><span class="line"><span class="comment">  The   Type field in the STREAM frame takes the form 0b00001XXX (or the set   of values from 0x08 to 0x0f).</span></span><br><span class="line"><span class="comment">  The three low-order bits of the frame   type determine the fields that are present in the frame:</span></span><br><span class="line"><span class="comment">  STREAM 帧隐式创建流并携带流数据。</span></span><br><span class="line"><span class="comment">   STREAM 帧中的类型字段采用 0b00001XXX 的形式（或从 0x08 到 0x0f 的一组值）。</span></span><br><span class="line"><span class="comment">   帧类型的三个低位确定帧中存在的字段：</span></span><br><span class="line"><span class="comment">   </span></span><br><span class="line"><span class="comment">   *  The OFF bit (0x04) in the frame type is set to indicate that there      is an Offset field present.</span></span><br><span class="line"><span class="comment">  When set to 1, the Offset field is      present.</span></span><br><span class="line"><span class="comment">  When set to 0, the Offset field is absent and the Stream      Data starts at an offset of 0 (that is, the frame contains the      first bytes of the stream, or the <span class="doctag">end</span> of a stream that includes no      data).</span></span><br><span class="line"><span class="comment">* 帧类型中的 OFF 位 (0x04) 设置为指示存在偏移字段。</span></span><br><span class="line"><span class="comment">   设置为 1 时，存在偏移字段。</span></span><br><span class="line"><span class="comment">   当设置为 0 时，偏移字段不存在并且流数据从偏移量 0 开始（即，帧包含流的第一个字节，或不包含数据的流的结尾）。</span></span><br><span class="line"><span class="comment">   </span></span><br><span class="line"><span class="comment">   *  The LEN bit (0x02) in the frame type is set to indicate that there      is a Length field present.</span></span><br><span class="line"><span class="comment">  If this bit is set to 0, the Length      field is absent and the Stream Data field extends to the <span class="doctag">end</span> of      the packet.</span></span><br><span class="line"><span class="comment">  If this bit is set to 1, the Length field is present.</span></span><br><span class="line"><span class="comment">* 帧类型中的 LEN 位 (0x02) 设置为指示存在长度字段。</span></span><br><span class="line"><span class="comment">   如果该位设置为 0，则长度字段不存在，流数据字段延伸到数据包的末尾。</span></span><br><span class="line"><span class="comment">   如果该位设置为 1，则存在长度字段。</span></span><br><span class="line"><span class="comment">   </span></span><br><span class="line"><span class="comment">   *  The FIN bit (0x01) indicates that the frame marks the <span class="doctag">end</span> of the      stream.</span></span><br><span class="line"><span class="comment">  The final size of the stream is the sum of the offset and      the length of this frame.</span></span><br><span class="line"><span class="comment">* FIN 位（0x01）表示该帧标志着流的结束。</span></span><br><span class="line"><span class="comment">   流的最终大小是偏移量和该帧长度的总和。</span></span><br><span class="line"><span class="comment">   </span></span><br><span class="line"><span class="comment">   An endpoint MUST terminate the connection with error   STREAM_STATE_ERROR if it receives a STREAM frame for a locally   initiated stream that has not yet been created, or for a send-only   stream.</span></span><br><span class="line"><span class="comment">如果端点接收到一个尚未创建的本地启动流或仅发送流的 STREAM 帧，则端点必须以错误 STREAM_STATE_ERROR 终止连接。</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>而Stream Data (..) 放的是什么？ 看下http3的rfc:<br>先看看双向流和单向流的不同：<br>双向流不变，单向流要支持更多的功能，所以：在Stream Data前多了一个字段：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Unidirectional Stream <span class="keyword">Header</span> &#123;     Stream <span class="keyword">Type</span> (i),   &#125;</span><br><span class="line">                   Figure <span class="number">1</span>: Unidirectional Stream <span class="keyword">Header</span></span><br><span class="line">Stream <span class="keyword">Type</span>的取值：</span><br><span class="line">https://datatracker.ietf.org/doc/html/draft-ietf-quic-http#section<span class="number">-6.2</span><span class="number">.1</span></span><br><span class="line"><span class="number">0x00</span>：控制Stream，传递各类Stream控制消息；</span><br><span class="line"><span class="number">0x01</span>：服务器推送消息；</span><br><span class="line"><span class="number">0x02</span>：用于编码QPACK动态表，比如面对不属于静态表的HTTP请求头部，客户端可以通过这个Stream发送动态表编码；</span><br><span class="line"><span class="number">0x03</span>：用于通知编码端QPACK动态表的更新结果。</span><br><span class="line">其他：https://datatracker.ietf.org/doc/html/draft-ietf-quic-http#section<span class="number">-6.2</span></span><br><span class="line">Two stream <span class="keyword">types</span> are defined <span class="keyword">in</span> this document: control streams</span><br><span class="line">   (Section <span class="number">6.2</span><span class="number">.1</span>) <span class="keyword">and</span> push streams (Section <span class="number">6.2</span><span class="number">.2</span>).  [QPACK] defines</span><br><span class="line">   two additional stream <span class="keyword">types</span>.  Other stream <span class="keyword">types</span> can be defined <span class="keyword">by</span></span><br><span class="line">   extensions <span class="keyword">to</span> HTTP/<span class="number">3</span>; see Section <span class="number">9</span> <span class="keyword">for</span> more details.  <span class="keyword">Some</span> stream</span><br><span class="line">   <span class="keyword">types</span> are reserved (Section <span class="number">6.2</span><span class="number">.3</span>).</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>详细见rfc 6.1，6.2.  </p>
+<p>接下来是StreamData的内容：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">7.1</span>.  Frame Layout</span><br><span class="line"></span><br><span class="line">   <span class="literal">All</span> frames have the following format:</span><br><span class="line">   HTTP/<span class="number">3</span> Frame Format &#123;</span><br><span class="line">     <span class="keyword">Type</span> (i),</span><br><span class="line">     Length (i),</span><br><span class="line">     Frame Payload (..),</span><br><span class="line">   &#125;</span><br><span class="line">        Figure <span class="number">3</span>: HTTP/<span class="number">3</span> Frame Format</span><br><span class="line">   A frame includes the following fields:</span><br><span class="line">   <span class="keyword">Type</span>:  A <span class="built_in">variable</span><span class="params">-length</span> <span class="built_in">integer</span> that identifies the frame <span class="keyword">type</span>.</span><br><span class="line"></span><br><span class="line">   Length:  A <span class="built_in">variable</span><span class="params">-length</span> <span class="built_in">integer</span> that describes the length <span class="keyword">in</span> <span class="built_in">bytes</span>      of the Frame Payload.</span><br><span class="line"></span><br><span class="line">   Frame Payload:  A payload, the semantics of which are determined <span class="keyword">by</span>      the <span class="keyword">Type</span> field.</span><br><span class="line">一个帧包括以下字段：</span><br><span class="line">    类型：标识帧类型的可变长度整数。</span><br><span class="line"></span><br><span class="line">    长度：一个可变长度整数，描述帧有效负载的字节长度。</span><br><span class="line"></span><br><span class="line">    Frame Payload：有效载荷，其语义由 <span class="keyword">Type</span> 字段确定。</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/format/" rel="tag"># format</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/23/quic-exprience/" rel="prev" title="quic_exprience">
+      <i class="fa fa-chevron-left"></i> quic_exprience
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#webtransport%E5%92%8Cquic-http3%E7%9A%84%E5%B0%81%E8%A3%85%E7%AE%80%E5%8D%95%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">webtransport和quic,http3的封装简单总结：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#webTransport"><span class="nav-number">1.1.</span> <span class="nav-text">webTransport:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#webtransport-%E6%98%AF%E5%95%A5"><span class="nav-number">1.1.1.</span> <span class="nav-text">webtransport 是啥</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-Session-Establishment"><span class="nav-number">1.1.2.</span> <span class="nav-text">3.  Session Establishment</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-4-Datagrams"><span class="nav-number">1.1.3.</span> <span class="nav-text">4.4.  Datagrams</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-Unidirectional-streams"><span class="nav-number">1.1.4.</span> <span class="nav-text">4.1.  Unidirectional streams</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2"><span class="nav-number">1.1.5.</span> <span class="nav-text">4.2:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-3-Resetting-Data-Streams"><span class="nav-number">1.1.6.</span> <span class="nav-text">4.3.  Resetting Data Streams</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-5-%E7%BC%93%E5%86%B2%E4%BC%A0%E5%85%A5%E7%9A%84%E6%B5%81%E5%92%8C%E6%95%B0%E6%8D%AE%E6%8A%A5-Buffering-Incoming-Streams-and-Datagrams"><span class="nav-number">1.1.7.</span> <span class="nav-text">4.5.缓冲传入的流和数据报 Buffering Incoming Streams and Datagrams</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#webTransport%E6%B5%81%E7%9A%84%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">1.1.8.</span> <span class="nav-text">webTransport流的概念：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%8E%A5%E5%8F%A3%EF%BC%9A"><span class="nav-number">1.1.9.</span> <span class="nav-text">相关接口：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#http3%EF%BC%8Cquic-%E5%B0%81%E8%A3%85%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">http3，quic 封装：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小兴"
+      src="/images/headicon2.jpg">
+  <p class="site-author-name" itemprop="name">小兴</p>
+  <div class="site-description" itemprop="description">始于歧路，愿归于征途</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xdksx/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xdksx&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-github-square"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/ksance@gmail.com" title="E-Mail → ksance@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.facebook.com/572897439" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;572897439" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      friendly link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小兴</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.1.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '06e6b70d396f6928e45a',
+      clientSecret: 'cd03b7c657d50a5d76a7fa682c4f8eb48cb15fc3',
+      repo        : 'xdksx.github.io',
+      owner       : 'xdksx',
+      admin       : ['xdksx'],
+      id          : 'fba21fe046e95f116ebee00eab9b5a22',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
